@@ -32,6 +32,7 @@ dev = [
   "types-pyyaml>=6.0",
   "lxml>=6.1.3",
   "lxml-stubs>=0.5.1",
+  "av>=14",  # evidence clip tests remux real H.264 packets
 ]
 
 [tool.ruff]

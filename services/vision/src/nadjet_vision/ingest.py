@@ -4,12 +4,13 @@ The PyAV reader runs in a thread (``read_stream``); everything else here is plai
 tests drive with synthetic timestamps.
 """
 
+import io
 import threading
 import time
 from collections import deque
 from collections.abc import Callable, Iterator
-from dataclasses import dataclass
-from typing import Any
+from dataclasses import dataclass, field, replace
+from typing import Any, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -30,6 +31,38 @@ class Packet:
     pts_s: float
     keyframe: bool
     data: bytes
+    dts_s: float | None = None  # decode order; ``None`` means equal to ``pts_s``
+
+
+@dataclass(frozen=True)
+class StreamInfo:
+    """What a muxer needs to copy the ring's packets into an MP4 without re-encoding."""
+
+    codec: str
+    width: int
+    height: int
+    extradata: bytes
+    time_base_den: int  # packet timestamps are multiples of 1 / time_base_den seconds
+    # A tiny Matroska file (source codec parameters + one keyframe) used as the muxer's stream
+    # template. RTSP cameras send SPS/PPS out of band (SDP): copying only `extradata` into a
+    # freshly opened encoder lets the encoder write its own avcC and the clip stops decoding.
+    template: bytes = b""
+
+
+def codec_template(stream: Any, keyframe: Any) -> bytes:
+    """Matroska bytes carrying ``stream``'s exact codec parameters (and ``keyframe``)."""
+    import av
+
+    buffer = io.BytesIO()
+    with av.open(buffer, "w", format="matroska") as output:
+        out_stream = output.add_stream_from_template(stream)
+        packet = av.Packet(bytes(keyframe))
+        packet.stream = out_stream
+        packet.time_base = stream.time_base
+        packet.pts = packet.dts = 0
+        packet.is_keyframe = True
+        output.mux(packet)  # Matroska writes nothing until a packet is muxed
+    return buffer.getvalue()
 
 
 @dataclass(frozen=True)
@@ -37,6 +70,7 @@ class SampledFrame:
     pts_s: float
     image: BgrFrame
     decode_ms: float  # time spent decoding this frame's packet
+    captured_at: float = field(default_factory=time.time)  # wall clock (epoch s) at decode
 
 
 class PacketRing:
@@ -51,6 +85,7 @@ class PacketRing:
         # Hard cap: a stream without keyframes could otherwise never be trimmed.
         self._packets: deque[Packet] = deque(maxlen=max_packets)
         self._lock = threading.Lock()
+        self.stream: StreamInfo | None = None
 
     def clear(self) -> None:
         """Forget the previous RTSP session (its packets cannot be mixed into a clip)."""
@@ -146,19 +181,32 @@ def iter_frames(
             on_open()
         stream = container.streams.video[0]
         base: Any = stream.time_base
+        context: Any = stream.codec_context
+        ring.stream = StreamInfo(
+            codec=str(context.name),
+            width=int(context.width),
+            height=int(context.height),
+            extradata=bytes(context.extradata or b""),
+            time_base_den=round(1 / base),
+        )
         for packet in container.demux(stream):
             if stop():
                 return
             if packet.dts is None or packet.pts is None:
                 continue  # flush packet
             ptime = float(packet.pts * base)
-            ring.append(Packet(ptime, bool(packet.is_keyframe), bytes(packet)))
+            if packet.is_keyframe and ring.stream is not None and not ring.stream.template:
+                ring.stream = replace(ring.stream, template=codec_template(stream, packet))
+            ring.append(
+                Packet(ptime, bool(packet.is_keyframe), bytes(packet), float(packet.dts * base))
+            )
             started = time.perf_counter()
             for frame in packet.decode():
                 pts = float(frame.pts * base) if frame.pts is not None else ptime
                 if sampler.accept(pts):
                     decode_ms = (time.perf_counter() - started) * 1000
-                    yield SampledFrame(pts, frame.to_ndarray(format="bgr24"), decode_ms)
+                    image = cast(BgrFrame, frame.to_ndarray(format="bgr24"))
+                    yield SampledFrame(pts, image, decode_ms, time.time())
 
 
 def make_ingest(settings: VisionSettings) -> tuple[FrameSampler, PacketRing]:
