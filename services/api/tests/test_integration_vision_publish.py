@@ -166,7 +166,7 @@ async def test_candidate_and_evidence_from_the_worker_make_a_valid_incident(
 async def test_resending_the_same_event_makes_one_incident(
     app: FastAPI, session: AsyncSession
 ) -> None:
-    """A retried or restarted worker re-sends the event under the same key (FR-VIS-010 loops)."""
+    """A retried post re-sends the event under the same key: one incident (FR-VIS-010)."""
     lat, lon = fresh_spot()
     event = crash_event(fresh_wall())
     key = candidate_key("cam-it-vision", event)
