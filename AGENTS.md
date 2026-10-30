@@ -65,7 +65,9 @@ Report exact commands and results. Never claim a check passed if you did not run
 - Never create incidents, detections or confidence values from hardcoded data, timestamps,
   file names or random values. Mocked AI answers are allowed **only in tests**.
 - Every AI value shown to users carries its source (rule name or model id).
-- Demo clips come from the held-out list; never tune on them.
+- Demo clips come from the held-out list (`eval/heldout.json`); never tune on them. Only the
+  catalogue validators and `eval/run_eval.py` may reference that file;
+  `scripts/check-integrity.sh` fails otherwise.
 
 ## Code conventions
 

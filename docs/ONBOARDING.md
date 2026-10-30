@@ -50,15 +50,28 @@ Live updates: `GET /events` (Server-Sent Events, bearer token header).
 
 ### Demo videos (optional for most work)
 
-Cameras are defined in `data/cameras.yaml`. Videos are **not** in git (research licences).
-Put H.264 files named `<camera-id>.mp4` in `data/videos/`, normalised for streaming:
+Cameras are defined in `data/cameras.yaml` (zones in `data/zones/<camera-id>.json`, demo clips
+listed in `eval/heldout.json`). Videos are **not** in git (research licences). Download the clips
+by hand following `scripts/videos/fetch.md`, then normalise them:
 
 ```bash
-ffmpeg -i in.mp4 -vf "scale=1280:-2,fps=25" -c:v libx264 -profile:v baseline -g 25 -bf 0 -an data/videos/cam-a1-pk42.mp4
-make camsim && make dev
+bash scripts/videos/prepare.sh      # data/videos/raw/<camera-id>.* -> data/videos/<camera-id>.mp4
+make camsim && make dev             # RTSP rtsp://localhost:8554/<id>, WebRTC http://localhost:8889/<id>
 ```
 
-Cameras without a video file are skipped with a warning.
+Cameras without a video file are skipped with a warning. `make dev` also syncs the camera
+registry (`make seed-cameras`); operators read it with `GET /cameras`.
+
+Simulator controls (FR-CAM-004), while `make dev` runs:
+
+```bash
+make camsim-list
+make camsim-freeze CAM=cam-a1-pk42      # no new frames, RTSP session stays open
+make camsim-unfreeze CAM=cam-a1-pk42
+make camsim-outage CAM=cam-a1-pk42      # drops the stream path; make camsim-restore brings it back
+make camsim-swap CAM=cam-a1-pk42 VIDEO=other.mp4
+make camsim-restart CAM=cam-a1-pk42     # clip restarts from 0
+```
 
 ## 3. AI inference: NVIDIA Brev only
 
