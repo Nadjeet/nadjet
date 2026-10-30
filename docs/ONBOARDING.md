@@ -48,6 +48,24 @@ it restarts. Evidence files go under `NADJET_EVIDENCE_DIR`. Set `NADJET_SIGNING_
 (`uv run nadjet-api gen-signing-key`) in production; a fixed insecure key is used locally.
 Live updates: `GET /events` (Server-Sent Events, bearer token header).
 
+### Map, routing and facilities (once per machine)
+
+Everything runs locally; nothing contacts a public tile, routing or Overpass server at runtime.
+
+| Step | Command | Download / needs |
+|---|---|---|
+| Offline basemap | `make map-data` | Protomaps extract for Algeria, ~560 MB at zoom 14, a few minutes on a good link, much longer on a slow one (needs Docker); also fetches fonts and sprites (~13 MB) |
+| Routing data | `make routing-data` | Geofabrik Algeria extract ~290 MB; `osrm-extract` peaks at ~1.3 GB RAM (measured), ~3 GB disk, a few minutes |
+| Start routing | `make routing-up` | OSRM on `localhost:55000`; stop with `make routing-down` |
+| Facilities and units | `make seed-geo` | Imports `data/seed/*.csv` (simulated capabilities and units on real OSM locations); safe to re-run |
+
+`data/map/` and `apps/web/public/map/` are git-ignored. The API serves the basemap at
+`/tiles/algeria.pmtiles` (HTTP Range) and `GET /routing/recommendations?lat=&lon=&kind=&need=`
+(operator roles) ranks units and hospitals by road ETA; it answers 503 when OSRM is down. OSRM
+has no live traffic, so ETAs use an urban multiplier (`NADJET_ROUTING_URBAN_MULTIPLIER`, docs/11
+TD-38). Regenerating `data/seed/facilities.csv` is a one-off developer task:
+`python3 scripts/osm/export_facilities.py` (see `data/seed/README.md`, ODbL).
+
 ### Notifications: SMS gateway and web push (FR-NTF, TD-13)
 
 `make dev` also runs `nadjet-api worker` (arq): it sends notifications, re-checks delivery after
@@ -122,6 +140,51 @@ for local development.
 6. Live test: `make test-brev` (not part of `make test` or CI).
 
 If Brev is unreachable, the app reports "AI unavailable" and keeps the rule-based signals.
+
+### Run the vision workers on Brev
+
+Workers run on the GPU instance and use two reverse tunnels (instance → your laptop) plus the
+vLLM port on the instance itself. The instance is never started by these commands: if it is not
+`RUNNING` they print `brev start nadjet-gpu` and stop (credits are manual).
+
+1. Locally: `make camsim && make dev` (MediaMTX on :8554, API on :8080) and `make brev-up`.
+2. `make brev-tunnel` opens, over the Brev ssh alias:
+   `-L 18000:127.0.0.1:8000` (vLLM for local tools), `-R 18554:127.0.0.1:8554` (RTSP) and
+   `-R 18080:127.0.0.1:8080` (API). Workers on the instance therefore use
+   `rtsp://127.0.0.1:18554` and `http://127.0.0.1:18080`.
+3. `make brev-deploy-workers` copies `deploy/gpu`, writes a 0600 `.env` with
+   `NADJET_INGEST_TOKEN` (from your local `.env`), pulls `ghcr.io/nadjeet/nadjet-vision:dev`
+   and starts the `workers` service. Until the first image is published (CI pushes on `dev` and
+   `main`), it builds the image on the instance instead, from the committed `HEAD` (uncommitted
+   changes are not sent). GHCR packages are private by default: either make
+   `nadjet-vision` public in the organisation's package settings, or run once on the instance
+   `docker login ghcr.io -u <github-user>` with a read-only token (`read:packages`); otherwise
+   every deploy falls back to the slow build. Set `NADJET_VISION_IMAGE` to pin a tag such as
+   `ghcr.io/nadjeet/nadjet-vision:<sha>`. A failed build or start stops with an error.
+4. `make brev-logs F=-f` should show `API http://127.0.0.1:18080/health reachable` and
+   `camera=cam-a1-pk42 fps=…` lines per camera. Cameras without a running stream log
+   `stream error` and retry with back-off (1 s to 30 s). A frozen camera (no frames, session
+   open) is detected after about 5 s and reconnected.
+5. `make brev-untunnel` cancels all three forwards. `brev stop nadjet-gpu` when done.
+
+Quick image check on the instance: `docker run --rm --gpus all ghcr.io/nadjeet/nadjet-vision:dev --help`.
+What a worker does (issue #8): one process per camera reads the stream at 5 fps, runs RF-DETR
+(weights downloaded once into the `weights` volume and checked against `models.lock.yaml`),
+tracks vehicles and people with ByteTrack, measures relative speed (box-heights per second),
+sets `camera_moving` while the camera pans, publishes the annotated stream `<camera>_ai`
+(`rtsp://…/<camera>_ai`, played over WebRTC like any camera) and pushes a health report every 5 s.
+
+- Metrics: camera *i* (in catalogue order) serves Prometheus text on the instance at
+  `http://127.0.0.1:<9100+i>/metrics` (`NADJET_METRICS_PORT_BASE`).
+- System page data: `GET /system/cameras` (operator/supervisor/admin) returns status, fps,
+  per-stage latency (decode/detect/track/annotate), queue depth and `camera_moving`; `stale: true`
+  means the worker stopped reporting.
+- Fault test: `make camsim-freeze CAM=cam-a1-pk42` makes the camera `degraded` within about 15 s
+  (`camera_fault` on `GET /events`); `make camsim-unfreeze CAM=cam-a1-pk42` clears it. Other cameras
+  keep running. `make camsim-outage` / `camsim-restore` shows the reconnect back-off in
+  `make brev-logs`.
+- Detection settings: `NADJET_DETECTOR_THRESHOLD` (0.4), `NADJET_SAMPLE_FPS` (5),
+  `NADJET_STALL_S` (10), `NADJET_ANNOTATED_ENCODER` (`h264_nvenc`; use `libx264` without a GPU).
 
 ## 4. Daily workflow
 

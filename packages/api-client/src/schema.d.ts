@@ -307,6 +307,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/internal/camera-health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Camera Health
+         * @description Store the latest report; a fault or recovery updates the camera status once.
+         */
+        post: operations["post_camera_health_internal_camera_health_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/internal/candidates": {
         parameters: {
             query?: never;
@@ -409,6 +429,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/routing/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recommendations
+         * @description Rank units and hospitals near a point by road ETA; hospitals by capability, state, ETA.
+         */
+        get: operations["recommendations_routing_recommendations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sms/inbound": {
         parameters: {
             query?: never;
@@ -449,6 +489,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/system/cameras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * System Cameras
+         * @description Camera status with FPS, per-stage latency and queue depth from each worker (FR-CAM-005).
+         */
+        get: operations["system_cameras_system_cameras_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tiles/algeria.pmtiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Algeria Tiles
+         * @description The PMTiles archive; clients read it with Range requests.
+         */
+        get: operations["algeria_tiles_tiles_algeria_pmtiles_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -481,6 +561,59 @@ export interface components {
             kind: "clip" | "keyframe" | "photo";
             /** Start Ts */
             start_ts?: string | null;
+        };
+        /** CameraHealthAck */
+        CameraHealthAck: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "unknown" | "online" | "degraded" | "offline";
+            /**
+             * Transition
+             * @description Set when this report changed the camera status
+             */
+            transition: ("camera_fault" | "camera_recovered") | null;
+        };
+        /** CameraHealthReport */
+        CameraHealthReport: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Camera Id */
+            camera_id: string;
+            /**
+             * Camera Moving
+             * @description Global camera motion (FR-VIS-011)
+             * @default false
+             */
+            camera_moving: boolean;
+            /** Connected */
+            connected: boolean;
+            /**
+             * Detector
+             * @description Detector model id (source of AI values)
+             */
+            detector?: string | null;
+            /**
+             * Fault
+             * @default false
+             */
+            fault: boolean;
+            /** Fault Reason */
+            fault_reason?: ("stall" | "disconnect") | null;
+            /**
+             * Fps
+             * @description Analysed frames per second
+             */
+            fps: number;
+            /** Last Frame At */
+            last_frame_at?: string | null;
+            latency_ms?: components["schemas"]["StageLatencyMs"];
+            /** Queue Depth */
+            queue_depth: number;
         };
         /** CameraOut */
         CameraOut: {
@@ -515,6 +648,30 @@ export interface components {
             zones: {
                 [key: string]: unknown;
             } | null;
+        };
+        /**
+         * CameraSystemStatus
+         * @description One row of the system page: registry status plus the latest worker report.
+         */
+        CameraSystemStatus: {
+            /** @description Latest report, null if none or expired */
+            health: components["schemas"]["CameraHealthReport"] | null;
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Stale
+             * @description No report for more than 15 s: the worker is not reporting
+             */
+            stale: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "unknown" | "online" | "degraded" | "offline";
         };
         /** CandidateAccepted */
         CandidateAccepted: {
@@ -1005,6 +1162,47 @@ export interface components {
             endpoint: string;
             keys: components["schemas"]["PushKeys"];
         };
+        /** RankedResource */
+        RankedResource: {
+            /** Agency */
+            agency?: string | null;
+            /** Capabilities */
+            capabilities?: {
+                [key: string]: unknown;
+            } | null;
+            /** Contact */
+            contact?: string | null;
+            /** Distance M */
+            distance_m: number;
+            /** Eta S */
+            eta_s: number;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "unit" | "hospital";
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /** Ready State */
+            ready_state?: string | null;
+            /** Route Geojson */
+            route_geojson: {
+                [key: string]: unknown;
+            } | null;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Source
+             * @default osrm
+             */
+            source: string;
+        };
         /** ReadinessResponse */
         ReadinessResponse: {
             /** Dependencies */
@@ -1013,6 +1211,15 @@ export interface components {
             };
             /** Status */
             status: string;
+        };
+        /** Recommendations */
+        Recommendations: {
+            /** Hospitals */
+            hospitals: components["schemas"]["RankedResource"][];
+            /** Units */
+            units: components["schemas"]["RankedResource"][];
+            /** Urban Multiplier */
+            urban_multiplier: number;
         };
         /** RejectIn */
         RejectIn: {
@@ -1035,6 +1242,20 @@ export interface components {
              * @enum {string}
              */
             status: "processed" | "duplicate" | "throttled" | "ignored";
+        };
+        /**
+         * StageLatencyMs
+         * @description Median per-stage latency over the last window; ``None`` before the first frame.
+         */
+        StageLatencyMs: {
+            /** Annotate */
+            annotate?: number | null;
+            /** Decode */
+            decode?: number | null;
+            /** Detect */
+            detect?: number | null;
+            /** Track */
+            track?: number | null;
         };
         /** StatusIn */
         StatusIn: {
@@ -1772,6 +1993,55 @@ export interface operations {
             };
         };
     };
+    post_camera_health_internal_camera_health_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CameraHealthReport"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CameraHealthAck"];
+                };
+            };
+            /** @description Invalid service token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown camera */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     post_candidate_internal_candidates_post: {
         parameters: {
             query?: never;
@@ -1967,6 +2237,49 @@ export interface operations {
             };
         };
     };
+    recommendations_routing_recommendations_get: {
+        parameters: {
+            query: {
+                lat: number;
+                lon: number;
+                kind?: "unit" | "hospital" | "all";
+                /** @description Required hospital capability, e.g. trauma */
+                need?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recommendations"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Routing service unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     sms_inbound_sms_inbound_post: {
         parameters: {
             query?: {
@@ -2047,6 +2360,51 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    system_cameras_system_cameras_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CameraSystemStatus"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    algeria_tiles_tiles_algeria_pmtiles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

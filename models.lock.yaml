@@ -1,0 +1,13 @@
+# Pinned model weights (doc 11 TD-25). A weight is loaded only if its SHA-256 matches.
+# Detectors must be permissively licensed (PRD NFR-LIC-001); a test fails on anything else
+# enabled by default.
+models:
+  - id: rf-detr-medium
+    role: detector
+    default: true
+    package: rfdetr==1.11.2
+    source: https://storage.googleapis.com/rfdetr/medium_coco/checkpoint_best_regular.pth
+    filename: rf-detr-medium.pth
+    sha256: 749ff6071828aaffac63e204c4f4135ed3d6cdae4d702e086c360edc3b5768c8
+    licence: Apache-2.0
+    notes: COCO weights published by Roboflow; md5 7223f764a87b863f02eb8d52bf0ce2ee matches rfdetr 1.11.2.

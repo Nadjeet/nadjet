@@ -52,6 +52,7 @@ scripts/              Doctor, Brev helpers, integrity checks
 | `make ci` | Everything CI runs |
 | `make doctor` | Diagnose the local environment |
 | `make brev-up` · `make brev-forward` · `make brev-check` | Start, connect to and verify the AI server on NVIDIA Brev |
+| `make brev-tunnel` · `make brev-deploy-workers` · `make brev-logs` | Run the vision workers on Brev against your local stack |
 | `make clean` · `make reset-db` | Remove caches/builds · delete local data (asks first) |
 
 ## AI inference on NVIDIA Brev (GPU)
@@ -92,10 +93,25 @@ make brev-check         # must print: OK ... serves Qwen/Qwen3-VL-8B-Instruct-FP
 make test-brev          # optional live test
 ```
 
-### 3. Stop it when you are done
+### 3. Run the vision workers on Brev
+
+The workers (`nadjet-vision camera`) run on the GPU instance, read the **local** simulated
+cameras and report to the **local** API through ssh tunnels, so nothing is exposed publicly.
 
 ```bash
-make brev-unforward     # close your local tunnel
+make dev                  # locally: infra, API, cameras (make camsim first, see docs/ONBOARDING.md)
+make brev-tunnel          # vLLM -> localhost:18000, local RTSP -> instance:18554, local API -> instance:18080
+make brev-deploy-workers  # pulls ghcr.io/nadjeet/nadjet-vision:dev (builds on the instance if absent) and starts workers
+make brev-logs F=-f       # follow worker logs: camera=... fps=...
+make brev-untunnel        # close all three tunnels when you are done
+```
+
+Details and the verification steps: [`docs/ONBOARDING.md`](docs/ONBOARDING.md).
+
+### 4. Stop it when you are done
+
+```bash
+make brev-untunnel      # close the tunnels (make brev-unforward if you only used brev-forward)
 brev stop nadjet-gpu    # stop the GPU: billing stops, the model stays cached
 ```
 

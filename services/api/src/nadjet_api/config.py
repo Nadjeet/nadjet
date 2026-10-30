@@ -62,6 +62,16 @@ class Settings(BaseSettings):
     candidate_claim_idle_ms: int = Field(
         default=30_000, ge=0, description="Re-claim stream entries pending longer than this"
     )
+    osrm_url: str = Field(default="http://localhost:55000", description="Self-hosted OSRM base URL")
+    routing_timeout_s: float = Field(default=5.0, gt=0)
+    routing_urban_multiplier: float = Field(
+        default=1.3,
+        ge=1.0,
+        description="Factor applied to OSRM free-flow durations (no live traffic); see docs/11",
+    )
+    map_tiles_path: Path = Field(
+        default=Path("data/map/algeria.pmtiles"), description="PMTiles file served at /tiles"
+    )
 
     # --- Notifications (FR-NTF, TD-13/14) ---
     sms_gateway_url: str | None = Field(
