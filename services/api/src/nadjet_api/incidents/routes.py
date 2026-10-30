@@ -5,7 +5,7 @@ from collections.abc import AsyncIterator, Awaitable
 from datetime import UTC, datetime
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, HTTPException, Query, Request, status
+from fastapi import APIRouter, Depends, Header, HTTPException, Query, Request, status
 from fastapi.responses import StreamingResponse
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -50,6 +50,16 @@ INTEGRITY_VIEWERS = (*DISPATCHERS, Role.AUDITOR)
 
 NOT_FOUND = HTTPException(status.HTTP_404_NOT_FOUND, "Incident not found")
 
+IdempotencyKey = Annotated[
+    str | None,
+    Header(
+        alias="Idempotency-Key",
+        min_length=1,
+        max_length=128,
+        description="Repeating a request with the same key changes nothing (offline queues)",
+    ),
+]
+
 
 def _client_ip(request: Request) -> str | None:
     return request.client.host if request.client else None
@@ -63,7 +73,7 @@ async def _run[T](session: AsyncSession, work: Awaitable[T]) -> T:
     except service.NotFoundError:
         await session.rollback()
         raise NOT_FOUND from None
-    except (IllegalTransitionError, service.MergeError) as exc:
+    except (IllegalTransitionError, service.MergeError, service.IdempotencyConflictError) as exc:
         await session.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from None
     return outcome
@@ -249,10 +259,19 @@ async def set_status(
     scope: ScopeDep,
     user: Annotated[User, Depends(require_roles(*STATUS_UPDATERS))],
     request: Request,
+    idempotency_key: IdempotencyKey = None,
 ) -> IncidentOut:
     """Advance the response lifecycle (dispatch, acknowledge, ..., close)."""
     return await _transition(
-        incident_id, IncidentStatus(body.status), session, redis, signer, scope, user, request
+        incident_id,
+        IncidentStatus(body.status),
+        session,
+        redis,
+        signer,
+        scope,
+        user,
+        request,
+        idempotency_key=idempotency_key,
     )
 
 
@@ -266,10 +285,20 @@ async def _transition(
     user: User,
     request: Request,
     reason: RejectReason | None = None,
+    idempotency_key: str | None = None,
 ) -> IncidentOut:
     change = await _run(
         session,
-        service.transition(session, signer, incident_id, target, user, scope, reason=reason),
+        service.transition(
+            session,
+            signer,
+            incident_id,
+            target,
+            user,
+            scope,
+            reason=reason,
+            idempotency_key=idempotency_key,
+        ),
     )
     await announce(redis, [change])
     incident = await service.get_visible(session, incident_id, scope)
@@ -289,12 +318,19 @@ async def add_casualty(
     signer: SignerDep,
     scope: ScopeDep,
     user: Annotated[User, Depends(require_roles(*TRIAGE_REPORTERS))],
+    idempotency_key: IdempotencyKey = None,
 ) -> IncidentOut:
     """Record a triage entry; the incident priority is recomputed (FR-INC-004, FR-INC-008)."""
     _casualty, change = await _run(
         session,
         service.add_casualty(
-            session, signer, incident_id, user, scope, body.model_dump(mode="json")
+            session,
+            signer,
+            incident_id,
+            user,
+            scope,
+            body.model_dump(mode="json"),
+            idempotency_key=idempotency_key,
         ),
     )
     await announce(redis, [change])

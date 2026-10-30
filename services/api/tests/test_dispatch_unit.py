@@ -1,8 +1,13 @@
 """Unit: need-based filtering and the hospital pre-alert line (FR-DSP-001/002, FR-NTF-006)."""
 
+import uuid
+from datetime import UTC, datetime
+
 import pytest
 
 from nadjet_api.dispatch.need import hospital_need, unit_agencies
+from nadjet_api.dispatch.schemas import DeliveryOut, DispatchOut
+from nadjet_api.dispatch.service import for_responder
 from nadjet_api.notifications.grammar import fits_sms, format_alert
 
 
@@ -62,3 +67,30 @@ def test_alert_line_is_unchanged_without_an_eta() -> None:
         short_code="7F3",
     )
     assert line == "ACC|P1|36.64800,3.32900|A1 PK42|2V|7F3"
+
+
+def _row(kind: str, status: str = "dispatched") -> DispatchOut:
+    return DispatchOut(
+        id=uuid.uuid4(),
+        kind=kind,  # type: ignore[arg-type]
+        resource_id="x",
+        name="X",
+        agency=None,
+        simulated=False,
+        lat=36.7,
+        lon=3.4,
+        eta_s=60,
+        distance_m=500,
+        route_geojson=None,
+        status=status,  # type: ignore[arg-type]
+        dispatched_by=uuid.uuid4(),
+        at=datetime.now(UTC),
+        deliveries=[DeliveryOut(channel="sms", status="sent", attempts=1)],
+    )
+
+
+def test_FR_RSP_001_a_responder_only_gets_the_active_hospital_without_deliveries() -> None:
+    rows = [_row("unit"), _row("hospital", "replaced"), _row("hospital"), _row("unit")]
+    seen = for_responder(rows)
+    assert [(r.kind, r.status, r.deliveries) for r in seen] == [("hospital", "dispatched", [])]
+    assert rows[2].deliveries  # the operator's copy is untouched

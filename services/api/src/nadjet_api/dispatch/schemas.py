@@ -42,6 +42,8 @@ class DispatchOut(BaseModel):
     name: str
     agency: str | None
     simulated: bool
+    lat: float = Field(description="Position of the unit or hospital")
+    lon: float
     eta_s: float
     distance_m: float
     route_geojson: dict[str, Any] | None

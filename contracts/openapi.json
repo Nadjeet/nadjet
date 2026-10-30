@@ -1445,6 +1445,15 @@
             "title": "Kind",
             "type": "string"
           },
+          "lat": {
+            "description": "Position of the unit or hospital",
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
           "name": {
             "title": "Name",
             "type": "string"
@@ -1485,6 +1494,8 @@
           "name",
           "agency",
           "simulated",
+          "lat",
+          "lon",
           "eta_s",
           "distance_m",
           "route_geojson",
@@ -3994,6 +4005,27 @@
         "title": "SmsAck",
         "type": "object"
       },
+      "SmsGateway": {
+        "properties": {
+          "number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Where responders text their codes; null when unset",
+            "title": "Number"
+          }
+        },
+        "required": [
+          "number"
+        ],
+        "title": "SmsGateway",
+        "type": "object"
+      },
       "StageLatencyMs": {
         "additionalProperties": false,
         "description": "Median per-stage latency over the last window; ``None`` before the first frame.",
@@ -6355,6 +6387,26 @@
               "title": "Incident Id",
               "type": "string"
             }
+          },
+          {
+            "description": "Repeating a request with the same key changes nothing (offline queues)",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Repeating a request with the same key changes nothing (offline queues)",
+              "title": "Idempotency-Key"
+            }
           }
         ],
         "requestBody": {
@@ -6466,7 +6518,7 @@
     },
     "/incidents/{incident_id}/dispatches": {
       "get": {
-        "description": "Dispatches of the incident with the delivery status of each notification.",
+        "description": "Dispatches of the incident with the delivery status of each notification.\n\nA responder only gets the hospital the patients go to.",
         "operationId": "list_dispatches_incidents__incident_id__dispatches_get",
         "parameters": [
           {
@@ -6895,6 +6947,26 @@
               "format": "uuid",
               "title": "Incident Id",
               "type": "string"
+            }
+          },
+          {
+            "description": "Repeating a request with the same key changes nothing (offline queues)",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Repeating a request with the same key changes nothing (offline queues)",
+              "title": "Idempotency-Key"
             }
           }
         ],
@@ -8550,6 +8622,33 @@
         "summary": "Recommendations",
         "tags": [
           "routing"
+        ]
+      }
+    },
+    "/sms/gateway": {
+      "get": {
+        "description": "The gateway SIM number the responder app pre-fills in the SMS fallback (FR-RSP-004).",
+        "operationId": "sms_gateway_sms_gateway_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmsGateway"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Sms Gateway",
+        "tags": [
+          "notifications"
         ]
       }
     },

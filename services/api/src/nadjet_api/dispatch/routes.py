@@ -37,7 +37,7 @@ SessionDep = Annotated[AsyncSession, Depends(get_session)]
 ScopeDep = Annotated[Scope, Depends(current_scope)]
 DISPATCHERS = (Role.OPERATOR, Role.SUPERVISOR, Role.ADMIN)
 Dispatcher = Annotated[User, Depends(require_roles(*DISPATCHERS))]
-Viewer = Annotated[User, Depends(require_roles(*DISPATCHERS, Role.AUDITOR))]
+Viewer = Annotated[User, Depends(require_roles(*DISPATCHERS, Role.AUDITOR, Role.RESPONDER))]
 
 NOT_FOUND = HTTPException(status.HTTP_404_NOT_FOUND, "Incident not found")
 
@@ -220,11 +220,15 @@ async def change_hospital(
 
 @router.get("/incidents/{incident_id}/dispatches", responses={404: {"description": "Not found"}})
 async def list_dispatches(
-    incident_id: uuid.UUID, session: SessionDep, scope: ScopeDep, _user: Viewer
+    incident_id: uuid.UUID, session: SessionDep, scope: ScopeDep, user: Viewer
 ) -> list[DispatchOut]:
-    """Dispatches of the incident with the delivery status of each notification."""
+    """Dispatches of the incident with the delivery status of each notification.
+
+    A responder only gets the hospital the patients go to.
+    """
     try:
         await incidents.get_visible(session, incident_id, scope)
     except incidents.NotFoundError:
         raise NOT_FOUND from None
-    return await service.list_dispatches(session, incident_id)
+    rows = await service.list_dispatches(session, incident_id)
+    return service.for_responder(rows) if user.role == Role.RESPONDER.value else rows

@@ -126,6 +126,10 @@ class Settings(BaseSettings):
     )
     sms_gateway_user: str = Field(default="", description="Gateway API username (from the app)")
     sms_gateway_password: SecretStr | None = None
+    sms_gateway_number: str | None = Field(
+        default=None,
+        description="Gateway SIM number; responders text their codes to it (FR-RSP-004)",
+    )
     sms_webhook_secret: SecretStr | None = Field(
         default=None,
         description="Signing key of the gateway webhooks; /sms/* return 503 when unset",
