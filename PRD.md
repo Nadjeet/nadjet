@@ -2,7 +2,7 @@
 
 | Field | Value |
 |---|---|
-| Product | **Nadjet** (Arabic: **نجاة**, "survival, being saved"). Final name (D-12). GitHub org handle and domain mapping are still open (Q-01) |
+| Product | **Nadjet** (Arabic: **نجاة**, "survival, being saved"). Final name (D-12). Repo: https://github.com/Nadjeet/nadjet. Domain mapping still open (Q-01) |
 | Document status | **DRAFT v0.2, for team review** |
 | Owner | Product lead: TBD · Tech lead: TBD |
 | Approvers | Whole team (sign-off table in §20) |
@@ -455,8 +455,8 @@ The design system is shadcn/ui on Tailwind. Clickable prototype: TBD (Q-08).
 ## 14. Solution overview (summary; details in docs 05, 09 and 10)
 
 - **Repos:**
-  - `<org>/platform`: monorepo with `contracts/`, `packages/`, `services/{api,vision,camsim}`, `apps/web`, `deploy/`, `eval/`, `docs/`
-  - `<org>/.github`: org profile
+  - `Nadjeet/nadjet`: monorepo with `contracts/`, `packages/`, `services/{api,vision,camsim}`, `apps/web`, `deploy/`, `eval/`, `docs/`
+  - `Nadjeet/.github`: org profile
 - **Pipeline:**
   1. RTSP feed.
   2. RF-DETR detection, then ByteTrack tracking, homography speed and zone tests.
@@ -551,7 +551,7 @@ The design system is shadcn/ui on Tailwind. Clickable prototype: TBD (Q-08).
 
 | ID | Question | Owner | Due |
 |---|---|---|---|
-| Q-01 | ~~Final product name~~ → **resolved: Nadjet (نجاة)** (D-12). Still open: the exact GitHub org handle (e.g. `nadjet`, if available) and domain/subdomain mapping | Team | Before repo creation |
+| Q-01 | ~~Product name and GitHub org~~ → **resolved**: Nadjet (نجاة) (D-12); org `Nadjeet`, repo `Nadjeet/nadjet`. Still open: domain/subdomain mapping | Team | Before repo creation |
 | Q-02 | Exact hackathon schedule, team size and roles? | Team lead | Now |
 | Q-03 | SMS cost: is a prepaid SIM with SMS credit acceptable? It is the only non-zero cost: operator tariff, a few DZD per SMS. | Team | Before P2 |
 | Q-04 | GPU tier: L40S (with Cosmos second opinion) or L4 (Qwen only)? Check Brev prices and credits in the console. | Tech lead | Day 1 |
@@ -572,7 +572,7 @@ The design system is shadcn/ui on Tailwind. Clickable prototype: TBD (Q-08).
 | D-02 | 2026-10-29 | Human verification before dispatch | Accountability; AI is not reliable enough | — |
 | D-03 | 2026-10-30 | No training. Crash verifier = pretrained **Qwen3-VL-8B** (vLLM) on rule candidates | No time; ACCIDENT 2026 winners used frozen Qwen3-VL; Apache-2.0 | Fine-tuned VideoMAE (docs 04/07) |
 | D-04 | 2026-10-30 | Detector = **RF-DETR** (Apache-2.0) | Permissive licence for B2G; real-time on GPU | Ultralytics YOLO (AGPL) default |
-| D-05 | 2026-10-30 | **One monorepo** `platform` + `.github` | Atomic contract changes; easier for agents; Dokploy watch paths | Polyrepo |
+| D-05 | 2026-10-30 | **One monorepo** `Nadjeet/nadjet` + `Nadjeet/.github` | Atomic contract changes; easier for agents; Dokploy watch paths | Polyrepo |
 | D-06 | 2026-10-30 | AGPL and non-commercial models are optional, isolated and off by default | Keep the core path licence-clean | — |
 | D-07 | 2026-10-30 | VPS (Dokploy, Compose mode) + Brev GPU (plain compose, outbound only) | Dokploy Traefik only proxies HTTP; Brev tunnels require browser auth | — |
 | D-08 | 2026-10-30 | SMS through a self-operated Android gateway | Free, no card, two-way; Twilio needs a card and has no two-way SMS in Algeria | Twilio |

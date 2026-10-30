@@ -126,13 +126,13 @@ flowchart LR
 # deploy/vps/compose.yml   (images built in GitHub Actions → GHCR; Dokploy only pulls)
 services:
   web:
-    image: ghcr.io/<org>/platform-web:${TAG}
+    image: ghcr.io/nadjeet/nadjet-web:${TAG}
     expose: ["80"]
     networks: [dokploy-network]
     # domains app./respond./try./hospital. added in Dokploy UI → Traefik labels injected (redeploy after changes)
 
   api:
-    image: ghcr.io/<org>/platform-api:${TAG}
+    image: ghcr.io/nadjeet/nadjet-api:${TAG}
     command: uvicorn api.main:app --host 0.0.0.0 --port 8000 --proxy-headers
     env_file: .env                      # Dokploy writes compose env vars to .env only
     expose: ["8000"]
@@ -140,7 +140,7 @@ services:
     networks: [dokploy-network, internal]
 
   worker:
-    image: ghcr.io/<org>/platform-api:${TAG}
+    image: ghcr.io/nadjeet/nadjet-api:${TAG}
     command: arq api.jobs.WorkerSettings
     env_file: .env
     networks: [internal]
@@ -231,7 +231,7 @@ services:
 
   cam:
     <<: *gpu
-    image: ghcr.io/<org>/platform-vision:${TAG}
+    image: ghcr.io/nadjeet/nadjet-vision:${TAG}
     command: vision camera --all              # spawns one process per camera from cameras.yaml
     env_file: .env                            # RTSP_BASE=rtsp://gpu:***@stream.<domain>:8554, API_URL, API_TOKEN, VLM_URL=http://vllm:8000/v1
     depends_on: [vllm]
@@ -239,7 +239,7 @@ services:
 
   jobs:
     <<: *gpu
-    image: ghcr.io/<org>/platform-vision:${TAG}
+    image: ghcr.io/nadjeet/nadjet-vision:${TAG}
     command: vision jobs                      # long-polls https://api.<domain>/jobs/next (outbound only)
     env_file: .env
     depends_on: [vllm]
@@ -252,7 +252,7 @@ volumes: {hf: {}, evidence: {}}
 ```bash
 brev create nadjet-gpu --gpu <l40s-type-from-brev-search>
 brev shell nadjet-gpu
-git clone https://github.com/<org>/platform && cd platform/deploy/gpu && docker compose pull && docker compose up -d
+git clone https://github.com/Nadjeet/nadjet && cd nadjet/deploy/gpu && docker compose pull && docker compose up -d
 ```
 
 Brev facts that drive the plan:

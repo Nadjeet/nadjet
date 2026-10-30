@@ -1,13 +1,13 @@
 # 09 — GitHub Organization: Repositories and Per-Repo Stack
 
-The product is **Nadjet (نجاة)**. `<org>` stands for the GitHub organization named after it (e.g. `nadjet`, if the handle is free; see PRD Q-01).
+The product is **Nadjet (نجاة)**. GitHub organization: **`Nadjeet`** (https://github.com/Nadjeet). Product monorepo: **`Nadjeet/nadjet`**. GHCR image names are lowercase: `ghcr.io/nadjeet/nadjet-*`.
 
 ## 1. Recommendation: one product monorepo, plus one tiny org repo
 
 | Repo | Visibility | Purpose |
 |---|---|---|
-| **`<org>/platform`** | Public for the hackathon (it signals transparency and satisfies AGPL if any AGPL component is used). Make it private later for the product. | The entire product: contracts, camera simulator, vision and AI, API, web apps, deploy configs, docs. |
-| **`<org>/.github`** | Public | Org profile README (`profile/README.md`), shared issue/PR templates, CODEOWNERS defaults, SECURITY.md. It costs nothing and makes the org look credible to a ministry evaluator. |
+| **`Nadjeet/nadjet`** | Public for the hackathon (it signals transparency and satisfies AGPL if any AGPL component is used). Make it private later for the product. | The entire product: contracts, camera simulator, vision and AI, API, web apps, deploy configs, docs. |
+| **`Nadjeet/.github`** | Public | Org profile README (`profile/README.md`), shared issue/PR templates, CODEOWNERS defaults, SECURITY.md. It costs nothing and makes the org look credible to a ministry evaluator. |
 
 That is all. **Do not create** separate `api`, `web`, `vision`, `infra` or `models` repos now.
 
@@ -34,10 +34,10 @@ That is all. **Do not create** separate `api`, `web`, `vision`, `infra` or `mode
   - Demo videos come from a fetch script plus a private object-storage bucket.
 - **The Android SMS gateway is a third-party APK** (capcom6, Apache-2.0). It is installed on the phone, not forked.
 
-## 2. `platform` layout
+## 2. `nadjet` layout
 
 ```
-platform/
+nadjet/
 ├─ AGENTS.md  CLAUDE.md  README.md  LICENSE  justfile  .editorconfig
 ├─ contracts/                    # single source of truth
 │  ├─ openapi.yaml               # REST API (generated from FastAPI, committed + diff-checked in CI)
@@ -138,9 +138,9 @@ ci.yml       on PR:   ruff+mypy+pytest (api, vision-cpu tests) · tsc+vitest (we
                       (regenerate openapi/clients → git diff --exit-code) · CAP XSD validation · integrity grep
                       (no `random`/hardcoded incidents in services/)
 images.yml   on push to main, path-filtered:
-                      services/api/**   → ghcr.io/<org>/platform-api:{sha,main}
-                      services/vision/** → ghcr.io/<org>/platform-vision:{sha,main}   (CUDA, built on GH runner, never on the VPS)
-                      apps/web/**       → ghcr.io/<org>/platform-web:{sha,main}
+                      services/api/**   → ghcr.io/nadjeet/nadjet-api:{sha,main}
+                      services/vision/** → ghcr.io/nadjeet/nadjet-vision:{sha,main}   (CUDA, built on GH runner, never on the VPS)
+                      apps/web/**       → ghcr.io/nadjeet/nadjet-web:{sha,main}
 deploy.yml   after images.yml: POST Dokploy deploy webhook for the VPS compose project (or Dokploy GitHub App auto-deploy)
 ```
 
