@@ -3,6 +3,7 @@
 Covers US-9, FR-CIT-001/004/006, FR-INC-003, AC-CIT-006.2, E-14.
 """
 
+import asyncio
 import random
 import uuid
 from collections.abc import AsyncIterator
@@ -110,6 +111,20 @@ async def test_same_idempotency_key_returns_the_same_report(
     second = await citizen.post("/public/reports", data=form(lat, lon), headers=headers)
     assert first.json()["short_code"] == second.json()["short_code"]
     assert (await incident_by_code(app, first.json()["short_code"])).report_count == 1
+
+
+async def test_concurrent_retries_with_one_key_return_the_same_report(
+    app: FastAPI, citizen: httpx.AsyncClient
+) -> None:
+    """A retry sent while the first request is still in flight must not fail or duplicate."""
+    lat, lon = fresh_spot()
+    headers = {"Idempotency-Key": uuid.uuid4().hex}
+    responses = await asyncio.gather(
+        *(citizen.post("/public/reports", data=form(lat, lon), headers=headers) for _ in range(3))
+    )
+    assert [r.status_code for r in responses] == [201, 201, 201]
+    assert len({r.json()["short_code"] for r in responses}) == 1
+    assert (await incident_by_code(app, responses[0].json()["short_code"])).report_count == 1
 
 
 async def test_phone_is_kept_in_the_event_for_call_back(

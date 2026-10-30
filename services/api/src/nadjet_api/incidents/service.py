@@ -241,6 +241,9 @@ async def ingest_candidate(
     Idempotent on ``key``: a redelivered candidate returns the incident it already produced.
     ``contact`` (a citizen's call-back phone) is kept in the event payload, not on the incident.
     """
+    # Look the key up under the lock: a concurrent retry then sees the first commit, not a
+    # unique-key violation.
+    await session.execute(text("SELECT pg_advisory_xact_lock(:k)"), {"k": _CREATE_LOCK_KEY})
     existing = await session.scalar(
         select(Incident)
         .join(IncidentEvent, IncidentEvent.incident_id == Incident.id)
@@ -249,7 +252,6 @@ async def ingest_candidate(
     if existing:
         return IngestResult(existing, created=False, duplicate=True, changes=[])
 
-    await session.execute(text("SELECT pg_advisory_xact_lock(:k)"), {"k": _CREATE_LOCK_KEY})
     target_id = await _find_mergeable(session, candidate)
     payload: dict[str, Any] = {"candidate": candidate.model_dump(mode="json")}
     if contact:
