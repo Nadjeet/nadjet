@@ -72,6 +72,10 @@ class Settings(BaseSettings):
         default=Path(__file__).resolve().parents[4] / "eval" / "results",
         description="Evaluation results written by `make eval`",
     )
+    retention_days: int = Field(
+        default=90, ge=1, le=365, description="Evidence older than this is purged (FR-SEC-005)"
+    )
+    retention_interval_s: float = Field(default=3600.0, gt=0, description="Purge schedule")
     try_dir: Path = Field(
         default=Path("try-sandbox"), description="Isolated store of public uploads (FR-CIT-004)"
     )
