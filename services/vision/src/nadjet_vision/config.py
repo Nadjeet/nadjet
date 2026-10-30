@@ -37,6 +37,24 @@ class VisionSettings(BaseSettings):
         default=None, description="Service token for /internal/* (never logged)"
     )
     cameras_file: Path = Field(default=Path("data/cameras.yaml"), description="Camera catalogue")
+    models_lock: Path = Field(
+        default=Path("models.lock.yaml"), description="Pinned weights (TD-25)"
+    )
+    weights_dir: Path = Field(default=Path("weights"), description="Downloaded, verified weights")
+    detector_model: str = Field(
+        default="rf-detr-medium", description="Entry id in models.lock.yaml"
+    )
+    detector_threshold: float = Field(default=0.4, gt=0, lt=1, description="Min confidence")
+    sample_fps: float = Field(default=5.0, gt=0, le=30, description="Analysed frames per second")
+    evidence_buffer_s: float = Field(
+        default=15.0, gt=0, description="Encoded packet ring (FR-VIS-006)"
+    )
+    annotate: bool = Field(default=True, description="Publish <camera>_ai annotated stream")
+    annotated_encoder: str = Field(default="h264_nvenc", description="ffmpeg video encoder (TD-07)")
+    metrics_port: int | None = Field(default=None, description="Serve /metrics on this port")
+    metrics_port_base: int = Field(default=9100, description="--all: camera i serves base + i")
+    health_push_s: float = Field(default=5.0, gt=0, description="Health report interval")
+    stall_s: float = Field(default=10.0, gt=0, description="No frame for this long = camera fault")
 
 
 @lru_cache

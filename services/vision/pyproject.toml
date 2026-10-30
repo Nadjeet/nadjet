@@ -7,6 +7,8 @@ dependencies = [
   "nadjet-shared",
   "httpx>=0.28",
   "pydantic-settings>=2.6",
+  "numpy>=2.0",
+  "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
