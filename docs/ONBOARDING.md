@@ -117,7 +117,23 @@ vLLM port on the instance itself. The instance is never started by these command
 5. `make brev-untunnel` cancels all three forwards. `brev stop nadjet-gpu` when done.
 
 Quick image check on the instance: `docker run --rm --gpus all ghcr.io/nadjeet/nadjet-vision:dev --help`.
-Skeleton only: detection and tracking arrive with the detection issue.
+What a worker does (issue #8): one process per camera reads the stream at 5 fps, runs RF-DETR
+(weights downloaded once into the `weights` volume and checked against `models.lock.yaml`),
+tracks vehicles and people with ByteTrack, measures relative speed (box-heights per second),
+sets `camera_moving` while the camera pans, publishes the annotated stream `<camera>_ai`
+(`rtsp://…/<camera>_ai`, played over WebRTC like any camera) and pushes a health report every 5 s.
+
+- Metrics: camera *i* (in catalogue order) serves Prometheus text on the instance at
+  `http://127.0.0.1:<9100+i>/metrics` (`NADJET_METRICS_PORT_BASE`).
+- System page data: `GET /system/cameras` (operator/supervisor/admin) returns status, fps,
+  per-stage latency (decode/detect/track/annotate), queue depth and `camera_moving`; `stale: true`
+  means the worker stopped reporting.
+- Fault test: `make camsim-freeze CAM=cam-a1-pk42` makes the camera `degraded` within about 15 s
+  (`camera_fault` on `GET /events`); `make camsim-unfreeze CAM=cam-a1-pk42` clears it. Other cameras
+  keep running. `make camsim-outage` / `camsim-restore` shows the reconnect back-off in
+  `make brev-logs`.
+- Detection settings: `NADJET_DETECTOR_THRESHOLD` (0.4), `NADJET_SAMPLE_FPS` (5),
+  `NADJET_STALL_S` (10), `NADJET_ANNOTATED_ENCODER` (`h264_nvenc`; use `libx264` without a GPU).
 
 ## 4. Daily workflow
 
