@@ -1,18 +1,18 @@
 # 10 — Live Stage Deployment (Dokploy VPS + NVIDIA Brev) and the No-Training Model Stack
 
-This supersedes the "fine-tune a VideoMAE verifier" plan in docs 04 and 07. The team has no time to train, so the crash verifier is now a **pretrained open-weights VLM** (Qwen3-VL-8B). The rest of the pipeline in doc 04 is unchanged.
+This supersedes the "fine-tune a VideoMAE verifier" plan. The team has no time to train, so the crash verifier is a **pretrained open-weights VLM** (Qwen3-VL-8B), also used as an **AI sweep** on every camera. The full AI design is in doc 04; exact settings are in doc 11 (TD-01, TD-03, TD-22 to TD-25, §6).
 
 ## 1. Models we can plug in today (no training)
 
 | Role | Model | Licence | Hardware | Evidence | Status |
 |---|---|---|---|---|---|
 | Vehicle/person detection | **RF-DETR S/M** (`pip install rfdetr`), COCO | Apache-2.0 | GPU (fine on L4/L40S); CPU possible but slow | 2.3–4.4 ms/frame on T4 TRT FP16 (authors) | **Core** |
-| Tracking, zones, speed | **supervision** ByteTrack + PolygonZone + ViewTransformer | MIT | CPU | Standard | **Core** |
-| Candidate triggers | Our rules (doc 04 §3): overlap→both stop, hard stop not shared by traffic, stalled in live lane, person on carriageway, box aspect flip (rollover) | ours | CPU | AI City 2021 Track 4 winners used detection + tracking + rules, F1 0.95 | **Core** |
-| **Crash verifier + describer** | **Qwen3-VL-8B-Instruct-FP8** via vLLM, guided JSON | Apache-2.0 | L4 24 GB (FP8) / L40S comfortable | Qwen3-VL is the base of the **CVPR 2026 ACCIDENT challenge 1st place** (frozen Qwen3-VL-32B + YOLO + tracking; code Apache-2.0): https://github.com/fuumin621/cvpr2026-accident-1st-place-solution · https://arxiv.org/abs/2605.29325 | **Core** |
-| Second-opinion verifier | **Cosmos-Reason2-8B** (gated HF) | NVIDIA Open Model License | ≥ 32 GB VRAM → L40S/A100 | NVIDIA's VSS Smart-City blueprint uses it for "event verification of collisions"; NVIDIA benchmarks put it ahead of Qwen3-VL-8B on fixed-camera scenes | Optional (L40S only) |
-| Smoke / fire | **D-Fire YOLOv5s** (https://github.com/pedbrgs/Fire-Detection) | weights MIT, YOLOv5 code AGPL | GPU/CPU | 21.5k-image D-Fire dataset; mAP of these weights unverified | Optional, behind a flag |
-| Extra "road accident" score | `OPear/videomae-large-finetuned-UCF-Crime` | **CC-BY-NC** | GPU | 92.96% on UCF-Crime (split unclear) | Demo-only, off by default |
+| Tracking, zones, speed | **supervision** ByteTrack + PolygonZone; speed relative to box size (no calibration) | MIT | CPU | Standard | **Core** |
+| Candidate triggers | Our rules (doc 04 §3): overlap→both stop, hard stop not shared by traffic, stalled in live lane, person on carriageway | ours | CPU | AI City 2021 Track 4 winners used detection + tracking + rules, F1 0.95 | **Core** |
+| **Crash verifier + describer + AI sweep** | **Qwen3-VL-8B-Instruct-FP8** via vLLM, guided JSON | Apache-2.0 | L4 24 GB (FP8) / L40S comfortable | Qwen3-VL is the base of the **CVPR 2026 ACCIDENT challenge 1st place** (frozen Qwen3-VL-32B + YOLO + tracking; code Apache-2.0): https://github.com/fuumin621/cvpr2026-accident-1st-place-solution · https://arxiv.org/abs/2605.29325 | **Core** |
+| Second-opinion verifier | Cosmos-Reason2-8B | NVIDIA Open Model License | ≥ 32 GB VRAM | Lost to Qwen3-VL in the ACCIDENT 1st-place tests; missed T-bone crashes; long reasoning is slow | **Dropped** |
+| Smoke / fire | `weslleyskah/fire_smoke_box` (YOLO26n) or D-Fire YOLOv5s | AGPL-derived | GPU/CPU | Public fire/smoke datasets; mAP not verified on road scenes | Optional, separate process; may be enabled for the demo |
+| Extra "road accident" score | `OPear/videomae-large-finetuned-UCF-Crime` | CC-BY-NC | GPU | 92.96% on UCF-Crime (split unclear) | **Dropped** |
 | Hosted fallback | Gemini Flash (video input, JSON) | commercial API | none | Used in a strong ACCIDENT pipeline (https://arxiv.org/abs/2605.01512) | **Stage fallback only.** Labelled non-sovereign |
 
 **Rejected:**
@@ -21,34 +21,26 @@ This supersedes the "fine-tune a VideoMAE verifier" plan in docs 04 and 07. The 
 - Zero-shot detectors (YOLOE, OWLv2, Grounding DINO) for "crashed car": good on nouns, weak on states. Fine for "smoke" and "person".
 - NVIDIA VSS full blueprint: needs 128 GB RAM and 1–2 GPUs, takes hours to set up. **Copy its architecture and cite it**; do not deploy it.
 
-### Verification logic
+### Detection and verification logic
 
-**A trigger fires.** The worker cuts a ±3 s clip and samples 8–16 frames at 448 px. It sends the frames to Qwen3-VL with a neutral prompt and a JSON schema:
+Two independent paths create candidates; one AI server serves both:
 
-```json
-{"incident": true, "type": "collision|rollover|fire|stalled|pedestrian|none",
- "vehicles_involved": 2, "lanes_blocked": 1, "severity_hint": "low|medium|high",
- "description_fr": "...", "description_ar": "...", "confidence": "low|medium|high"}
-```
+1. **Rule path.** A trigger fires (doc 04 §3). The worker sends one video to Qwen3-VL: 16 dense frames at 4 fps around the moment plus 4 context frames, 768 px, timestamp drawn on each frame.
+2. **AI sweep.** Every 5 s per camera, the last 8 s at 2 fps, 640 px.
 
-The prompt allows `none` and says "answer only from what is visible".
+The verifier answers in a fixed JSON format that allows "no collision" (doc 11 §6). Confidence comes from the probability of the yes/no answer token, not from text.
 
-**An incident becomes a `collision` only when the rule and the VLM agree.**
-- If they disagree, the incident is raised as a `possible_incident` for the human to decide.
-- The UI always shows three things:
-  - the trigger signals (from the rules)
-  - the VLM output (with its model name)
-  - the operator's decision
+**Statuses** (PRD FR-VIS-007): `confirmed` needs a rule trigger **and** a confident AI "yes"; the sweep alone can reach `probable` at most; unclear footage gives `insufficient_evidence`. Every status goes to the operator, with the rule signals, the AI findings (each citing frames), the model name and the operator's decision.
 
-Expected latency is about 1–3 s per check on an L40S and 3–6 s on an L4 (estimates; **measure on day 1**).
+Expected latency is about 2–3 s per check on an L40S (estimate; **measure on day 1**, TQ-02). Load: 4 cameras × 1 sweep / 5 s ≈ 0.8 calls/s plus verifications and uploads, well within one L40S.
 
 ```python
 # detector
 from rfdetr import RFDETRMedium; det = RFDETRMedium(); dets = det.predict(frame_rgb, threshold=0.4)  # returns sv.Detections
-# verifier (vLLM OpenAI-compatible, guided JSON)
+# verifier / sweep (vLLM OpenAI-compatible, one video, structured output, yes-token logprobs)
 client.chat.completions.create(model="Qwen/Qwen3-VL-8B-Instruct-FP8",
-    messages=[{"role":"user","content":[*frames_as_image_url, {"type":"text","text":PROMPT}]}],
-    extra_body={"guided_json": SCHEMA}, temperature=0)
+    messages=[{"role":"user","content":[{"type":"video_url","video_url":{"url":clip_url}}, {"type":"text","text":PROMPT}]}],
+    response_format={"type":"json_schema","json_schema":SCHEMA}, temperature=0, logprobs=True, top_logprobs=5, max_tokens=256)
 ```
 
 ### Honest failure modes (put them on the "limits" slide)
@@ -212,7 +204,7 @@ networks:
 
 ## 4. Brev GPU host: `deploy/gpu/compose.yml`
 
-**Instance:** 1× **L40S 48 GB** is recommended. It fits Qwen3-VL-8B-FP8 plus Cosmos-Reason2-8B plus the RF-DETR workers with headroom. An **L4 24 GB** works if Cosmos is dropped. Brev hourly prices were not verified; check them in the Brev console.
+**Instance:** 1× **L40S 48 GB** is recommended. It fits Qwen3-VL-8B-FP8 (≈ 10 GB + cache), the RF-DETR workers (≈ 2–3 GB) and the optional fire detector (≈ 1 GB) with headroom. An **L4 24 GB** is the fallback (slower; sweep interval may need 8–10 s). Check live Brev prices in the console.
 
 ```yaml
 x-gpu: &gpu
@@ -223,8 +215,9 @@ services:
     <<: *gpu
     image: vllm/vllm-openai:latest            # pin tag
     command: >
-      --model Qwen/Qwen3-VL-8B-Instruct-FP8 --max-model-len 16384
-      --gpu-memory-utilization 0.45 --limit-mm-per-prompt '{"image":16}'
+      --model Qwen/Qwen3-VL-8B-Instruct-FP8 --max-model-len 8192
+      --gpu-memory-utilization 0.75 --limit-mm-per-prompt '{"video":1,"image":0}'
+      --enable-prefix-caching --mm-processor-cache-gb 0 --max-num-seqs 8 --async-scheduling
     volumes: [hf:/root/.cache/huggingface]   # weights persist across stop/start
     env_file: .env                            # HF_TOKEN
     ports: ["127.0.0.1:8000:8000"]            # local only
@@ -260,6 +253,17 @@ Brev facts that drive the plan:
 - **A restart can fail if that GPU type is unavailable**, so **start the instance hours before the stage slot and do not stop it.**
 - When credits run out, stoppable instances are paused, so top up beforehand.
 - Evidence clips are uploaded to the API (and stored on a VPS volume), so the GPU box keeps no state that matters.
+
+### $90 Brev budget plan
+
+| Phase | Hours | Cost at $1.06–1.86/h (July 2026 snapshot, verify live) |
+|---|---|---|
+| Development benchmarks (stop the instance between sessions; code on laptops) | ~13 h | ≈ $14–24 |
+| Dress rehearsal | 2 h | ≈ $2–4 |
+| Demo day, started 1 h early, never stopped | 13 h | ≈ $14–24 |
+| **Total** | **~28 h** | **≈ $30–52**, leaving about $40–60 |
+
+**Day-1 go/no-go (TQ-02):** if the verifier p95 is above 6 s, set the sweep to 8–10 s or use Qwen3-VL-4B for the sweep only.
 
 ## 5. The "try it yourself" stage experience
 

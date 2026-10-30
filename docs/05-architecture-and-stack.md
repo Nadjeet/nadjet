@@ -22,7 +22,7 @@ flowchart LR
   end
   subgraph Video[Video plane]
     MTX[MediaMTX<br/>RTSP in · WebRTC/HLS out]
-    VW[Vision worker x N<br/>decode → detect → track → triggers → verifier]
+    VW[Vision worker x N<br/>decode → detect → track → triggers + AI sweep → verifier]
     RB[(Evidence<br/>clips + keyframes)]
   end
   subgraph Core[Coordination plane]
@@ -83,7 +83,7 @@ sequenceDiagram
   participant R as Responder (PWA/SMS)
   participant H as Hospital view
   V->>V: tracks overlap → both stop ≥3s (trigger)
-  V->>V: verifier p(crash)=0.91 on ±2s clip
+  V->>V: AI verifier: collision visible (yes-prob 0.9x), status confirmed
   V->>A: XADD incident.candidate {camera, ts, bbox, signals, clip}
   A->>A: dedupe/merge, priority score, store, hash
   A-->>O: SSE incident.created (+ VLM description later)
@@ -102,7 +102,7 @@ sequenceDiagram
 | Component | Responsibility | Tech |
 |---|---|---|
 | **camsim** | Plays real video files as RTSP cameras. Injects faults (freeze, outage). | MediaMTX v1.21.x, ffmpeg, a small Python CLI |
-| **vision worker** (1 process per camera) | Decode, detect, track, measure speed, run triggers, keep the evidence ring buffer, run the verifier. Publishes candidates and overlay data. | Python 3.12, PyAV, Ultralytics (CoreML/MPS/CUDA), supervision, PyTorch/transformers (VideoMAE) |
+| **vision worker** (1 process per camera) | Decode, detect, track, measure relative speed, run triggers and the AI sweep, keep the evidence ring buffer, call the verifier, validate its output. Publishes candidates and overlay data. | Python 3.12, PyAV, RF-DETR, supervision; Qwen3-VL-8B on vLLM (GPU host) |
 | **vlm worker** | Describes incidents from keyframes. Returns constrained JSON. | Ollama or mlx-vlm, Qwen2.5-VL-7B / Qwen3-VL-8B |
 | **core API** | Auth/RBAC, cameras, incidents, merge and dedupe, priority, dispatch, facilities, triage, CAP export, KPIs, audit, SSE/WS. | FastAPI, SQLAlchemy 2 + Alembic (or SQLModel), Pydantic v2 |
 | **notifier** (module inside the API, run in a worker) | Fans out to SMS (Android gateway), Telegram, Web Push and email. Handles retries, delivery receipts and inbound SMS parsing. | httpx, python-telegram-bot, pywebpush |
@@ -132,7 +132,7 @@ sequenceDiagram
 ## 4. Data model (core tables)
 
 ```
-cameras(id, name, rtsp_url, geom Point, road, pk_km, heading_deg, wilaya, zones jsonb, homography jsonb, status)
+cameras(id, name, rtsp_url, geom Point, road, pk_km, heading_deg, wilaya, zones jsonb, calibration jsonb, status)
 incidents(id, short_code, type, status, priority, priority_reasons jsonb, geom Point, road, pk_km, wilaya,
           source[camera|citizen|operator], camera_id, detected_at, event_time, confidence jsonb,
           ai_description jsonb, merged_into, created_at)
@@ -190,8 +190,8 @@ users(id, name, role, agency, facility_id)      audit_log(id, actor, action, tar
 | Camera simulation | MediaMTX v1.21.3, ffmpeg 7.x |
 | Video I/O | PyAV 19.x |
 | Detection | Ultralytics YOLO11s (CoreML export) → RF-DETR (Apache-2.0) for production |
-| Tracking / zones / speed | supervision (ByteTrack, PolygonZone, ViewTransformer) |
-| Crash verifier | VideoMAE-B fine-tuned (transformers) / EfficientNet-B0 fallback |
+| Tracking / zones / speed | supervision (ByteTrack, PolygonZone); speed relative to box size |
+| AI verifier + sweep | Qwen3-VL-8B-Instruct-FP8 on vLLM (no training) |
 | VLM | Qwen2.5-VL-7B or Qwen3-VL-8B via Ollama or mlx-vlm |
 | API | FastAPI 0.16x, Pydantic v2, SQLAlchemy 2, Alembic |
 | DB / bus | PostgreSQL 17 + PostGIS 3.5, Redis 8 |

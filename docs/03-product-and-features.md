@@ -52,9 +52,9 @@
 |---|---|---|---|---|---|
 | E1 | **Virtual camera network** | Several road cameras streaming real video in a loop. | MediaMTX plus ffmpeg `-stream_loop -1 -re -c copy` per camera, configured from `cameras.yaml` (with coordinates, road, kilometre point and heading). | ffmpeg, MediaMTX | H |
 | E2 | **Live camera wall** | The browser shows live streams with an AI overlay. | WebRTC (WHEP) from MediaMTX into a `<video>` element, with detection boxes drawn on a `<canvas>` from a WebSocket feed. | MediaMTX WebRTC, canvas | H |
-| E3 | **Real-time vision pipeline** | Detect and track vehicles and people on every camera. | Per-camera worker: PyAV decode at 5–10 fps, then a COCO detector (YOLO11s/RF-DETR), then ByteTrack, then homography-based speed. | CoreML/MPS or CUDA | H |
+| E3 | **Real-time vision pipeline** | Detect and track vehicles and people on every camera. | Per-camera worker: decode at 5 fps, then a COCO detector (RF-DETR), then ByteTrack, then speed relative to vehicle size. | GPU (Brev L40S) | H |
 | E4 | **Incident triggers** | Turn track behaviour into candidate incidents. | Rules on tracks: two vehicles overlap and then both stop; sudden deceleration that other vehicles do not share; a vehicle stationary in a live lane longer than T seconds; a pedestrian on the carriageway. | supervision zones | H |
-| E5 | **Crash verifier** | Confirm a candidate is a collision, not congestion. | Video classifier on a ±2 s window cropped around the tracks involved. VideoMAE-B or X3D, fine-tuned on CCTV accident clips (TAD, CADP, UCF-Crime), split by video. | 1 GPU or a few hours on Apple MPS | M |
+| E5 | **AI verifier + AI sweep** | Confirm a candidate is a collision, and catch crashes the rules miss. | A pretrained vision-language model (no training) checks a short clip on each trigger, and checks every camera every few seconds on its own. Graded statuses; a human decides. | 1 GPU (Brev L40S) | M |
 | E6 | **Incident record + evidence** | A persistent incident with location, time, type, confidence and evidence. | The worker keeps a ring buffer of encoded packets and writes a 15 s pre-event + 10 s post-event MP4 plus keyframes. A SHA-256 is stored with each file. | PyAV, PostGIS | H |
 | E7 | **Operator verification** | A human confirms or rejects the incident before dispatch. | Incident card with clip, keyframes, AI signals and a map. Actions: Confirm / False positive / Duplicate. Rejections are stored as labels. | — | H |
 | E8 | **Multi-channel alerting** | Notify the right agencies. | Notifier fans out to web push/SSE, Telegram, and **SMS through an Android SMS gateway**. The canonical alert is a CAP 1.2 XML document. | capcom6 SMS Gateway, Telegram Bot API | H |
@@ -70,8 +70,8 @@
 | D3 | **On-scene triage and vitals** | Covers the "vital signs" part of the thematic. | Responder form: victim count and START triage tags (red / yellow / green / black). Per victim: consciousness (AVPU), breathing rate, pulse, SpO₂ if a pulse oximeter is available, bleeding. Data goes straight to the receiving hospital. | H |
 | D4 | **SMS-compact protocol** | Works on 2G or with no data. | Alert: `ACC|P1|36.47012,2.82731|A1 PK42|2V|7F3`. Triage reply: `T 7F3 R2 Y1 G3`. Parsed both ways through the Android gateway. | H |
 | D5 | **Hospital pre-alert view** | The hospital prepares before arrival. | A per-hospital page and SMS with incoming victims, triage, vitals and ETA. A "Ready / Divert" reply feeds back into recommendation. | H |
-| D6 | **Citizen report (no-camera roads)** | Covers roads without cameras. | Minimal web page with a GPS button and photo. An inbound SMS keyword (`ACCIDENT <place>`) also works. Reports near an existing incident merge into it; standalone reports are marked "unverified". | H |
-| D7 | **AI incident description (VLM, local)** | A readable summary such as "2 cars, side impact, one overturned, right lane blocked". | Asynchronous: 4–8 keyframes go to a local VLM (Qwen2.5-VL-7B or Qwen3-VL-8B via Ollama/MLX) with constrained JSON output. **Advisory only**; it never raises alerts by itself. | M |
+| D6 | **Citizen report (no-camera roads)** | Covers roads without cameras. | One-tap web page with GPS, optional photo, and two witness questions (how many people? anyone trapped?). Offline, a pre-filled SMS `ACCIDENT lat,lon P<n> C<0/1>` keeps the exact position. Reports near an existing incident merge into it; standalone reports are marked "unverified". Trapped → P1 + extrication unit. | H |
+| D7 | **AI incident description** | A readable summary such as "2 cars, side impact, one stopped across the right lane". | Produced by the same verifier, in Arabic and French. Every finding cites a frame; safety wording (never "dead"/"injured"). **Advisory only**. | M |
 | D8 | **Response-time KPIs** | Proves the value. | Each incident records the timeline: event time, detection, verification, alert, acknowledgement, on scene, at hospital. Dashboard shows medians and per-agency breakdowns. | H |
 | D9 | **Evidence integrity** | Evidence stands up in court and audit. | SHA-256 per file, a hash chain over incident events, an Ed25519-signed chain head, and a `/verify` endpoint. | H |
 
@@ -80,7 +80,7 @@
 | # | Feature | Notes | Feas. |
 |---|---|---|---|
 | A1 | Wrong-way vehicle detection | Track heading against each lane's flow vector. Cheap once tracking works. | H |
-| A2 | Smoke / fire detection | A detector fine-tuned on public fire/smoke datasets. Many false positives from dust, fog and headlights. Mark it experimental. | M |
+| A2 | Smoke / fire detection | A pretrained fire/smoke detector (AGPL-derived, separate process, optional) plus a 10-minute watch after each incident. Many false positives from dust, fog and headlights. Mark it experimental. | M |
 | A3 | Secondary-accident warning | Suggest a variable-message-sign text and warn upstream cameras' operators of a queue. Simulated output. | H |
 | A4 | Camera health monitoring | Detect a frozen feed, an outage, darkness or a tilted camera. The simulator can trigger these with `SIGSTOP` and kill. | H |
 | A5 | Privacy filter | Blur faces and licence plates in exported evidence. | M |

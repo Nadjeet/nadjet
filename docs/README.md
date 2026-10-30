@@ -20,8 +20,8 @@ These are research and design documents for SolveX 3.0, **Thematic 1: "Road acci
   - We build a pipeline:
     1. A COCO object detector and a tracker.
     2. Behaviour triggers. This approach is proven on highway CCTV: AI City 2021 winners reached F1 ≈ 0.95.
-    3. A crash verifier that we fine-tune on CCTV accident datasets.
-    4. An optional local vision-language model that writes descriptions.
+    3. A pretrained vision-language model (no training) that verifies each candidate and also sweeps every camera every few seconds.
+    4. Graded AI statuses, evidence-cited findings and safety wording.
     5. **A human verification step before dispatch.**
   - Evaluation is event-level on held-out videos, including false alarms per camera-hour.
 - **Architecture:**
@@ -49,7 +49,7 @@ These are research and design documents for SolveX 3.0, **Thematic 1: "Road acci
 | 10 | [Live stage deployment (Dokploy + Brev) & no-training model stack](10-live-deployment-and-models.md) | deploy, models, "try it" demo |
 | 11 | [Technical decisions register (TD-xx)](11-technical-decisions.md) | the canonical "how": wins over docs 04–10 where they differ |
 
-> **Update (doc 10):** there is no time to train, so the crash verifier is now the pretrained open-weights VLM **Qwen3-VL-8B** (Apache-2.0) served by vLLM on a Brev GPU. It replaces the fine-tuned VideoMAE described in docs 04 and 07. The detector is **RF-DETR** (Apache-2.0).
+> **AI design:** no training. The verifier and AI sweep are the pretrained open-weights VLM **Qwen3-VL-8B** (Apache-2.0) on vLLM on one Brev L40S; the detector is **RF-DETR** (Apache-2.0). The AI design is doc 04; exact settings are doc 11. Earlier mentions of a fine-tuned VideoMAE are superseded.
 
 ## Evidence labels used throughout
 

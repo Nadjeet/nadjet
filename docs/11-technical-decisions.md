@@ -23,10 +23,10 @@ If those documents disagree with this register, **this register wins**.
 
 | ID | Date | Decision | Alternatives rejected | Rationale | Serves (PRD) |
 |---|---|---|---|---|---|
-| TD-01 | 2026-10-30 | **Crash verifier:** pretrained **Qwen3-VL-8B-Instruct-FP8** (Apache-2.0), served by **vLLM** with guided JSON output | Fine-tuned VideoMAE (needs training); Roboflow "accident" YOLO (leaky benchmarks); dashcam models (wrong viewpoint) | No training allowed (PRD C-02). Frozen Qwen3-VL is the base of the CVPR 2026 ACCIDENT challenge 1st place. Permissive licence | FR-VIS-005, FR-VIS-007, D-03 |
+| TD-01 | 2026-10-30 | **AI verifier:** pretrained **Qwen3-VL-8B-Instruct-FP8** (Apache-2.0) on **vLLM**, used for both the verifier and the sweep. Input sent as **one video**: 16 dense frames at 4 fps around the moment (±2 s) plus 4 context frames (−8 s to +4 s), 768 px, **timestamp drawn on each frame**. Structured JSON, temperature 0, **no thinking mode**, neutral question that allows "no collision". Confidence = probability of the yes/no answer token (logprobs), not self-reported confidence | Fine-tuned VideoMAE (needs training); Cosmos-Reason2 (lost to Qwen3-VL in the ACCIDENT 1st-place tests, missed T-bone crashes, slow reasoning); Qwen3-VL-32B (small gain, does not fit next to the rest on one L40S) | No training (PRD C-02). Settings follow the CVPR 2026 ACCIDENT winners: 4 fps beat 10 fps, thinking mode collapsed timing, overlays of tracking trails hurt. Video input halves visual tokens vs image lists | FR-VIS-005, FR-VIS-007, FR-VIS-015, D-03 |
 | TD-02 | 2026-10-30 | **Detector:** **RF-DETR** (Apache-2.0), COCO classes | Ultralytics YOLO11/26 (AGPL-3.0) | Permissive licence for a government product (PRD NFR-LIC-001); real-time on GPU | FR-VIS-002 |
-| TD-03 | 2026-10-30 | **Tracking, zones, speed:** `supervision` (MIT): ByteTrack, PolygonZone, homography ViewTransformer | Ultralytics track mode (AGPL) | Detector-agnostic, permissive | FR-VIS-003, FR-VIS-004 |
-| TD-04 | 2026-10-30 | **Optional modules, off by default:** Cosmos-Reason2-8B second opinion (NVIDIA Open Model License, gated); D-Fire YOLOv5s smoke/fire (weights MIT, code AGPL, isolated); UCF-Crime VideoMAE score (CC-BY-NC, demo only) | — | Extra signals without contaminating the core licence path | FR-VIS-012, FR-VIS-013, D-06 |
+| TD-03 | 2026-10-30 | **Tracking, zones, speed:** `supervision` (MIT): ByteTrack + PolygonZone. **Speed = pixel displacement divided by box height, smoothed over 0.5–1 s** (no calibration). Homography (ViewTransformer) only for calibrated production cameras | Homography on every demo camera (public clips have unknown geometry; speed is very sensitive to calibration errors, Revaud et al. ICCV 2021); Ultralytics track mode (AGPL) | Rules only need relative speed changes | FR-VIS-003, FR-VIS-004 |
+| TD-04 | 2026-10-30 | **Optional modules:** smoke/fire detector (`weslleyskah/fire_smoke_box` YOLO26n or D-Fire YOLOv5s; both AGPL-derived), run as a **separate process**, off by default in production, may be enabled for the public hackathon demo | Cosmos-Reason2 second opinion (dropped); `OPear` VideoMAE UCF-Crime (CC-BY-NC, dropped); person-exit counting and thermal person detection (dropped for the MVP, D-16) | Keep the core path licence-clean and the scope small | FR-VIS-012, D-06, D-16 |
 | TD-05 | 2026-10-30 | **One monorepo** `Nadjeet/nadjet`, plus `Nadjeet/.github` for the org profile | Polyrepo | Shared contracts change atomically; easier for agents; Dokploy watch paths; GitHub path-filtered builds | NFR-MAINT-001 |
 | TD-06 | 2026-10-30 | **Video server:** **MediaMTX** (MIT). RTSP/WHIP in; WebRTC (WHEP) and LL-HLS out. Simulator = ffmpeg `-re -stream_loop -1 -c copy` via `runOnInit` | go2rtc; GStreamer; WebCodecs over WebSocket | One binary covers simulated cameras, annotated republish, phone-as-camera and browser playback | FR-CAM-001..004, FR-CIT-003, SC-007 |
 | TD-07 | 2026-10-30 | **Annotated stream:** re-encoded on the GPU (NVENC) and republished to the video server | Canvas overlay in the browser | Boxes and video stay in perfect sync on stage; the browser is a plain player | FR-VIS-008 |
@@ -40,10 +40,14 @@ If those documents disagree with this register, **this register wins**.
 | TD-15 | 2026-10-30 | **Alert format:** OASIS **CAP 1.2** XML, validated against the XSD | Custom JSON only | Standard for civil-protection systems | FR-INC-009, NFR-COMP-001 |
 | TD-16 | 2026-10-30 | **Evidence integrity:** SHA-256 per file; hash chain over incident events; **Ed25519**-signed chain head (PyNaCl) | — | Tamper-evident and verifiable | FR-SEC-003 |
 | TD-17 | 2026-10-30 | **Stage deployment:** **VPS + Dokploy** in Docker Compose mode (not Stack) runs web, api, worker, PostGIS, Redis, OSRM and MediaMTX. Traefik + Let's Encrypt for HTTP. WebRTC/RTSP ports (8189 udp+tcp, 8554 tcp) published directly. `stream.` DNS must not go through the Cloudflare proxy | Brev as a Dokploy remote server; Swarm mode | Dokploy's Traefik only proxies HTTP; Swarm handles UDP and GPUs badly | NFR-FLEX-001 |
-| TD-18 | 2026-10-30 | **GPU host:** **NVIDIA Brev**, 1× L40S (or L4 without Cosmos). Plain `docker compose` running vLLM and the vision workers. **Outbound connections only** (RTSP pull/push to the VPS, HTTPS to the API) | Brev tunnels (they require browser authentication); hosted inference APIs as the main path | Simple, documented, no inbound ports | NFR-PERF-001, NFR-PERF-003 |
+| TD-18 | 2026-10-30 | **GPU host:** **NVIDIA Brev**, 1× L40S (L4 as fallback). Budget: $90 of credits, plan about 28 h (≈ $30–52), see doc 10 §4. Plain `docker compose` running vLLM and the vision workers. **Outbound connections only** (RTSP pull/push to the VPS, HTTPS to the API) | Brev tunnels (they require browser authentication); hosted inference APIs as the main path | Simple, documented, no inbound ports | NFR-PERF-001, NFR-PERF-003 |
 | TD-19 | 2026-10-30 | **CI/CD:** GitHub Actions builds images and pushes them to **GHCR** (`ghcr.io/nadjeet/nadjet-{web,api,vision}`). Dokploy only pulls. Stage pins to the tag `demo-v1` | Building on the VPS | CUDA images are 5–15 GB; Dokploy re-clones on every deploy | NFR-MAINT-001 |
 | TD-20 | 2026-10-30 | **Hosted AI fallback (optional):** Gemini API (Google AI Studio free tier), only for public sample clips and consented uploads | build.nvidia.com as the critical path (terms limit it to trial use; unofficial rate limit) | Free, no card, Algeria supported; restricted by PRD NFR-PRIV-002 | FR-CIT-005 |
 | TD-21 | 2026-10-30 | **Offline fallback:** `deploy/local` runs the full stack on the laptop; Mac VLM = Qwen2.5-VL-7B 4-bit via mlx-vlm | — | Stage resilience | NFR-REL-003 |
+| TD-22 | 2026-10-30 | **AI sweep:** every 5 s per camera, the last 8 s at 2 fps, 640 px, sent as one video to the same Qwen3-VL server. Threshold on the yes-token probability. Sweep-only detections are at most `probable` | Sentinel every 10–15 s (too slow for SC-001); no sweep (rules miss crashes) | Rule-based detection alone reached 71% detection in published work and had about twice the timing error of the VLM (arXiv 1911.10037, 2605.01512). NVIDIA RT-VLM handles dozens of streams per GPU | FR-VIS-015 |
+| TD-23 | 2026-10-30 | **Upload two-pass:** pass 1 scans the whole clip at 1–2 fps with a "no collision" option; pass 2 looks at ±2–3 s around the found time at 4 fps; correction damped and capped; RF-DETR only snaps the result onto vehicles | Rules on uploads (break on unseen camera angles) | Same method as all three ACCIDENT 2026 top papers | FR-CIT-002 |
+| TD-24 | 2026-10-30 | **Validation layer:** Pydantic schema check; every finding must cite an existing frame ID, else dropped and logged; trilingual (AR/FR/EN) safety-word filter; one retry with the validation error, then a template description from rule signals | Trusting raw VLM text | Prevents hallucinated or harmful wording reaching operators | FR-VIS-016, FR-VIS-017 |
+| TD-25 | 2026-10-30 | **`models.lock.yaml`:** every weight pinned with source, version, checksum and licence; CI fails if an AGPL or non-commercial model is enabled by default in a production profile. `VLM_MODE=mock` (recorded answers) allowed only in `tests/`; production start-up refuses it | — | Licence hygiene and no fake AI outside tests | NFR-LIC-001, FR-VIS-020 |
 
 ---
 
@@ -54,7 +58,7 @@ The team already owns: an NVIDIA Brev account, a VPS with Dokploy, and a domain 
 | Need | Service | Card? | Limits and caveats | Source |
 |---|---|---|---|---|
 | Code, CI, images | GitHub Free org, Actions, GHCR | No | Unlimited standard runners and free GHCR for **public** repos | https://docs.github.com/en/billing/concepts/product-billing/github-actions · https://docs.github.com/en/billing/concepts/product-billing/github-packages |
-| Model weights | Hugging Face Hub (free token) | No | 5,000 file requests per 5 min with a token. Cosmos-Reason2 is gated; credit "Built on NVIDIA Cosmos" | https://huggingface.co/docs/hub/rate-limits |
+| Model weights | Hugging Face Hub (free token) | No | 5,000 file requests per 5 min with a token. No gated model in the core path | https://huggingface.co/docs/hub/rate-limits |
 | TLS | Let's Encrypt via Traefik | No | 50 certificates per domain per week; test against staging | https://letsencrypt.org/docs/rate-limits/ |
 | Push | Web Push (VAPID) | No account | iOS requires the PWA on the home screen (16.4+) | https://webkit.org/blog/12945/meet-web-push/ |
 | Chat alerts | Telegram Bot API | No | About 20 messages/min per group | https://core.telegram.org/bots/faq |
@@ -86,9 +90,7 @@ The team already owns: an NVIDIA Brev account, a VPS with Dokploy, and a domain 
 | vLLM | Apache-2.0 | Core |
 | MediaMTX | MIT | Core |
 | FastAPI, PostGIS, Redis, OSRM, MapLibre | Permissive (MIT / BSD / PostgreSQL / GPL-compatible server use) | Core |
-| Cosmos-Reason2-8B | NVIDIA Open Model License (gated) | Optional |
-| D-Fire YOLOv5 (code) | AGPL-3.0 | Optional, isolated |
-| OPear VideoMAE UCF-Crime | CC-BY-NC-4.0 | Optional, demo only |
+| Smoke/fire detector (`fire_smoke_box` YOLO26n or D-Fire YOLOv5) | AGPL-3.0 derived | Optional, isolated, off by default in production |
 | Demo datasets (TAD, CADP, UCF-Crime, AI City) | Research / non-commercial | Demo footage only |
 
 ---
@@ -97,11 +99,13 @@ The team already owns: an NVIDIA Brev account, a VPS with Dokploy, and a domain 
 
 | ID | Question | Owner | Due |
 |---|---|---|---|
-| TQ-01 | GPU tier: L40S (Qwen + Cosmos) or L4 (Qwen only)? Check Brev prices and credits in the console. | Tech lead | Day 1 |
+| TQ-01 | GPU tier: L40S (recommended) or L4 (fallback)? Check live Brev prices; $90 budget. | Tech lead | Day 1 |
 | TQ-02 | Measured latency of RF-DETR + Qwen3-VL-8B-FP8 on the chosen GPU. Validates PRD NFR-PERF-001 and NFR-PERF-003. | Vision owner | Day 1 |
 | TQ-03 | Exact capcom6 request format (`textMessage` vs `message`), webhook signing, and private-server deployment details. | Backend owner | Before P2 |
 | TQ-04 | Pin exact image tags: MediaMTX, vLLM, PostGIS, OSRM. | Tech lead | P0 |
 | TQ-05 | Does Dokploy support wildcard TLS? If not, one certificate per subdomain. | Tech lead | P0 |
+| TQ-06 | Do boxes / track IDs drawn on the verifier frames help or hurt? (The ACCIDENT 1st place found drawn tracking trails hurt.) Run as an ablation; default = timestamps only. | Vision owner | P1 |
+| TQ-07 | Yes-probability thresholds for `confirmed` / `probable` / `possible` and for the sweep, tuned on non-held-out normal, jam and crash clips to keep SC-005. | Vision owner | P1 |
 
 ---
 
@@ -125,15 +129,18 @@ Serves PRD FR-VIS-004, FR-VIS-005, FR-VIS-009 and FR-VIS-010. Every value is con
 | Parameter | Default | Requirement |
 |---|---|---|
 | Frame analysis rate | 5 frames/s | FR-VIS-001 |
-| `collision_candidate` | Box overlap IoU > 0.05 (or centre distance < 0.6 × mean box width), **then** both tracks < 1.5 m/s for ≥ 3 s | FR-VIS-004 |
-| `hard_stop` | Speed drop > 6 m/s within ≤ 1.5 s, while < 30% of the other tracks slow down | FR-VIS-004 |
+| Relative speed | Pixel displacement per second ÷ box height, median over 0.5–1 s ("lengths/s") | FR-VIS-003 |
+| `collision_candidate` | Box overlap IoU > 0.05 (or centre distance < 0.6 × mean box width), **then** both tracks below 0.1 lengths/s for ≥ 3 s | FR-VIS-004 |
+| `hard_stop` | Relative speed drops by > 70% within ≤ 1 s, then stays near zero ≥ 2 s, while < 30% of the other tracks slow down | FR-VIS-004 |
 | `stalled_vehicle` | Stationary ≥ 20 s inside a live-lane polygon while other tracks still move | FR-VIS-004 |
 | `pedestrian_on_road` | Person inside the carriageway polygon ≥ 2 s (highway cameras) | FR-VIS-004 |
-| `rollover_candidate` | Box aspect ratio flips abruptly, then the track stops | FR-VIS-004 |
 | Confirmation frames before a stop counts | N = 3 consecutive frames | PRD E-04 |
 | Evidence clip | ≥ 10 s before + ≥ 5 s after the trigger | FR-VIS-005 |
-| Keyframes sent to the verifier | 8–16 frames, about 448 px | FR-VIS-005 |
-| Verifier answer format | JSON: `incident` (bool), `type` (collision / rollover / fire / stalled / pedestrian / none), `vehicles_involved`, `lanes_blocked`, `severity_hint`, `description_fr`, `description_ar`, `confidence`. Enforced by guided decoding, temperature 0 | FR-VIS-005 |
+| Verifier input | One video: 16 frames at 4 fps over ±2 s + 4 context frames from −8 s to +4 s; 768 px long side; timestamp drawn on each frame | FR-VIS-005 |
+| AI sweep | Every 5 s per camera; last 8 s at 2 fps; 640 px; one video | FR-VIS-015 |
+| Upload pass 1 / pass 2 | Whole clip at 1–2 fps (max 64 frames) / ±2–3 s at 4 fps; correction damped (×0.35) and capped at ±1.5 s | FR-CIT-002 |
+| Status thresholds | Yes-token probability: `confirmed` ≥ 0.8 with a rule trigger; `probable` 0.5–0.8 (or sweep ≥ threshold on 2 consecutive sweeps); below → `possible`. Starting values, tune per TQ-07 | FR-VIS-007 |
+| Verifier answer format | JSON: `collision_visible` (yes / no / cannot_judge), `t_contact`, `type` (collision / rollover / fire / stalled / pedestrian / none), `vehicles_involved`, `lanes_blocked`, `findings[]` (statement, observed or inferred, `frame_ids`), `not_assessable[]`, `priority_raise` (0 or 1, with a finding), `description_fr`, `description_ar`. Guided decoding, temperature 0, no thinking | FR-VIS-005, FR-VIS-016 |
 | Verifier timeout | 15 s | FR-VIS-009 |
 | Repeat-trigger cooldown, same location | 120 s | FR-VIS-010 |
 | "Try it" live session forced verifier check | every 4 s | FR-CIT-003 |
@@ -146,7 +153,8 @@ Serves PRD §12.
 cameras(id, name, stream_url, geom Point, road, pk_km, heading_deg, wilaya, zones jsonb, calibration jsonb, status)
 incidents(id, short_code, type, status, priority, priority_reasons jsonb, geom Point, road, pk_km, wilaya,
           source[camera|citizen|operator], camera_id, event_time, detected_at, ai_signals jsonb,
-          verifier_result jsonb, merged_into, created_at)
+          verifier_result jsonb, ai_status, quality_flags jsonb,
+          people_reported, trapped_reported, merged_into, created_at)
 incident_events(id, incident_id, kind, actor_id, payload jsonb, ts, prev_hash, hash)        -- append-only
 evidence(id, incident_id, kind[clip|keyframe|photo], path, sha256, start_ts, end_ts)
 facilities(id, kind[hospital|civil_protection|gendarmerie|police], name, geom, wilaya, capabilities jsonb,

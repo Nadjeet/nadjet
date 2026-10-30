@@ -14,9 +14,9 @@
 |---|---|---|
 | 0:00 | **The problem in one slide.** 3,838 road deaths in 2025 (DNSR). Three separate emergency numbers. No public response-time data. Cameras exist but people watch them. | Sourced figures from doc 02 |
 | 0:45 | **Camera wall.** Four A1 / Algiers cameras live with AI boxes and speed labels. `/system` shows FPS and per-stage latency. | MediaMTX → vision workers → WebRTC + canvas overlay |
-| 1:30 | **Congestion camera.** Heavy, slow traffic. **No alert.** | The triggers' jam normalisation and the verifier both reject it, which demonstrates false-positive control |
-| 2:00 | **Crash on A1 PK42.** Within seconds an incident card appears: *Possible collision, P1*. Reasons shown: "2 vehicles · stop in live lane · p(crash)=0.9x · pre-impact ~85 km/h". Clip and keyframes attached. The map pin is in Boumerdès. | Real trigger, then the verifier, then a Redis candidate, then the API, then SSE |
-| 2:30 | A few seconds later the AI description arrives: "Two cars, side impact, one stopped across the right lane". | Local VLM, async, labelled *advisory* |
+| 1:30 | **Congestion camera.** Heavy, slow traffic. **No alert.** | The triggers' jam normalisation, the AI verifier and the sweep threshold all reject it, which demonstrates false-positive control |
+| 2:00 | **Crash on A1 PK42.** Within seconds an incident card appears: *Collision — confirmed by rule + AI, P1*. Reasons shown: "2 vehicles · both stopped in live lane · AI: collision visible (frames 7–9)". Clip and keyframes attached. The map pin is in Boumerdès. | Real trigger, then the verifier, then a Redis candidate, then the API, then SSE |
+| 2:30 | A few seconds later the AI description arrives: "Two cars, side impact, one stopped across the right lane". | Same verifier output, in Arabic and French, every finding citing frames, labelled *advisory* |
 | 2:45 | **Operator confirms.** The system recommends the nearest Civil Protection unit (ETA 9 min) and the hospital, CHU or EPH by capability (ETA 14 min), and draws the routes. | PostGIS KNN, then the OSRM `/table` and `/route` calls |
 | 3:15 | **Dispatch.** Phone 1 gets a push notification. Phone 2 gets an SMS: `ACC|P1|36.64800,3.32900|A1 PK42|2V|7F3`. The CAP 1.2 XML is shown. | Real SMS via the gateway; real web push |
 | 3:45 | Phone 2 replies **`OK 7F3`** by SMS. The dashboard flips to *Acknowledged* and the timeline records the acknowledgement time. | Inbound SMS webhook, parser, state transition |
@@ -34,10 +34,11 @@
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| **Verifier generalisation.** Research clips differ from Algerian CCTV (resolution, angle, vehicle types). | Missed crashes or false alarms in the field | Human verification. Report metrics honestly. Retrain on Algerian footage under a pilot agreement. Rules provide a baseline that does not depend on the domain. |
+| **AI generalisation.** Research clips differ from Algerian CCTV (resolution, angle, vehicle types). | Missed crashes or false alarms in the field | Two detection paths (rules + AI sweep), graded statuses, human verification, honest metrics. Retrain or adapt on Algerian footage under a pilot agreement. |
 | **Small or low-quality datasets, possible leakage** | Overstated accuracy | Split by video, keep held-out demo clips, publish the evaluation script, report confidence intervals |
 | **Night, rain, glare, small far-away vehicles** | Lower recall | Per-camera zones, minimum object size, camera-health flags; state these limits |
 | **Traffic jams and camera motion → false positives** | Alarm fatigue | Normalise against the rest of the traffic, detect global motion, cooldowns, human gate, track false alarms per camera-hour |
+| **AI sweep false alarms** | Alarm fatigue (SC-005) | Sweep alerts never above `probable`; threshold tuned on non-held-out normal/jam clips; raise interval if needed |
 | **Laptop performance with 4 streams** | Laggy demo | Benchmark at hour 0; 5 fps sampling; CoreML; drop to 3 cameras if needed |
 | **SMS delivery at the venue** | A broken demo step | Test the SIM beforehand; Telegram/PWA fallback; recorded backup |
 | **AGPL (Ultralytics)** | Licensing for a government product | Detector interface; RF-DETR / D-FINE (Apache-2.0) or an Enterprise licence for production |

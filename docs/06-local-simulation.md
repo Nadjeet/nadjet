@@ -25,7 +25,6 @@ cameras:
     heading_deg: 270
     wilaya: Boumerdès
     zones: zones/cam-a1-pk42.json                # live lanes, shoulder, carriageway polygons
-    homography: calib/cam-a1-pk42.json           # 4 image pts ↔ 4 metric pts
   - id: cam-a1-lakhdaria
     video: videos/heldout/normal_heavy_traffic_h264.mp4   # congestion, should NOT alert
   - id: cam-alg-rn5-bab-ezzouar
@@ -92,8 +91,8 @@ Each camera is then available at:
 
 ```
 MediaMTX (RTSP) → vision worker (PyAV decode, 5–10 fps sampling)
-  → detector (YOLO11s CoreML) → ByteTrack → homography speed → zone tests
-  → triggers → verifier (VideoMAE-B fine-tuned) → candidate
+  → detector (RF-DETR) → ByteTrack → relative speed → zone tests
+  → triggers + AI sweep → AI verifier (Qwen3-VL-8B, no training) → status → candidate
   → evidence: encoded-packet ring buffer (15 s pre) + 10 s post → MP4 + 6 keyframes + SHA-256
   → Redis XADD incidents.candidates
   → API: dedupe (same camera ±60 s & ±50 m) → priority → DB → SSE
@@ -101,11 +100,7 @@ MediaMTX (RTSP) → vision worker (PyAV decode, 5–10 fps sampling)
 
 **Loop deduplication.** A looped clip re-triggers the same crash. The API merges candidates from the same camera and location inside a cooldown window, so the crash appears once. It also counts "re-observed" events, which is honest.
 
-**Calibration (one-off per camera, about 10 minutes).** A small `calib` web tool or script:
-1. Click 4 ground points on a keyframe.
-2. Enter their metric distances, for example lane width 3.5 m and dash length.
-3. Draw the zone polygons.
-4. Store the results as JSON.
+**Zones (one-off per camera, a few minutes).** Draw the live-lane and carriageway polygons on a keyframe and store them as JSON. No metric calibration is needed: speed is measured relative to vehicle size (doc 11 TD-03). Metric calibration is only for real production cameras.
 
 ## 4. Authority and responder simulation (real software, real delivery)
 
@@ -137,7 +132,7 @@ curl -u $GW_USER:$GW_PASS -H 'Content-Type: application/json' http://$PHONE_IP:8
 | Accident CCTV clips | TAD (UnicomBenchmark/TADBench), CADP, TU-DAT, UCF-Crime RoadAccidents | Train/validate the verifier (train split); demo (held-out split) |
 | Normal / jam CCTV | UCF-Crime Normal, TAD negatives, AI City (if access) | Hard negatives; false-alarm evaluation |
 | Detector weights | `yolo11s.pt` → CoreML | Vehicle / person detection |
-| Verifier weights | Our fine-tune of `MCG-NJU/videomae-base-finetuned-kinetics` | Crash verification |
+| Verifier weights | `Qwen/Qwen3-VL-8B-Instruct-FP8` (pretrained, no fine-tuning) | Crash verification and AI sweep |
 | VLM | `ollama pull qwen2.5vl:7b` (or the Qwen3-VL equivalent) | Description |
 | Map tiles | `pmtiles extract https://build.protomaps.com/<date>.pmtiles algeria.pmtiles --bbox=-8.7,18.9,12.0,37.2` | Offline basemap |
 | Routing graph | Geofabrik `algeria-latest.osm.pbf` → OSRM MLD | ETA, routes |

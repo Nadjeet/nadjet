@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Product | **Nadjet** (Arabic: **نجاة**, "survival, being saved"). Final name (D-12). Repo: https://github.com/Nadjeet/nadjet. Domain mapping still open (Q-01) |
-| Document status | **DRAFT v0.4, for team review** |
+| Document status | **DRAFT v0.5, for team review** |
 | Owner | Product lead: TBD · Tech lead: TBD |
 | Approvers | Whole team (sign-off table in §20) |
 | Created / updated | 2026-10-30 |
@@ -36,6 +36,7 @@
 | 0.2 | 2026-10-30 | Team + Claude | Citizen report raised to Must. Added a one-tap report with an automatic GPS SMS fallback (FR-CIT-006) for roads without cameras (D-11) |
 | 0.3 | 2026-10-30 | Team + Claude | PRD made technology-neutral (D-13). Technical choices moved to `docs/11-technical-decisions.md` (TD-01…TD-21). Technical open questions moved there (TQ-01…) |
 | 0.4 | 2026-10-30 | Team + Claude | Engineering details moved to doc 11 (§6–§9): AI thresholds and clip sizes, data fields, engineering and traceability rules, reliability timings. The PRD keeps only product-level requirements |
+| 0.5 | 2026-10-30 | Team + Claude | AI design merged and aligned with 2026 evidence: graded AI statuses (FR-VIS-007), AI sweep as a second detection path (FR-VIS-015), evidence-cited AI findings (FR-VIS-016), safety wording (FR-VIS-017), priority floors (FR-INC-003), witness questions and trapped flag (FR-CIT-001/006, FR-NTF-005), AI-first two-pass analysis of uploads (FR-CIT-002), relative speed (FR-VIS-003), rollover trigger removed. Decisions D-14 to D-16 |
 
 ---
 
@@ -224,7 +225,7 @@ Areas:
 
 - **FR-VIS-001 [M]** The vision worker shall decode each camera stream and analyse sampled frames at a configurable rate (default 5 frames/s).
 - **FR-VIS-002 [M]** The vision worker shall detect vehicles (car, bus, truck, motorcycle) and persons using a **pretrained open-weights detector with a permissive licence**.
-- **FR-VIS-003 [M]** The vision worker shall track detections across frames and estimate each vehicle's speed in m/s using a per-camera ground calibration.
+- **FR-VIS-003 [M]** The vision worker shall track detections across frames and measure **relative speed changes** of each vehicle (no camera calibration needed). Real-world speed (km/h) shall only be used on cameras that have been calibrated.
 - **FR-VIS-004 [M]** The vision worker shall evaluate **trigger rules** on vehicle and person movements. Thresholds are configurable per camera; default values are in doc 11 §6.
 
   | Trigger | Situation detected |
@@ -233,7 +234,8 @@ Areas:
   | `hard_stop` | A sudden deceleration not shared by the other traffic |
   | `stalled_vehicle` | A vehicle stopped for a long time in a live lane |
   | `pedestrian_on_road` | A person on the carriageway |
-  | `rollover_candidate` | A sudden change in the vehicle's shape, then a stop |
+
+  Single-vehicle crashes and rollovers are left to the AI sweep (FR-VIS-015) and the AI verifier.
 - **FR-VIS-005 [M]** WHEN a trigger fires, the vision worker shall extract a short video clip around the event and a set of keyframes. It shall submit them to a **pretrained vision-language AI verifier**, asked neutrally, which answers in a fixed format and may answer `none`. Clip lengths, frame counts and the answer format are in doc 11 §6.
 - **FR-VIS-006 [M]** The vision worker shall publish an incident candidate containing:
   - trigger signals;
@@ -241,14 +243,27 @@ Areas:
   - the verifier output;
   - model names and versions;
   - evidence file hashes.
-- **FR-VIS-007 [M]** The incident type shall be `collision` **only if** the rule trigger and the AI verifier agree. Otherwise the type shall be `possible_incident`, for human decision.
+- **FR-VIS-007 [M]** Every camera candidate shall get an **AI status**, shown with its reasons. The AI alone shall never confirm a collision.
+
+  | Rule fired | AI verifier says | AI status | Incident type |
+  |---|---|---|---|
+  | yes | collision visible (high confidence) | `confirmed` | `collision` |
+  | yes | possible, or verifier unavailable | `probable` | `possible_incident` |
+  | yes | no collision visible | `possible` | `possible_incident`, both signals shown |
+  | yes | cannot judge (night, blur, too small) | `insufficient_evidence` | `possible_incident`, with a quality flag |
+  | no (AI sweep only) | collision visible | `possible` (`probable` if seen on 2 consecutive sweeps) | `possible_incident`, never `collision` |
+
+  Every status goes to the operator. Contradictions between signals are listed, never hidden.
 - **FR-VIS-008 [M]** The vision worker shall produce an **annotated stream** for each camera (boxes, track ids, speeds, zones), kept in sync with the video.
 - **FR-VIS-009 [M]** IF the AI verifier is unavailable or too slow (timeout in doc 11 §6), THEN the vision worker shall publish the candidate with `verifier: unavailable` and the rule signals only. It shall never block or drop the candidate.
 - **FR-VIS-010 [S]** The vision worker shall suppress repeat triggers at the same location within a configurable cooldown (default in doc 11 §6). This handles video loops and lingering scenes.
 - **FR-VIS-011 [S]** The vision worker shall suppress triggers during global camera motion (pan, zoom, shake).
-- **FR-VIS-012 [C]** WHERE the smoke/fire module is enabled, the vision worker shall add a `smoke_fire` signal. *(Optional module, licence-isolated: D-06.)*
+- **FR-VIS-012 [C]** WHERE the smoke/fire module is enabled, the vision worker shall add a `smoke_fire` signal, and keep watching the area around the involved vehicles for 10 minutes after an incident; a confirmed fire updates the open incident (fire flag, P1, fire-capable unit recommended). *(Optional, licence-isolated, off by default in production; may be enabled for the hackathon demo: D-06, D-16.)*
 - **FR-VIS-013 [C]** WHERE the second-opinion module is enabled, the vision worker shall also query a second AI verifier and store both verdicts.
 - **FR-VIS-014 [M]** The vision workers shall expose metrics: per-camera frame rate, latency per stage, queue depth, last frame time.
+- **FR-VIS-015 [M]** The system shall run an **AI sweep**: every few seconds, the AI verifier checks the most recent seconds of video from each camera, independently of the trigger rules. A sweep detection can only create a `possible` or `probable` incident (FR-VIS-007). Its interval and confidence threshold are configurable and tuned on footage that is not used in the demo.
+- **FR-VIS-016 [M]** Every AI finding shown to users shall cite the frame(s) it is based on. Findings without a valid citation shall be dropped and logged. IF the verifier fails or returns invalid output, THEN the system shall show a description built only from the rule signals.
+- **FR-VIS-017 [M]** AI-generated text shall never state death, injury or a medical condition, in any language. It shall use neutral wording such as "person lying on the ground — needs human assessment". What the AI cannot see (occupants' condition, people behind intact windows, fuel leaks) shall be listed as not assessable.
 
 **AI integrity rules.** These are Must requirements, checked in CI and in review.
 
@@ -274,6 +289,12 @@ Areas:
   - person on the road;
   - smoke or fire;
   - night or highway.
+
+  Priority rules:
+  - Each rule that fires sets a **minimum priority**; the final priority is the highest minimum.
+  - Bus involved, person on the carriageway near an involved vehicle, visible flames, or **someone reported trapped** → at least P1. Trapped also flags the need for an extrication-capable unit.
+  - The AI verifier may raise the priority by **one level at most**, citing a finding, and may **never lower** it below the rule minimum.
+  - Not enough evidence to judge → **P2, marked "to assess"** (D-15).
 - **FR-INC-004 [M]** WHEN triage data is received, the system shall recompute priority from it. Triage overrides the AI estimate.
 - **FR-INC-005 [M]** The system shall enforce this lifecycle:
 
@@ -313,7 +334,7 @@ Areas:
   | `OK`, `ER`, `OS`, `TR`, `AH`, `CL` followed by `<code>` | Status update |
   | `T <code> R# Y# G# B#` | Triage |
   | `H <code> READY` or `H <code> DIVERT` | Hospital response |
-  | `ACCIDENT <lat>,<lon> [text]` | Citizen report placed at those coordinates |
+  | `ACCIDENT <lat>,<lon> [P<n>] [C<0|1>] [text]` | Citizen report placed at those coordinates, with the optional number of people and trapped flag |
   | `ACCIDENT <text>` (no coordinates) | Citizen report with a free-text location, flagged for operator call-back |
 
   It shall reply with a confirmation or an error.
@@ -345,17 +366,18 @@ Areas:
 - **FR-CIT-001 [M]** The public report page shall capture:
   - GPS location, with a map pick as fallback;
   - an optional photo;
-  - an optional phone number.
+  - an optional phone number;
+  - two optional witness questions: **how many people are involved?** and **is anyone trapped?**
 
   It shall create an *unverified* incident.
 - **FR-CIT-006 [M]** The report page shall offer a **one-tap "Report a crash" button** that reads the phone's GPS position.
   - WHEN the phone is online, the tap shall submit the report directly.
-  - IF the submission fails or the phone is offline, THEN the page shall open the phone's SMS app, addressed to the platform's gateway number, with `ACCIDENT <lat>,<lon> <optional text>` filled in. Coordinates use 5 decimals; the message is ≤ 160 GSM-7 characters.
+  - IF the submission fails or the phone is offline, THEN the page shall open the phone's SMS app, addressed to the platform's gateway number, with `ACCIDENT <lat>,<lon> P<n> C<0|1> <optional text>` filled in (P = number of people, C = someone trapped; each only if answered). Coordinates use 5 decimals; the message is ≤ 160 GSM-7 characters.
   - The page shall open without connectivity after the first visit.
   - The page shall be reachable from a printed QR code or short link.
 - **FR-CIT-002 [S]** The public **try** page shall:
   - accept a video upload of at most 60 s and 100 MB;
-  - run the **same pipeline** as the cameras and show progress;
+  - analyse it **AI-first in two passes**: a fast scan of the whole clip, then a close look around the detected moment. Vehicle detection only places the result on the vehicles. Show progress;
   - return the annotated video, the trigger timeline, the AI verdict and a sandbox incident.
 - **FR-CIT-003 [S]** The try page shall let a phone's browser stream its camera as a temporary live camera.
   - While the session lasts, the camera appears on the wall and is analysed.
@@ -413,7 +435,7 @@ Areas:
 ### 8.12 Administration (ADM)
 
 - **FR-ADM-001 [M]** Admins shall manage cameras (registry, zones, calibration), facilities, units, users and contact numbers, using seed files and a minimal admin UI.
-- **FR-ADM-002 [S]** A calibration tool shall let an admin, per camera:
+- **FR-ADM-002 [C]** A calibration tool shall let an admin, per camera (needed only for real-world speed on production cameras):
   1. click 4 ground points;
   2. enter their real-world distances;
   3. draw the zone polygons.
@@ -423,7 +445,9 @@ Areas:
 ## 9. Acceptance criteria (key, Given/When/Then)
 
 - **AC-VIS-005.1:** **Given** camera `cam-a1-pk42` is playing held-out crash clip X, **when** the impact occurs, **then** an incident candidate with a rule trigger and an AI verdict is published within 10 s (median over 5 runs) and contains no hardcoded values.
-- **AC-VIS-007.1:** **Given** the rule fires but the AI verifier answers `none`, **when** the incident is created, **then** its type is `possible_incident` and both signals are visible.
+- **AC-VIS-007.1:** **Given** the rule fires but the AI verifier answers that no collision is visible, **when** the incident is created, **then** its AI status is `possible`, its type is `possible_incident`, and both signals are visible.
+- **AC-VIS-015.1:** **Given** a held-out crash clip where no trigger rule fires, **when** the AI sweep sees the collision, **then** a `possible_incident` is created and is never labelled `collision` without a rule trigger.
+- **AC-VIS-017.1:** **Given** the AI output contains the word "dead" or "injured" (in Arabic, French or English), **when** it is validated, **then** the text shown to users contains the neutral wording instead.
 - **AC-VIS-009.1:** **Given** the AI verifier is stopped, **when** a trigger fires, **then** the candidate is still created within 5 s with `verifier: unavailable`.
 - **AC-INC-002.1:** **Given** an open incident at point P, **when** a second candidate arrives 30 s later 20 m from P, **then** no new incident is created and the existing one records a merged candidate.
 - **AC-DSP-001.1:** **Given** a verified incident near Boumerdès, **when** dispatch opens, **then** at least 3 units and 3 hospitals are listed, ranked by road ETA, in under 2 s.
@@ -465,6 +489,8 @@ Areas:
 | E-12 | Public upload is not a video, too long or too large | Reject with a clear error before the upload completes (checked on the phone and on the server). |
 | E-13 | AI server down during the demo | Switch to the fallback (FR-CIT-005) and show its label. The camera pipeline runs in degraded mode on the laptop. |
 | E-14 | Same crash reported by several citizens, or by a citizen and a camera | Merge into one incident (FR-INC-002). Show the report count as a confidence signal. |
+| E-15 | AI sweep raises alerts on normal traffic | Count them in the false-alarm rate (SC-005). Raise the sweep threshold or interval; sweep alerts are never higher than `probable`. |
+| E-16 | A witness reports someone trapped | Priority at least P1; the dispatch panel highlights the need for an extrication-capable unit. |
 
 ---
 
@@ -530,7 +556,7 @@ Each surface gets its own subdomain (mapping open: Q-01). Clickable prototype: T
 
 ## 14. Solution concept (non-technical summary)
 
-1. **Detect.** AI watches camera feeds and spots suspicious vehicle behaviour. A second AI check looks at the short clip. Citizens and phone calls cover everything the cameras miss.
+1. **Detect.** AI watches camera feeds and spots suspicious vehicle behaviour. A second AI check looks at the short clip, and the AI also checks every camera every few seconds on its own. Citizens and phone calls cover everything the cameras miss.
 2. **Verify.** A human operator confirms or rejects. The AI never dispatches on its own.
 3. **Decide.** The system recommends the nearest suitable unit and hospital by real driving time, with an explained priority.
 4. **Alert.** Responders get a push notification and an SMS. The hospital gets a pre-alert.
@@ -632,6 +658,9 @@ Technical decisions (models, frameworks, services, repository, deployment, SMS g
 | D-11 | 2026-10-30 | Citizen report is **Must**, with one-tap reporting and an automatic GPS SMS fallback | Most roads have no cameras. A filled-in SMS gives exact coordinates with no data and no extra cost |
 | D-12 | 2026-10-30 | Product name: **Nadjet** (Arabic **نجاة**) | In Arabic it means survival, being saved: the outcome the platform exists for |
 | D-13 | 2026-10-30 | The PRD stays technology-neutral; technical choices live in doc 11 | Technology can change without reopening product requirements; the PRD stays readable for the whole team |
+| D-14 | 2026-10-30 | Graded AI statuses and an AI sweep as a second detection path | Rules alone miss many real crashes; published evidence shows rule-based timing errors about twice the AI's. Statuses keep the AI honest and the human in charge |
+| D-15 | 2026-10-30 | Not enough evidence → P2 "to assess" | Better to over-prioritise an unclear case than to bury it |
+| D-16 | 2026-10-30 | MVP scope cut: no occupant counting from video, no thermal module, no second AI verifier; fire/smoke optional and may be enabled for the demo | Fit 48 h; keep the effort on what the jury sees and on measured quality |
 
 ---
 

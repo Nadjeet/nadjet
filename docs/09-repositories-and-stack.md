@@ -96,11 +96,9 @@ The API and the arq worker are **one image with two commands**, which means less
 |---|---|
 | Python 3.12, **PyAV** | RTSP/WHIP ingest with packet-level access, so evidence clips are cut without re-encoding. Clean reconnects. |
 | **RF-DETR** (`rfdetr`, Apache-2.0) | COCO vehicles and persons. Permissive licence, so it is usable in a government product. Real-time on GPU (2.3–4.4 ms on a T4 with TRT per the authors). |
-| **supervision** (MIT) | ByteTrack, `PolygonZone`, homography speed, annotators for drawing the overlay video. |
-| **vLLM** serving **Qwen3-VL-8B-Instruct (FP8)** (Apache-2.0) | The no-training crash *verifier and describer*. An OpenAI-compatible API with guided JSON output. This model family won the CVPR 2026 ACCIDENT challenge (doc 10). |
-| Optional: **Cosmos-Reason2-8B** (NVIDIA Open Model License, gated) | Second opinion on an L40S. It is what NVIDIA's Smart-City blueprint uses to verify collisions. |
-| Optional: **D-Fire YOLOv5s** (weights MIT, code AGPL) | Smoke and fire signal. **Isolated behind a feature flag** so the core path stays permissively licensed. |
-| Optional, demo only: `OPear/videomae-large-finetuned-UCF-Crime` (CC-BY-NC) | Extra "road accident" score. Non-commercial, so it is flagged and off by default. |
+| **supervision** (MIT) | ByteTrack, `PolygonZone`, speed relative to box size, annotators for drawing the overlay video. |
+| **vLLM** serving **Qwen3-VL-8B-Instruct (FP8)** (Apache-2.0) | The no-training crash *verifier, describer and AI sweep*. Structured JSON output, yes-token probabilities. This model family won the CVPR 2026 ACCIDENT challenge (doc 04). |
+| Optional: smoke/fire detector (`fire_smoke_box` YOLO26n or D-Fire YOLOv5s; AGPL-derived) | Smoke and fire signal. **Separate process behind a feature flag**, off by default in production, so the core path stays permissively licensed. |
 | ffmpeg with **h264_nvenc** | Republishes the annotated stream back to MediaMTX on the GPU encoder. |
 | CUDA base image `nvidia/cuda:12.x-runtime` + PyTorch | GPU runtime. |
 
