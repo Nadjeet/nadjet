@@ -255,6 +255,28 @@ async def test_FR_HSP_001_the_arrival_moves_from_incoming_to_todays_history(
     assert arrival["status"] == "at_hospital"
 
 
+async def test_an_arrival_from_an_earlier_day_leaves_the_board(
+    client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
+) -> None:
+    """The board only loads what it shows: older arrivals are not history of the day."""
+    scene, hospital = await dispatched(client, session, make_user)
+    for step in ("acknowledged", "en_route", "on_scene", "transporting", "at_hospital"):
+        done = await client.post(
+            f"/incidents/{scene.id}/status", json={"status": step}, headers=scene.operator
+        )
+        assert done.status_code == 200, done.text
+    await session.execute(
+        text("UPDATE dispatches SET at = at - interval '2 days' WHERE incident_id = :i"),
+        {"i": scene.id},
+    )
+    await session.commit()
+
+    board = (await client.get(scene.url, headers=hospital)).json()
+
+    assert mine(board["incoming"], scene.id) == []
+    assert mine(board["history"], scene.id) == []
+
+
 # ------------------------------------------------------------------ acknowledgement
 
 
