@@ -10,7 +10,7 @@ UNIT := -m "not integration and not brev"
 
 .PHONY: help setup doctor env dev stop down infra infra-logs ps camsim migrate gen check-contracts \
 	test test-unit test-integration test-brev coverage lint format typecheck build ci clean reset-db \
-	brev-status brev-forward brev-unforward brev-check
+	brev-status brev-up brev-forward brev-unforward brev-check
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; printf "Nadjet — make <target>\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-17s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -119,6 +119,9 @@ reset-db: ## DANGER: delete local database and Redis volumes (asks for confirmat
 # ---------------------------------------------------------------- NVIDIA Brev (all AI inference)
 brev-status: ## List Brev instances
 	@bash scripts/brev.sh status
+
+brev-up: ## Start vLLM on the running Brev instance and wait until it serves
+	@bash scripts/brev.sh up
 
 brev-forward: ## Forward localhost:18000 to vLLM on the Brev instance
 	@bash scripts/brev.sh forward

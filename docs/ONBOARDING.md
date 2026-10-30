@@ -49,8 +49,11 @@ for local development.
 2. The instance (default name `nadjet-gpu`, set `NADJET_BREV_INSTANCE` in `.env`) runs
    `deploy/gpu/compose.yml`. Starting or creating instances spends credits: only the team
    lead does it.
-3. Connect: `make brev-forward` (localhost:18000 → instance:8000), then `make brev-check`.
-4. Live test: `make test-brev` (not part of `make test` or CI).
+3. Start the instance if stopped (team lead, spends credits): `brev start nadjet-gpu`.
+4. `make brev-up` starts vLLM on it and waits until the model is loaded (~2 min after a start).
+5. Connect: `make brev-forward` (localhost:18000 → instance:8000), then `make brev-check`.
+   `make brev-unforward` closes the tunnel.
+6. Live test: `make test-brev` (not part of `make test` or CI).
 
 If Brev is unreachable, the app reports "AI unavailable" and keeps the rule-based signals.
 
@@ -77,6 +80,7 @@ claude                              # in the repo root
 | `pre-push` refuses to push | You are pushing to `dev`/`main` or force-pushing; push your feature branch instead |
 | `brev not logged in` | `brev login` |
 | `make brev-check` fails | Instance stopped or forward missing: `make brev-status`, then `make brev-forward` |
+| `Server disconnected without sending a response` | The tunnel works but vLLM is not serving yet (model loading or container not started): `make brev-up`, then `make brev-check` |
 | MediaMTX shows no cameras | Add videos to `data/videos/` and run `make camsim`, then restart `make dev` |
 | PostGIS image fails on Apple Silicon | Use the repo's `imresamu/postgis` image (multi-arch); do not switch to `postgis/postgis` |
 

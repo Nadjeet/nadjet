@@ -51,7 +51,7 @@ scripts/              Doctor, Brev helpers, integrity checks
 | `make build` | Build Python wheels and the web app |
 | `make ci` | Everything CI runs |
 | `make doctor` | Diagnose the local environment |
-| `make brev-forward` · `make brev-check` | Connect to and verify the AI server on NVIDIA Brev |
+| `make brev-up` · `make brev-forward` · `make brev-check` | Start, connect to and verify the AI server on NVIDIA Brev |
 | `make clean` · `make reset-db` | Remove caches/builds · delete local data (asks first) |
 
 ## AI development workflow
