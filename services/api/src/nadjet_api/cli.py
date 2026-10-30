@@ -17,6 +17,7 @@ from nadjet_api.auth.seed import load_seed_file, seed_users
 from nadjet_api.cameras.seed import seed_cameras
 from nadjet_api.config import get_settings
 from nadjet_api.db import create_engine, create_session_factory
+from nadjet_api.demo import seed_demo
 from nadjet_api.geo.seed import load_capabilities, load_facilities, load_units, seed_geo
 from nadjet_api.incidents.ingest import CandidateConsumer
 from nadjet_api.incidents.signing import ChainSigner, generate_seed_hex
@@ -108,6 +109,32 @@ async def run_seed_geo(directory: Path) -> None:
     print("seed-geo: {} facilities, {} capabilities, {} units upserted".format(*counts))
 
 
+async def run_seed_demo(users_file: Path, cameras_file: Path, directory: Path) -> int:
+    """Seed users, cameras, units and facilities for the demo; never incidents (FR-VIS-020)."""
+    if not users_file.is_file():  # noqa: ASYNC240
+        print(
+            f"seed-demo: {users_file} not found; copy data/seed/users.example.yaml and set "
+            "real passwords and responder phones",
+            file=sys.stderr,
+        )
+        return 1
+    engine = create_engine(get_settings())
+    try:
+        async with create_session_factory(engine)() as session:
+            report = await seed_demo(
+                session,
+                users=load_seed_file(users_file),
+                catalogue=load_catalogue(cameras_file),
+                facilities=load_facilities(directory / "facilities.csv"),
+                capabilities=load_capabilities(directory / "capabilities.csv"),
+                units=load_units(directory / "units.csv"),
+            )
+    finally:
+        await engine.dispose()
+    print("\n".join(report.lines()))
+    return 0
+
+
 async def run_send_test_sms(to: str) -> int:
     """Send one SMS through the configured gateway to check the setup (FR-NTF-003)."""
     async with httpx.AsyncClient() as client:
@@ -152,6 +179,11 @@ def main(argv: list[str] | None = None) -> int:
     geo = sub.add_parser("seed-geo", help="import facilities and units from data/seed CSV files")
     geo.add_argument("--dir", type=Path, default=DEFAULT_SEED_DIR)
 
+    demo = sub.add_parser("seed-demo", help="seed users, cameras, units, facilities; no incidents")
+    demo.add_argument("--users", type=Path, default=DEFAULT_SEED_DIR / "users.yaml")
+    demo.add_argument("--cameras", type=Path, default=DEFAULT_CAMERAS)
+    demo.add_argument("--dir", type=Path, default=DEFAULT_SEED_DIR)
+
     sub.add_parser("gen-vapid", help="print a new Web Push VAPID key pair for NADJET_VAPID_*")
     sub.add_parser("worker", help="run the notification worker (arq)")
     test_sms = sub.add_parser("send-test-sms", help="send a test SMS through the gateway")
@@ -185,6 +217,8 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "seed-geo":
         asyncio.run(run_seed_geo(args.dir))
         return 0
+    if args.command == "seed-demo":
+        return asyncio.run(run_seed_demo(args.users, args.cameras, args.dir))
     if args.command == "seed-users":
         asyncio.run(run_seed_users(args.file))
         return 0
