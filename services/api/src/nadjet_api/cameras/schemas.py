@@ -28,6 +28,9 @@ class CameraOut(BaseModel):
     zones: dict[str, Any] | None = Field(description="live_lanes and carriageway polygons")
     status: CameraStatus
     simulated: bool
+    live_demo: bool = Field(
+        default=False, description="A visitor's phone on the try page (sandbox, FR-CIT-003)"
+    )
     stream: StreamUrls
 
 
