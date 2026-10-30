@@ -45,7 +45,8 @@ Report exact commands and results. Never claim a check passed if you did not run
   API contracts, error handling, edge cases and integrations.
   - Unit tests: no network, no infra; use fakes / `httpx.MockTransport`.
   - Integration tests: `@pytest.mark.integration`, real PostGIS/Redis from `make infra`.
-    They must **fail, not skip**, when infra is down.
+    They must **fail, not skip**, when infra is down. They run against the `nadjet_test`
+    database and Redis db 15, never the dev data, and never read `.env` (root `conftest.py`).
   - `@pytest.mark.brev`: live Brev endpoint; never in CI; run with `make test-brev`.
 - Name tests after behaviour and reference requirement IDs in docstrings where relevant.
 
