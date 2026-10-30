@@ -39,7 +39,7 @@ def kind_of(tags: dict[str, str]) -> str:
 
 
 def fetch(iso: str) -> list[dict[str, str]]:
-    request = urllib.request.Request(  # noqa: S310 (fixed https endpoint)
+    request = urllib.request.Request(
         ENDPOINT,
         data=urllib.parse.urlencode({"data": query(iso)}).encode(),
         headers={"User-Agent": USER_AGENT},

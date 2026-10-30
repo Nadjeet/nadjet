@@ -15,9 +15,9 @@ from nadjet_api.auth.seed import load_seed_file, seed_users
 from nadjet_api.cameras.seed import seed_cameras
 from nadjet_api.config import get_settings
 from nadjet_api.db import create_engine, create_session_factory
+from nadjet_api.geo.seed import load_capabilities, load_facilities, load_units, seed_geo
 from nadjet_api.incidents.ingest import CandidateConsumer
 from nadjet_api.incidents.signing import ChainSigner, generate_seed_hex
-from nadjet_api.geo.seed import load_capabilities, load_facilities, load_units, seed_geo
 from nadjet_api.main import create_app
 from nadjet_shared.catalogue import load_catalogue
 
