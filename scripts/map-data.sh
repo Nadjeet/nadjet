@@ -21,7 +21,15 @@ done
 
 mkdir -p "$OUT_DIR"
 echo "Extracting Protomaps build $build (bbox $BBOX, maxzoom $MAXZOOM)..."
-docker run --rm -v "$PWD/$OUT_DIR:/data" "$PMTILES_IMAGE" \
-  extract "https://build.protomaps.com/${build}.pmtiles" /data/algeria.pmtiles \
-  --bbox="$BBOX" --maxzoom="$MAXZOOM"
-ls -lh "$OUT_DIR/algeria.pmtiles"
+rm -f "$OUT_DIR/algeria.pmtiles" # a failed run leaves a partial file
+for attempt in 1 2 3 4; do # the public build server drops long transfers now and then
+  if docker run --rm -v "$PWD/$OUT_DIR:/data" "$PMTILES_IMAGE" \
+    extract "https://build.protomaps.com/${build}.pmtiles" /data/algeria.pmtiles \
+    --bbox="$BBOX" --maxzoom="$MAXZOOM"; then
+    ls -lh "$OUT_DIR/algeria.pmtiles"
+    exit 0
+  fi
+  echo "Extract failed (attempt $attempt/4), retrying..." >&2
+  rm -f "$OUT_DIR/algeria.pmtiles"
+done
+exit 1
