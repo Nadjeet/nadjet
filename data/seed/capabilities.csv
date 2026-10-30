@@ -1,0 +1,7 @@
+facility_id,capability,ready_state
+osm-way-26456258,trauma,ready
+osm-way-28919252,trauma,ready
+osm-way-368356283,trauma,divert
+osm-way-314611182,emergency,ready
+osm-way-242898759,emergency,ready
+osm-way-782759372,emergency,divert

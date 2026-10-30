@@ -1,0 +1,591 @@
+id,kind,name,lat,lon,wilaya,contact_sms,simulated
+osm-node-1077625968,civil_protection,Unité de protection civile Birtouta,36.642387,3.000564,Alger,,true
+osm-node-11665618766,civil_protection,Djamaa El Djazair Civil Protection Station,36.732863,3.144444,Alger,,true
+osm-node-1624111096,civil_protection,الحماية المدنية,36.739740,3.277479,Alger,,true
+osm-node-1747840547,civil_protection,Pompiers Cheraga,36.756932,2.952625,Alger,,true
+osm-node-2063233750,civil_protection,Protection civile Bab Ezzouar,36.721033,3.179947,Alger,,true
+osm-node-2476980848,civil_protection,Unité de Protection civile,36.722916,3.065685,Alger,,true
+osm-node-2535767185,civil_protection,Unité de Protection civile,36.610085,3.087768,Alger,,true
+osm-node-2776940710,civil_protection,Unité de Protection Civile,36.754232,3.064423,Alger,,true
+osm-node-2950431280,civil_protection,Unité de Protection civile,36.720216,3.180241,Alger,,true
+osm-node-3015196666,civil_protection,Protection civile Sidi Fredj,36.764235,2.846692,Alger,,true
+osm-node-3016092746,civil_protection,Unité de Protection civile,36.741338,2.871580,Alger,,true
+osm-node-3109233405,civil_protection,Protection civile,36.741549,3.122310,Alger,,true
+osm-node-3201193808,civil_protection,Unité de Protection civile,36.733610,3.082393,Alger,,true
+osm-node-3649619527,civil_protection,Kharouba 1,36.745992,3.095669,Alger,,true
+osm-node-3700127027,civil_protection,Secouristes-surveillants de plages,36.784011,3.336425,Alger,,true
+osm-node-3764921209,civil_protection,الحماية المدنية,36.811719,3.024224,Alger,,true
+osm-node-4034677613,civil_protection,Pompiers,36.697501,3.184866,Alger,,true
+osm-node-4714992894,civil_protection,Unité Nationale d'Instruction et d'Intervention de Dar El Beidha,36.722652,3.200436,Alger,,true
+osm-node-5001376041,civil_protection,Unité secondaire de Rouiba,36.739003,3.282657,Alger,,true
+osm-node-5248631821,civil_protection,Unité de Protection civile,36.648265,3.082461,Alger,,true
+osm-node-5818110343,civil_protection,Unité de Protection civile,36.796940,2.987207,Alger,,true
+osm-node-5856817198,civil_protection,القوات الجوية الجزائرية,36.740506,3.107354,Alger,,true
+osm-node-6026938563,civil_protection,Unité de Protection civile,36.653108,3.147898,Alger,,true
+osm-node-6795541388,civil_protection,الحماية المدنية لشاطىء المرسى,36.806823,3.231628,Alger,,true
+osm-node-692972825,civil_protection,Unité de Protection civile الحماية المدنية,36.809002,3.034903,Alger,,true
+osm-node-692973083,civil_protection,Unité de Protection civile,36.791047,3.048186,Alger,,true
+osm-node-692999427,civil_protection,Unité de Protection civile,36.813482,2.971606,Alger,,true
+osm-node-7197474185,civil_protection,حماية مدنية,36.670260,2.949015,Alger,,true
+osm-node-993807690,civil_protection,Protection Civile,36.738891,3.050627,Alger,,true
+osm-way-108284328,civil_protection,Protection Civile,36.697556,3.091829,Alger,,true
+osm-way-1172792884,civil_protection,Unité de Protection civile,36.698284,3.168055,Alger,,true
+osm-way-201730366,civil_protection,Unité de protection civile d'El Harrach,36.722919,3.135800,Alger,,true
+osm-way-217692643,civil_protection,Protection Civile,36.718369,3.086011,Alger,,true
+osm-way-224286513,civil_protection,وحدة الحماية المدنية,36.733020,3.171079,Alger,,true
+osm-way-245734435,civil_protection,Siège de la Protection Civile,36.723925,3.202446,Alger,,true
+osm-way-245965235,civil_protection,Unité de Protection Civile,36.719441,2.848982,Alger,,true
+osm-way-260901004,civil_protection,Unité de Protection civile,36.775662,3.056004,Alger,,true
+osm-way-310267617,civil_protection,Unité de Protection civile,36.715566,2.999213,Alger,,true
+osm-way-360584591,civil_protection,Unité de Protection civile,36.779210,3.039798,Alger,,true
+osm-way-438416425,civil_protection,Unité de protection civile,36.731905,2.998908,Alger,,true
+osm-way-50982870,civil_protection,UM Port d'Alger الحماية المدنية,36.763878,3.060136,Alger,,true
+osm-way-677477215,civil_protection,Unité de Protection civile,36.767471,2.945231,Alger,,true
+osm-node-11076597173,gendarmerie,Gendarmerie nationale,36.785798,3.325580,Alger,,true
+osm-node-11382777077,gendarmerie,barrage de la gendarmerie nationale,36.735283,3.196937,Alger,,true
+osm-node-1474275041,gendarmerie,Gendarmerie nationale,36.670009,3.050099,Alger,,true
+osm-node-1624111083,gendarmerie,Gendarmerie,36.740109,3.281651,Alger,,true
+osm-node-1638864217,gendarmerie,Gendarmerie,36.674663,3.021227,Alger,,true
+osm-node-1666768792,gendarmerie,Gendarmerie Nationale,36.725260,2.835137,Alger,,true
+osm-node-2530644088,gendarmerie,الدرك الوطني,36.743355,2.846884,Alger,,true
+osm-node-2530644132,gendarmerie,Gendarmerie Nationale,36.756552,2.892225,Alger,,true
+osm-node-2530644236,gendarmerie,Gendarmerie Nationale,36.727962,2.889355,Alger,,true
+osm-node-2683204525,gendarmerie,Brigade de gendarmerie,36.732673,2.993340,Alger,,true
+osm-node-2767232465,gendarmerie,Gendarmerie,36.744347,3.082791,Alger,,true
+osm-node-2959897359,gendarmerie,Brigade Gendarmerie Ouled Fayet,36.732557,2.958167,Alger,,true
+osm-node-3026534290,gendarmerie,Gendarmerie,36.713405,3.043947,Alger,,true
+osm-node-3031637052,gendarmerie,barrage fixe Gendarmerie,36.732018,2.966083,Alger,,true
+osm-node-3036036518,gendarmerie,الدرك الوطني,36.655431,3.179194,Alger,,true
+osm-node-3218558562,gendarmerie,Gendarmerie National Souedania,36.703527,2.921745,Alger,,true
+osm-node-3493206722,gendarmerie,Gendarmerie Nationale,36.707248,3.080460,Alger,,true
+osm-node-3506270343,gendarmerie,Gendarmerie nationale Birtouta,36.643569,2.998920,Alger,,true
+osm-node-3548985478,gendarmerie,Gendarmerie Nationale,36.696782,3.077122,Alger,,true
+osm-node-3562475341,gendarmerie,GENDARMERIE NATIONALE,36.752877,3.207132,Alger,,true
+osm-node-3586049545,gendarmerie,Brigade de Gendarmerie,36.679718,3.191466,Alger,,true
+osm-node-3749282251,gendarmerie,Gendarmerie,36.796350,2.998143,Alger,,true
+osm-node-3800767379,gendarmerie,Gendarmerie nationale,36.728572,3.154898,Alger,,true
+osm-node-3936170537,gendarmerie,Gendarmerie nationale,36.778547,3.061375,Alger,,true
+osm-node-4122018889,gendarmerie,Gendarmerie nationale,36.750413,2.992579,Alger,,true
+osm-node-4231938450,gendarmerie,Gendarmerie nationale,36.743317,2.910289,Alger,,true
+osm-node-4247330303,gendarmerie,Gendarmerie nationale,36.811082,2.957208,Alger,,true
+osm-node-4309822492,gendarmerie,Gendarmerie,36.682641,2.877158,Alger,,true
+osm-node-4333279833,gendarmerie,Gendarmerie,36.658062,3.099265,Alger,,true
+osm-node-4336773490,gendarmerie,Gendarmerie,36.649158,3.086679,Alger,,true
+osm-node-4356467595,gendarmerie,Gendarmerie nationale,36.784971,3.243670,Alger,,true
+osm-node-4396497392,gendarmerie,Gendarmerie nationale,36.746412,3.342896,Alger,,true
+osm-node-4404056613,gendarmerie,Gendarmerie,36.796880,2.988665,Alger,,true
+osm-node-4758802301,gendarmerie,Gendarmerie,36.716259,2.844085,Alger,,true
+osm-node-5614257732,gendarmerie,الدرك الوطني,36.629979,2.948634,Alger,,true
+osm-node-6166675848,gendarmerie,Gendarmerie nationale,36.621987,2.957488,Alger,,true
+osm-node-694114891,gendarmerie,Gendarmerie,36.781869,2.977755,Alger,,true
+osm-node-6970847085,gendarmerie,Gendarmerie nationale,36.665008,3.001251,Alger,,true
+osm-node-975473454,gendarmerie,Gendarmerie,36.679490,2.983833,Alger,,true
+osm-way-108285919,gendarmerie,Gendarmerie,36.705680,3.064913,Alger,,true
+osm-way-1485663863,gendarmerie,الدرك الوطني - الأبيار,36.769808,3.030144,Alger,,true
+osm-way-217603079,gendarmerie,Gendarmerie Nationale,36.732783,3.052796,Alger,,true
+osm-way-224436627,gendarmerie,Gendarmerie Hamiz,36.731377,3.236562,Alger,,true
+osm-way-249008113,gendarmerie,Gendarmerie,36.739276,3.046374,Alger,,true
+osm-way-260300741,gendarmerie,Gendarmerie nationale,36.741737,3.096861,Alger,,true
+osm-way-261400761,gendarmerie,Gendarmerie Nationale,36.775532,3.020325,Alger,,true
+osm-way-264951891,gendarmerie,Gendarmerie nationale,36.745322,2.976516,Alger,,true
+osm-way-266321413,gendarmerie,Gendarmerie,36.698751,2.969576,Alger,,true
+osm-way-347685849,gendarmerie,Gendarmerie,36.714895,3.108049,Alger,,true
+osm-way-347789531,gendarmerie,Gendarmerie Nationale Sidi Fredj,36.761301,2.843668,Alger,,true
+osm-way-352173693,gendarmerie,Gendarmerie nationale,36.747666,3.063800,Alger,,true
+osm-way-362255233,gendarmerie,Commandement de la Gendarmerie nationale,36.786743,3.057110,Alger,,true
+osm-way-390809646,gendarmerie,Gendarmerie nationale,36.650014,3.086434,Alger,,true
+osm-way-401440305,gendarmerie,Gendarmerie Nationale,36.679802,2.903902,Alger,,true
+osm-way-428444163,gendarmerie,Gendarmerie Nationale,36.721696,3.197441,Alger,,true
+osm-way-458086277,gendarmerie,Gendarmerie Nationale Chéraga,36.771332,2.963080,Alger,,true
+osm-way-475110785,gendarmerie,Gendarmerie nationale,36.617970,3.125204,Alger,,true
+osm-way-475147065,gendarmerie,Gendarmerie,36.664231,3.127302,Alger,,true
+osm-way-482939894,gendarmerie,Gendarmerie,36.696804,2.823810,Alger,,true
+osm-way-96588975,gendarmerie,Gendarmerie Beaulieu,36.710395,3.166621,Alger,,true
+osm-way-982278054,gendarmerie,Gendarmerie Nationale,36.672709,2.893244,Alger,,true
+osm-node-10113736560,hospital,clinic zohor عيادة زهور,36.701632,3.025097,Alger,,true
+osm-node-10242606009,hospital,El Hamma,36.744322,3.075882,Alger,,true
+osm-node-10564950209,hospital,اسحاق,36.766505,3.235032,Alger,,true
+osm-node-11942981566,hospital,Hôpital Ali Aït Idir,36.787403,3.058418,Alger,,true
+osm-node-13149137101,hospital,Clinique du Val عيادة الوادي,36.758306,3.025380,Alger,,true
+osm-node-14064594001,hospital,Hospital de zghara,36.806767,3.028079,Alger,,true
+osm-node-2744651460,hospital,Hôpital des brûlés,36.772195,3.056717,Alger,,true
+osm-node-3004200407,hospital,Parnet,36.736692,3.103839,Alger,,true
+osm-node-3061964490,hospital,Clinique des Orchidées,36.736083,3.033000,Alger,,true
+osm-node-3334397403,hospital,Rouchai Boualem,36.752197,3.067044,Alger,,true
+osm-node-3786889385,hospital,مصحة بلعرج,36.742704,3.064930,Alger,,true
+osm-node-3884750015,hospital,Les Glycines,36.757282,3.041724,Alger,,true
+osm-node-3989718213,hospital,Cabinet médical d'urgence,36.764308,3.265035,Alger,,true
+osm-node-4169433293,hospital,urgence chirurgicale,36.779022,2.981933,Alger,,true
+osm-node-4170340791,hospital,Urgences pédiatrique et chirurgie pediatrique,36.721836,3.147341,Alger,,true
+osm-node-4197345590,hospital,consultation d'hématologie,36.779889,2.983977,Alger,,true
+osm-node-4197361089,hospital,urgence pédiatriques,36.780368,2.983341,Alger,,true
+osm-node-4208929127,hospital,Hôpital Ziroud Yousef,36.786474,3.026096,Alger,,true
+osm-node-4218102291,hospital,Polyclinique Douera,36.668583,2.939576,Alger,,true
+osm-node-4246756954,hospital,Hôpital de rouiba les urgence,36.735477,3.286744,Alger,,true
+osm-node-4246766519,hospital,Hôpital de rouiba,36.735585,3.285736,Alger,,true
+osm-node-4246766520,hospital,Clinique d'accouchement,36.741268,3.284408,Alger,,true
+osm-node-4416216189,hospital,عيادة محند امقران,36.767786,3.001656,Alger,,true
+osm-node-4538618189,hospital,Hôpital Djilali Bounâama,36.667886,2.940747,Alger,,true
+osm-node-4577311790,hospital,Polyclinique de Hraoua,36.774987,3.304298,Alger,,true
+osm-node-4581255978,hospital,نادية بوجناح,36.788031,3.020295,Alger,,true
+osm-node-4737083723,hospital,عروة,36.741079,3.039529,Alger,,true
+osm-node-4767475021,hospital,قاعة العلاج الطاحونتين,36.811365,3.029502,Alger,,true
+osm-node-4794767523,hospital,Centre d'expertise Médicale (CNEMPN),36.719390,3.059953,Alger,,true
+osm-node-4822390322,hospital,Polyclinique Bouchnafa مصحة بوشنافة,36.756400,3.062911,Alger,,true
+osm-node-5039751720,hospital,Centre d'analyses médicales,36.755112,3.035180,Alger,,true
+osm-node-5098331621,hospital,المصحة الكوبية الجزائرية لقرح القدم,36.735031,3.057463,Alger,,true
+osm-node-5133147524,hospital,دكتورة غلاتي أ,36.725120,3.052754,Alger,,true
+osm-node-5473517521,hospital,مصحة مصطفى نقاش,36.740403,3.064753,Alger,,true
+osm-node-5548655822,hospital,مخبر التحاليل الطبية,36.736469,3.285904,Alger,,true
+osm-node-5765259135,hospital,Clinique de Bir morad rais,36.734889,3.034632,Alger,,true
+osm-node-6187423686,hospital,Centre médical Boudjemâa Moghni,36.740375,3.098528,Alger,,true
+osm-node-6189288087,hospital,Epsp gynécologue pédiatrie,36.767983,3.031899,Alger,,true
+osm-node-6784641748,hospital,centre pour radiologie et chimiothérapie,36.661616,2.879977,Alger,,true
+osm-node-956483907,hospital,Polyclinique Les Sources,36.733876,3.058232,Alger,,true
+osm-relation-17714490,hospital,Zouje Aayoun,36.787910,3.061007,Alger,,true
+osm-way-1285280017,hospital,Mother and Child Military Hospital,36.769596,2.973301,Alger,,true
+osm-way-1422963160,hospital,Service Médecine Interne d'Hôpital Birtraria,36.768452,3.025843,Alger,,true
+osm-way-186937625,hospital,Clinique militaire les Oliviers,36.726266,3.059100,Alger,,true
+osm-way-216697959,hospital,Hôpital de Ben Aknoun مستشفى بن عكنون,36.754722,3.000806,Alger,,true
+osm-way-217506872,hospital,Clinique Ophtalmologique,36.737454,3.032147,Alger,,true
+osm-way-217697083,hospital,EHS Bachir Mentouri,36.726108,3.086647,Alger,,true
+osm-way-226907914,hospital,Polyclinique Dar el bida,36.720844,3.213340,Alger,,true
+osm-way-227890170,hospital,Hôpital de Tixeraïne مستشفى تيقصراين,36.724333,3.021898,Alger,,true
+osm-way-231883341,hospital,EPSP Drid Hocine,36.738551,3.084426,Alger,,true
+osm-way-241265165,hospital,Centre Médicale Djenan Mabrouk,36.724424,3.124893,Alger,,true
+osm-way-245174975,hospital,Hôpital d'Aïn Taya,36.789664,3.295423,Alger,,true
+osm-way-245965237,hospital,Hôpital de Zéralda,36.700371,2.843852,Alger,,true
+osm-way-245965240,hospital,Centre de rééducation militaire,36.731908,2.887198,Alger,,true
+osm-way-246086623,hospital,Hôpital Militaire de Ain Naadja,36.719029,3.064881,Alger,,true
+osm-way-246408116,hospital,EHS Psychiatrique Mahfoud Boucebsi,36.765012,2.954043,Alger,,true
+osm-way-251256118,hospital,Centre Médical Bachdjarah,36.722304,3.119039,Alger,,true
+osm-way-252074570,hospital,Laboratoire médical Hussein Dey,36.734442,3.104068,Alger,,true
+osm-way-253592388,hospital,Hôpital Pédiatrique Hacen Badi,36.721891,3.146994,Alger,,true
+osm-way-253995046,hospital,Polyclinique Les Sources,36.733860,3.058093,Alger,,true
+osm-way-262048933,hospital,مستوصف بوزريعة,36.789536,3.017480,Alger,,true
+osm-way-26253281,hospital,مستشفى الهادي فليسي القطار,36.785157,3.051645,Alger,,true
+osm-way-263624389,hospital,Hopital De Police,36.757522,3.041623,Alger,,true
+osm-way-264325095,hospital,Centre de santé de la Police المركز الصحي للشرطة,36.752151,3.066939,Alger,,true
+osm-way-26456258,hospital,CHU Mohamed Lamine Debaghine,36.794844,3.048818,Alger,,true
+osm-way-271903487,hospital,مستشفى الامراض العقلية دريد الحسين (ب),36.738424,3.086501,Alger,,true
+osm-way-271912485,hospital,Centre de soins Bachir Laadjouz;Dispensaire Maison du diabétique,36.747048,3.078791,Alger,,true
+osm-way-274667738,hospital,Centre de soins Mourad Rachid,36.725569,3.025314,Alger,,true
+osm-way-28825181,hospital,مستشفى الجامعي نفيسة حمود,36.736166,3.105504,Alger,,true
+osm-way-28919252,hospital,Hôpital Mustapha Pacha المستشفى الجامعي مصطفى باشا,36.761800,3.053586,Alger,,true
+osm-way-301992497,hospital,Clinique des Orchidées,36.736075,3.032989,Alger,,true
+osm-way-30350387,hospital,Hôpital Salim Zemirli,36.703284,3.123694,Alger,,true
+osm-way-347685816,hospital,Croissant Rouge,36.714955,3.107214,Alger,,true
+osm-way-347755866,hospital,Hôpital Azur Plage,36.736347,2.845229,Alger,,true
+osm-way-366377637,hospital,Hôpital de Rouiba,36.735027,3.286182,Alger,,true
+osm-way-368356283,hospital,Hôpital Bologhine Ibn Ziri,36.810456,2.979061,Alger,,true
+osm-way-38224201,hospital,المركز الاستشفائي الجامعي بني مسوس,36.779026,2.980967,Alger,,true
+osm-way-398716275,hospital,عروة,36.741179,3.039481,Alger,,true
+osm-way-40072354,hospital,Hopital Douira,36.667493,2.940411,Alger,,true
+osm-way-420557893,hospital,Clinique Zighout Amine,36.786315,3.026250,Alger,,true
+osm-way-435214531,hospital,Centre psychopédagogique Salim Slima,36.669459,2.947993,Alger,,true
+osm-way-458090428,hospital,Hôpital Militaire Universitaire Spécialisé,36.733146,2.888961,Alger,,true
+osm-way-460188064,hospital,Hôpital de Gériatrie de Zéralda,36.697732,2.845010,Alger,,true
+osm-way-475102376,hospital,Polyclinique Rais,36.611374,3.126124,Alger,,true
+osm-way-479279697,hospital,Polylinque Bali Mohamed,36.761564,2.923024,Alger,,true
+osm-way-482709055,hospital,Polyclinique 66 lgts,36.714854,2.846230,Alger,,true
+osm-way-482709087,hospital,EPSP Zéralda,36.709093,2.844338,Alger,,true
+osm-way-482939911,hospital,Salle de soins Mazafran,36.699270,2.835198,Alger,,true
+osm-way-482940197,hospital,Salle de soin,36.676012,2.834964,Alger,,true
+osm-way-483129334,hospital,Salle de Soin,36.716991,2.916568,Alger,,true
+osm-way-55035272,hospital,EPH Djillali Belkhenchir - El Biar,36.773726,3.040444,Alger,,true
+osm-way-554235723,hospital,Polyclinique de Sebbala,36.714960,3.013063,Alger,,true
+osm-way-782776803,hospital,Hôpital des brûlés,36.772228,3.056453,Alger,,true
+osm-way-782994504,hospital,مصحة بلعرج,36.742684,3.064934,Alger,,true
+osm-way-783010148,hospital,Polyclinique Douera,36.668623,2.939590,Alger,,true
+osm-way-783041002,hospital,Clinique Mouhannad Amqran,36.767827,3.001415,Alger,,true
+osm-way-783041257,hospital,Maillot,36.789963,3.046187,Alger,,true
+osm-way-783091381,hospital,Larbi tebssi العربي التبسي,36.754428,3.057489,Alger,,true
+osm-way-783103765,hospital,قاعة العلاج الطاحونتين,36.811576,3.029493,Alger,,true
+osm-way-783850606,hospital,المصحة الكوبية الجزائرية لقرح القدم,36.735049,3.057363,Alger,,true
+osm-way-783862892,hospital,دكتورة غلاتي أ,36.725236,3.052744,Alger,,true
+osm-way-783877345,hospital,Clinique de Bir morad rais,36.734743,3.034403,Alger,,true
+osm-way-783897428,hospital,Centre médical Boudjemâa Moghni,36.740326,3.098385,Alger,,true
+osm-node-1118742971,police,Sureté Urbaine,36.627906,2.944785,Alger,,true
+osm-node-1118774527,police,Garde Communale,36.686538,2.924104,Alger,,true
+osm-node-11665618765,police,Djamaa El Djazair Police Station,36.732954,3.142456,Alger,,true
+osm-node-1237867450,police,BMPJ Eucalyptus,36.668560,3.144783,Alger,,true
+osm-node-1315019489,police,Police juridique BMPG,36.768611,3.020514,Alger,,true
+osm-node-1337269302,police,la collone,36.753686,3.042163,Alger,,true
+osm-node-1376005298,police,Sureté urbaine,36.701805,3.020838,Alger,,true
+osm-node-1624111076,police,أمن دائرة الرويبة,36.735680,3.278367,Alger,,true
+osm-node-1626609827,police,1° SU,36.731116,3.278698,Alger,,true
+osm-node-1723003132,police,Poste de Police Dely Ibrahim,36.751318,2.982359,Alger,,true
+osm-node-2063222328,police,Surté Daira Dar el Bida أمن دائرة الدار البيضاء,36.719616,3.180240,Alger,,true
+osm-node-2274608925,police,sûreté Urbaine,36.723047,3.109313,Alger,,true
+osm-node-2276365547,police,Sureté Urbaine,36.725522,3.106269,Alger,,true
+osm-node-2326858633,police,Sureté Urbaine,36.727901,3.079820,Alger,,true
+osm-node-2332524125,police,Sureté Urbaine Hamiz,36.729205,3.230340,Alger,,true
+osm-node-2355385751,police,BMPJ,36.725249,3.180660,Alger,,true
+osm-node-2356681016,police,Sûreté Urbaine de Mohammadia,36.730915,3.140295,Alger,,true
+osm-node-2359351465,police,Sureté Urbaine Sbaat,36.709310,3.281851,Alger,,true
+osm-node-2462778514,police,الأمن الحضري,36.718419,3.049936,Alger,,true
+osm-node-2489276226,police,Sureté urbaine,36.719018,3.108416,Alger,,true
+osm-node-2530644061,police,Sureté urbaine,36.757297,2.844758,Alger,,true
+osm-node-2530644092,police,Sureté urbaine,36.745292,2.847821,Alger,,true
+osm-node-2530644144,police,Sûreté Daira,36.714819,2.844701,Alger,,true
+osm-node-2530644157,police,Sureté urbaine,36.706229,2.846227,Alger,,true
+osm-node-2535767192,police,Sureté Urbaine,36.604978,3.086384,Alger,,true
+osm-node-2556190563,police,Sureté Urbaine,36.743197,3.029133,Alger,,true
+osm-node-2683204554,police,Surté Urbain,36.744805,2.996986,Alger,,true
+osm-node-2686551864,police,El Biar,36.768123,3.031957,Alger,,true
+osm-node-2688977170,police,Sureté urbaine,36.719588,2.995974,Alger,,true
+osm-node-2692496728,police,9 ème Sûreté urbaine,36.751638,3.052204,Alger,,true
+osm-node-2730520252,police,Sureté urbaine,36.722752,3.217587,Alger,,true
+osm-node-2768491724,police,Sureté urbaine,36.743274,3.080570,Alger,,true
+osm-node-2776940579,police,Sureté Urbaine,36.752749,3.062484,Alger,,true
+osm-node-2776940712,police,Sureté urbaine,36.755970,3.065048,Alger,,true
+osm-node-2798716954,police,Ecole DGSN,36.717168,3.091140,Alger,,true
+osm-node-287167998,police,Barage de police fix,36.729630,3.063579,Alger,,true
+osm-node-287876774,police,École Mohamed Baaziz,36.788629,3.015228,Alger,,true
+osm-node-2955700950,police,Sureté de Daira,36.768551,2.960802,Alger,,true
+osm-node-2988615800,police,Police Nationale 8,36.762448,3.056178,Alger,,true
+osm-node-3004200179,police,Police nationale,36.734042,3.104796,Alger,,true
+osm-node-3031666151,police,Poste de police,36.675334,3.170467,Alger,,true
+osm-node-3037251783,police,BMPJ,36.780201,3.047396,Alger,,true
+osm-node-3186538202,police,Sureté Urbaine,36.729793,3.174625,Alger,,true
+osm-node-3220014237,police,Sureté urbaine,36.804539,3.236319,Alger,,true
+osm-node-3342962710,police,Sûreté de Wilaya d'Alger,36.770376,3.058054,Alger,,true
+osm-node-3402025019,police,مركز شرطة,36.734236,3.045101,Alger,,true
+osm-node-347122722,police,Sureté urbaine Bordj El Kiffan,36.747514,3.193227,Alger,,true
+osm-node-3488422020,police,Sureté Urbaine,36.711441,3.092782,Alger,,true
+osm-node-3734794644,police,Poste de Police (Cavaignac),36.773355,3.060051,Alger,,true
+osm-node-3765451300,police,semar,36.697642,3.093784,Alger,,true
+osm-node-3899375063,police,شرطة حسن بادي,36.721619,3.144857,Alger,,true
+osm-node-4278575190,police,Poste police les iris,36.729137,3.333520,Alger,,true
+osm-node-4335919531,police,Sûreté urbaine أمن حضري,36.658547,3.146754,Alger,,true
+osm-node-4376672791,police,Police nationale الأمن الوطني,36.755170,3.023405,Alger,,true
+osm-node-4420917490,police,الامن الحضري بوفريزي,36.786408,3.040539,Alger,,true
+osm-node-4535978590,police,Police urbaine,36.695542,2.973978,Alger,,true
+osm-node-4553051691,police,Barage Police,36.727948,3.071439,Alger,,true
+osm-node-4566767669,police,10 eme arrondissement,36.769446,3.046851,Alger,,true
+osm-node-4734341526,police,Poste police APC,36.733678,3.086319,Alger,,true
+osm-node-4757158066,police,Sureté urbaine,36.700519,2.833725,Alger,,true
+osm-node-480042671,police,Sûreté de Daira,36.791711,3.053130,Alger,,true
+osm-node-4876870421,police,Brigade territoriale de Gandarmerie nationale,36.772806,3.261347,Alger,,true
+osm-node-4879532223,police,الأمن الحضري,36.644692,3.044452,Alger,,true
+osm-node-495958248,police,Sureté urbaine,36.740830,3.342652,Alger,,true
+osm-node-4982431268,police,الأمن الحضري,36.767989,3.224301,Alger,,true
+osm-node-5113959922,police,Sureté urbaine,36.647904,3.074194,Alger,,true
+osm-node-5145279223,police,Escadron de Sécurité Routière,36.692854,2.810389,Alger,,true
+osm-node-5206802521,police,نقطة تفتيش قهوة شرقي,36.779884,3.248882,Alger,,true
+osm-node-5206918721,police,Police aux frontières (PAF),36.698750,3.205557,Alger,,true
+osm-node-5573840226,police,قي,36.745690,3.058672,Alger,,true
+osm-node-5614257723,police,مرقد الشرطة,36.631775,2.945381,Alger,,true
+osm-node-5641635840,police,Police nationale,36.742559,3.095381,Alger,,true
+osm-node-5647478334,police,Police nationale,36.758915,2.982796,Alger,,true
+osm-node-5658773521,police,DAG-police,36.752689,3.028968,Alger,,true
+osm-node-5658773522,police,مركز التكوين التقني,36.752828,3.028033,Alger,,true
+osm-node-5806747975,police,BMPG Réghaia,36.740726,3.342623,Alger,,true
+osm-node-582818918,police,Sureté urbaine,36.802889,2.913055,Alger,,true
+osm-node-6024997010,police,Police métro,36.714260,3.098865,Alger,,true
+osm-node-6269431185,police,Police nationale,36.646988,3.003800,Alger,,true
+osm-node-6522519185,police,Police nationale,36.744612,2.997341,Alger,,true
+osm-node-6789414587,police,الأمن الحضري المرسى,36.810831,3.252285,Alger,,true
+osm-node-691082071,police,Commissariat de Dar El Beida,36.716334,3.208667,Alger,,true
+osm-node-694037766,police,Poste Police,36.780082,2.974078,Alger,,true
+osm-node-694114079,police,Poste de police,36.784301,2.964430,Alger,,true
+osm-node-7367630832,police,Gendermerie,36.651556,2.982921,Alger,,true
+osm-node-7439521314,police,مركز الشرطة,36.715988,3.119693,Alger,,true
+osm-node-759489474,police,Sureté de Daïra (14 eme ),36.742009,3.095076,Alger,,true
+osm-node-820571087,police,SREM,36.714820,3.105884,Alger,,true
+osm-node-892566758,police,6 ème Sûreté urbaine,36.767565,3.053073,Alger,,true
+osm-node-944155596,police,Sûreté Urbaine 8 Mai 1945,36.737271,3.189954,Alger,,true
+osm-node-945315378,police,Sureté Urbaine,36.708466,2.911474,Alger,,true
+osm-node-950284244,police,Sûreté Urbaine Cité Faizi,36.768491,3.241072,Alger,,true
+osm-node-975497797,police,Sureté Urbaine,36.677614,2.982149,Alger,,true
+osm-node-975519077,police,Sureté Urbaine,36.670874,2.942243,Alger,,true
+osm-node-991957169,police,Sureté urbaine,36.747473,3.040398,Alger,,true
+osm-node-992999952,police,Sureté Urbaine Saïd Hamdine,36.734507,3.034476,Alger,,true
+osm-way-1057933584,police,Police Nationale,36.695454,2.974038,Alger,,true
+osm-way-108285944,police,Sureté Urbaine Ain Naâdja,36.701078,3.073421,Alger,,true
+osm-way-1172030648,police,الأمن الحضري السبالة,36.732931,2.997191,Alger,,true
+osm-way-1173895616,police,شرطة,36.780613,3.056740,Alger,,true
+osm-way-1339875709,police,افريبول (Afripol),36.753714,3.005552,Alger,,true
+osm-way-1475036951,police,"Sûreté urbaine 18, Bouzaréah",36.787954,3.014424,Alger,,true
+osm-way-171440611,police,Unité Républicaine,36.734290,3.105265,Alger,,true
+osm-way-216695467,police,الأمن الحضري - بن عكنون,36.760579,3.013177,Alger,,true
+osm-way-217609790,police,BMPJ,36.725897,3.071792,Alger,,true
+osm-way-217692651,police,Surêté Urbaine,36.722200,3.081154,Alger,,true
+osm-way-218189281,police,Sureté urbaine,36.720841,3.114302,Alger,,true
+osm-way-222360052,police,État major de la sûreté wilaya d’Alger,36.711481,3.191281,Alger,,true
+osm-way-224286507,police,Sureté Urbaine 14,36.735194,3.178046,Alger,,true
+osm-way-228767138,police,Sureté Urbaine,36.730714,3.038591,Alger,,true
+osm-way-240077481,police,BMPJ,36.729613,3.047130,Alger,,true
+osm-way-241176590,police,Sureté Urbaine (22e),36.731451,3.122217,Alger,,true
+osm-way-241179014,police,Poste de police Bourouba,36.713644,3.113224,Alger,,true
+osm-way-241183918,police,Sûreté de Daïra El Harrach,36.722641,3.136288,Alger,,true
+osm-way-243316233,police,Ecole de Police,36.716054,3.088087,Alger,,true
+osm-way-261518551,police,Police,36.793248,3.014867,Alger,,true
+osm-way-261684021,police,5 ème,36.791952,3.053092,Alger,,true
+osm-way-261827178,police,Sureté urbaine,36.767290,3.033223,Alger,,true
+osm-way-291553525,police,Commisariat de Police Beaulieu,36.709799,3.158438,Alger,,true
+osm-way-291623828,police,Poste de police,36.689354,3.186460,Alger,,true
+osm-way-293054684,police,Motards de la police nationale,36.726776,3.166713,Alger,,true
+osm-way-296815626,police,Commissariat de Police - Ouled Fayet,36.734801,2.948216,Alger,,true
+osm-way-304250512,police,حرس بلدي Hamiz,36.731357,3.241031,Alger,,true
+osm-way-304989914,police,Police SPS,36.766497,3.014128,Alger,,true
+osm-way-306259951,police,Commissariat 05 Juillet,36.721933,3.198491,Alger,,true
+osm-way-310833914,police,Sureté Daira Bouzareah,36.786667,3.012800,Alger,,true
+osm-way-31114302,police,Sûreté urbaine 14e,36.742132,3.191706,Alger,,true
+osm-way-314858342,police,Sureté urbaine,36.706076,3.127010,Alger,,true
+osm-way-319527686,police,Sureté Urbaine Dergana,36.767399,3.256969,Alger,,true
+osm-way-321127075,police,SDT Bouzareah,36.794458,3.026333,Alger,,true
+osm-way-323802184,police,Surêté Urbaine,36.737440,3.286006,Alger,,true
+osm-way-329079999,police,SRM Bachdjerrah,36.714625,3.105199,Alger,,true
+osm-way-346567478,police,Brigade mobile de la police judiciaire Dely Ibrahim,36.750102,2.987178,Alger,,true
+osm-way-349087525,police,Sureté Urbaine,36.693438,3.079491,Alger,,true
+osm-way-349145507,police,Sureté Urbaine,36.699976,3.082282,Alger,,true
+osm-way-365986783,police,Sûreté de daïra - Draria,36.714488,3.000460,Alger,,true
+osm-way-371920384,police,BMPJ,36.722176,3.111876,Alger,,true
+osm-way-435403330,police,Sureté de Daïra,36.665839,3.089768,Alger,,true
+osm-way-435406673,police,Sureté Urbaine,36.669366,3.094220,Alger,,true
+osm-way-435777332,police,BMPJ,36.671596,2.948493,Alger,,true
+osm-way-461717173,police,8 ème,36.720747,3.127219,Alger,,true
+osm-way-484126170,police,Garde Communale,36.691327,2.982616,Alger,,true
+osm-way-503565618,police,Direction de la Sécurité Publique,36.730585,3.161908,Alger,,true
+osm-way-51245010,police,Direction des moyens généraux de la Police,36.712252,3.105227,Alger,,true
+osm-way-548333644,police,DGSN IGS,36.694750,3.164532,Alger,,true
+osm-way-613092141,police,Unité du maintien de l'ordre,36.646742,3.089858,Alger,,true
+osm-way-615990150,police,Sûreté de Daïra,36.643290,2.994945,Alger,,true
+osm-way-615995752,police,Unité du maintien de l'ordre وحدة حفظ النظام,36.622659,2.962600,Alger,,true
+osm-way-81114388,police,Sureté Urbaine Ouled Fayet,36.733462,2.950177,Alger,,true
+osm-way-82574194,police,Sureté Urbaine,36.734931,3.072034,Alger,,true
+osm-way-929633816,police,Tixeraïne Police Station,36.719563,3.032041,Alger,,true
+osm-way-96664029,police,Police Scientifique,36.765122,3.009723,Alger,,true
+osm-node-3476971729,civil_protection,Unité de Protection civile,36.533176,3.686473,Bouira,,true
+osm-node-4525190093,civil_protection,Unité de protection civile,36.406137,4.320765,Bouira,,true
+osm-node-6331263285,civil_protection,الحماية المدنية,36.382087,3.639215,Bouira,,true
+osm-way-260612311,civil_protection,Unité de protection civile,36.224582,3.821734,Bouira,,true
+osm-way-318086070,civil_protection,Unité de Protection civile,36.288244,3.680616,Bouira,,true
+osm-way-340455348,civil_protection,Unité de protection civile,36.568170,3.599753,Bouira,,true
+osm-way-349927305,civil_protection,Unité de Protection Civile,36.146067,3.699506,Bouira,,true
+osm-way-353063128,civil_protection,Unité de Protection civile,35.996495,3.754579,Bouira,,true
+osm-way-522933366,civil_protection,Unité de protection civile,36.375595,3.909896,Bouira,,true
+osm-way-549989836,civil_protection,Unité de Protection civile,36.372582,3.883332,Bouira,,true
+osm-way-550149541,civil_protection,Protection civile,36.372782,3.881567,Bouira,,true
+osm-way-562295913,civil_protection,Unité de protection civile,36.254753,4.042493,Bouira,,true
+osm-way-588801226,civil_protection,unités de la Protection Civile,36.475031,3.757689,Bouira,,true
+osm-node-3476966485,gendarmerie,Gendarmerie,36.534837,3.681324,Bouira,,true
+osm-node-4156173690,gendarmerie,Gendarmerie nationale,36.249226,4.042065,Bouira,,true
+osm-node-4745777868,gendarmerie,Gendarmerie nationale,36.329704,4.155211,Bouira,,true
+osm-node-4874483462,gendarmerie,Point de contrôle Gendarmerie,36.327886,3.972392,Bouira,,true
+osm-node-6177049510,gendarmerie,Gendarmerie Nationale,36.362761,3.898798,Bouira,,true
+osm-node-6331205385,gendarmerie,الدرك الوطني,36.384459,3.634531,Bouira,,true
+osm-way-331297903,gendarmerie,Brigade territoriale de Gendarmerie nationale,36.296070,3.683015,Bouira,,true
+osm-way-344357940,gendarmerie,Gendarmerie Nationale Axxam n iǧadarmiyen,36.384609,3.900707,Bouira,,true
+osm-way-516722648,gendarmerie,الدرك الوطني,36.296217,3.682992,Bouira,,true
+osm-way-554564118,gendarmerie,Gendarmerie Nationale,36.289088,3.918869,Bouira,,true
+osm-way-554743495,gendarmerie,Gendarmerie nationale,36.321444,4.014678,Bouira,,true
+osm-way-556031835,gendarmerie,Gendarmerie Nationale,36.395037,3.997686,Bouira,,true
+osm-way-558035520,gendarmerie,Tamsetla taɣelnawt Brigade Gendarmerie,36.439957,3.868538,Bouira,,true
+osm-way-558905671,gendarmerie,Brigade Gendarmerie,36.313251,4.070530,Bouira,,true
+osm-way-560398303,gendarmerie,Brigade de gendarmerie,36.566017,3.593498,Bouira,,true
+osm-way-566794008,gendarmerie,Gendarmerie Nationale,36.316549,4.156928,Bouira,,true
+osm-way-569455557,gendarmerie,Gendarmerie National,36.338665,3.805199,Bouira,,true
+osm-way-570510111,gendarmerie,Annexe groupement de la gendarmerie nationale,36.379078,3.877350,Bouira,,true
+osm-way-573277821,gendarmerie,Gendarmerie Nationale,36.381679,3.900314,Bouira,,true
+osm-way-589290555,gendarmerie,Brigade de Gendarmerie nationale,36.477274,3.747583,Bouira,,true
+osm-way-648565000,gendarmerie,Gendarmerie Nationale,36.361053,4.321810,Bouira,,true
+osm-way-671687578,gendarmerie,Gendarmerie nationale,36.380916,3.946265,Bouira,,true
+osm-node-4477484992,hospital,Nouveau Centre de santé (non encore achevé),36.257556,4.037025,Bouira,,true
+osm-node-5332970221,hospital,EPH LAKHDARIA,36.576562,3.601701,Bouira,,true
+osm-node-6249915362,hospital,قاعة علاج,36.235567,3.646880,Bouira,,true
+osm-node-6303025150,hospital,طبيبة عامة دحماني,36.234513,3.648724,Bouira,,true
+osm-node-6716444987,hospital,Polyclinique,35.957425,3.848768,Bouira,,true
+osm-node-7638176189,hospital,طبيب الأسنان,36.290731,3.673896,Bouira,,true
+osm-way-188924305,hospital,Hôpital Mohamed Boudiaf ⵙⵠⵉⵜⴰⵔ ⵎⵓⵀⴰⵎⴻⴷ ⴱⵓⵝⵖⴰⴼ مستشفى محمد بوضياف,36.369852,3.883904,Bouira,,true
+osm-way-253436569,hospital,Hopital,36.360446,4.321552,Bouira,,true
+osm-way-253441507,hospital,Centre de Santé,36.415325,4.341001,Bouira,,true
+osm-way-260571351,hospital,clinique de oued edhous,36.368772,3.900988,Bouira,,true
+osm-way-260601203,hospital,Centre de santé,36.220230,3.814936,Bouira,,true
+osm-way-469201625,hospital,Hôpital de Aïn Bessam,36.296634,3.675956,Bouira,,true
+osm-way-480207937,hospital,Centre de santé,36.337905,4.185755,Bouira,,true
+osm-way-550314465,hospital,Centre médical de la police,36.377057,3.887511,Bouira,,true
+osm-way-550337582,hospital,Centre de santé,36.375987,3.882749,Bouira,,true
+osm-way-551526310,hospital,Etablissement public de santé de proximité,36.381241,3.900577,Bouira,,true
+osm-way-560399388,hospital,Centre Medicale,36.566416,3.595661,Bouira,,true
+osm-way-560399389,hospital,Hoplital Lakhdaria,36.567094,3.596377,Bouira,,true
+osm-way-560399390,hospital,Hoplital Lakhdaria,36.566859,3.596060,Bouira,,true
+osm-way-561870393,hospital,Hôpital becheloul,36.312829,4.068432,Bouira,,true
+osm-way-564595560,hospital,Hadiouch Saleh Polyclinic,36.295625,3.669399,Bouira,,true
+osm-way-564595564,hospital,Polyclinique,36.295470,3.669402,Bouira,,true
+osm-way-565137244,hospital,Centre De Santé Aïn El Hadjar,36.340846,3.811309,Bouira,,true
+osm-way-783051776,hospital,Nouveau Centre de santé (non encore achevé),36.257423,4.037297,Bouira,,true
+osm-way-783898287,hospital,قاعة علاج,36.235597,3.646895,Bouira,,true
+osm-way-783898640,hospital,طبيبة عامة دحماني,36.234504,3.648864,Bouira,,true
+osm-way-783901110,hospital,Polyclinique,35.957417,3.848859,Bouira,,true
+osm-node-2593593491,police,Garde Communale,36.359802,4.324964,Bouira,,true
+osm-node-3476972894,police,Commissariat,36.533216,3.685793,Bouira,,true
+osm-node-6126597085,police,أمن الدائرة,36.289086,3.680247,Bouira,,true
+osm-node-6177049511,police,poste de police,36.366742,3.866836,Bouira,,true
+osm-node-6289887300,police,poste de police,36.392708,3.901878,Bouira,,true
+osm-way-1186820268,police,دار الشرطة,36.386773,3.635836,Bouira,,true
+osm-way-171214710,police,Sureté urbaine,36.149433,3.704556,Bouira,,true
+osm-way-254530544,police,Unité Républicaine,36.395876,3.993390,Bouira,,true
+osm-way-260601197,police,Sureté urbaine,36.221157,3.819814,Bouira,,true
+osm-way-260612310,police,Garde communale,36.221466,3.810820,Bouira,,true
+osm-way-331297904,police,Sureté urbaine,36.289867,3.670169,Bouira,,true
+osm-way-549989832,police,Commissariat de Police,36.370960,3.882718,Bouira,,true
+osm-way-550314464,police,sûreté urbaine,36.376950,3.887143,Bouira,,true
+osm-way-550696759,police,Commissariat de Police,36.376119,3.914827,Bouira,,true
+osm-way-551070487,police,Commissariat Central,36.374761,3.895521,Bouira,,true
+osm-way-551742182,police,Sureté Urbaine,36.376034,3.895676,Bouira,,true
+osm-way-551943824,police,Commissariat de police,36.372980,3.881424,Bouira,,true
+osm-way-552767510,police,Commissariat de police,36.387576,3.891393,Bouira,,true
+osm-way-553585710,police,Sureté urbaine,36.379476,3.900853,Bouira,,true
+osm-way-554738426,police,Commesariat de Police El Asnam,36.319771,4.019245,Bouira,,true
+osm-way-556813689,police,Commissariat de police,36.374817,3.900399,Bouira,,true
+osm-way-561845253,police,Sureté urbaine,36.312684,4.074038,Bouira,,true
+osm-way-587773872,police,Commissariat de Police,36.563885,3.597783,Bouira,,true
+osm-way-589333651,police,مركز الشرطة,36.495317,3.772922,Bouira,,true
+osm-way-644505889,police,Circuit automobile educatif pour enfant,36.386290,3.879743,Bouira,,true
+osm-way-659766988,police,poste de police,36.368616,3.870658,Bouira,,true
+osm-node-2508774546,civil_protection,Unité de protection civile,36.752622,3.720400,Boumerdès,,true
+osm-node-3588056280,civil_protection,Unité de Protection civile,36.766435,3.475091,Boumerdès,,true
+osm-node-4677616200,civil_protection,الحماية المدنية بودواو,36.739202,3.397399,Boumerdès,,true
+osm-node-5589121357,civil_protection,Unité de protection civile,36.913219,3.911103,Boumerdès,,true
+osm-way-1383279433,civil_protection,Protection civile Issers,36.722954,3.674601,Boumerdès,,true
+osm-way-245223226,civil_protection,Unité de protection civile,36.660712,3.331754,Boumerdès,,true
+osm-way-314611190,civil_protection,Unité de protection civile,36.725064,3.558890,Boumerdès,,true
+osm-way-353022320,civil_protection,Protection civile,36.763772,3.458269,Boumerdès,,true
+osm-node-3012942049,gendarmerie,Gendarmerie,36.595914,3.576951,Boumerdès,,true
+osm-node-3208647710,gendarmerie,Brigade de gendarmerie,36.679314,3.261528,Boumerdès,,true
+osm-node-3683503882,gendarmerie,Gendarmerie nationale,36.722664,3.499685,Boumerdès,,true
+osm-node-4414420333,gendarmerie,Gendarmerie nationale,36.716765,3.587050,Boumerdès,,true
+osm-way-243473822,gendarmerie,Gendarmerie,36.745432,3.721763,Boumerdès,,true
+osm-way-288222210,gendarmerie,Gendarmerie natianle,36.729422,3.495598,Boumerdès,,true
+osm-way-347005840,gendarmerie,Brigade de gendarmerie,36.916088,3.908914,Boumerdès,,true
+osm-way-356930399,gendarmerie,Gendarmerie nationale,36.762020,3.462289,Boumerdès,,true
+osm-way-365532125,gendarmerie,Gendarmerie nationale الدرك الوطني,36.787327,3.592843,Boumerdès,,true
+osm-way-439356747,gendarmerie,Gendarmerie nationale,36.755446,3.468142,Boumerdès,,true
+osm-way-615988799,gendarmerie,Brigade de la gendarmerie nationale,36.660430,3.329728,Boumerdès,,true
+osm-node-12803144478,hospital,Dispensaire Issers,36.721006,3.664201,Boumerdès,,true
+osm-node-2328372813,hospital,Hôpital Dellys,36.916870,3.895226,Boumerdès,,true
+osm-node-2328372835,hospital,Urgences,36.917174,3.894826,Boumerdès,,true
+osm-node-2524668150,hospital,Cabinet medical,36.689650,3.360944,Boumerdès,,true
+osm-node-4819712921,hospital,dellys,36.916497,3.895550,Boumerdès,,true
+osm-node-6001298368,hospital,dispensaire,36.843229,3.987730,Boumerdès,,true
+osm-node-6454369090,hospital,Dr LOUAHCHI Gynecologue,36.917622,3.894150,Boumerdès,,true
+osm-node-8602201718,hospital,EPSP KHEMIS EL KHACHNA,36.643171,3.319643,Boumerdès,,true
+osm-way-1176825938,hospital,مستشفى شعبة العامر,36.635858,3.693618,Boumerdès,,true
+osm-way-242898759,hospital,E.P.H Bordj Menaiel,36.744494,3.722791,Boumerdès,,true
+osm-way-244870319,hospital,Cabinet medical,36.689634,3.361006,Boumerdès,,true
+osm-way-314611182,hospital,E.P.H Thenia,36.728464,3.555231,Boumerdès,,true
+osm-way-782759372,hospital,Hôpital Dellys,36.916697,3.895159,Boumerdès,,true
+osm-way-782759890,hospital,Urgences,36.917159,3.894852,Boumerdès,,true
+osm-way-783106322,hospital,Hôpital Dellys,36.916762,3.895190,Boumerdès,,true
+osm-way-783883438,hospital,dispensaire,36.843297,3.987643,Boumerdès,,true
+osm-way-783900063,hospital,Dr LOUAHCHI Gynecologue,36.917627,3.894204,Boumerdès,,true
+osm-node-2326838591,police,Sûreté de Wilaya,36.754826,3.482009,Boumerdès,,true
+osm-node-2508732804,police,Commissariat de police,36.744584,3.720095,Boumerdès,,true
+osm-node-3683504059,police,AN,36.728221,3.618605,Boumerdès,,true
+osm-node-5873931362,police,BMPJ,36.880986,3.726280,Boumerdès,,true
+osm-node-6122819488,police,Police,36.755503,3.456224,Boumerdès,,true
+osm-node-8156562317,police,barrage fix,36.754206,3.415027,Boumerdès,,true
+osm-way-1176813751,police,Poste de Police,36.667879,3.592051,Boumerdès,,true
+osm-way-1252172691,police,Sûreté nationale,36.638629,3.690793,Boumerdès,,true
+osm-way-1507813831,police,Brigade de la Police Judiciaire,36.719760,3.674215,Boumerdès,,true
+osm-way-347005806,police,Brigade mobile de la police judiciaire,36.916783,3.910938,Boumerdès,,true
+osm-way-355197606,police,Unité d'intervention de la police,36.728383,3.393730,Boumerdès,,true
+osm-way-355459859,police,Sureté urbaine,36.729070,3.407459,Boumerdès,,true
+osm-node-6744430685,civil_protection,Protection civile,36.897155,4.146963,Tizi Ouzou,,true
+osm-way-1540772578,civil_protection,Unité Protection Civile,36.700294,4.152368,Tizi Ouzou,,true
+osm-way-231437995,civil_protection,Unité de protection civile de Bouzeguene,36.618344,4.478966,Tizi Ouzou,,true
+osm-way-287541896,civil_protection,Protection Civile,36.711507,4.075217,Tizi Ouzou,,true
+osm-way-309215823,civil_protection,Unité de Protection civile,36.885876,4.425422,Tizi Ouzou,,true
+osm-way-344335941,civil_protection,Unité de protection civile de Draa Ben Khedda,36.725467,3.969993,Tizi Ouzou,,true
+osm-way-727266621,civil_protection,Taqcelt n yisexsayen,36.737643,4.374592,Tizi Ouzou,,true
+osm-node-3703227688,gendarmerie,Gendarmerie,36.681799,3.985921,Tizi Ouzou,,true
+osm-node-3705280777,gendarmerie,Gendarmerie,36.734819,3.956184,Tizi Ouzou,,true
+osm-node-4261299490,gendarmerie,gendarmerie nationale,36.864290,4.216970,Tizi Ouzou,,true
+osm-node-4522167189,gendarmerie,Gendarmerie,36.702934,4.188195,Tizi Ouzou,,true
+osm-node-5641478323,gendarmerie,Gendarmerie nationale,36.867816,4.219883,Tizi Ouzou,,true
+osm-node-5641503022,gendarmerie,Gendarmerie nationale,36.867654,4.219582,Tizi Ouzou,,true
+osm-node-6307583585,gendarmerie,الدرك الوطني ، تيقزيرت,36.893407,4.126641,Tizi Ouzou,,true
+osm-node-6711714985,gendarmerie,Gendarmerie nationale,36.890616,4.114372,Tizi Ouzou,,true
+osm-node-6744430485,gendarmerie,Gendarmerie nationale,36.897048,4.146859,Tizi Ouzou,,true
+osm-node-7605272786,gendarmerie,Gendarmerie nationale,36.637910,3.886378,Tizi Ouzou,,true
+osm-way-309215811,gendarmerie,Brigade territoriale de la Gendarmerie nationale,36.894473,4.418819,Tizi Ouzou,,true
+osm-way-318081338,gendarmerie,Gendarmerie national,36.555084,4.084977,Tizi Ouzou,,true
+osm-way-338452278,gendarmerie,Brigade de gendarmerie,36.709891,4.045859,Tizi Ouzou,,true
+osm-way-345638234,gendarmerie,Brigade de gendarmerie nationale,36.743378,3.901820,Tizi Ouzou,,true
+osm-way-355182428,gendarmerie,Gendarmerie,36.539199,4.342414,Tizi Ouzou,,true
+osm-way-374300277,gendarmerie,Gendarmerie Sidi naamane,36.757761,3.982889,Tizi Ouzou,,true
+osm-way-423851002,gendarmerie,Iǧedeṛmiyen,36.524000,4.206365,Tizi Ouzou,,true
+osm-node-13713262540,hospital,Salle de soins Frères SEBAOUI KANTIDJA,36.617879,3.916239,Tizi Ouzou,,true
+osm-node-13713262541,hospital,salle de soins Frères SEBAOUI KANTIDJA,36.617363,3.914587,Tizi Ouzou,,true
+osm-node-1801881869,hospital,Urgences médicale,36.892095,4.126492,Tizi Ouzou,,true
+osm-node-2187606087,hospital,Centre de Soin Illilten,36.512858,4.420792,Tizi Ouzou,,true
+osm-node-3751964639,hospital,Centre de soin Afir,36.809906,4.169461,Tizi Ouzou,,true
+osm-node-4348076689,hospital,Polyclinique At wasif,36.519352,4.202684,Tizi Ouzou,,true
+osm-node-4498172790,hospital,مستوصف تالة تقانة,36.797851,4.296911,Tizi Ouzou,,true
+osm-node-4637364689,hospital,Centre d'imagerie médicale mahmoudi,36.700881,4.039308,Tizi Ouzou,,true
+osm-node-6130844701,hospital,Maternité,36.537217,3.953884,Tizi Ouzou,,true
+osm-node-6130844895,hospital,Adhkhchim,36.503600,3.917531,Tizi Ouzou,,true
+osm-node-6246886823,hospital,Hôpital de Tigzirt,36.892376,4.126497,Tizi Ouzou,,true
+osm-node-6801392586,hospital,مركز تحقين الدم,36.712697,4.038115,Tizi Ouzou,,true
+osm-way-1020562978,hospital,laboratoire belkacem,36.758796,4.313259,Tizi Ouzou,,true
+osm-way-1191943553,hospital,HOPITAL AHMED ALI AMMAR,36.570771,4.289527,Tizi Ouzou,,true
+osm-way-287904844,hospital,Hôpital Psychiatrique Fernan Hanafi,36.699070,4.114173,Tizi Ouzou,,true
+osm-way-307015652,hospital,Dispensaire,36.499093,3.937559,Tizi Ouzou,,true
+osm-way-307889649,hospital,Polyclinique de Boghni,36.538735,3.956889,Tizi Ouzou,,true
+osm-way-307889650,hospital,Sbiṭaṛ n Vuɣni,36.537613,3.954489,Tizi Ouzou,,true
+osm-way-309215808,hospital,Établissement public de santé de proximité d'Azeffoun,36.891236,4.422994,Tizi Ouzou,,true
+osm-way-319119439,hospital,Hôpital de Larbâa N'Aït Irathen,36.644663,4.199320,Tizi Ouzou,,true
+osm-way-344335938,hospital,Hôpital pour enfants cardiaques,36.727852,3.969112,Tizi Ouzou,,true
+osm-way-356961309,hospital,Hôpital Sidi Belloua Sanatorium,36.726891,4.065228,Tizi Ouzou,,true
+osm-way-370191750,hospital,Hôpital Chahids Mahmoudi,36.701181,4.054947,Tizi Ouzou,,true
+osm-way-370226259,hospital,Hôpital Nedir Mohamed,36.708579,4.054691,Tizi Ouzou,,true
+osm-way-417102329,hospital,Polyclinique de Mekla,36.685612,4.267951,Tizi Ouzou,,true
+osm-way-483051965,hospital,Hôpital Krim Belkacem,36.531834,3.830430,Tizi Ouzou,,true
+osm-way-514045216,hospital,Ammas n Tujjya d Tazmert Gerib Mulud,36.605305,4.117301,Tizi Ouzou,,true
+osm-way-622018246,hospital,Centre Anti-Cancer,36.729322,3.969841,Tizi Ouzou,,true
+osm-way-726854216,hospital,Ṣṣbiṭaṛ Meɣnem Lunes,36.759706,4.389334,Tizi Ouzou,,true
+osm-way-782758647,hospital,Centre de Soin Illilten,36.512808,4.420723,Tizi Ouzou,,true
+osm-way-782994058,hospital,Centre de soin Afir,36.809889,4.169539,Tizi Ouzou,,true
+osm-way-783039982,hospital,Etablissement hospitalier privé les Amandiers,36.702650,4.239476,Tizi Ouzou,,true
+osm-way-783085450,hospital,Centre d'imagerie médicale mahmoudi,36.700890,4.039359,Tizi Ouzou,,true
+osm-way-783895009,hospital,Adhkhchim,36.503714,3.917692,Tizi Ouzou,,true
+osm-way-783897876,hospital,Urgences médicale,36.892286,4.126627,Tizi Ouzou,,true
+osm-way-783902826,hospital,مركز تحقين الدم,36.712738,4.038228,Tizi Ouzou,,true
+osm-way-966308014,hospital,Polyclinique Ouacif,36.519443,4.202682,Tizi Ouzou,,true
+osm-node-2065645452,police,Sureté urbaine,36.713634,4.037831,Tizi Ouzou,,true
+osm-node-2065650188,police,Sureté urbaine,36.711579,4.052079,Tizi Ouzou,,true
+osm-node-2065650425,police,Commissariat,36.713936,4.051779,Tizi Ouzou,,true
+osm-node-2065658266,police,Comissariat 3eme,36.699993,4.049951,Tizi Ouzou,,true
+osm-node-2065688748,police,Sureté urbaine,36.706486,4.037349,Tizi Ouzou,,true
+osm-node-2340589841,police,Police Communale,36.665978,4.512924,Tizi Ouzou,,true
+osm-node-2432419118,police,Commissariat de Assi Youcef,36.506472,4.013772,Tizi Ouzou,,true
+osm-node-2915124018,police,Sureté de Daira,36.791518,4.065271,Tizi Ouzou,,true
+osm-node-3410301933,police,POLICE IFERHOUNENE,36.533451,4.369222,Tizi Ouzou,,true
+osm-node-3510848678,police,Commissariat de Police,36.733289,3.964059,Tizi Ouzou,,true
+osm-node-3609792793,police,Sureté urbaine,36.636786,4.202108,Tizi Ouzou,,true
+osm-node-3705280775,police,Brigade mobile de la police judiciaire,36.737181,3.947865,Tizi Ouzou,,true
+osm-node-3739168415,police,Poste de police,36.700450,4.057000,Tizi Ouzou,,true
+osm-node-4200926891,police,Tamssulta,36.617714,4.076417,Tizi Ouzou,,true
+osm-node-4226047663,police,Poste de police,36.718606,4.053510,Tizi Ouzou,,true
+osm-node-4377721090,police,Axxam ibuslisen,36.530406,4.205927,Tizi Ouzou,,true
+osm-node-4469085601,police,Police communale,36.803340,4.323349,Tizi Ouzou,,true
+osm-node-4999355021,police,Barrage Police,36.725189,4.022652,Tizi Ouzou,,true
+osm-node-5909089433,police,Police nationale,36.894587,4.125551,Tizi Ouzou,,true
+osm-node-6231485885,police,Barrage fixe,36.634078,4.381799,Tizi Ouzou,,true
+osm-node-6516171990,police,Police nationale,36.890621,4.121742,Tizi Ouzou,,true
+osm-node-6744430385,police,Police nationale,36.894742,4.121948,Tizi Ouzou,,true
+osm-node-7438787997,police,فرقة البحث و التحري,36.715816,4.056038,Tizi Ouzou,,true
+osm-way-1189653970,police,Sûreté de Daïra,36.769187,4.177057,Tizi Ouzou,,true
+osm-way-231437881,police,Sûreté de Daira de Bouzeguene,36.616171,4.477418,Tizi Ouzou,,true
+osm-way-307015657,police,Police municipale,36.499375,3.935888,Tizi Ouzou,,true
+osm-way-307889651,police,Sûerté urbaine Boghni,36.542710,3.953954,Tizi Ouzou,,true
+osm-way-309215820,police,الأمن الوطني,36.889676,4.411491,Tizi Ouzou,,true
+osm-way-339189726,police,Sureté urbaine,36.571002,4.313376,Tizi Ouzou,,true
+osm-way-388843691,police,Sureté urbaine,36.761246,4.317532,Tizi Ouzou,,true
+osm-way-482877288,police,CNS Police Boukhalfa,36.730336,4.015897,Tizi Ouzou,,true
+osm-way-727266619,police,Tamsulta taɣelnawt,36.743774,4.373037,Tizi Ouzou,,true
+osm-way-795319159,police,Poste de garde du CEM hamoutene,36.717439,4.054740,Tizi Ouzou,,true
+osm-way-829858370,police,CRS et B.R.I,36.715972,4.056140,Tizi Ouzou,,true
+osm-way-966383681,police,Taxxamt n tɛessast,36.519745,4.207977,Tizi Ouzou,,true

@@ -1,0 +1,11 @@
+id,facility_id,agency,callsign,lat,lon,phone,simulated
+unit-pc-boumerdes-1,osm-way-353022320,civil_protection,PC-BOUMERDES-1,36.763772,3.458269,,true
+unit-pc-boumerdes-2,osm-node-3588056280,civil_protection,PC-BOUMERDES-2,36.766435,3.475091,,true
+unit-pc-boudouaou-1,osm-node-4677616200,civil_protection,PC-BOUDOUAOU-1,36.739202,3.397399,,true
+unit-pc-thenia-1,osm-way-314611190,civil_protection,PC-THENIA-1,36.725064,3.558890,,true
+unit-pc-issers-1,osm-way-1383279433,civil_protection,PC-ISSERS-1,36.722954,3.674601,,true
+unit-gn-boumerdes-1,osm-way-356930399,gendarmerie,GN-BOUMERDES-1,36.762020,3.462289,,true
+unit-gn-boumerdes-2,osm-way-439356747,gendarmerie,GN-BOUMERDES-2,36.755446,3.468142,,true
+unit-gn-thenia-1,osm-node-3683503882,gendarmerie,GN-THENIA-1,36.722664,3.499685,,true
+unit-pn-boumerdes-1,osm-node-2326838591,police,PN-BOUMERDES-1,36.754826,3.482009,,true
+unit-pn-bordj-menaiel-1,osm-node-2508732804,police,PN-BORDJ-MENAIEL-1,36.744584,3.720095,,true
