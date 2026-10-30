@@ -384,3 +384,27 @@ async def test_without_a_verifier_the_candidate_is_published_as_before() -> None
     sink.publish_candidate(build_candidate(camera(), ev), "k", VerifyContext(ev, [], None))
     await sink.aclose()
     assert api.candidates[0][1].verifier.available is False
+
+
+async def test_AC_VIS_009_1_a_hanging_vllm_costs_one_budget_then_is_skipped() -> None:
+    """vLLM accepts the connection and never answers (saturated GPU, stuck tunnel): the first
+    candidate waits only the verification budget; the next ones skip the AI at once."""
+
+    async def hang(request: httpx.Request) -> httpx.Response:
+        await asyncio.sleep(60)
+        raise AssertionError("unreachable")
+
+    client = BrevVlmClient(VisionSettings(), transport=httpx.MockTransport(hang))
+    verifier = AiVerifier(client, "m", budget_s=0.3, backoff_s=30.0)
+    packets, info = synthetic_stream_for_publish()
+
+    started = time.monotonic()
+    first = await verifier.verify_event(packets, info, 15.0, TriggerType.HARD_STOP)
+    first_s = time.monotonic() - started
+    started = time.monotonic()
+    second = await verifier.verify_event(packets, info, 15.0, TriggerType.HARD_STOP)
+    second_s = time.monotonic() - started
+    await client.aclose()
+
+    assert first.available is False and first_s < 2.0
+    assert second.available is False and second_s < 0.1

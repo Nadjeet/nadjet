@@ -273,7 +273,12 @@ async def run_worker(
     vlm: BrevVlmClient | None = None
     if verifier is None and (settings.verify_candidates or settings.sweep_enabled):
         vlm = BrevVlmClient(settings)  # refuses any endpoint that is not Brev
-        verifier = AiVerifier(vlm, settings.vlm_model)
+        verifier = AiVerifier(
+            vlm,
+            settings.vlm_model,
+            budget_s=settings.vlm_budget_s,
+            backoff_s=settings.vlm_backoff_s,
+        )
         try:
             await vlm.check()
         except Exception as exc:

@@ -26,6 +26,18 @@ class VisionSettings(BaseSettings):
         description="Extra hostnames of Brev instances allowed besides loopback",
     )
     vlm_timeout_s: float = Field(default=15.0, gt=0, description="PRD FR-VIS-009 timeout")
+    vlm_budget_s: float = Field(
+        default=7.0,
+        gt=0,
+        description="Whole verification (video + call + retry) per candidate; SC-001 leaves "
+        "the AI about this much of the 10 s budget",
+    )
+    vlm_backoff_s: float = Field(
+        default=30.0,
+        ge=0,
+        description="After the AI times out or is unreachable, answer 'unavailable' at once "
+        "for this long instead of making every candidate wait (FR-VIS-009)",
+    )
     rtsp_base: str = Field(
         default="rtsp://127.0.0.1:8554",
         description="RTSP base URL; cameras are read from <base>/<camera-id>",
