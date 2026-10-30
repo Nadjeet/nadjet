@@ -18,6 +18,7 @@ from nadjet_api.incidents.ingest import CandidateConsumer
 from nadjet_api.incidents.signing import ChainSigner, generate_seed_hex
 from nadjet_api.main import create_app
 
+GRACEFUL_SHUTDOWN_S = 3
 DEFAULT_OPENAPI = Path(__file__).resolve().parents[4] / "contracts" / "openapi.json"
 
 
@@ -109,6 +110,8 @@ def main(argv: list[str] | None = None) -> int:
             host=args.host,
             port=args.port,
             reload=args.reload,
+            # Open SSE streams (GET /events) never end on their own: do not wait for them forever.
+            timeout_graceful_shutdown=GRACEFUL_SHUTDOWN_S,
         )
         return 0
     return export_openapi(args.out, check=args.check)
