@@ -55,11 +55,14 @@ async def get_facility(session: AsyncSession, facility_id: str) -> FacilityState
 # ---------------------------------------------------------------- the board
 
 _DISPATCHES = """
-SELECT d.incident_id, d.eta_s, d.distance_m, d.at,
-       d.at >= (date_trunc('day', now() AT TIME ZONE 'Africa/Algiers')
-                AT TIME ZONE 'Africa/Algiers') AS today
-FROM dispatches d
-WHERE d.hospital_id = :f AND d.status = 'dispatched'
+SELECT incident_id, eta_s, distance_m, at, today FROM (
+  SELECT d.incident_id, d.eta_s, d.distance_m, d.at, i.status,
+         d.at >= (date_trunc('day', now() AT TIME ZONE 'Africa/Algiers')
+                  AT TIME ZONE 'Africa/Algiers') AS today
+  FROM dispatches d JOIN incidents i ON i.id = d.incident_id
+  WHERE d.hospital_id = :f AND d.status = 'dispatched'
+) b
+WHERE status = ANY(:incoming) OR (status = ANY(:arrived) AND today)
 """
 _UNITS = """
 SELECT d.incident_id, u.callsign, u.agency, u.simulated
@@ -71,7 +74,11 @@ ORDER BY u.callsign
 
 async def board(session: AsyncSession, facility: FacilityState) -> HospitalBoard:
     """Incoming pre-alerts and today's arrivals for ``facility`` (FR-HSP-001)."""
-    dispatches = {r["incident_id"]: r for r in await _rows(session, _DISPATCHES, f=facility.id)}
+    # Only what the board shows: older arrivals would make it grow with every incident.
+    rows = await _rows(
+        session, _DISPATCHES, f=facility.id, incoming=INCOMING_VALUES, arrived=ARRIVED_VALUES
+    )
+    dispatches = {r["incident_id"]: r for r in rows}
     ids = list(dispatches)
     if not ids:
         return HospitalBoard(facility=facility, incoming=[], history=[])
@@ -160,6 +167,11 @@ async def set_readiness(
     Every open incident that selected this hospital gets a ``hospital_response`` event; going to
     Divert also raises the E-10 alert with the next-ranked hospital. No change, no events.
     """
+    # Lock the row: two taps at once must not raise the E-10 alert twice.
+    current = await session.scalar(
+        text("SELECT ready_state FROM facilities WHERE id = :id FOR UPDATE"), {"id": facility.id}
+    )
+    facility = facility.model_copy(update={"ready_state": current})
     if facility.ready_state == state:
         return facility, []
     await session.execute(
