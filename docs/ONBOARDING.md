@@ -39,6 +39,15 @@ make migrate
 Re-running is safe: existing usernames are skipped. Log in with `POST /auth/login`.
 `NADJET_JWT_SECRET` is optional locally but required (≥ 32 chars) in production.
 
+### Incident engine
+
+`make dev` also runs `nadjet-api consume` (Procfile.dev): it persists candidates queued by
+`POST /internal/candidates` (header `Authorization: Bearer $NADJET_INGEST_TOKEN`, plus an
+`Idempotency-Key`). Without the consumer, candidates wait in the Redis Stream and are saved when
+it restarts. Evidence files go under `NADJET_EVIDENCE_DIR`. Set `NADJET_SIGNING_KEY`
+(`uv run nadjet-api gen-signing-key`) in production; a fixed insecure key is used locally.
+Live updates: `GET /events` (Server-Sent Events, bearer token header).
+
 ### Demo videos (optional for most work)
 
 Cameras are defined in `data/cameras.yaml`. Videos are **not** in git (research licences).
