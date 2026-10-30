@@ -190,11 +190,16 @@ async def recompute_priority(session: AsyncSession, incident: Incident) -> tuple
 # ---------------------------------------------------------------- ingestion
 
 
-def incident_type(trigger: TriggerType) -> str:
-    return {
+def incident_type(trigger: TriggerType, ai_status: AiStatus | None = None) -> str:
+    """``collision`` only once the AI status is ``confirmed``; until then ``possible_incident``
+    (PRD FR-VIS-007: the AI or a rule alone never makes a collision)."""
+    fixed = {
         TriggerType.STALLED_VEHICLE: "stalled_vehicle",
         TriggerType.PEDESTRIAN_ON_ROAD: "pedestrian_on_road",
-    }.get(trigger, "crash")
+    }.get(trigger)
+    if fixed:
+        return fixed
+    return "collision" if ai_status is AiStatus.CONFIRMED else "possible_incident"
 
 
 async def _find_mergeable(session: AsyncSession, candidate: IncidentCandidate) -> uuid.UUID | None:
@@ -253,6 +258,8 @@ async def ingest_candidate(
             incident.ai_status = best_ai_status(
                 AiStatus(incident.ai_status), candidate.ai_status
             ).value
+            if incident.ai_status == AiStatus.CONFIRMED and incident.type == "possible_incident":
+                incident.type = "collision"
         if candidate.witness:
             incident.trapped_reported = incident.trapped_reported or candidate.witness.trapped
             known = incident.people_reported
@@ -297,7 +304,7 @@ async def _new_incident(
     incident = Incident(
         id=incident_id,
         short_code=pick_short_code(incident_id, taken),
-        type=incident_type(candidate.trigger),
+        type=incident_type(candidate.trigger, ai_status),
         status=status.value,
         lat=loc.lat,
         lon=loc.lon,
