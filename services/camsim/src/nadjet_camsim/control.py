@@ -17,6 +17,7 @@ from nadjet_shared.catalogue import Camera, Catalogue
 
 Runner = Callable[[list[str]], "subprocess.CompletedProcess[str]"]
 
+PKILL_NO_MATCH = 1  # pkill exit status when no process matched
 VIDEO_NAME = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._-]*\.(mp4|mkv|mov)$")
 
 
@@ -33,7 +34,11 @@ class CameraState:
 
 
 def run_subprocess(argv: list[str]) -> "subprocess.CompletedProcess[str]":
-    return subprocess.run(argv, capture_output=True, text=True, check=False)  # noqa: S603
+    try:
+        return subprocess.run(argv, capture_output=True, text=True, check=False)  # noqa: S603
+    except OSError as exc:
+        message = f"cannot run {argv[0]!r} ({exc.strerror}); is Docker installed?"
+        raise ControlError(message) from exc
 
 
 def signal_command(signal: str, cam_id: str) -> str:
@@ -96,8 +101,13 @@ class Controller:
         return response
 
     def _signal(self, signal: str, cam_id: str) -> bool:
+        """True if a publisher was signalled, False if none runs; other failures raise."""
         argv = compose_exec(self.compose_file, self.service, signal_command(signal, cam_id))
-        return self.run(argv).returncode == 0
+        result = self.run(argv)
+        if result.returncode not in (0, PKILL_NO_MATCH):
+            detail = (result.stderr or result.stdout).strip() or f"exit {result.returncode}"
+            raise ControlError(f"docker compose exec failed for {cam_id}: {detail}")
+        return result.returncode == 0
 
     def _require_signal(self, signal: str, cam_id: str) -> None:
         if not self._signal(signal, cam_id):

@@ -160,3 +160,23 @@ def test_cli_reports_control_errors(capsys: pytest.CaptureFixture[str]) -> None:
     code = main(["freeze", "nope", "--api", "http://127.0.0.1:1"], run=Recorder().run)
     assert code == 1
     assert "unknown camera" in capsys.readouterr().err
+
+
+def test_docker_failure_is_not_reported_as_missing_publisher(videos: Path) -> None:
+    recorder = Recorder(returncode=1)
+    recorder.run = lambda argv: subprocess.CompletedProcess(  # type: ignore[method-assign]
+        argv, 125, "", "Cannot connect to the Docker daemon"
+    )
+    with pytest.raises(ControlError, match="Docker daemon"):
+        recorder.controller(videos).freeze("cam-a1-pk42")
+
+
+def test_missing_docker_binary_is_a_control_error(monkeypatch: pytest.MonkeyPatch) -> None:
+    from nadjet_camsim import control
+
+    def boom(*_args: object, **_kwargs: object) -> None:
+        raise FileNotFoundError(2, "No such file or directory")
+
+    monkeypatch.setattr(control.subprocess, "run", boom)
+    with pytest.raises(ControlError, match="is Docker installed"):
+        control.run_subprocess(["docker", "ps"])
