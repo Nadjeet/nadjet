@@ -4,6 +4,8 @@ from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
+from nadjet_shared.health import CameraHealthReport
+
 CameraStatus = Literal["unknown", "online", "degraded", "offline"]
 
 
@@ -26,3 +28,21 @@ class CameraOut(BaseModel):
     status: CameraStatus
     simulated: bool
     stream: StreamUrls
+
+
+class CameraHealthAck(BaseModel):
+    status: CameraStatus
+    transition: Literal["camera_fault", "camera_recovered"] | None = Field(
+        description="Set when this report changed the camera status"
+    )
+
+
+class CameraSystemStatus(BaseModel):
+    """One row of the system page: registry status plus the latest worker report."""
+
+    id: str
+    name: str
+    status: CameraStatus
+    simulated: bool
+    health: CameraHealthReport | None = Field(description="Latest report, null if none or expired")
+    stale: bool = Field(description="No report for more than 15 s: the worker is not reporting")
