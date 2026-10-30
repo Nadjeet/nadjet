@@ -62,7 +62,9 @@ class VerifierResult(BaseModel):
         default=None, description="Probability of the 'yes' answer token (logprobs)"
     )
     t_contact: float | None = Field(
-        default=None, description="Seconds from the start of the verifier video to the contact"
+        default=None,
+        description="Contact time in seconds on the frame stamps: relative to the rule "
+        "moment for a rule candidate, to the window end for a sweep (negative = before)",
     )
     type: str | None = Field(
         default=None,

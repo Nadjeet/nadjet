@@ -1407,7 +1407,7 @@ export interface components {
             priority_raise: number;
             /**
              * T Contact
-             * @description Seconds from the start of the verifier video to the contact
+             * @description Contact time in seconds on the frame stamps: relative to the rule moment for a rule candidate, to the window end for a sweep (negative = before)
              */
             t_contact?: number | null;
             /**
