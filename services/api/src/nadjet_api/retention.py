@@ -63,11 +63,14 @@ async def purge_expired(
 async def retention_loop(app_state: object, interval_s: float, stop: asyncio.Event) -> None:
     """Background task of the API: run the purge on a schedule until ``stop`` is set."""
     while not stop.is_set():
-        with contextlib.suppress(Exception):
+        try:
             await purge_expired(
                 getattr(app_state, "session_factory"),  # noqa: B009
                 getattr(app_state, "store"),  # noqa: B009
                 getattr(app_state, "settings"),  # noqa: B009
             )
+        except Exception:
+            # Retry on the next tick, but leave a trace: a silent purge breaks FR-SEC-005.
+            log.exception("retention: purge run failed")
         with contextlib.suppress(TimeoutError):
             await asyncio.wait_for(stop.wait(), timeout=interval_s)
