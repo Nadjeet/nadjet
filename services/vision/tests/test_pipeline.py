@@ -181,3 +181,50 @@ async def test_a_crashing_worker_is_restarted_and_stop_terminates_it(
     stop.set()
     await asyncio.wait_for(task, 2)
     assert spawned[-1].terminated
+
+
+def test_dead_ffmpeg_backs_off_and_falls_back_from_nvenc(monkeypatch: pytest.MonkeyPatch) -> None:
+    """No NVENC: ffmpeg dies at once. Never respawn on every frame; retry later with libx264."""
+    import subprocess
+
+    import numpy as np
+
+    from nadjet_vision import annotate
+
+    started: list[list[str]] = []
+
+    class DeadFfmpeg:
+        def __init__(self, command: list[str], **_: object) -> None:
+            started.append(command)
+            self.returncode = 1
+
+            class Pipe:
+                def write(self, _data: bytes) -> None:
+                    raise BrokenPipeError
+
+                def flush(self) -> None: ...
+
+                def close(self) -> None: ...
+
+            self.stdin = Pipe()
+
+        def poll(self) -> int:
+            return 1
+
+        def terminate(self) -> None: ...
+
+        def wait(self, timeout: float) -> int:
+            return 1
+
+    monkeypatch.setattr(subprocess, "Popen", DeadFfmpeg)
+    now = [0.0]
+    publisher = annotate.AnnotatedPublisher("rtsp://h/x_ai", 5, "h264_nvenc", clock=lambda: now[0])
+    frame = np.zeros((36, 64, 3), dtype=np.uint8)
+    assert not publisher.write(frame)
+    for _ in range(20):  # 4 s of frames inside the 1 s back-off... no new ffmpeg
+        assert not publisher.write(frame)
+    assert len(started) == 1
+    now[0] = 1.5  # back-off elapsed: one retry, now with libx264
+    publisher.write(frame)
+    assert len(started) == 2
+    assert "libx264" in started[1]
