@@ -12,14 +12,18 @@ import uvicorn
 from redis.asyncio import Redis
 
 from nadjet_api.auth.seed import load_seed_file, seed_users
+from nadjet_api.cameras.seed import seed_cameras
 from nadjet_api.config import get_settings
 from nadjet_api.db import create_engine, create_session_factory
 from nadjet_api.incidents.ingest import CandidateConsumer
 from nadjet_api.incidents.signing import ChainSigner, generate_seed_hex
 from nadjet_api.main import create_app
+from nadjet_shared.catalogue import load_catalogue
 
 GRACEFUL_SHUTDOWN_S = 3
-DEFAULT_OPENAPI = Path(__file__).resolve().parents[4] / "contracts" / "openapi.json"
+ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_OPENAPI = ROOT / "contracts" / "openapi.json"
+DEFAULT_CAMERAS = ROOT / "data" / "cameras.yaml"
 
 
 def render_openapi() -> str:
@@ -73,6 +77,17 @@ async def run_consume() -> None:
         await engine.dispose()
 
 
+async def run_seed_cameras(path: Path) -> None:
+    catalogue = load_catalogue(path)
+    engine = create_engine(get_settings())
+    try:
+        async with create_session_factory(engine)() as session:
+            count = await seed_cameras(session, catalogue)
+    finally:
+        await engine.dispose()
+    print(f"seed-cameras: {count} camera(s) synced from {path}")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="nadjet-api")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -89,6 +104,8 @@ def main(argv: list[str] | None = None) -> int:
     seed = sub.add_parser("seed-users", help="create dev/demo users from a YAML file")
     seed.add_argument("--file", type=Path, required=True)
 
+    cameras = sub.add_parser("seed-cameras", help="sync the camera registry from the catalogue")
+    cameras.add_argument("--file", type=Path, default=DEFAULT_CAMERAS)
     sub.add_parser("consume", help="persist candidates from the Redis Stream")
     sub.add_parser("gen-signing-key", help="print a new Ed25519 seed for NADJET_SIGNING_KEY")
 
@@ -99,6 +116,9 @@ def main(argv: list[str] | None = None) -> int:
     if args.command == "consume":
         logging.basicConfig(level=logging.INFO)
         asyncio.run(run_consume())
+        return 0
+    if args.command == "seed-cameras":
+        asyncio.run(run_seed_cameras(args.file))
         return 0
     if args.command == "seed-users":
         asyncio.run(run_seed_users(args.file))

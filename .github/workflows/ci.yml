@@ -52,6 +52,12 @@ jobs:
       - name: Migrations
         working-directory: services/api
         run: uv run alembic upgrade head
+      - name: Simulated cameras (MediaMTX control API for camsim integration tests)
+        # Not `make infra-video`: it creates .env from .env.example, which tests must not read.
+        run: |
+          mkdir -p data/videos
+          uv run nadjet-camsim render
+          docker compose -f deploy/local/compose.yml --profile video up -d --wait mediamtx
       - name: Tests (unit + integration, no Brev)
         run: uv run pytest -m "not brev" --cov --cov-report=term --cov-report=xml
       - run: uv build --all-packages --out-dir dist

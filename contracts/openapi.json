@@ -93,6 +93,95 @@
         "title": "Body_upload_evidence_internal_evidence_post",
         "type": "object"
       },
+      "CameraOut": {
+        "properties": {
+          "heading_deg": {
+            "title": "Heading Deg",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "pk_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pk Km"
+          },
+          "road": {
+            "title": "Road",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "unknown",
+              "online",
+              "degraded",
+              "offline"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "stream": {
+            "$ref": "#/components/schemas/StreamUrls"
+          },
+          "wilaya": {
+            "title": "Wilaya",
+            "type": "string"
+          },
+          "zones": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "live_lanes and carriageway polygons",
+            "title": "Zones"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "lat",
+          "lon",
+          "road",
+          "pk_km",
+          "heading_deg",
+          "wilaya",
+          "zones",
+          "status",
+          "simulated",
+          "stream"
+        ],
+        "title": "CameraOut",
+        "type": "object"
+      },
       "CandidateAccepted": {
         "properties": {
           "stream_id": {
@@ -1472,6 +1561,32 @@
         "title": "StatusIn",
         "type": "object"
       },
+      "StreamUrls": {
+        "properties": {
+          "path": {
+            "description": "Video server path (MediaMTX)",
+            "title": "Path",
+            "type": "string"
+          },
+          "rtsp_url": {
+            "description": "RTSP URL for vision workers",
+            "title": "Rtsp Url",
+            "type": "string"
+          },
+          "whep_url": {
+            "description": "WebRTC WHEP URL for the browser",
+            "title": "Whep Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "rtsp_url",
+          "whep_url"
+        ],
+        "title": "StreamUrls",
+        "type": "object"
+      },
       "TokenResponse": {
         "properties": {
           "access_token": {
@@ -1832,6 +1947,93 @@
         "summary": "Me",
         "tags": [
           "auth"
+        ]
+      }
+    },
+    "/cameras": {
+      "get": {
+        "description": "All registered cameras with coordinates, zones and stream URLs.",
+        "operationId": "list_cameras_cameras_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CameraOut"
+                  },
+                  "title": "Response List Cameras Cameras Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Role"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Cameras",
+        "tags": [
+          "cameras"
+        ]
+      }
+    },
+    "/cameras/{camera_id}": {
+      "get": {
+        "operationId": "get_camera_cameras__camera_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "camera_id",
+            "required": true,
+            "schema": {
+              "title": "Camera Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CameraOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Unknown camera"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Camera",
+        "tags": [
+          "cameras"
         ]
       }
     },

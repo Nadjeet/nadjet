@@ -4,7 +4,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Literal
 
-from pydantic import Field, PostgresDsn, RedisDsn, SecretStr, model_validator
+from pydantic import Field, PostgresDsn, RedisDsn, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 MIN_JWT_SECRET_LENGTH = 32
@@ -24,6 +24,26 @@ class Settings(BaseSettings):
     redis_url: RedisDsn = Field(default=RedisDsn("redis://localhost:56379/0"))
     cors_origins: list[str] = Field(default=["http://localhost:5173"])
     readiness_timeout_s: float = Field(default=2.0, gt=0)
+    rtsp_url_template: str = Field(
+        default="rtsp://localhost:8554/{path}", description="Camera RTSP URL; {path} = stream path"
+    )
+    whep_url_template: str = Field(
+        default="http://localhost:8889/{path}/whep",
+        description="Camera WebRTC WHEP URL for the browser; {path} = stream path",
+    )
+
+    @field_validator("rtsp_url_template", "whep_url_template")
+    @classmethod
+    def _url_template_has_only_path(cls, value: str) -> str:
+        """Fail at startup, not with a 500 on every GET /cameras."""
+        try:
+            rendered = value.format(path="probe")
+        except (KeyError, IndexError, ValueError) as exc:
+            raise ValueError(f"URL template may only use {{path}}: {exc!r}") from exc
+        if "probe" not in rendered:
+            raise ValueError("URL template must contain {path}")
+        return value
+
     jwt_secret: SecretStr | None = Field(
         default=None,
         description="HS256 signing key; required (>= 32 chars) outside development/test",

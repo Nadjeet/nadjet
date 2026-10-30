@@ -44,6 +44,43 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/cameras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Cameras
+         * @description All registered cameras with coordinates, zones and stream URLs.
+         */
+        get: operations["list_cameras_cameras_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cameras/{camera_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Camera */
+        get: operations["get_camera_cameras__camera_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/events": {
         parameters: {
             query?: never;
@@ -344,6 +381,40 @@ export interface components {
             kind: "clip" | "keyframe" | "photo";
             /** Start Ts */
             start_ts?: string | null;
+        };
+        /** CameraOut */
+        CameraOut: {
+            /** Heading Deg */
+            heading_deg: number;
+            /** Id */
+            id: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Road */
+            road: string;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "unknown" | "online" | "degraded" | "offline";
+            stream: components["schemas"]["StreamUrls"];
+            /** Wilaya */
+            wilaya: string;
+            /**
+             * Zones
+             * @description live_lanes and carriageway polygons
+             */
+            zones: {
+                [key: string]: unknown;
+            } | null;
         };
         /** CandidateAccepted */
         CandidateAccepted: {
@@ -840,6 +911,24 @@ export interface components {
              */
             status: "dispatched" | "acknowledged" | "en_route" | "on_scene" | "transporting" | "at_hospital" | "closed";
         };
+        /** StreamUrls */
+        StreamUrls: {
+            /**
+             * Path
+             * @description Video server path (MediaMTX)
+             */
+            path: string;
+            /**
+             * Rtsp Url
+             * @description RTSP URL for vision workers
+             */
+            rtsp_url: string;
+            /**
+             * Whep Url
+             * @description WebRTC WHEP URL for the browser
+             */
+            whep_url: string;
+        };
         /** TokenResponse */
         TokenResponse: {
             /** Access Token */
@@ -1026,6 +1115,78 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    list_cameras_cameras_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CameraOut"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_camera_cameras__camera_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                camera_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CameraOut"];
+                };
+            };
+            /** @description Unknown camera */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

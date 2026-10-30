@@ -1,0 +1,52 @@
+{
+  "clips": [
+    {
+      "id": "demo-crash-01",
+      "role": "demo",
+      "event": "crash",
+      "source_dataset": "TAD",
+      "source_clip": null,
+      "licence": "research-only (not redistributed; see licence_url)",
+      "licence_url": "https://github.com/UnicomAI/UnicomBenchmark/tree/main/TADBench",
+      "annotation_status": "pending",
+      "impact_time_s": null,
+      "impact_region": null
+    },
+    {
+      "id": "demo-heavy-congestion-01",
+      "role": "demo",
+      "event": "heavy_congestion",
+      "source_dataset": "UCF-Crime Normal",
+      "source_clip": null,
+      "licence": "research-only (not redistributed; see licence_url)",
+      "licence_url": "https://www.crcv.ucf.edu/projects/real-world/",
+      "annotation_status": "pending",
+      "impact_time_s": null,
+      "impact_region": null
+    },
+    {
+      "id": "demo-crash-02",
+      "role": "demo",
+      "event": "crash",
+      "source_dataset": "UCF-Crime RoadAccidents",
+      "source_clip": null,
+      "licence": "research-only (not redistributed; see licence_url)",
+      "licence_url": "https://www.crcv.ucf.edu/projects/real-world/",
+      "annotation_status": "pending",
+      "impact_time_s": null,
+      "impact_region": null
+    },
+    {
+      "id": "demo-stalled-01",
+      "role": "demo",
+      "event": "stalled_vehicle",
+      "source_dataset": "TAD",
+      "source_clip": null,
+      "licence": "research-only (not redistributed; see licence_url)",
+      "licence_url": "https://github.com/UnicomAI/UnicomBenchmark/tree/main/TADBench",
+      "annotation_status": "pending",
+      "impact_time_s": null,
+      "impact_region": null
+    }
+  ]
+}
