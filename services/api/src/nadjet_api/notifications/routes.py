@@ -137,7 +137,8 @@ async def sms_inbound(
     dedupe_key = f"sms:in:{message_id}"
     if message_id and not await redis.set(dedupe_key, 1, nx=True, ex=DEDUPE_TTL_S):
         return SmsAck(status="duplicate")
-    rate_key = f"sms:rate:{payload.sender}"
+    phone = normalize_phone(payload.sender)
+    rate_key = f"sms:rate:{phone}"
     count = await redis.incr(rate_key)
     if count == 1:
         await redis.expire(rate_key, RATE_WINDOW_S)
@@ -153,7 +154,7 @@ async def sms_inbound(
         await redis.delete(dedupe_key)
         raise
     await announce(redis, result.changes)
-    await _reply(request, normalize_phone(payload.sender), result.reply)
+    await _reply(request, phone, result.reply)
     return SmsAck(status="processed")
 
 

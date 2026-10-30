@@ -457,6 +457,15 @@ async def test_messages_without_a_message_id_are_not_deduplicated_together(
     assert len(sms.sent) == 2
 
 
+async def test_the_rate_limit_counts_a_phone_however_it_is_written(
+    gw: httpx.AsyncClient,
+) -> None:
+    number = phone()
+    forms = [number, "0" + number[4:]]
+    statuses = [(await post_sms(gw, forms[i % 2], "hello")).json()["status"] for i in range(31)]
+    assert statuses[-1] == "throttled"
+
+
 async def test_a_phone_flooding_the_gateway_is_throttled(
     gw: httpx.AsyncClient, sms: FakeSms
 ) -> None:
