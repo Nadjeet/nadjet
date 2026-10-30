@@ -30,6 +30,9 @@ def path_config(video_in_container: str) -> dict[str, Any]:
     return {"runOnInit": publisher_command(video_in_container), "runOnInitRestart": True}
 
 
+FREEZE_READ_TIMEOUT = "1h"
+
+
 def render_mediamtx(
     catalogue: Catalogue, videos_dir: Path, container_videos_dir: str = CONTAINER_VIDEOS_DIR
 ) -> tuple[dict[str, Any], list[str]]:
@@ -47,6 +50,9 @@ def render_mediamtx(
         "apiAddress": ":9997",
         "rtspAddress": ":8554",
         "rtspTransports": ["tcp"],
+        # A frozen camera (SIGSTOP'd publisher, FR-CAM-004) sends nothing; with the default 10 s
+        # MediaMTX drops it and its readers, turning a freeze into an outage.
+        "readTimeout": FREEZE_READ_TIMEOUT,
         "webrtcAddress": ":8889",
         "webrtcLocalUDPAddress": ":8189",
         "webrtcLocalTCPAddress": ":8189",

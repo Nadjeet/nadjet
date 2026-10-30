@@ -89,3 +89,9 @@ def test_cli_fails_on_invalid_catalogue(tmp_path: Path) -> None:
     cams = tmp_path / "cameras.yaml"
     cams.write_text("cameras: [{id: x}]")
     assert main(["--cameras", str(cams), "render", "--out", str(tmp_path / "o.yml")]) == 1
+
+
+def test_frozen_publisher_is_not_dropped_by_the_read_timeout(tmp_path: Path) -> None:
+    """FR-CAM-004: a SIGSTOP'd publisher sends nothing; the 10 s default turned freeze into outage."""
+    config, _ = render_mediamtx(catalogue(CAMERA), tmp_path)
+    assert config["readTimeout"] == "1h"
