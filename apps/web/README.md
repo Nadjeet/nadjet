@@ -108,12 +108,14 @@ Computed with the WCAG relative-luminance formula.
 | Dark | error text on card | `#f87171` on `#002040` | 5.93:1 |
 | Dark | focus ring (UI, 3:1) | `#55a8fe` on `#002040` | 6.57:1 |
 
-Disabled controls are exempt from the contrast rule.
+Focus is shown as an opaque `--ring` ring with a 2 px gap in the background colour (`--shadow-focus`), so the ratios above hold on every control. Disabled controls are exempt from the contrast rule.
 
 ## PWA
 
 `vite-plugin-pwa` generates the manifest and a service worker that precaches the app shell
-(`/api` and the live stream are never cached). One manifest covers `/respond` and `/public`
-(`start_url: /` redirects by role or to login). Check installability in Chrome DevTools >
-Application > Manifest and Service workers, using `pnpm --filter @nadjet/web build` then
-`pnpm --filter @nadjet/web preview`. Offline queues belong to the responder and citizen issues.
+(`/api` and the live stream are never cached). The staff manifest opens `/` (redirect by role
+or to login); on public pages the shell swaps in `public/manifest-public.webmanifest`, so
+installing from `/public` opens `/public`. Updates use `registerType: "prompt"` with no prompt:
+a new version waits until every tab is closed, so nobody is reloaded mid-task. Check
+installability in Chrome DevTools > Application > Manifest and Service workers, using
+`pnpm --filter @nadjet/web build` then `pnpm --filter @nadjet/web preview`. Offline queues belong to the responder and citizen issues.

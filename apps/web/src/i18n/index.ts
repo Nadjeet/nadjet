@@ -35,6 +35,10 @@ function storedLanguage(): Language {
 function applyDocumentLanguage(language: string) {
   document.documentElement.lang = language;
   document.documentElement.dir = i18n.dir(language);
+  document.title = `${i18n.t("app.name")} — ${i18n.t("app.tagline")}`;
+  document
+    .querySelector('meta[name="description"]')
+    ?.setAttribute("content", i18n.t("app.tagline"));
 }
 
 void i18n.use(initReactI18next).init({

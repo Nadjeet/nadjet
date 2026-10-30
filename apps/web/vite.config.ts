@@ -12,8 +12,15 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: "autoUpdate",
-      includeAssets: ["favicon.svg", "logo-mark.svg", "apple-touch-icon.png"],
+      // "prompt" without a prompt UI: a new version waits until every tab is closed, so an
+      // operator or responder is never reloaded mid-task.
+      registerType: "prompt",
+      includeAssets: [
+        "favicon.svg",
+        "logo-mark.svg",
+        "apple-touch-icon.png",
+        "manifest-public.webmanifest",
+      ],
       manifest: {
         name: "Nadjet — نجاة",
         short_name: "Nadjet",
