@@ -453,3 +453,26 @@ async def test_a_progress_stream_ends_after_its_lifetime(
     ]
     assert frames[0].startswith("event: job\n")
     assert frames[-1].startswith("retry:")
+
+
+async def test_a_phone_session_may_publish_only_its_own_path_through_mediamtx_auth(
+    sandbox: tuple[FastAPI, httpx.AsyncClient],
+) -> None:
+    """FR-SEC-007: the try-it publish token works for the session's path and nothing else."""
+    _app, client = sandbox
+    live = (await client.post("/public/try/sessions")).json()
+    token = live["publish_token"]
+    assert token
+
+    def auth(action: str, path: str) -> dict[str, str]:
+        return {"action": action, "path": path, "token": token, "protocol": "webrtc"}
+
+    ok = await client.post("/internal/mediamtx-auth", json=auth("publish", live["path"]))
+    assert ok.status_code == 204
+    other = await client.post("/internal/mediamtx-auth", json=auth("publish", "cam-001"))
+    assert other.status_code == 401
+    read = await client.post("/internal/mediamtx-auth", json=auth("read", live["path"]))
+    assert read.status_code == 401
+    # Polling the session never hands the token out again.
+    state = (await client.get(f"/public/try/sessions/{live['id']}")).json()
+    assert state["publish_token"] is None

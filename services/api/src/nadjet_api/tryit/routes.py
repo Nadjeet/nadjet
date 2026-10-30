@@ -23,6 +23,7 @@ from nadjet_api.config import Settings
 from nadjet_api.db import get_session
 from nadjet_api.incidents.deps import RedisDep
 from nadjet_api.ratelimit import rate_limit
+from nadjet_api.streams.tokens import encode_stream_token
 from nadjet_api.tryit import media, service
 from nadjet_api.tryit.models import TryJob, TrySession
 from nadjet_shared.tryit import TryJobOut, TrySessionOut, TryStatus
@@ -267,7 +268,12 @@ async def create_session(
     )
     db.add(row)
     await db.commit()
-    return service.session_out(row, s)
+    out = service.session_out(row, s)
+    # MediaMTX only lets the phone publish to its own path with this token (FR-SEC-007).
+    out.publish_token = encode_stream_token(
+        str(session_id), "publish", key=s.jwt_key, ttl=timedelta(seconds=s.try_ttl_s), path=row.path
+    )
+    return out
 
 
 @router.get("/sessions/{session_id}", responses={404: {"description": "Ended"}})

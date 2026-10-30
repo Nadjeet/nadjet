@@ -4960,6 +4960,18 @@
             "title": "Path",
             "type": "string"
           },
+          "publish_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Bearer token for the WHIP publish, limited to this path (only on creation)",
+            "title": "Publish Token"
+          },
           "status": {
             "enum": [
               "active",

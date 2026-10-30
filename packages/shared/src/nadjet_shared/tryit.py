@@ -116,6 +116,10 @@ class TrySessionOut(BaseModel):
     path: str = Field(description="Video server path the phone publishes to")
     whip_url: str
     whep_url: str
+    publish_token: str | None = Field(
+        default=None,
+        description="Bearer token for the WHIP publish, limited to this path (only on creation)",
+    )
     expires_at: AwareDatetime
     events: list[SessionEvent]
 

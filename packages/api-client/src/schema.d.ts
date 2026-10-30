@@ -3219,6 +3219,11 @@ export interface components {
              */
             path: string;
             /**
+             * Publish Token
+             * @description Bearer token for the WHIP publish, limited to this path (only on creation)
+             */
+            publish_token?: string | null;
+            /**
              * Status
              * @enum {string}
              */
