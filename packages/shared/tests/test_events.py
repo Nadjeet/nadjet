@@ -4,7 +4,14 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from nadjet_shared import AiStatus, IncidentCandidate, TriggerType, VerifierResult
+from nadjet_shared import (
+    AiStatus,
+    CandidateSource,
+    GeoLocation,
+    IncidentCandidate,
+    TriggerType,
+    VerifierResult,
+)
 from nadjet_shared.export_schemas import export, main
 
 NOW = datetime(2026, 10, 30, 12, 0, tzinfo=UTC)
@@ -13,6 +20,7 @@ NOW = datetime(2026, 10, 30, 12, 0, tzinfo=UTC)
 def make_candidate(**overrides: object) -> IncidentCandidate:
     data: dict[str, object] = {
         "camera_id": "cam-a1-pk42",
+        "location": GeoLocation(lat=36.648, lon=3.329, road="A1"),
         "trigger": TriggerType.COLLISION_CANDIDATE,
         "event_time": NOW,
         "detected_at": NOW,
@@ -36,6 +44,30 @@ def test_candidate_rejects_unknown_fields() -> None:
 def test_candidate_requires_camera_id() -> None:
     with pytest.raises(ValidationError):
         make_candidate(camera_id="")
+
+
+def test_citizen_candidate_needs_no_camera_and_defaults_to_no_ai() -> None:
+    candidate = IncidentCandidate(
+        source=CandidateSource.CITIZEN,
+        location=GeoLocation(lat=36.7, lon=3.1),
+        trigger=TriggerType.CITIZEN_REPORT,
+        event_time=NOW,
+        detected_at=NOW,
+    )
+    assert candidate.verifier.available is False
+    assert candidate.ai_status is AiStatus.INSUFFICIENT_EVIDENCE
+
+
+def test_location_is_required() -> None:
+    with pytest.raises(ValidationError):
+        IncidentCandidate.model_validate(
+            {"trigger": "hard_stop", "event_time": NOW, "detected_at": NOW, "camera_id": "c"}
+        )
+
+
+def test_verifier_raise_is_at_most_one_level() -> None:
+    with pytest.raises(ValidationError):
+        VerifierResult(available=True, priority_raise=2)
 
 
 @pytest.mark.parametrize("value", [-0.1, 1.5])

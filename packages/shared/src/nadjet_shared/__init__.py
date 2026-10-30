@@ -9,16 +9,20 @@ from nadjet_shared.events import (
     AiStatus,
     CandidateSource,
     Evidence,
+    GeoLocation,
     IncidentCandidate,
     TriggerType,
     VerifierResult,
+    Witness,
 )
 
 __all__ = [
     "AiStatus",
     "CandidateSource",
     "Evidence",
+    "GeoLocation",
     "IncidentCandidate",
     "TriggerType",
     "VerifierResult",
+    "Witness",
 ]
