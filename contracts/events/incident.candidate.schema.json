@@ -11,6 +11,15 @@
       "title": "AiStatus",
       "type": "string"
     },
+    "CandidateSource": {
+      "enum": [
+        "camera",
+        "citizen",
+        "operator"
+      ],
+      "title": "CandidateSource",
+      "type": "string"
+    },
     "Evidence": {
       "additionalProperties": false,
       "properties": {
@@ -40,6 +49,66 @@
       "title": "Evidence",
       "type": "object"
     },
+    "GeoLocation": {
+      "additionalProperties": false,
+      "description": "Where the event happened (FR-INC-001).",
+      "properties": {
+        "lat": {
+          "maximum": 90,
+          "minimum": -90,
+          "title": "Lat",
+          "type": "number"
+        },
+        "lon": {
+          "maximum": 180,
+          "minimum": -180,
+          "title": "Lon",
+          "type": "number"
+        },
+        "pk_km": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Pk Km"
+        },
+        "road": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Road"
+        },
+        "wilaya": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Wilaya"
+        }
+      },
+      "required": [
+        "lat",
+        "lon"
+      ],
+      "title": "GeoLocation",
+      "type": "object"
+    },
     "TriggerType": {
       "description": "Rule triggers (PRD FR-VIS-004) plus the AI sweep (FR-VIS-015).",
       "enum": [
@@ -47,7 +116,9 @@
         "hard_stop",
         "stalled_vehicle",
         "pedestrian_on_road",
-        "ai_sweep"
+        "ai_sweep",
+        "citizen_report",
+        "operator_report"
       ],
       "title": "TriggerType",
       "type": "string"
@@ -99,6 +170,14 @@
           "default": null,
           "title": "Description Fr"
         },
+        "findings": {
+          "description": "Cited findings; a raise without one is ignored",
+          "items": {
+            "type": "string"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
         "model": {
           "anyOf": [
             {
@@ -111,6 +190,14 @@
           "default": null,
           "description": "Model id that produced the answer",
           "title": "Model"
+        },
+        "priority_raise": {
+          "default": 0,
+          "description": "Levels the verifier asks to raise priority (max 1)",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Priority Raise",
+          "type": "integer"
         },
         "yes_probability": {
           "anyOf": [
@@ -133,18 +220,53 @@
       ],
       "title": "VerifierResult",
       "type": "object"
+    },
+    "Witness": {
+      "additionalProperties": false,
+      "description": "Answers from a citizen or responder on scene (FR-CIT-006).",
+      "properties": {
+        "people_reported": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "People Reported"
+        },
+        "trapped": {
+          "default": false,
+          "title": "Trapped",
+          "type": "boolean"
+        }
+      },
+      "title": "Witness",
+      "type": "object"
     }
   },
   "additionalProperties": false,
-  "description": "Published by a vision worker for every trigger or sweep detection (FR-VIS-006).",
+  "description": "A candidate incident from a camera, a citizen or an operator (FR-VIS-006, FR-INC-001).",
   "properties": {
     "ai_status": {
-      "$ref": "#/$defs/AiStatus"
+      "$ref": "#/$defs/AiStatus",
+      "default": "insufficient_evidence"
     },
     "camera_id": {
-      "minLength": 1,
-      "title": "Camera Id",
-      "type": "string"
+      "anyOf": [
+        {
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Camera Id"
     },
     "detected_at": {
       "format": "date-time",
@@ -168,6 +290,9 @@
       ],
       "default": null
     },
+    "location": {
+      "$ref": "#/$defs/GeoLocation"
+    },
     "signals": {
       "additionalProperties": {
         "type": "number"
@@ -175,6 +300,10 @@
       "description": "Named rule signals and their measured values",
       "title": "Signals",
       "type": "object"
+    },
+    "source": {
+      "$ref": "#/$defs/CandidateSource",
+      "default": "camera"
     },
     "track_ids": {
       "items": {
@@ -188,15 +317,24 @@
     },
     "verifier": {
       "$ref": "#/$defs/VerifierResult"
+    },
+    "witness": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Witness"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
     }
   },
   "required": [
-    "camera_id",
+    "location",
     "trigger",
     "event_time",
-    "detected_at",
-    "verifier",
-    "ai_status"
+    "detected_at"
   ],
   "title": "IncidentCandidate",
   "type": "object"

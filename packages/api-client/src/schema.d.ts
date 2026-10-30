@@ -44,6 +44,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Incident Events
+         * @description Server-Sent Events: ``incident.created|updated|status_changed`` with id and version.
+         *
+         *     Clients refetch the incident on each event. A comment heartbeat is sent every 15 s.
+         */
+        get: operations["incident_events_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -58,6 +80,212 @@ export interface paths {
         get: operations["health_health_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Incidents
+         * @description Incidents ordered by priority then recency, limited to the caller's scope.
+         */
+        get: operations["list_incidents_incidents_get"];
+        put?: never;
+        /**
+         * Create Incident
+         * @description Operator creates an incident from a phone call (FR-INC-007); it starts verified.
+         */
+        post: operations["create_incident_incidents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Incident
+         * @description One incident with its event timeline, evidence and casualties.
+         */
+        get: operations["get_incident_incidents__incident_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/casualties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Casualty
+         * @description Record a triage entry; the incident priority is recomputed (FR-INC-004, FR-INC-008).
+         */
+        post: operations["add_casualty_incidents__incident_id__casualties_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/evidence/{evidence_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download Evidence
+         * @description Stream an evidence file; every view or download is audited (FR-SEC-004).
+         */
+        get: operations["download_evidence_incidents__incident_id__evidence__evidence_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/integrity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Integrity
+         * @description Recompute evidence hashes and the signed event chain (FR-SEC-003).
+         */
+        get: operations["integrity_incidents__incident_id__integrity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject Incident
+         * @description Operator rejects a candidate with a reason label (FR-INC-006).
+         */
+        post: operations["reject_incident_incidents__incident_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set Status
+         * @description Advance the response lifecycle (dispatch, acknowledge, ..., close).
+         */
+        post: operations["set_status_incidents__incident_id__status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify Incident
+         * @description Operator confirms a candidate (FR-INC-005).
+         */
+        post: operations["verify_incident_incidents__incident_id__verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Candidate
+         * @description Queue a candidate (Redis Stream). Re-sending the same ``Idempotency-Key`` is safe.
+         */
+        post: operations["post_candidate_internal_candidates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Evidence
+         * @description Store a file under the evidence root; SHA-256 is computed server-side (FR-SEC-003).
+         *
+         *     Identify the incident by ``incident_id`` or by the ``idempotency_key`` of its candidate.
+         */
+        post: operations["upload_evidence_internal_evidence_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -93,12 +321,160 @@ export interface components {
          * @enum {string}
          */
         Agency: "civil_protection" | "gendarmerie" | "police" | "samu";
+        /**
+         * AiStatus
+         * @description Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.
+         * @enum {string}
+         */
+        AiStatus: "confirmed" | "probable" | "possible" | "insufficient_evidence";
+        /** Body_upload_evidence_internal_evidence_post */
+        Body_upload_evidence_internal_evidence_post: {
+            /** End Ts */
+            end_ts?: string | null;
+            /** File */
+            file: string;
+            /** Idempotency Key */
+            idempotency_key?: string | null;
+            /** Incident Id */
+            incident_id?: string | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "clip" | "keyframe" | "photo";
+            /** Start Ts */
+            start_ts?: string | null;
+        };
+        /** CandidateAccepted */
+        CandidateAccepted: {
+            /** Stream Id */
+            stream_id: string;
+        };
+        /**
+         * CandidateSource
+         * @enum {string}
+         */
+        CandidateSource: "camera" | "citizen" | "operator";
+        /** CasualtyIn */
+        CasualtyIn: {
+            /** Avpu */
+            avpu?: ("A" | "V" | "P" | "U") | null;
+            /** Bleeding */
+            bleeding?: boolean | null;
+            /** Notes */
+            notes?: string | null;
+            /** Pulse */
+            pulse?: number | null;
+            /** Resp Rate */
+            resp_rate?: number | null;
+            /**
+             * Source
+             * @default app
+             * @enum {string}
+             */
+            source: "app" | "sms";
+            /** Spo2 */
+            spo2?: number | null;
+            triage_tag: components["schemas"]["TriageTag"];
+        };
+        /** CasualtyOut */
+        CasualtyOut: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Avpu */
+            avpu?: ("A" | "V" | "P" | "U") | null;
+            /** Bleeding */
+            bleeding?: boolean | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Notes */
+            notes?: string | null;
+            /** Pulse */
+            pulse?: number | null;
+            /** Reported By */
+            reported_by: string | null;
+            /** Resp Rate */
+            resp_rate?: number | null;
+            /**
+             * Source
+             * @default app
+             * @enum {string}
+             */
+            source: "app" | "sms";
+            /** Spo2 */
+            spo2?: number | null;
+            triage_tag: components["schemas"]["TriageTag"];
+        };
         /** DependencyStatus */
         DependencyStatus: {
             /** Detail */
             detail: string;
             /** Ok */
             ok: boolean;
+        };
+        /** Evidence */
+        Evidence: {
+            /** Clip Path */
+            clip_path: string;
+            /** Keyframe Paths */
+            keyframe_paths?: string[];
+            /**
+             * Sha256
+             * @description file path -> SHA-256
+             */
+            sha256?: {
+                [key: string]: string;
+            };
+        };
+        /** EvidenceOut */
+        EvidenceOut: {
+            /** Content Type */
+            content_type: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** End Ts */
+            end_ts: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "clip" | "keyframe" | "photo";
+            /** Sha256 */
+            sha256: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Start Ts */
+            start_ts: string | null;
+        };
+        /**
+         * GeoLocation
+         * @description Where the event happened (FR-INC-001).
+         */
+        GeoLocation: {
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Pk Km */
+            pk_km?: number | null;
+            /** Road */
+            road?: string | null;
+            /** Wilaya */
+            wilaya?: string | null;
         };
         /** HTTPValidationError */
         HTTPValidationError: {
@@ -112,12 +488,326 @@ export interface components {
             /** Version */
             version: string;
         };
+        /**
+         * IncidentCandidate
+         * @description A candidate incident from a camera, a citizen or an operator (FR-VIS-006, FR-INC-001).
+         */
+        IncidentCandidate: {
+            /** @default insufficient_evidence */
+            ai_status: components["schemas"]["AiStatus"];
+            /** Camera Id */
+            camera_id?: string | null;
+            /**
+             * Detected At
+             * Format: date-time
+             */
+            detected_at: string;
+            /**
+             * Event Time
+             * Format: date-time
+             * @description Best estimate of the impact time
+             */
+            event_time: string;
+            evidence?: components["schemas"]["Evidence"] | null;
+            location: components["schemas"]["GeoLocation"];
+            /**
+             * Signals
+             * @description Named rule signals and their measured values
+             */
+            signals?: {
+                [key: string]: number;
+            };
+            /** @default camera */
+            source: components["schemas"]["CandidateSource"];
+            /** Track Ids */
+            track_ids?: number[];
+            trigger: components["schemas"]["TriggerType"];
+            verifier?: components["schemas"]["VerifierResult"];
+            witness?: components["schemas"]["Witness"] | null;
+        };
+        /** IncidentDetail */
+        IncidentDetail: {
+            /** Ai Signals */
+            ai_signals: {
+                [key: string]: number;
+            };
+            /** Ai Status */
+            ai_status: string | null;
+            /** Camera Id */
+            camera_id: string | null;
+            /** Casualties */
+            casualties: components["schemas"]["CasualtyOut"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Detected At
+             * Format: date-time
+             */
+            detected_at: string;
+            /**
+             * Event Time
+             * Format: date-time
+             */
+            event_time: string;
+            /** Events */
+            events: components["schemas"]["IncidentEventOut"][];
+            /** Evidence */
+            evidence: components["schemas"]["EvidenceOut"][];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Mass Casualty */
+            mass_casualty: boolean;
+            /** Merged Into */
+            merged_into: string | null;
+            /** Needs Extrication */
+            needs_extrication: boolean;
+            /** People Reported */
+            people_reported: number | null;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Priority */
+            priority: number;
+            /** Priority Reasons */
+            priority_reasons: components["schemas"]["PriorityReason"][];
+            /** Quality Flags */
+            quality_flags: string[];
+            reject_reason: components["schemas"]["RejectReason"] | null;
+            /** Report Count */
+            report_count: number;
+            /** Road */
+            road: string | null;
+            /** Short Code */
+            short_code: string;
+            /** Source */
+            source: string;
+            status: components["schemas"]["IncidentStatus"];
+            /** To Assess */
+            to_assess: boolean;
+            /** Trapped Reported */
+            trapped_reported: boolean;
+            /** Type */
+            type: string;
+            verifier_result: components["schemas"]["VerifierResult"];
+            /** Version */
+            version: number;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** IncidentEventOut */
+        IncidentEventOut: {
+            /** Actor Id */
+            actor_id: string | null;
+            /** Hash */
+            hash: string;
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+        };
+        /** IncidentList */
+        IncidentList: {
+            /** Items */
+            items: components["schemas"]["IncidentOut"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** IncidentOut */
+        IncidentOut: {
+            /** Ai Signals */
+            ai_signals: {
+                [key: string]: number;
+            };
+            /** Ai Status */
+            ai_status: string | null;
+            /** Camera Id */
+            camera_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Detected At
+             * Format: date-time
+             */
+            detected_at: string;
+            /**
+             * Event Time
+             * Format: date-time
+             */
+            event_time: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Mass Casualty */
+            mass_casualty: boolean;
+            /** Merged Into */
+            merged_into: string | null;
+            /** Needs Extrication */
+            needs_extrication: boolean;
+            /** People Reported */
+            people_reported: number | null;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Priority */
+            priority: number;
+            /** Priority Reasons */
+            priority_reasons: components["schemas"]["PriorityReason"][];
+            /** Quality Flags */
+            quality_flags: string[];
+            reject_reason: components["schemas"]["RejectReason"] | null;
+            /** Report Count */
+            report_count: number;
+            /** Road */
+            road: string | null;
+            /** Short Code */
+            short_code: string;
+            /** Source */
+            source: string;
+            status: components["schemas"]["IncidentStatus"];
+            /** To Assess */
+            to_assess: boolean;
+            /** Trapped Reported */
+            trapped_reported: boolean;
+            /** Type */
+            type: string;
+            verifier_result: components["schemas"]["VerifierResult"];
+            /** Version */
+            version: number;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /**
+         * IncidentStatus
+         * @enum {string}
+         */
+        IncidentStatus: "candidate" | "verified" | "rejected" | "merged" | "dispatched" | "acknowledged" | "en_route" | "on_scene" | "transporting" | "at_hospital" | "closed";
+        /** IntegrityFailureOut */
+        IntegrityFailureOut: {
+            /** Detail */
+            detail: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "event" | "signature" | "file";
+            /** Ref */
+            ref: string;
+        };
+        /** IntegrityOut */
+        IntegrityOut: {
+            /** Events Checked */
+            events_checked: number;
+            /** Failures */
+            failures: components["schemas"]["IntegrityFailureOut"][];
+            /** Files Checked */
+            files_checked: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "valid" | "invalid";
+        };
         /** LoginRequest */
         LoginRequest: {
             /** Password */
             password: string;
             /** Username */
             username: string;
+        };
+        /**
+         * ManualIncidentIn
+         * @description Operator-created incident from a phone call (FR-INC-007).
+         */
+        ManualIncidentIn: {
+            /**
+             * Bus Involved
+             * @default false
+             */
+            bus_involved: boolean;
+            /**
+             * Event Time
+             * @description Defaults to now
+             */
+            event_time?: string | null;
+            /**
+             * Flames
+             * @default false
+             */
+            flames: boolean;
+            location: components["schemas"]["GeoLocation"];
+            /**
+             * Overturned
+             * @default false
+             */
+            overturned: boolean;
+            /** People Reported */
+            people_reported?: number | null;
+            /**
+             * Person On Road
+             * @default false
+             */
+            person_on_road: boolean;
+            /**
+             * Smoke
+             * @default false
+             */
+            smoke: boolean;
+            /**
+             * Stopped In Lane
+             * @default false
+             */
+            stopped_in_lane: boolean;
+            /**
+             * Trapped
+             * @default false
+             */
+            trapped: boolean;
+            /** Vehicle Count */
+            vehicle_count?: number | null;
+        };
+        /** PriorityReason */
+        PriorityReason: {
+            /** Detail */
+            detail: string;
+            /** Level */
+            level: number;
+            /** Rule */
+            rule: string;
+            /**
+             * Source
+             * @description Rule name, model id or 'triage' (FR-VIS-021)
+             */
+            source: string;
         };
         /** ReadinessResponse */
         ReadinessResponse: {
@@ -128,11 +818,28 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** RejectIn */
+        RejectIn: {
+            reason: components["schemas"]["RejectReason"];
+        };
+        /**
+         * RejectReason
+         * @enum {string}
+         */
+        RejectReason: "false_positive" | "duplicate" | "not_emergency" | "other";
         /**
          * Role
          * @enum {string}
          */
         Role: "operator" | "supervisor" | "responder" | "hospital" | "auditor" | "admin";
+        /** StatusIn */
+        StatusIn: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "dispatched" | "acknowledged" | "en_route" | "on_scene" | "transporting" | "at_hospital" | "closed";
+        };
         /** TokenResponse */
         TokenResponse: {
             /** Access Token */
@@ -150,6 +857,17 @@ export interface components {
             token_type: "bearer";
             user: components["schemas"]["UserOut"];
         };
+        /**
+         * TriageTag
+         * @enum {string}
+         */
+        TriageTag: "red" | "yellow" | "green" | "black";
+        /**
+         * TriggerType
+         * @description Rule triggers (PRD FR-VIS-004) plus the AI sweep (FR-VIS-015).
+         * @enum {string}
+         */
+        TriggerType: "collision_candidate" | "hard_stop" | "stalled_vehicle" | "pedestrian_on_road" | "ai_sweep" | "citizen_report" | "operator_report";
         /** UserOut */
         UserOut: {
             agency: components["schemas"]["Agency"] | null;
@@ -180,6 +898,60 @@ export interface components {
             msg: string;
             /** Error Type */
             type: string;
+        };
+        /**
+         * VerifierResult
+         * @description Outcome of one call to the AI verifier (or of a failed call).
+         */
+        VerifierResult: {
+            /**
+             * Available
+             * @description False when the verifier timed out or was unreachable
+             */
+            available: boolean;
+            /**
+             * Collision Visible
+             * @description Verifier verdict
+             */
+            collision_visible?: string | null;
+            /** Description Ar */
+            description_ar?: string | null;
+            /** Description Fr */
+            description_fr?: string | null;
+            /**
+             * Findings
+             * @description Cited findings; a raise without one is ignored
+             */
+            findings?: string[];
+            /**
+             * Model
+             * @description Model id that produced the answer
+             */
+            model?: string | null;
+            /**
+             * Priority Raise
+             * @description Levels the verifier asks to raise priority (max 1)
+             * @default 0
+             */
+            priority_raise: number;
+            /**
+             * Yes Probability
+             * @description Probability of the 'yes' answer token (logprobs)
+             */
+            yes_probability?: number | null;
+        };
+        /**
+         * Witness
+         * @description Answers from a citizen or responder on scene (FR-CIT-006).
+         */
+        Witness: {
+            /** People Reported */
+            people_reported?: number | null;
+            /**
+             * Trapped
+             * @default false
+             */
+            trapped: boolean;
         };
     };
     responses: never;
@@ -257,6 +1029,24 @@ export interface operations {
             };
         };
     };
+    incident_events_events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     health_health_get: {
         parameters: {
             query?: never;
@@ -273,6 +1063,460 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    list_incidents_incidents_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["IncidentStatus"] | null;
+                priority?: number | null;
+                source?: components["schemas"]["CandidateSource"] | null;
+                wilaya?: string | null;
+                to_assess?: boolean | null;
+                open_only?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_incident_incidents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualIncidentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_incident_incidents__incident_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentDetail"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_casualty_incidents__incident_id__casualties_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CasualtyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Incident is closed */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_evidence_incidents__incident_id__evidence__evidence_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+                evidence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    integrity_incidents__incident_id__integrity_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrityOut"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_incident_incidents__incident_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Illegal transition */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_status_incidents__incident_id__status_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatusIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Illegal transition */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_incident_incidents__incident_id__verify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Illegal transition */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_candidate_internal_candidates_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "idempotency-key": string;
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IncidentCandidate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateAccepted"];
+                };
+            };
+            /** @description Invalid service token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_evidence_internal_evidence_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_evidence_internal_evidence_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceOut"];
+                };
+            };
+            /** @description Unknown incident */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Candidate not persisted yet, retry */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description File too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unsupported media type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

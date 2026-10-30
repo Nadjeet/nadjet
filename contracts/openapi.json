@@ -11,6 +11,335 @@
         "title": "Agency",
         "type": "string"
       },
+      "AiStatus": {
+        "description": "Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.",
+        "enum": [
+          "confirmed",
+          "probable",
+          "possible",
+          "insufficient_evidence"
+        ],
+        "title": "AiStatus",
+        "type": "string"
+      },
+      "Body_upload_evidence_internal_evidence_post": {
+        "properties": {
+          "end_ts": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Ts"
+          },
+          "file": {
+            "contentMediaType": "application/octet-stream",
+            "title": "File",
+            "type": "string"
+          },
+          "idempotency_key": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Idempotency Key"
+          },
+          "incident_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Incident Id"
+          },
+          "kind": {
+            "enum": [
+              "clip",
+              "keyframe",
+              "photo"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "start_ts": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Ts"
+          }
+        },
+        "required": [
+          "file",
+          "kind"
+        ],
+        "title": "Body_upload_evidence_internal_evidence_post",
+        "type": "object"
+      },
+      "CandidateAccepted": {
+        "properties": {
+          "stream_id": {
+            "title": "Stream Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stream_id"
+        ],
+        "title": "CandidateAccepted",
+        "type": "object"
+      },
+      "CandidateSource": {
+        "enum": [
+          "camera",
+          "citizen",
+          "operator"
+        ],
+        "title": "CandidateSource",
+        "type": "string"
+      },
+      "CasualtyIn": {
+        "properties": {
+          "avpu": {
+            "anyOf": [
+              {
+                "enum": [
+                  "A",
+                  "V",
+                  "P",
+                  "U"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avpu"
+          },
+          "bleeding": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bleeding"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "pulse": {
+            "anyOf": [
+              {
+                "maximum": 300.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pulse"
+          },
+          "resp_rate": {
+            "anyOf": [
+              {
+                "maximum": 120.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resp Rate"
+          },
+          "source": {
+            "default": "app",
+            "enum": [
+              "app",
+              "sms"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "spo2": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spo2"
+          },
+          "triage_tag": {
+            "$ref": "#/components/schemas/TriageTag"
+          }
+        },
+        "required": [
+          "triage_tag"
+        ],
+        "title": "CasualtyIn",
+        "type": "object"
+      },
+      "CasualtyOut": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "avpu": {
+            "anyOf": [
+              {
+                "enum": [
+                  "A",
+                  "V",
+                  "P",
+                  "U"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avpu"
+          },
+          "bleeding": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bleeding"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "pulse": {
+            "anyOf": [
+              {
+                "maximum": 300.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pulse"
+          },
+          "reported_by": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reported By"
+          },
+          "resp_rate": {
+            "anyOf": [
+              {
+                "maximum": 120.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resp Rate"
+          },
+          "source": {
+            "default": "app",
+            "enum": [
+              "app",
+              "sms"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "spo2": {
+            "anyOf": [
+              {
+                "maximum": 100.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spo2"
+          },
+          "triage_tag": {
+            "$ref": "#/components/schemas/TriageTag"
+          }
+        },
+        "required": [
+          "triage_tag",
+          "id",
+          "reported_by",
+          "at"
+        ],
+        "title": "CasualtyOut",
+        "type": "object"
+      },
       "DependencyStatus": {
         "properties": {
           "detail": {
@@ -27,6 +356,163 @@
           "detail"
         ],
         "title": "DependencyStatus",
+        "type": "object"
+      },
+      "Evidence": {
+        "additionalProperties": false,
+        "properties": {
+          "clip_path": {
+            "title": "Clip Path",
+            "type": "string"
+          },
+          "keyframe_paths": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Keyframe Paths",
+            "type": "array"
+          },
+          "sha256": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "file path -> SHA-256",
+            "title": "Sha256",
+            "type": "object"
+          }
+        },
+        "required": [
+          "clip_path"
+        ],
+        "title": "Evidence",
+        "type": "object"
+      },
+      "EvidenceOut": {
+        "properties": {
+          "content_type": {
+            "title": "Content Type",
+            "type": "string"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "end_ts": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Ts"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "clip",
+              "keyframe",
+              "photo"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "sha256": {
+            "title": "Sha256",
+            "type": "string"
+          },
+          "size_bytes": {
+            "title": "Size Bytes",
+            "type": "integer"
+          },
+          "start_ts": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Start Ts"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "content_type",
+          "size_bytes",
+          "sha256",
+          "start_ts",
+          "end_ts",
+          "created_at"
+        ],
+        "title": "EvidenceOut",
+        "type": "object"
+      },
+      "GeoLocation": {
+        "additionalProperties": false,
+        "description": "Where the event happened (FR-INC-001).",
+        "properties": {
+          "lat": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          },
+          "pk_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pk Km"
+          },
+          "road": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Road"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "GeoLocation",
         "type": "object"
       },
       "HTTPValidationError": {
@@ -60,6 +546,718 @@
         "title": "HealthResponse",
         "type": "object"
       },
+      "IncidentCandidate": {
+        "additionalProperties": false,
+        "description": "A candidate incident from a camera, a citizen or an operator (FR-VIS-006, FR-INC-001).",
+        "properties": {
+          "ai_status": {
+            "$ref": "#/components/schemas/AiStatus",
+            "default": "insufficient_evidence"
+          },
+          "camera_id": {
+            "anyOf": [
+              {
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Id"
+          },
+          "detected_at": {
+            "format": "date-time",
+            "title": "Detected At",
+            "type": "string"
+          },
+          "event_time": {
+            "description": "Best estimate of the impact time",
+            "format": "date-time",
+            "title": "Event Time",
+            "type": "string"
+          },
+          "evidence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Evidence"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "location": {
+            "$ref": "#/components/schemas/GeoLocation"
+          },
+          "signals": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "description": "Named rule signals and their measured values",
+            "title": "Signals",
+            "type": "object"
+          },
+          "source": {
+            "$ref": "#/components/schemas/CandidateSource",
+            "default": "camera"
+          },
+          "track_ids": {
+            "items": {
+              "type": "integer"
+            },
+            "title": "Track Ids",
+            "type": "array"
+          },
+          "trigger": {
+            "$ref": "#/components/schemas/TriggerType"
+          },
+          "verifier": {
+            "$ref": "#/components/schemas/VerifierResult"
+          },
+          "witness": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Witness"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "location",
+          "trigger",
+          "event_time",
+          "detected_at"
+        ],
+        "title": "IncidentCandidate",
+        "type": "object"
+      },
+      "IncidentDetail": {
+        "properties": {
+          "ai_signals": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Ai Signals",
+            "type": "object"
+          },
+          "ai_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Status"
+          },
+          "camera_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Id"
+          },
+          "casualties": {
+            "items": {
+              "$ref": "#/components/schemas/CasualtyOut"
+            },
+            "title": "Casualties",
+            "type": "array"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "detected_at": {
+            "format": "date-time",
+            "title": "Detected At",
+            "type": "string"
+          },
+          "event_time": {
+            "format": "date-time",
+            "title": "Event Time",
+            "type": "string"
+          },
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/IncidentEventOut"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "evidence": {
+            "items": {
+              "$ref": "#/components/schemas/EvidenceOut"
+            },
+            "title": "Evidence",
+            "type": "array"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "mass_casualty": {
+            "title": "Mass Casualty",
+            "type": "boolean"
+          },
+          "merged_into": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merged Into"
+          },
+          "needs_extrication": {
+            "title": "Needs Extrication",
+            "type": "boolean"
+          },
+          "people_reported": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "People Reported"
+          },
+          "pk_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pk Km"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "integer"
+          },
+          "priority_reasons": {
+            "items": {
+              "$ref": "#/components/schemas/PriorityReason"
+            },
+            "title": "Priority Reasons",
+            "type": "array"
+          },
+          "quality_flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Quality Flags",
+            "type": "array"
+          },
+          "reject_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RejectReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "report_count": {
+            "title": "Report Count",
+            "type": "integer"
+          },
+          "road": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Road"
+          },
+          "short_code": {
+            "title": "Short Code",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/IncidentStatus"
+          },
+          "to_assess": {
+            "title": "To Assess",
+            "type": "boolean"
+          },
+          "trapped_reported": {
+            "title": "Trapped Reported",
+            "type": "boolean"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "verifier_result": {
+            "$ref": "#/components/schemas/VerifierResult"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "required": [
+          "id",
+          "short_code",
+          "type",
+          "status",
+          "priority",
+          "priority_reasons",
+          "to_assess",
+          "mass_casualty",
+          "needs_extrication",
+          "lat",
+          "lon",
+          "road",
+          "pk_km",
+          "wilaya",
+          "source",
+          "camera_id",
+          "event_time",
+          "detected_at",
+          "ai_status",
+          "ai_signals",
+          "verifier_result",
+          "quality_flags",
+          "people_reported",
+          "trapped_reported",
+          "report_count",
+          "reject_reason",
+          "merged_into",
+          "version",
+          "created_at",
+          "events",
+          "evidence",
+          "casualties"
+        ],
+        "title": "IncidentDetail",
+        "type": "object"
+      },
+      "IncidentEventOut": {
+        "properties": {
+          "actor_id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Actor Id"
+          },
+          "hash": {
+            "title": "Hash",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "integer"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "payload": {
+            "additionalProperties": true,
+            "title": "Payload",
+            "type": "object"
+          },
+          "ts": {
+            "format": "date-time",
+            "title": "Ts",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "actor_id",
+          "payload",
+          "ts",
+          "hash"
+        ],
+        "title": "IncidentEventOut",
+        "type": "object"
+      },
+      "IncidentList": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/IncidentOut"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "limit": {
+            "title": "Limit",
+            "type": "integer"
+          },
+          "offset": {
+            "title": "Offset",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "limit",
+          "offset"
+        ],
+        "title": "IncidentList",
+        "type": "object"
+      },
+      "IncidentOut": {
+        "properties": {
+          "ai_signals": {
+            "additionalProperties": {
+              "type": "number"
+            },
+            "title": "Ai Signals",
+            "type": "object"
+          },
+          "ai_status": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ai Status"
+          },
+          "camera_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Camera Id"
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "detected_at": {
+            "format": "date-time",
+            "title": "Detected At",
+            "type": "string"
+          },
+          "event_time": {
+            "format": "date-time",
+            "title": "Event Time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "mass_casualty": {
+            "title": "Mass Casualty",
+            "type": "boolean"
+          },
+          "merged_into": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Merged Into"
+          },
+          "needs_extrication": {
+            "title": "Needs Extrication",
+            "type": "boolean"
+          },
+          "people_reported": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "People Reported"
+          },
+          "pk_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pk Km"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "integer"
+          },
+          "priority_reasons": {
+            "items": {
+              "$ref": "#/components/schemas/PriorityReason"
+            },
+            "title": "Priority Reasons",
+            "type": "array"
+          },
+          "quality_flags": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Quality Flags",
+            "type": "array"
+          },
+          "reject_reason": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RejectReason"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "report_count": {
+            "title": "Report Count",
+            "type": "integer"
+          },
+          "road": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Road"
+          },
+          "short_code": {
+            "title": "Short Code",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/IncidentStatus"
+          },
+          "to_assess": {
+            "title": "To Assess",
+            "type": "boolean"
+          },
+          "trapped_reported": {
+            "title": "Trapped Reported",
+            "type": "boolean"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "verifier_result": {
+            "$ref": "#/components/schemas/VerifierResult"
+          },
+          "version": {
+            "title": "Version",
+            "type": "integer"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "required": [
+          "id",
+          "short_code",
+          "type",
+          "status",
+          "priority",
+          "priority_reasons",
+          "to_assess",
+          "mass_casualty",
+          "needs_extrication",
+          "lat",
+          "lon",
+          "road",
+          "pk_km",
+          "wilaya",
+          "source",
+          "camera_id",
+          "event_time",
+          "detected_at",
+          "ai_status",
+          "ai_signals",
+          "verifier_result",
+          "quality_flags",
+          "people_reported",
+          "trapped_reported",
+          "report_count",
+          "reject_reason",
+          "merged_into",
+          "version",
+          "created_at"
+        ],
+        "title": "IncidentOut",
+        "type": "object"
+      },
+      "IncidentStatus": {
+        "enum": [
+          "candidate",
+          "verified",
+          "rejected",
+          "merged",
+          "dispatched",
+          "acknowledged",
+          "en_route",
+          "on_scene",
+          "transporting",
+          "at_hospital",
+          "closed"
+        ],
+        "title": "IncidentStatus",
+        "type": "string"
+      },
+      "IntegrityFailureOut": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "event",
+              "signature",
+              "file"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "ref": {
+            "title": "Ref",
+            "type": "string"
+          }
+        },
+        "required": [
+          "kind",
+          "ref",
+          "detail"
+        ],
+        "title": "IntegrityFailureOut",
+        "type": "object"
+      },
+      "IntegrityOut": {
+        "properties": {
+          "events_checked": {
+            "title": "Events Checked",
+            "type": "integer"
+          },
+          "failures": {
+            "items": {
+              "$ref": "#/components/schemas/IntegrityFailureOut"
+            },
+            "title": "Failures",
+            "type": "array"
+          },
+          "files_checked": {
+            "title": "Files Checked",
+            "type": "integer"
+          },
+          "status": {
+            "enum": [
+              "valid",
+              "invalid"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "events_checked",
+          "files_checked",
+          "failures"
+        ],
+        "title": "IntegrityOut",
+        "type": "object"
+      },
       "LoginRequest": {
         "properties": {
           "password": {
@@ -80,6 +1278,121 @@
           "password"
         ],
         "title": "LoginRequest",
+        "type": "object"
+      },
+      "ManualIncidentIn": {
+        "description": "Operator-created incident from a phone call (FR-INC-007).",
+        "properties": {
+          "bus_involved": {
+            "default": false,
+            "title": "Bus Involved",
+            "type": "boolean"
+          },
+          "event_time": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Defaults to now",
+            "title": "Event Time"
+          },
+          "flames": {
+            "default": false,
+            "title": "Flames",
+            "type": "boolean"
+          },
+          "location": {
+            "$ref": "#/components/schemas/GeoLocation"
+          },
+          "overturned": {
+            "default": false,
+            "title": "Overturned",
+            "type": "boolean"
+          },
+          "people_reported": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "People Reported"
+          },
+          "person_on_road": {
+            "default": false,
+            "title": "Person On Road",
+            "type": "boolean"
+          },
+          "smoke": {
+            "default": false,
+            "title": "Smoke",
+            "type": "boolean"
+          },
+          "stopped_in_lane": {
+            "default": false,
+            "title": "Stopped In Lane",
+            "type": "boolean"
+          },
+          "trapped": {
+            "default": false,
+            "title": "Trapped",
+            "type": "boolean"
+          },
+          "vehicle_count": {
+            "anyOf": [
+              {
+                "maximum": 50.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicle Count"
+          }
+        },
+        "required": [
+          "location"
+        ],
+        "title": "ManualIncidentIn",
+        "type": "object"
+      },
+      "PriorityReason": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "level": {
+            "title": "Level",
+            "type": "integer"
+          },
+          "rule": {
+            "title": "Rule",
+            "type": "string"
+          },
+          "source": {
+            "description": "Rule name, model id or 'triage' (FR-VIS-021)",
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule",
+          "level",
+          "detail",
+          "source"
+        ],
+        "title": "PriorityReason",
         "type": "object"
       },
       "ReadinessResponse": {
@@ -103,6 +1416,28 @@
         "title": "ReadinessResponse",
         "type": "object"
       },
+      "RejectIn": {
+        "properties": {
+          "reason": {
+            "$ref": "#/components/schemas/RejectReason"
+          }
+        },
+        "required": [
+          "reason"
+        ],
+        "title": "RejectIn",
+        "type": "object"
+      },
+      "RejectReason": {
+        "enum": [
+          "false_positive",
+          "duplicate",
+          "not_emergency",
+          "other"
+        ],
+        "title": "RejectReason",
+        "type": "string"
+      },
       "Role": {
         "enum": [
           "operator",
@@ -114,6 +1449,28 @@
         ],
         "title": "Role",
         "type": "string"
+      },
+      "StatusIn": {
+        "properties": {
+          "status": {
+            "enum": [
+              "dispatched",
+              "acknowledged",
+              "en_route",
+              "on_scene",
+              "transporting",
+              "at_hospital",
+              "closed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "StatusIn",
+        "type": "object"
       },
       "TokenResponse": {
         "properties": {
@@ -143,6 +1500,30 @@
         ],
         "title": "TokenResponse",
         "type": "object"
+      },
+      "TriageTag": {
+        "enum": [
+          "red",
+          "yellow",
+          "green",
+          "black"
+        ],
+        "title": "TriageTag",
+        "type": "string"
+      },
+      "TriggerType": {
+        "description": "Rule triggers (PRD FR-VIS-004) plus the AI sweep (FR-VIS-015).",
+        "enum": [
+          "collision_candidate",
+          "hard_stop",
+          "stalled_vehicle",
+          "pedestrian_on_road",
+          "ai_sweep",
+          "citizen_report",
+          "operator_report"
+        ],
+        "title": "TriggerType",
+        "type": "string"
       },
       "UserOut": {
         "properties": {
@@ -246,6 +1627,124 @@
         ],
         "title": "ValidationError",
         "type": "object"
+      },
+      "VerifierResult": {
+        "additionalProperties": false,
+        "description": "Outcome of one call to the AI verifier (or of a failed call).",
+        "properties": {
+          "available": {
+            "description": "False when the verifier timed out or was unreachable",
+            "title": "Available",
+            "type": "boolean"
+          },
+          "collision_visible": {
+            "anyOf": [
+              {
+                "pattern": "^(yes|no|cannot_judge)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Verifier verdict",
+            "title": "Collision Visible"
+          },
+          "description_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Ar"
+          },
+          "description_fr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Fr"
+          },
+          "findings": {
+            "description": "Cited findings; a raise without one is ignored",
+            "items": {
+              "type": "string"
+            },
+            "title": "Findings",
+            "type": "array"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Model id that produced the answer",
+            "title": "Model"
+          },
+          "priority_raise": {
+            "default": 0,
+            "description": "Levels the verifier asks to raise priority (max 1)",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Priority Raise",
+            "type": "integer"
+          },
+          "yes_probability": {
+            "anyOf": [
+              {
+                "maximum": 1.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Probability of the 'yes' answer token (logprobs)",
+            "title": "Yes Probability"
+          }
+        },
+        "required": [
+          "available"
+        ],
+        "title": "VerifierResult",
+        "type": "object"
+      },
+      "Witness": {
+        "additionalProperties": false,
+        "description": "Answers from a citizen or responder on scene (FR-CIT-006).",
+        "properties": {
+          "people_reported": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "People Reported"
+          },
+          "trapped": {
+            "default": false,
+            "title": "Trapped",
+            "type": "boolean"
+          }
+        },
+        "title": "Witness",
+        "type": "object"
       }
     },
     "securitySchemes": {
@@ -336,6 +1835,26 @@
         ]
       }
     },
+    "/events": {
+      "get": {
+        "description": "Server-Sent Events: ``incident.created|updated|status_changed`` with id and version.\n\nClients refetch the incident on each event. A comment heartbeat is sent every 15 s.",
+        "operationId": "incident_events_events_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Incident Events",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
     "/health": {
       "get": {
         "description": "Liveness: the process is running.",
@@ -355,6 +1874,748 @@
         "summary": "Health",
         "tags": [
           "system"
+        ]
+      }
+    },
+    "/incidents": {
+      "get": {
+        "description": "Incidents ordered by priority then recency, limited to the caller's scope.",
+        "operationId": "list_incidents_incidents_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "status",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/IncidentStatus"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "in": "query",
+            "name": "priority",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maximum": 4,
+                  "minimum": 1,
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Priority"
+            }
+          },
+          {
+            "in": "query",
+            "name": "source",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/CandidateSource"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Source"
+            }
+          },
+          {
+            "in": "query",
+            "name": "wilaya",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Wilaya"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to_assess",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To Assess"
+            }
+          },
+          {
+            "in": "query",
+            "name": "open_only",
+            "required": false,
+            "schema": {
+              "default": false,
+              "title": "Open Only",
+              "type": "boolean"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 200,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "offset",
+            "required": false,
+            "schema": {
+              "default": 0,
+              "minimum": 0,
+              "title": "Offset",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentList"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Incidents",
+        "tags": [
+          "incidents"
+        ]
+      },
+      "post": {
+        "description": "Operator creates an incident from a phone call (FR-INC-007); it starts verified.",
+        "operationId": "create_incident_incidents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ManualIncidentIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create Incident",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}": {
+      "get": {
+        "description": "One incident with its event timeline, evidence and casualties.",
+        "operationId": "get_incident_incidents__incident_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentDetail"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get Incident",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}/casualties": {
+      "post": {
+        "description": "Record a triage entry; the incident priority is recomputed (FR-INC-004, FR-INC-008).",
+        "operationId": "add_casualty_incidents__incident_id__casualties_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CasualtyIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Incident is closed"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Add Casualty",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}/evidence/{evidence_id}": {
+      "get": {
+        "description": "Stream an evidence file; every view or download is audited (FR-SEC-004).",
+        "operationId": "download_evidence_incidents__incident_id__evidence__evidence_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "evidence_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Evidence Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Download Evidence",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}/integrity": {
+      "get": {
+        "description": "Recompute evidence hashes and the signed event chain (FR-SEC-003).",
+        "operationId": "integrity_incidents__incident_id__integrity_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IntegrityOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Integrity",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}/reject": {
+      "post": {
+        "description": "Operator rejects a candidate with a reason label (FR-INC-006).",
+        "operationId": "reject_incident_incidents__incident_id__reject_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RejectIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Illegal transition"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Reject Incident",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}/status": {
+      "post": {
+        "description": "Advance the response lifecycle (dispatch, acknowledge, ..., close).",
+        "operationId": "set_status_incidents__incident_id__status_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/StatusIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Illegal transition"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Set Status",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}/verify": {
+      "post": {
+        "description": "Operator confirms a candidate (FR-INC-005).",
+        "operationId": "verify_incident_incidents__incident_id__verify_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Illegal transition"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Verify Incident",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
+    "/internal/candidates": {
+      "post": {
+        "description": "Queue a candidate (Redis Stream). Re-sending the same ``Idempotency-Key`` is safe.",
+        "operationId": "post_candidate_internal_candidates_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "idempotency-key",
+            "required": true,
+            "schema": {
+              "maxLength": 128,
+              "minLength": 1,
+              "title": "Idempotency-Key",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IncidentCandidate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CandidateAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Invalid service token"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Candidate",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/evidence": {
+      "post": {
+        "description": "Store a file under the evidence root; SHA-256 is computed server-side (FR-SEC-003).\n\nIdentify the incident by ``incident_id`` or by the ``idempotency_key`` of its candidate.",
+        "operationId": "upload_evidence_internal_evidence_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_evidence_internal_evidence_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvidenceOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Unknown incident"
+          },
+          "409": {
+            "description": "Candidate not persisted yet, retry"
+          },
+          "413": {
+            "description": "File too large"
+          },
+          "415": {
+            "description": "Unsupported media type"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Upload Evidence",
+        "tags": [
+          "internal"
         ]
       }
     },
