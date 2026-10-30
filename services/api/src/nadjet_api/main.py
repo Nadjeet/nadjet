@@ -8,10 +8,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from redis.asyncio import Redis
-from sqlalchemy.ext.asyncio import create_async_engine
 
 from nadjet_api import __version__
+from nadjet_api.auth.routes import router as auth_router
 from nadjet_api.config import Settings, get_settings
+from nadjet_api.db import create_engine, create_session_factory
 from nadjet_api.health import Probe, database_probe, redis_probe, run_probes
 
 
@@ -40,8 +41,10 @@ def create_app(settings: Settings | None = None, probes: dict[str, Probe] | None
             app.state.probes = probes
             yield
             return
-        engine = create_async_engine(str(settings.database_url), pool_pre_ping=True)
+        engine = create_engine(settings)
         redis: Redis = Redis.from_url(str(settings.redis_url))
+        app.state.session_factory = create_session_factory(engine)
+        app.state.redis = redis
         app.state.probes = {"database": database_probe(engine), "redis": redis_probe(redis)}
         try:
             yield
@@ -50,6 +53,8 @@ def create_app(settings: Settings | None = None, probes: dict[str, Probe] | None
             await engine.dispose()
 
     app = FastAPI(title="Nadjet API", version=__version__, lifespan=lifespan)
+    app.state.settings = settings
+    app.include_router(auth_router)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

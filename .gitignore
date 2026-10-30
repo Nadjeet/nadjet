@@ -48,3 +48,6 @@ CLAUDE.local.md
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+
+# Real seed users (copy of users.example.yaml with local passwords)
+data/seed/users.yaml
