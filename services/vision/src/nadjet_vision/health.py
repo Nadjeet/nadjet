@@ -191,10 +191,26 @@ async def push_loop(
     stop: asyncio.Event,
     transport: httpx.AsyncBaseTransport | None = None,
 ) -> None:
+    """Push every ``health_push_s``, and at once when the fault state changes.
+
+    Checking each second keeps "stall > 10 s -> camera_fault" inside the 15 s budget (FR-CAM-005)
+    instead of waiting up to one more push interval.
+    """
+    last_fault: bool | None = None
+    last_push = float("-inf")
+    loop = asyncio.get_running_loop()
     async with httpx.AsyncClient(timeout=5.0, transport=transport) as client:
         while not stop.is_set():
-            await push_once(client, settings, report())
             try:
-                await asyncio.wait_for(stop.wait(), timeout=settings.health_push_s)
+                current = report()
+            except Exception:
+                log.exception("building the health report failed")
+            else:
+                due = loop.time() - last_push >= settings.health_push_s
+                if due or current.fault != last_fault:
+                    await push_once(client, settings, current)
+                    last_fault, last_push = current.fault, loop.time()
+            try:
+                await asyncio.wait_for(stop.wait(), timeout=min(1.0, settings.health_push_s))
             except TimeoutError:
                 continue

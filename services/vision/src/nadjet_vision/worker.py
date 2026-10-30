@@ -7,6 +7,7 @@ Detection and tracking come with the detection issue; this module only proves th
 import asyncio
 import contextlib
 import logging
+import threading
 import time
 from collections import deque
 from collections.abc import Callable, Iterator
@@ -46,19 +47,23 @@ class FpsMeter:
         self._window_s = window_s
         self._clock = clock
         self._ticks: deque[float] = deque()
+        # tick() runs in the analysis thread, fps() in the event loop: guard the deque.
+        self._lock = threading.Lock()
 
     def tick(self) -> None:
-        now = self._clock()
-        self._ticks.append(now)
-        self._trim(now)
+        with self._lock:
+            now = self._clock()
+            self._ticks.append(now)
+            self._trim(now)
 
     def fps(self) -> float:
-        now = self._clock()
-        self._trim(now)
-        if len(self._ticks) < 2:
-            return 0.0
-        span = self._ticks[-1] - self._ticks[0]
-        return (len(self._ticks) - 1) / span if span > 0 else 0.0
+        with self._lock:
+            now = self._clock()
+            self._trim(now)
+            if len(self._ticks) < 2:
+                return 0.0
+            span = self._ticks[-1] - self._ticks[0]
+            return (len(self._ticks) - 1) / span if span > 0 else 0.0
 
     def _trim(self, now: float) -> None:
         while self._ticks and now - self._ticks[0] > self._window_s:
