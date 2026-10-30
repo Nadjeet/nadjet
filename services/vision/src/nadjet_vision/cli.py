@@ -3,13 +3,16 @@
 import argparse
 import asyncio
 import logging
+import signal
 import sys
 
 import httpx
 
 from nadjet_vision.config import VisionSettings, get_settings
 from nadjet_vision.inference import BrevVlmClient, InferenceConfigError
-from nadjet_vision.worker import camera_ids, run_cameras
+from nadjet_vision.pipeline import run_worker
+from nadjet_vision.supervisor import supervise
+from nadjet_vision.worker import camera_ids
 
 
 async def check_inference(
@@ -40,12 +43,27 @@ async def camera(
     ids: list[str],
     all_cameras: bool,
     duration_s: float | None,
+    *,
+    inline: bool = False,
     settings: VisionSettings | None = None,
 ) -> int:
+    """Run cameras: one process each (supervised), or one in this process with ``inline``."""
     settings = settings or get_settings()
     if all_cameras:
         ids = camera_ids(settings.cameras_file)
-    return await run_cameras(ids, settings, duration_s)
+    stop = asyncio.Event()
+    loop = asyncio.get_running_loop()
+    for signum in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(signum, stop.set)
+    if duration_s is not None:
+        loop.call_later(duration_s, stop.set)
+    if inline:
+        if len(ids) != 1:
+            print("FAIL --inline runs exactly one camera", file=sys.stderr)
+            return 2
+        await run_worker(ids[0], settings, stop)
+        return 0
+    return await supervise(ids, settings, stop)
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -57,13 +75,20 @@ def main(argv: list[str] | None = None) -> int:
     target.add_argument("--id", action="append", default=[], help="camera id (repeatable)")
     target.add_argument("--all", action="store_true", help="every camera in the catalogue")
     cam.add_argument("--duration", type=float, help="stop after this many seconds")
+    cam.add_argument("--inline", action="store_true", help="one camera in this process")
+    cam.add_argument("--metrics-port", type=int, help="serve /metrics on this port (--inline)")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     if args.command == "check-inference":
         return asyncio.run(check_inference())
     if args.command == "camera":
         try:
-            return asyncio.run(camera(args.id, args.all, args.duration))
+            settings = get_settings()
+            if args.metrics_port is not None:
+                settings = settings.model_copy(update={"metrics_port": args.metrics_port})
+            return asyncio.run(
+                camera(args.id, args.all, args.duration, inline=args.inline, settings=settings)
+            )
         except KeyboardInterrupt:
             return 0
     return 2

@@ -12,7 +12,9 @@ from redis.asyncio import Redis
 
 from nadjet_api import __version__
 from nadjet_api.auth.routes import router as auth_router
+from nadjet_api.cameras.internal import router as camera_internal_router
 from nadjet_api.cameras.routes import router as cameras_router
+from nadjet_api.cameras.routes import system_router as system_cameras_router
 from nadjet_api.config import Settings, get_settings
 from nadjet_api.db import create_engine, create_session_factory
 from nadjet_api.geo.tiles import router as tiles_router
@@ -75,6 +77,8 @@ def create_app(
     app.state.store = LocalEvidenceStore(settings.evidence_dir)
     app.include_router(auth_router)
     app.include_router(cameras_router)
+    app.include_router(system_cameras_router)
+    app.include_router(camera_internal_router)
     app.include_router(incident_routes.router)
     app.include_router(internal.router)
     app.include_router(routing_router)

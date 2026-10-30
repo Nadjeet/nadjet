@@ -15,13 +15,17 @@ from nadjet_shared.events import (
     VerifierResult,
     Witness,
 )
+from nadjet_shared.health import CameraHealthReport, FaultReason, StageLatencyMs
 
 __all__ = [
     "AiStatus",
+    "CameraHealthReport",
     "CandidateSource",
     "Evidence",
+    "FaultReason",
     "GeoLocation",
     "IncidentCandidate",
+    "StageLatencyMs",
     "TriggerType",
     "VerifierResult",
     "Witness",

@@ -7,24 +7,23 @@ Detection and tracking come with the detection issue; this module only proves th
 import asyncio
 import contextlib
 import logging
+import threading
 import time
 from collections import deque
 from collections.abc import Callable, Iterator
 from pathlib import Path
+from typing import Any
 
 import httpx
 
 from nadjet_shared.catalogue import load_catalogue
 from nadjet_vision.config import VisionSettings
+from nadjet_vision.ingest import OPEN_TIMEOUT_S, RTSP_OPTIONS
 
 log = logging.getLogger("nadjet_vision.worker")
 
 BACKOFF_START_S = 1.0
 BACKOFF_MAX_S = 30.0  # doc 11: reconnect back-off 1 s to 30 s
-# FFmpeg >= 5 calls the socket timeout `timeout` (µs); `stimeout` is silently ignored. Without it
-# a frozen camera (RTSP session open, no frames) blocks decode forever and never reconnects.
-RTSP_OPTIONS = {"rtsp_transport": "tcp", "timeout": "5000000"}
-OPEN_TIMEOUT_S = (5.0, 5.0)  # (open, read) seconds, enforced by PyAV
 
 
 def rtsp_url(base: str, camera_id: str) -> str:
@@ -48,19 +47,23 @@ class FpsMeter:
         self._window_s = window_s
         self._clock = clock
         self._ticks: deque[float] = deque()
+        # tick() runs in the analysis thread, fps() in the event loop: guard the deque.
+        self._lock = threading.Lock()
 
     def tick(self) -> None:
-        now = self._clock()
-        self._ticks.append(now)
-        self._trim(now)
+        with self._lock:
+            now = self._clock()
+            self._ticks.append(now)
+            self._trim(now)
 
     def fps(self) -> float:
-        now = self._clock()
-        self._trim(now)
-        if len(self._ticks) < 2:
-            return 0.0
-        span = self._ticks[-1] - self._ticks[0]
-        return (len(self._ticks) - 1) / span if span > 0 else 0.0
+        with self._lock:
+            now = self._clock()
+            self._trim(now)
+            if len(self._ticks) < 2:
+                return 0.0
+            span = self._ticks[-1] - self._ticks[0]
+            return (len(self._ticks) - 1) / span if span > 0 else 0.0
 
     def _trim(self, now: float) -> None:
         while self._ticks and now - self._ticks[0] > self._window_s:
@@ -99,10 +102,16 @@ async def run_camera(
     settings: VisionSettings,
     stop: asyncio.Event,
     *,
-    frames: Callable[[str, Callable[[], bool]], Iterator[None]] = read_frames,
+    frames: Callable[[str, Callable[[], bool]], Iterator[Any]] = read_frames,
+    on_frame: Callable[[Any], None] | None = None,
+    on_state: Callable[[bool], None] | None = None,
     report_every_s: float = 1.0,
 ) -> None:
-    """Read one camera until ``stop`` is set, reconnecting with back-off, logging FPS."""
+    """Read one camera until ``stop`` is set, reconnecting with back-off, logging FPS.
+
+    ``on_frame`` receives each item ``frames`` yields; ``on_state(False)`` is called when a
+    connection ends or fails, so health tracking sees every disconnect.
+    """
     url = rtsp_url(settings.rtsp_base, camera_id)
     meter = FpsMeter()
     backoff = BACKOFF_START_S
@@ -113,9 +122,11 @@ async def run_camera(
     def consume() -> None:
         nonlocal received
         last_report = time.monotonic()
-        for _ in frames(url, stop.is_set):
+        for item in frames(url, stop.is_set):
             received = True
             meter.tick()
+            if on_frame is not None:
+                on_frame(item)
             if time.monotonic() - last_report >= report_every_s:
                 last_report = time.monotonic()
                 log.info("camera=%s fps=%.1f", camera_id, meter.fps())
@@ -127,6 +138,8 @@ async def run_camera(
             await loop.run_in_executor(None, consume)
         except Exception as exc:  # stream errors are many; always reconnect
             log.warning("camera=%s stream error: %s", camera_id, exc)
+        if on_state is not None:
+            on_state(False)
         # A stream that delivered frames was healthy (even if it then dropped): start over at
         # the shortest back-off.
         if received:
@@ -137,20 +150,3 @@ async def run_camera(
         with contextlib.suppress(TimeoutError):
             await asyncio.wait_for(stop.wait(), timeout=backoff)
         backoff = next_backoff(backoff)
-
-
-async def run_cameras(
-    ids: list[str], settings: VisionSettings, duration_s: float | None = None
-) -> int:
-    """Run every camera concurrently; stop after ``duration_s`` (None = until cancelled)."""
-    stop = asyncio.Event()
-    await check_api(settings)
-    tasks = [asyncio.create_task(run_camera(i, settings, stop)) for i in ids]
-    try:
-        if duration_s is not None:
-            await asyncio.sleep(duration_s)
-            stop.set()
-        await asyncio.gather(*tasks)
-    finally:
-        stop.set()
-    return 0

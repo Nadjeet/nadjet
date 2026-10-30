@@ -39,6 +39,9 @@ def visible_to(scope: Scope, message: dict[str, object]) -> bool:
 
 
 def frame(message: dict[str, object]) -> str:
+    if "camera_id" in message:  # camera_fault / camera_recovered (cameras/health.py)
+        camera = json.dumps({"camera_id": message["camera_id"], "status": message["status"]})
+        return f"event: {message['type']}\ndata: {camera}\n\n"
     data = json.dumps({"incident_id": message["incident_id"], "version": message["version"]})
     return f"event: {message['type']}\ndata: {data}\n\n"
 

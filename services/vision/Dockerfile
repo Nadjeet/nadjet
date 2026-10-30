@@ -11,10 +11,12 @@ ENV NVIDIA_DRIVER_CAPABILITIES=compute,utility,video \
     UV_PYTHON_INSTALL_DIR=/opt/python \
     UV_PROJECT_ENVIRONMENT=/opt/venv \
     PATH="/opt/venv/bin:$PATH" \
-    PYTHONUNBUFFERED=1
+    PYTHONUNBUFFERED=1 \
+    HOME=/tmp \
+    XDG_CACHE_HOME=/tmp/cache
 
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends ffmpeg ca-certificates curl \
+    && apt-get install -y --no-install-recommends ffmpeg ca-certificates curl libgl1 libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=ghcr.io/astral-sh/uv:0.9 /uv /usr/local/bin/uv
@@ -37,13 +39,16 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 COPY packages/shared packages/shared
 COPY services/vision services/vision
+COPY models.lock.yaml models.lock.yaml
 COPY data/cameras.yaml data/cameras.yaml
 COPY data/zones data/zones
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev --package nadjet-vision --extra gpu
 
 # Run as an unprivileged user; the environment and Python live in /opt (read-only for it).
-RUN useradd --system --uid 10001 --no-create-home nadjet
+# /app/weights holds the checksum-verified detector weights (models.lock.yaml).
+RUN useradd --system --uid 10001 --no-create-home nadjet \
+    && mkdir -p /app/weights && chown nadjet /app/weights
 USER nadjet
 
 ENTRYPOINT ["nadjet-vision"]

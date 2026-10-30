@@ -93,6 +93,135 @@
         "title": "Body_upload_evidence_internal_evidence_post",
         "type": "object"
       },
+      "CameraHealthAck": {
+        "properties": {
+          "status": {
+            "enum": [
+              "unknown",
+              "online",
+              "degraded",
+              "offline"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "transition": {
+            "anyOf": [
+              {
+                "enum": [
+                  "camera_fault",
+                  "camera_recovered"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Set when this report changed the camera status",
+            "title": "Transition"
+          }
+        },
+        "required": [
+          "status",
+          "transition"
+        ],
+        "title": "CameraHealthAck",
+        "type": "object"
+      },
+      "CameraHealthReport": {
+        "additionalProperties": false,
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "camera_id": {
+            "maxLength": 63,
+            "minLength": 1,
+            "title": "Camera Id",
+            "type": "string"
+          },
+          "camera_moving": {
+            "default": false,
+            "description": "Global camera motion (FR-VIS-011)",
+            "title": "Camera Moving",
+            "type": "boolean"
+          },
+          "connected": {
+            "title": "Connected",
+            "type": "boolean"
+          },
+          "detector": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Detector model id (source of AI values)",
+            "title": "Detector"
+          },
+          "fault": {
+            "default": false,
+            "title": "Fault",
+            "type": "boolean"
+          },
+          "fault_reason": {
+            "anyOf": [
+              {
+                "enum": [
+                  "stall",
+                  "disconnect"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Fault Reason"
+          },
+          "fps": {
+            "description": "Analysed frames per second",
+            "minimum": 0.0,
+            "title": "Fps",
+            "type": "number"
+          },
+          "last_frame_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Frame At"
+          },
+          "latency_ms": {
+            "$ref": "#/components/schemas/StageLatencyMs"
+          },
+          "queue_depth": {
+            "minimum": 0.0,
+            "title": "Queue Depth",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "camera_id",
+          "at",
+          "connected",
+          "fps",
+          "queue_depth"
+        ],
+        "title": "CameraHealthReport",
+        "type": "object"
+      },
       "CameraOut": {
         "properties": {
           "heading_deg": {
@@ -180,6 +309,59 @@
           "stream"
         ],
         "title": "CameraOut",
+        "type": "object"
+      },
+      "CameraSystemStatus": {
+        "description": "One row of the system page: registry status plus the latest worker report.",
+        "properties": {
+          "health": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/CameraHealthReport"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Latest report, null if none or expired"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "stale": {
+            "description": "No report for more than 15 s: the worker is not reporting",
+            "title": "Stale",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "unknown",
+              "online",
+              "degraded",
+              "offline"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "status",
+          "simulated",
+          "health",
+          "stale"
+        ],
+        "title": "CameraSystemStatus",
         "type": "object"
       },
       "CandidateAccepted": {
@@ -1683,6 +1865,62 @@
         "title": "Role",
         "type": "string"
       },
+      "StageLatencyMs": {
+        "additionalProperties": false,
+        "description": "Median per-stage latency over the last window; ``None`` before the first frame.",
+        "properties": {
+          "annotate": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Annotate"
+          },
+          "decode": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Decode"
+          },
+          "detect": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detect"
+          },
+          "track": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track"
+          }
+        },
+        "title": "StageLatencyMs",
+        "type": "object"
+      },
       "StatusIn": {
         "properties": {
           "status": {
@@ -2819,6 +3057,72 @@
         ]
       }
     },
+    "/internal/camera-health": {
+      "post": {
+        "description": "Store the latest report; a fault or recovery updates the camera status once.",
+        "operationId": "post_camera_health_internal_camera_health_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CameraHealthReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CameraHealthAck"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Invalid service token"
+          },
+          "404": {
+            "description": "Unknown camera"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Camera Health",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
     "/internal/candidates": {
       "post": {
         "description": "Queue a candidate (Redis Stream). Re-sending the same ``Idempotency-Key`` is safe.",
@@ -3103,6 +3407,40 @@
         "summary": "Recommendations",
         "tags": [
           "routing"
+        ]
+      }
+    },
+    "/system/cameras": {
+      "get": {
+        "description": "Camera status with FPS, per-stage latency and queue depth from each worker (FR-CAM-005).",
+        "operationId": "system_cameras_system_cameras_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/CameraSystemStatus"
+                  },
+                  "title": "Response System Cameras System Cameras Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "System Cameras",
+        "tags": [
+          "system"
         ]
       }
     },
