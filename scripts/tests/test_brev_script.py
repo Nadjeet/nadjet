@@ -13,6 +13,10 @@ ROOT = Path(__file__).resolve().parents[2]
 FAKE_BREV = """#!/usr/bin/env bash
 echo "brev $*" >> "$FAKE_LOG"
 [ "$1" = "ls" ] && echo "nadjet-gpu $FAKE_STATE"
+# Remote commands succeed (print the sentinel) unless FAKE_FAIL names part of them.
+if [ "$1" = "exec" ]; then
+  case "$3" in *"${FAKE_FAIL:-<none>}"*) echo "boom" ;; *) echo "NADJET_REMOTE_OK" ;; esac
+fi
 exit 0
 """
 # `ss` checks on the instance report "nothing listening" (exit 1); everything else succeeds.
@@ -37,7 +41,7 @@ def sandbox(tmp_path: Path) -> Path:
     return tmp_path
 
 
-def run(sandbox: Path, command: str, state: str = "RUNNING") -> tuple[int, str, str]:
+def run(sandbox: Path, command: str, state: str = "RUNNING", **extra: str) -> tuple[int, str, str]:
     log = sandbox / "calls.log"
     env = {
         **os.environ,
@@ -45,6 +49,7 @@ def run(sandbox: Path, command: str, state: str = "RUNNING") -> tuple[int, str, 
         "FAKE_LOG": str(log),
         "FAKE_STATE": state,
         "NADJET_VLM_LOCAL_PORT": "48999",  # nothing listens here
+        **extra,
     }
     done = subprocess.run(
         ["bash", str(sandbox / "scripts" / "brev.sh"), command],
@@ -89,3 +94,17 @@ def test_deploy_workers_and_logs_refuse_when_instance_is_stopped(sandbox: Path) 
         assert "brev start nadjet-gpu" in err
         assert "brev copy" not in calls
         assert "brev exec" not in calls
+
+
+def test_deploy_workers_pulls_and_never_puts_the_token_on_a_command_line(sandbox: Path) -> None:
+    code, _, calls = run(sandbox, "deploy-workers", NADJET_INGEST_TOKEN="tok-secret-123")
+    assert code == 0
+    assert "--profile workers pull workers" in calls
+    assert "--profile workers up -d" in calls
+    assert "tok-secret-123" not in calls
+
+
+def test_deploy_workers_fails_loudly_when_the_workers_do_not_start(sandbox: Path) -> None:
+    code, err, _ = run(sandbox, "deploy-workers", FAKE_FAIL="up -d")
+    assert code == 1
+    assert "Starting the workers failed" in err

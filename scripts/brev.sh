@@ -51,6 +51,15 @@ remote_listening() {
   ssh "$INSTANCE" "ss -ltn | grep -q ':$1 '" </dev/null >/dev/null 2>&1
 }
 
+# Run a command on the instance, hide Brev's connection noise and fail if the command failed.
+# A sentinel is used because `brev exec` does not reliably return the remote exit status.
+remote_ok() {
+  local out
+  out=$(brev exec "$INSTANCE" "$1 && echo NADJET_REMOTE_OK" </dev/null 2>&1 || true)
+  printf '%s\n' "$out" | grep -v -e "waiting for SSH" -e "NADJET_REMOTE_OK" || true
+  printf '%s\n' "$out" | grep -q "NADJET_REMOTE_OK"
+}
+
 # Open the Brev ssh master connection if it is not up yet (port-forward starts one).
 ensure_master() {
   ssh -O check "$INSTANCE" </dev/null >/dev/null 2>&1 && return 0
@@ -160,25 +169,30 @@ case "${1:-}" in
     } >"$envfile"
     brev copy "$envfile" "$INSTANCE:$REMOTE_DIR/.env" </dev/null >/dev/null
     brev exec "$INSTANCE" "chmod 600 $REMOTE_DIR/.env" </dev/null >/dev/null 2>&1
-    if brev exec "$INSTANCE" "cd $REMOTE_DIR && docker compose pull workers" </dev/null >/dev/null 2>&1; then
-      echo "Pulled the vision image from the registry"
+    image="${NADJET_VISION_IMAGE:-ghcr.io/nadjeet/nadjet-vision:dev}"
+    # Pull, then check the image really is there: a failed pull (private GHCR package without
+    # `docker login ghcr.io` on the instance) must fall back to a build, not to a broken `up`.
+    if remote_ok "cd $REMOTE_DIR && docker compose --profile workers pull workers >/dev/null 2>&1 && docker image inspect $image >/dev/null"; then
+      echo "Pulled $image from the registry"
     else
-      echo "No registry image yet: building on the instance"
+      echo "Could not pull $image (not published yet, or private: run 'docker login ghcr.io' on the instance). Building on the instance"
       tarball=$(mktemp)
       git archive --format=tar.gz -o "$tarball" HEAD pyproject.toml uv.lock packages services data/cameras.yaml data/zones .dockerignore
       brev copy "$tarball" "$INSTANCE:/home/ubuntu/nadjet-src.tgz" </dev/null >/dev/null
       rm -f "$tarball"
-      brev exec "$INSTANCE" "rm -rf $REMOTE_SRC && mkdir -p $REMOTE_SRC && tar -xzf /home/ubuntu/nadjet-src.tgz -C $REMOTE_SRC && cd $REMOTE_DIR && docker compose build workers" </dev/null 2>&1 | grep -v "waiting for SSH" | tail -5
+      remote_ok "rm -rf $REMOTE_SRC && mkdir -p $REMOTE_SRC && tar -xzf /home/ubuntu/nadjet-src.tgz -C $REMOTE_SRC && cd $REMOTE_DIR && docker compose --profile workers build workers" \
+        || { echo "Building the vision image on the instance failed (see above)" >&2; exit 1; }
     fi
-    brev exec "$INSTANCE" "cd $REMOTE_DIR && docker compose up -d" </dev/null 2>&1 | grep -v "waiting for SSH" || true
-    echo "Workers started. Logs: make brev-logs"
+    remote_ok "cd $REMOTE_DIR && docker compose --profile workers up -d" \
+      || { echo "Starting the workers failed (see above)" >&2; exit 1; }
+    echo "Workers started (from the committed HEAD, not uncommitted changes). Logs: make brev-logs"
     ;;
   logs)
     require_brev
     require_running
     follow=""
     [ "${2:-}" = "-f" ] && follow="-f"
-    brev exec "$INSTANCE" "cd $REMOTE_DIR && docker compose logs --tail 100 $follow workers" </dev/null
+    brev exec "$INSTANCE" "cd $REMOTE_DIR && docker compose --profile workers logs --tail 100 $follow workers" </dev/null
     ;;
   *)
     echo "usage: scripts/brev.sh {status|up|forward|unforward|check|tunnel|untunnel|deploy-workers|logs}" >&2

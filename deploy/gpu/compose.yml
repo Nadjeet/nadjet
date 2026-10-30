@@ -34,6 +34,8 @@ services:
   workers:
     # Vision workers (PRD NFR-PERF-001). Host networking: reaches the dev tunnels on 127.0.0.1
     # (rtsp 18554, api 18080, see `make brev-tunnel`) and the vLLM port on loopback.
+    # Opt-in profile: a plain `docker compose up -d` (or `make brev-up`) starts vLLM only.
+    profiles: [workers]
     image: ${NADJET_VISION_IMAGE:-ghcr.io/nadjeet/nadjet-vision:dev}
     build:
       context: ${NADJET_BUILD_CONTEXT:-../..}
