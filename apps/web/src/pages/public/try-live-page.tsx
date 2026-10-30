@@ -43,6 +43,10 @@ export function TryLivePage() {
         video: { facingMode: "environment" },
         audio: false,
       });
+      // Until publishing works, a failure must still turn the phone camera off.
+      stopRef.current = () => {
+        for (const track of media.getTracks()) track.stop();
+      };
       if (preview.current) preview.current.srcObject = media;
       const created = await createSession();
       idRef.current = created.id;
