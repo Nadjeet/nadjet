@@ -28,6 +28,7 @@ from nadjet_api.notifications.channels import SMS, DeliveryError, DeliveryReques
 from nadjet_api.notifications.models import (
     DELIVERED,
     FAILED,
+    QUEUED,
     SENT,
     Notification,
     PushSubscription,
@@ -298,8 +299,8 @@ async def test_hospital_reply_updates_facility_state(
     facility = f"fac-{uuid.uuid4().hex[:8]}"
     await session.execute(
         text(
-            "INSERT INTO facilities (id, kind, name, geom) VALUES "
-            "(:id, 'hospital', 'Test', ST_SetSRID(ST_MakePoint(3.4, 36.7), 4326))"
+            "INSERT INTO facilities (id, kind, name, simulated, geom) VALUES "
+            "(:id, 'hospital', 'Test', true, ST_SetSRID(ST_MakePoint(3.4, 36.7), 4326))"
         ),
         {"id": facility},
     )
