@@ -21,6 +21,7 @@ from nadjet_api.incidents.service import ingest_candidate
 from nadjet_shared.events import (
     AiStatus,
     CandidateSource,
+    Finding,
     GeoLocation,
     IncidentCandidate,
     TriggerType,
@@ -419,7 +420,7 @@ async def test_FR_INC_004_triage_recomputes_priority_and_flags_mass_casualty(
     lat, lon = fresh_spot()
     raise_ai = VerifierResult(
         available=True, model="qwen-test", collision_visible="yes", yes_probability=0.9,
-        priority_raise=1, findings=["f1: overturned"],
+        priority_raise=1, findings=[Finding(statement="overturned", basis="observed", frame_ids=[1])],
     )  # fmt: skip
     incident = await ingest(app, candidate(lat, lon, verifier=raise_ai))
     assert incident.priority == 2  # P3 rule minimum raised by the AI
@@ -669,3 +670,24 @@ async def test_incident_events_cannot_be_modified_in_the_database(
         with pytest.raises(DBAPIError, match="append-only"):
             await session.execute(text(statement), {"i": incident.id})
         await session.rollback()
+
+
+async def test_AC_VIS_007_1_type_is_possible_incident_until_the_ai_confirms(
+    app: FastAPI, session: AsyncSession
+) -> None:
+    lat, lon = fresh_spot()
+    t0 = datetime.now(UTC)
+    no = VerifierResult(available=True, model="m", collision_visible="no", yes_probability=0.02)
+    first = await ingest(app, candidate(lat, lon, at=t0, verifier=no, ai_status=AiStatus.POSSIBLE))
+    assert (first.type, first.ai_status) == ("possible_incident", "possible")
+
+    yes = VerifierResult(available=True, model="m", collision_visible="yes", yes_probability=0.95)
+    await ingest(
+        app,
+        candidate(
+            lat, lon, at=t0 + timedelta(seconds=5), verifier=yes, ai_status=AiStatus.CONFIRMED
+        ),
+    )
+    merged = await session.get(Incident, first.id, populate_existing=True)
+    assert merged is not None
+    assert (merged.type, merged.ai_status) == ("collision", "confirmed")

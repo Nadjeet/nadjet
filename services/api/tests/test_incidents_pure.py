@@ -277,3 +277,15 @@ async def test_sse_heartbeat_is_not_starved_by_filtered_traffic() -> None:
     assert await anext(frames) == ": connected\n\n"
     assert await asyncio.wait_for(anext(frames), timeout=1) == ": heartbeat\n\n"
     await frames.aclose()
+
+
+def test_AC_VIS_007_1_only_a_confirmed_status_makes_a_collision() -> None:
+    from nadjet_api.incidents.service import incident_type
+    from nadjet_shared import AiStatus, TriggerType
+
+    for status in (AiStatus.PROBABLE, AiStatus.POSSIBLE, AiStatus.INSUFFICIENT_EVIDENCE, None):
+        assert incident_type(TriggerType.COLLISION_CANDIDATE, status) == "possible_incident"
+        assert incident_type(TriggerType.AI_SWEEP, status) == "possible_incident"
+    assert incident_type(TriggerType.COLLISION_CANDIDATE, AiStatus.CONFIRMED) == "collision"
+    assert incident_type(TriggerType.STALLED_VEHICLE, AiStatus.CONFIRMED) == "stalled_vehicle"
+    assert incident_type(TriggerType.PEDESTRIAN_ON_ROAD, None) == "pedestrian_on_road"

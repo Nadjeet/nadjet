@@ -789,6 +789,21 @@ export interface components {
             start_ts: string | null;
         };
         /**
+         * Finding
+         * @description One statement of the verifier, tied to the frames it was read from (FR-VIS-016).
+         */
+        Finding: {
+            /** Basis */
+            basis: string;
+            /**
+             * Frame Ids
+             * @description Frames of the verifier video
+             */
+            frame_ids?: number[];
+            /** Statement */
+            statement: string;
+        };
+        /**
          * GeoLocation
          * @description Where the event happened (FR-INC-001).
          */
@@ -1365,18 +1380,43 @@ export interface components {
              * Findings
              * @description Cited findings; a raise without one is ignored
              */
-            findings?: string[];
+            findings?: components["schemas"]["Finding"][];
+            /**
+             * Invalid
+             * @description True when the answer failed validation twice (template text)
+             * @default false
+             */
+            invalid: boolean;
+            /** Lanes Blocked */
+            lanes_blocked?: number | null;
             /**
              * Model
              * @description Model id that produced the answer
              */
             model?: string | null;
             /**
+             * Not Assessable
+             * @description What the video does not let anyone judge
+             */
+            not_assessable?: string[];
+            /**
              * Priority Raise
              * @description Levels the verifier asks to raise priority (max 1)
              * @default 0
              */
             priority_raise: number;
+            /**
+             * T Contact
+             * @description Contact time in seconds on the frame stamps: relative to the rule moment for a rule candidate, to the window end for a sweep (negative = before)
+             */
+            t_contact?: number | null;
+            /**
+             * Type
+             * @description What the verifier sees
+             */
+            type?: string | null;
+            /** Vehicles Involved */
+            vehicles_involved?: number | null;
             /**
              * Yes Probability
              * @description Probability of the 'yes' answer token (logprobs)

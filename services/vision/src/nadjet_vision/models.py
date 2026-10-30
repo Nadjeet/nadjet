@@ -5,7 +5,7 @@ from pathlib import Path
 
 import httpx
 import yaml
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 PERMISSIVE_LICENCES = frozenset({"Apache-2.0", "MIT", "BSD-3-Clause", "BSD-2-Clause"})
 
@@ -22,10 +22,22 @@ class ModelEntry(BaseModel):
     default: bool = False
     package: str | None = None
     source: str
-    filename: str
-    sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    filename: str | None = None
+    sha256: str | None = Field(default=None, pattern=r"^[0-9a-f]{64}$")
+    revision: str | None = Field(
+        default=None, pattern=r"^[0-9a-f]{40}$", description="Git revision of a served model"
+    )
+    served_by: str | None = Field(default=None, description="e.g. vllm: not downloaded here")
     licence: str
     notes: str | None = None
+
+    @model_validator(mode="after")
+    def _pinned(self) -> "ModelEntry":
+        if self.served_by is None and (self.filename is None or self.sha256 is None):
+            raise ValueError(f"{self.id}: a downloaded weight needs filename and sha256")
+        if self.served_by is not None and self.revision is None:
+            raise ValueError(f"{self.id}: a served model needs a pinned revision")
+        return self
 
 
 def load_lock(path: Path) -> dict[str, ModelEntry]:
@@ -49,7 +61,7 @@ def sha256_file(path: Path) -> str:
 
 def verify_weights(path: Path, entry: ModelEntry) -> None:
     actual = sha256_file(path)
-    if actual != entry.sha256:
+    if entry.sha256 is None or actual != entry.sha256:
         raise ModelWeightError(
             f"{entry.id}: checksum mismatch for {path} (expected {entry.sha256}, got {actual})"
         )
@@ -59,6 +71,8 @@ def ensure_weights(
     entry: ModelEntry, directory: Path, transport: httpx.BaseTransport | None = None
 ) -> Path:
     """Return the verified weight file, downloading it from the pinned source if missing."""
+    if entry.filename is None or entry.sha256 is None:
+        raise ModelWeightError(f"{entry.id}: served by {entry.served_by}, nothing to download")
     target = directory / entry.filename
     if not target.exists():
         directory.mkdir(parents=True, exist_ok=True)

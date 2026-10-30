@@ -20,6 +20,7 @@ from typing import Any, Protocol
 import httpx
 
 from nadjet_shared import (
+    AiStatus,
     CandidateSource,
     GeoLocation,
     IncidentCandidate,
@@ -29,8 +30,9 @@ from nadjet_shared.catalogue import Camera
 from nadjet_vision.config import VisionSettings
 from nadjet_vision.evidence import EvidenceFiles, build_evidence
 from nadjet_vision.ingest import Packet, StreamInfo
-from nadjet_vision.status import classify
+from nadjet_vision.status import StatusThresholds, classify
 from nadjet_vision.triggers import TriggerEvent
+from nadjet_vision.verifier import AiVerifier
 
 log = logging.getLogger("nadjet_vision.publish")
 
@@ -50,10 +52,17 @@ def candidate_key(camera_id: str, event: TriggerEvent) -> str:
     return f"{camera_id}-{hashlib.sha256(raw.encode()).hexdigest()[:40]}"
 
 
-def build_candidate(camera: Camera, event: TriggerEvent) -> IncidentCandidate:
-    """Candidate from a rule trigger: the verifier is unavailable until it is plugged in
-    (FR-VIS-009), so the status is whatever ``classify`` makes of a rule alone."""
-    verifier = VerifierResult(available=False)
+def build_candidate(
+    camera: Camera,
+    event: TriggerEvent,
+    verifier: VerifierResult | None = None,
+    ai_status: AiStatus | None = None,
+) -> IncidentCandidate:
+    """Candidate from a trigger. Without a verifier result it is unavailable (FR-VIS-009), so
+    the status is whatever ``classify`` makes of a rule alone; sweep candidates pass both."""
+    verifier = verifier or VerifierResult(available=False)
+    if ai_status is None:
+        ai_status = classify(rule_fired=True, verifier=verifier)
     return IncidentCandidate(
         source=CandidateSource.CAMERA,
         camera_id=camera.id,
@@ -70,7 +79,7 @@ def build_candidate(camera: Camera, event: TriggerEvent) -> IncidentCandidate:
         track_ids=list(event.track_ids),
         signals=event.signals,
         verifier=verifier,
-        ai_status=classify(rule_fired=True, verifier=verifier),
+        ai_status=ai_status,
     )
 
 
@@ -80,10 +89,21 @@ def _log_failure(future: "Future[None]") -> None:
         log.error("background publish failed", exc_info=future.exception())
 
 
+@dataclass(frozen=True)
+class VerifyContext:
+    """What the AI verifier needs to look at a rule candidate: the ring at the moment it fired."""
+
+    event: TriggerEvent
+    packets: Sequence[Packet]
+    info: StreamInfo | None
+
+
 class IncidentSink(Protocol):
     """What the pipeline needs from a publisher (a fake in unit tests)."""
 
-    def publish_candidate(self, candidate: IncidentCandidate, key: str) -> None: ...
+    def publish_candidate(
+        self, candidate: IncidentCandidate, key: str, verify: VerifyContext | None = None
+    ) -> None: ...
 
     def submit_evidence(
         self,
@@ -114,8 +134,11 @@ class IncidentPublisher:
         transport: httpx.AsyncBaseTransport | None = None,
         retry_delays_s: Sequence[float] = RETRY_DELAYS_S,
         evidence_retry_delays_s: Sequence[float] = EVIDENCE_RETRY_DELAYS_S,
+        verifier: AiVerifier | None = None,
     ) -> None:
         self.settings = settings
+        self._verifier = verifier
+        self._thresholds = StatusThresholds(settings.status_confirmed, settings.status_probable)
         self.stats = PublishStats()
         self._loop = loop
         self._delays = tuple(retry_delays_s)
@@ -133,8 +156,10 @@ class IncidentPublisher:
 
     # ------------------------------------------------------------------ thread-safe
 
-    def publish_candidate(self, candidate: IncidentCandidate, key: str) -> None:
-        self._spawn(self._send_candidate(candidate, key))
+    def publish_candidate(
+        self, candidate: IncidentCandidate, key: str, verify: VerifyContext | None = None
+    ) -> None:
+        self._spawn(self._send_candidate(candidate, key, verify))
 
     def submit_evidence(
         self,
@@ -180,7 +205,28 @@ class IncidentPublisher:
             await asyncio.sleep(delay)
         return None
 
-    async def _send_candidate(self, candidate: IncidentCandidate, key: str) -> None:
+    async def _verified(
+        self, candidate: IncidentCandidate, verify: VerifyContext
+    ) -> IncidentCandidate:
+        """Ask the AI about a rule candidate; any failure leaves it unavailable, never blocks
+        or drops it (FR-VIS-009)."""
+        assert self._verifier is not None
+        event = verify.event
+        try:
+            result = await self._verifier.verify_event(
+                verify.packets, verify.info, event.evidence_t, event.trigger
+            )
+        except Exception:
+            log.exception("verifier failed for %s", event.trigger.value)
+            result = VerifierResult(available=False)
+        status = classify(rule_fired=True, verifier=result, thresholds=self._thresholds)
+        return candidate.model_copy(update={"verifier": result, "ai_status": status})
+
+    async def _send_candidate(
+        self, candidate: IncidentCandidate, key: str, verify: VerifyContext | None = None
+    ) -> None:
+        if verify is not None and self._verifier is not None:
+            candidate = await self._verified(candidate, verify)
         if self.settings.ingest_token is None:
             log.warning("NADJET_INGEST_TOKEN is not set: candidate %s not published", key)
             self.stats.candidates_failed += 1

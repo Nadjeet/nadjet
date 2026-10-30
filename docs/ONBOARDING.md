@@ -227,3 +227,12 @@ keyframes follow to `POST /internal/evidence` and show up under the incident, wh
 add `triggers: { stalled_s: 30 }` to its entry in `data/cameras.yaml` (names: `TriggerConfig` in
 `services/vision/src/nadjet_vision/triggers.py`). Each rule logs `trigger=… tracks=… signals=…` in
 `make brev-logs`. `NADJET_PUBLISH_CANDIDATES=false` detects and logs without posting.
+
+From issue #10 every rule candidate is checked by Qwen3-VL on Brev before it is posted (the worker
+needs the vLLM port-forward, `make brev-forward`, or the host network on the instance): the
+candidate carries the verdict, the cited findings and the AI status (`confirmed` / `probable` /
+`possible` / `insufficient_evidence`). If vLLM is down the candidate still goes out at once with
+`verifier: unavailable`. The AI sweep looks at the last 8 s of every camera every 5 s and can open a
+`possible_incident` for crashes the rules miss (never a `collision`); `NADJET_SWEEP_ENABLED=false`
+turns it off and `NADJET_VERIFY_CANDIDATES=false` skips verification. `make test-brev` runs the live
+check against the real endpoint (uses GPU credits).

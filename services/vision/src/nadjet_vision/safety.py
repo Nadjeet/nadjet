@@ -25,9 +25,20 @@ _PATTERNS = {lang: re.compile(p, re.IGNORECASE) for lang, p in _FORBIDDEN.items(
 _SENTENCE_SPLIT = re.compile(r"(?<=[.!?؟])\s+")
 
 
-def sanitize(text: str, lang: str) -> tuple[str, bool]:
-    """Return (safe_text, changed). Unknown languages are checked against all patterns."""
-    patterns = [_PATTERNS[lang]] if lang in _PATTERNS else list(_PATTERNS.values())
+def mentions_health(text: str) -> bool:
+    """True if ``text`` states death, injury or a medical condition in any supported language."""
+    return any(p.search(text) for p in _PATTERNS.values())
+
+
+def sanitize(text: str, lang: str, *, any_language: bool = False) -> tuple[str, bool]:
+    """Return (safe_text, changed). Unknown languages are checked against all patterns.
+
+    ``any_language``: check every language (a model can mix them) but answer in ``lang``.
+    """
+    if any_language or lang not in _PATTERNS:
+        patterns = list(_PATTERNS.values())
+    else:
+        patterns = [_PATTERNS[lang]]
     neutral = NEUTRAL.get(lang, NEUTRAL["en"])
     out: list[str] = []
     changed = False
