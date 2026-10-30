@@ -261,6 +261,13 @@ candidate carries the verdict, the cited findings and the AI status (`confirmed`
 turns it off and `NADJET_VERIFY_CANDIDATES=false` skips verification. `make test-brev` runs the live
 check against the real endpoint (uses GPU credits).
 
+### Seed the demo data (issue #22)
+
+`make seed-demo` (after `make migrate`) loads the users of `data/seed/users.yaml` (copy of
+`users.example.yaml`; put the demo phones on the responders), the camera registry and the simulated
+units and facilities in one idempotent call. It never creates incidents: those come from the live
+pipeline (FR-VIS-020). Demo day procedure: `docs/demo/RUNBOOK.md`; measurements: `docs/demo/RESULTS.md`.
+
 ### Evaluate on the held-out clips (issue #19)
 
 `make eval` replays every scorable clip of `eval/heldout.json` through the real pipeline and writes
