@@ -11,6 +11,7 @@ from nadjet_vision.health import (
     FaultTracker,
     StageTimers,
     WorkerState,
+    push_loop,
     push_once,
     render_prometheus,
     serve_metrics,
@@ -148,3 +149,43 @@ async def test_push_failure_is_reported_not_raised() -> None:
     async with httpx.AsyncClient() as client:
         assert not await push_once(client, VisionSettings(), make_state().report())  # no token
     await asyncio.sleep(0)
+
+
+async def test_a_fault_change_is_pushed_at_once_not_at_the_next_interval() -> None:
+    """FR-CAM-005: stall > 10 s must reach the API within 15 s, not after another 5 s push."""
+    pushed: list[bool] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        pushed.append(b'"fault":true' in request.content)
+        return httpx.Response(202, json={})
+
+    clock = Clock()
+    state = make_state(clock)
+    settings = VisionSettings(ingest_token=SecretStr("tok"), health_push_s=60.0)
+    stop = asyncio.Event()
+    task = asyncio.create_task(
+        push_loop(settings, state.report, stop, httpx.MockTransport(handler))
+    )
+    await asyncio.sleep(0.1)
+    clock.now += 11.0  # silence beyond stall_s: the next check (<= 1 s) must push the fault
+    await asyncio.sleep(1.3)
+    stop.set()
+    await task
+    assert pushed == [False, True]
+
+
+async def test_push_loop_survives_a_failing_report() -> None:
+    calls = 0
+
+    def broken() -> object:
+        nonlocal calls
+        calls += 1
+        raise RuntimeError("boom")
+
+    stop = asyncio.Event()
+    settings = VisionSettings(ingest_token=SecretStr("tok"), health_push_s=0.05)
+    task = asyncio.create_task(push_loop(settings, broken, stop))  # type: ignore[arg-type]
+    await asyncio.sleep(0.2)
+    stop.set()
+    await task
+    assert calls >= 2
