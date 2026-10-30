@@ -63,7 +63,10 @@ jobs:
         env:
           OSRM_IMAGE: ghcr.io/project-osrm/osrm-backend:v6.0.0
         run: |
-          data="$PWD/services/api/tests/data"
+          # Outside the repo: root-owned graph files would break `uv build` below.
+          data="$RUNNER_TEMP/osrm"
+          mkdir -p "$data"
+          cp services/api/tests/data/boumerdes.osm.pbf "$data/"
           osrm() { docker run --rm -v "$data:/data" "$OSRM_IMAGE" "$@"; }
           osrm osrm-extract -p /opt/car.lua /data/boumerdes.osm.pbf
           osrm osrm-partition /data/boumerdes.osrm

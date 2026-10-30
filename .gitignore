@@ -56,6 +56,5 @@ data/seed/users.yaml
 data/map/
 apps/web/public/map/
 
-# OSRM graph built from the committed test extract is generated
-services/api/tests/data/*.osrm*
+# Committed routing test extract
 !services/api/tests/data/*.osm.pbf
