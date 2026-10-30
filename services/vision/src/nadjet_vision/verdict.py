@@ -12,7 +12,7 @@ from typing import Any, Literal
 from pydantic import BaseModel, ConfigDict, Field
 
 from nadjet_shared import Finding, TriggerType, VerifierResult
-from nadjet_vision.safety import sanitize
+from nadjet_vision.safety import mentions_health, sanitize
 
 log = logging.getLogger("nadjet_vision.verdict")
 
@@ -48,7 +48,16 @@ def answer_schema() -> dict[str, Any]:
 
 
 def _safe(text: str, lang: str) -> str:
-    return sanitize(text, lang)[0]
+    return sanitize(text, lang, any_language=True)[0]
+
+
+def _keep(text: str, field: str) -> bool:
+    """Findings and not-assessable items that mention health are dropped, never rewritten:
+    the neutral "person lying on the ground" sentence would be an observation nobody made."""
+    if mentions_health(text):
+        log.warning("%s dropped (health wording, FR-VIS-017): %r", field, text)
+        return False
+    return True
 
 
 def finalize(
@@ -68,9 +77,9 @@ def finalize(
         if not valid:
             log.warning("finding dropped, no valid frame cited: %r", item.statement)
             continue
-        findings.append(
-            Finding(statement=_safe(item.statement, "en"), basis=item.basis, frame_ids=valid)
-        )
+        if not _keep(item.statement, "finding"):
+            continue
+        findings.append(Finding(statement=item.statement, basis=item.basis, frame_ids=valid))
     return VerifierResult(
         available=True,
         model=model,
@@ -84,7 +93,7 @@ def finalize(
         description_ar=_safe(answer.description_ar, "ar"),
         priority_raise=answer.priority_raise if findings else 0,
         findings=findings,
-        not_assessable=[_safe(t, "en") for t in answer.not_assessable],
+        not_assessable=[t for t in answer.not_assessable if _keep(t, "not_assessable")],
     )
 
 

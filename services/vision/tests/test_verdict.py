@@ -79,7 +79,31 @@ def test_AC_VIS_017_1_health_words_are_replaced_before_storage(text: str, lang: 
     )
     for word in ("dead", "blessé", "مصاب"):
         assert word not in stored
-    assert "needs human assessment" in stored or "humaine" in stored or "تقييم بشري" in stored
+    if lang == "en":
+        # Findings and not-assessable items are dropped, not rewritten into an observation.
+        assert result.findings == [] and result.not_assessable == []
+    else:
+        assert "humaine" in stored or "تقييم بشري" in stored
+
+
+def test_health_wording_is_caught_in_any_language_and_never_becomes_a_cited_finding() -> None:
+    """FR-VIS-017: a model can mix languages; "no visible injuries" must not turn into
+    "person lying on the ground" with valid frame ids (that would invent an observation)."""
+    raw = answer(
+        priority_raise=1,
+        description_fr="The occupants look injured.",
+        findings=[
+            finding("Un blessé près de la voiture", [3]),
+            finding("no visible injuries", [4]),
+        ],
+        not_assessable=["whether occupants are injured", "lane markings"],
+    )
+    result = finalize(raw, 20, MODEL, 0.9)
+    assert result.findings == []
+    assert result.priority_raise == 0  # no surviving cited finding
+    assert result.not_assessable == ["lane markings"]
+    assert "injured" not in (result.description_fr or "")
+    assert "Person lying on the ground" not in " ".join(result.not_assessable)
 
 
 def test_priority_raise_needs_a_surviving_finding() -> None:
