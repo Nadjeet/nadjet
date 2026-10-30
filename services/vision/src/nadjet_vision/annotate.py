@@ -6,6 +6,8 @@ video server; the browser plays it like any camera, so boxes and video stay in s
 
 import logging
 import subprocess
+import time
+from collections.abc import Callable
 from typing import IO
 
 from nadjet_shared.catalogue import Zones
@@ -75,22 +77,43 @@ def draw(
 class AnnotatedPublisher:
     """Owns the ffmpeg process; restarts it after a failure on the next frame."""
 
-    def __init__(self, url: str, fps: float, encoder: str) -> None:
+    RETRY_START_S = 1.0
+    RETRY_MAX_S = 30.0
+
+    def __init__(
+        self, url: str, fps: float, encoder: str, clock: Callable[[], float] = time.monotonic
+    ) -> None:
         self._url, self._fps, self._encoder = url, fps, encoder
         self._proc: subprocess.Popen[bytes] | None = None
         self._size: tuple[int, int] | None = None
+        self._clock = clock
+        self._retry_s = self.RETRY_START_S
+        self._next_start = 0.0
+        self._written = 0  # frames accepted by the current ffmpeg
+
+    def _failed(self) -> None:
+        """ffmpeg died: wait before the next start (doubling), never respawn on every frame."""
+        if self._written == 0 and self._encoder.endswith("nvenc"):
+            log.warning("ffmpeg %s failed before any frame; falling back to libx264", self._encoder)
+            self._encoder = "libx264"
+        self._proc = None
+        self._next_start = self._clock() + self._retry_s
+        self._retry_s = min(self._retry_s * 2, self.RETRY_MAX_S)
 
     def _start(self, frame: BgrFrame) -> None:
         height, width = frame.shape[:2]
         self._size = (width, height)
         command = ffmpeg_command(self._url, width, height, self._fps, self._encoder)
         self._proc = subprocess.Popen(command, stdin=subprocess.PIPE)  # noqa: S603
+        self._written = 0
 
     def write(self, frame: BgrFrame) -> bool:
         """Send one annotated frame; ``False`` if ffmpeg is down (it is restarted next time)."""
         if self._proc is not None and self._proc.poll() is not None:
-            log.warning("ffmpeg exited with %s; restarting", self._proc.returncode)
-            self._proc = None
+            log.warning("ffmpeg exited with %s; restarting after back-off", self._proc.returncode)
+            self._failed()
+        if self._proc is None and self._clock() < self._next_start:
+            return False  # backing off; the raw stream keeps working
         if self._proc is None or self._size != (frame.shape[1], frame.shape[0]):
             self.close()
             self._start(frame)
@@ -100,8 +123,11 @@ class AnnotatedPublisher:
             stdin.write(frame.tobytes())
             stdin.flush()
         except (BrokenPipeError, OSError, AssertionError):
-            self._proc = None
+            self._failed()
             return False
+        self._written += 1
+        if self._written == 1:
+            self._retry_s = self.RETRY_START_S
         return True
 
     def close(self) -> None:
