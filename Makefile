@@ -103,7 +103,7 @@ map-data: ## Download the offline Algeria basemap to data/map/algeria.pmtiles (1
 	@bash scripts/map-data.sh
 	@bash scripts/map-assets.sh
 
-routing-data: ## Download the Algeria OSM extract and prepare OSRM data (~290 MB, 4 GB RAM, once)
+routing-data: ## Download the Algeria OSM extract and prepare OSRM data (~290 MB, ~2 GB RAM, once)
 	@bash scripts/routing-data.sh
 
 routing-up: env ## Start OSRM (after make routing-data) and wait until healthy

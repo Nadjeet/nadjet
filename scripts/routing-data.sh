@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Prepare OSRM routing data (MLD) from the Geofabrik Algeria extract into the `osrmdata` volume.
-# Download ~290 MB; osrm-extract needs ~4 GB RAM and ~3 GB disk, takes 5-15 minutes.
+# Download ~290 MB; osrm-extract peaks at ~1.3 GB RAM, needs ~3 GB disk, takes a few minutes.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 

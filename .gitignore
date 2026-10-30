@@ -55,3 +55,7 @@ data/seed/users.yaml
 # Self-hosted map data and assets (make map-data / routing-data)
 data/map/
 apps/web/public/map/
+
+# OSRM graph built from the committed test extract is generated
+services/api/tests/data/*.osrm*
+!services/api/tests/data/*.osm.pbf

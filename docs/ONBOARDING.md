@@ -55,7 +55,7 @@ Everything runs locally; nothing contacts a public tile, routing or Overpass ser
 | Step | Command | Download / needs |
 |---|---|---|
 | Offline basemap | `make map-data` | Protomaps extract for Algeria, ~1-3 GB, a few minutes (needs Docker); also fetches fonts and sprites (~13 MB) |
-| Routing data | `make routing-data` | Geofabrik Algeria extract ~290 MB; `osrm-extract` needs ~4 GB RAM (raise Docker Desktop memory) and ~3 GB disk, 5-15 min |
+| Routing data | `make routing-data` | Geofabrik Algeria extract ~290 MB; `osrm-extract` peaks at ~1.3 GB RAM (measured), ~3 GB disk, a few minutes |
 | Start routing | `make routing-up` | OSRM on `localhost:55000`; stop with `make routing-down` |
 | Facilities and units | `make seed-geo` | Imports `data/seed/*.csv` (simulated capabilities and units on real OSM locations); safe to re-run |
 
