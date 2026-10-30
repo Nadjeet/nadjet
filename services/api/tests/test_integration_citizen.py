@@ -191,3 +191,5 @@ async def test_rate_limit_is_per_ip(tmp_path: Path) -> None:
 async def test_invalid_report_creates_no_incident(app: FastAPI, citizen: httpx.AsyncClient) -> None:
     response = await citizen.post("/public/reports", data=form(48.85, 2.35))  # Paris
     assert response.status_code == 422
+    async with app.state.session_factory() as s:
+        assert await s.scalar(select(Incident.id).where(Incident.lat > 38)) is None
