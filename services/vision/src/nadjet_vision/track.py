@@ -16,7 +16,7 @@ import numpy as np
 from numpy.typing import NDArray
 
 from nadjet_shared.catalogue import Zones
-from nadjet_vision.detect import Detection
+from nadjet_vision.detect import TARGET_CLASSES, Detection
 from nadjet_vision.ingest import BgrFrame
 
 Point = tuple[float, float]
@@ -33,13 +33,18 @@ class Tracker(Protocol):
 
 
 class ByteTrackTracker:
-    """``supervision`` ByteTrack (MIT) at the analysis frame rate."""
+    """ByteTrack from ``trackers`` (Roboflow, Apache-2.0) at the analysis frame rate.
 
-    def __init__(self, fps: float) -> None:
+    ``supervision`` 0.31 no longer ships a tracker. Detections that the tracker has not yet
+    confirmed come back with ``tracker_id`` -1 and are not reported.
+    """
+
+    def __init__(self, fps: float, activation_threshold: float = 0.4) -> None:
         import supervision as sv
+        from trackers import ByteTrackTracker as ByteTrack
 
         self._sv = sv
-        self._tracker = sv.ByteTrack(frame_rate=max(1, round(fps)))
+        self._tracker = ByteTrack(frame_rate=fps, track_activation_threshold=activation_threshold)
 
     def update(self, detections: list[Detection]) -> list[Tracked]:
         sv = self._sv
@@ -51,14 +56,17 @@ class ByteTrackTracker:
             )
         else:
             batch = sv.Detections.empty()
-        tracked = self._tracker.update_with_detections(batch)
-        by_class = {d.class_id: d.label for d in detections}
+        tracked = self._tracker.update(batch)
         out: list[Tracked] = []
+        if tracked.tracker_id is None:
+            return out
         for xyxy, conf, cls, tid in zip(
             tracked.xyxy, tracked.confidence, tracked.class_id, tracked.tracker_id, strict=True
         ):
+            if int(tid) < 0:
+                continue
             box = (float(xyxy[0]), float(xyxy[1]), float(xyxy[2]), float(xyxy[3]))
-            label = by_class.get(int(cls), str(int(cls)))
+            label = TARGET_CLASSES.get(int(cls), str(int(cls)))
             out.append(Tracked(int(tid), Detection(box, int(cls), label, float(conf))))
         return out
 

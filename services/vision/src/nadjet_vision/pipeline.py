@@ -133,7 +133,7 @@ async def run_worker(
     """Run one camera until ``stop``: reconnecting reader, analysis thread, health, metrics."""
     camera = next(c for c in load_catalogue(settings.cameras_file).cameras if c.id == camera_id)
     detector = detector or load_detector(settings)
-    tracker = tracker or ByteTrackTracker(settings.sample_fps)
+    tracker = tracker or ByteTrackTracker(settings.sample_fps, settings.detector_threshold)
     sampler = FrameSampler(settings.sample_fps)
     ring = PacketRing(settings.evidence_buffer_s)
     queue: LatestFrameQueue[SampledFrame] = LatestFrameQueue()
