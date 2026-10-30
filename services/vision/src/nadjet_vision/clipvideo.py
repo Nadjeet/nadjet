@@ -106,12 +106,9 @@ def decode_nearest(
     if info.extradata:
         decoder.extradata = info.extradata
     best: list[tuple[float, float, Any] | None] = [None] * len(targets_s)
-    for item in packets:
-        packet = av.Packet(item.data)
-        packet.time_base = base
-        packet.pts = round(item.pts_s / base)
-        packet.dts = round((item.dts_s if item.dts_s is not None else item.pts_s) / base)
-        for frame in decoder.decode(packet):
+
+    def consider(frames: Any) -> None:
+        for frame in frames:
             if frame.pts is None:
                 continue
             seconds = float(frame.pts * base)
@@ -120,6 +117,14 @@ def decode_nearest(
                 current = best[i]
                 if current is None or distance < current[0]:
                     best[i] = (distance, seconds, frame)
+
+    for item in packets:
+        packet = av.Packet(item.data)
+        packet.time_base = base
+        packet.pts = round(item.pts_s / base)
+        packet.dts = round((item.dts_s if item.dts_s is not None else item.pts_s) / base)
+        consider(decoder.decode(packet))
+    consider(decoder.decode(None))  # flush: B-frames and decoder delay hold the newest frames
     chosen: dict[float, Any] = {}
     for entry in best:
         if entry is not None:

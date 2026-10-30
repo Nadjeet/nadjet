@@ -110,3 +110,16 @@ def test_a_short_ring_gives_fewer_distinct_frames_not_invented_ones(
 def test_no_video_without_any_keyframe(synthetic_stream: StreamFactory) -> None:
     packets, info = synthetic_stream(seconds=6)
     assert build_verifier_video([p for p in packets if not p.keyframe], info, 5.0) is None
+
+
+def test_decode_nearest_flushes_the_decoder_so_the_newest_frames_count(
+    synthetic_stream: StreamFactory,
+) -> None:
+    """B-frames and decoder delay hold the last frames until a flush: without it the sweep's
+    newest moment (its window end) would silently map to an older frame."""
+    from nadjet_vision.clipvideo import decode_nearest
+
+    packets, info = synthetic_stream(seconds=6, gop=10)
+    last = max(p.pts_s for p in packets)
+    [(pts, _frame)] = decode_nearest(packets, info, [last])
+    assert pts == pytest.approx(last)
