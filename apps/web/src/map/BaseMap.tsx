@@ -4,6 +4,7 @@ import type { Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
 import { useEffect, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import { basemapStyle, type MapLang } from "./style";
 
@@ -36,6 +37,7 @@ type BaseMapProps = {
 
 /** Offline vector basemap of Algeria with the OpenStreetMap attribution (FR-MAP-001). */
 export function BaseMap({ lang, center = DEMO_CENTER, zoom = 9, className, onLoad }: BaseMapProps) {
+  const { t } = useTranslation();
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapLibreMap | null>(null);
   const onLoadRef = useRef(onLoad);
@@ -87,7 +89,7 @@ export function BaseMap({ lang, center = DEMO_CENTER, zoom = 9, className, onLoa
           role="alert"
           className="absolute start-3 top-3 rounded bg-amber-100 px-3 py-2 text-sm text-amber-900"
         >
-          Basemap unavailable: run `make map-data`, then restart the API.
+          {t("map.unavailable")}
         </p>
       )}
     </div>
