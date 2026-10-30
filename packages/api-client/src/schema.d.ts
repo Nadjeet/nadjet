@@ -4,6 +4,163 @@
  */
 
 export interface paths {
+    "/admin/cameras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Cameras */
+        get: operations["list_cameras_admin_cameras_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/cameras/{camera_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Camera */
+        patch: operations["update_camera_admin_cameras__camera_id__patch"];
+        trace?: never;
+    };
+    "/admin/cameras/{camera_id}/zones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace Zones
+         * @description Replace the camera's zones (``live_lanes`` / ``carriageway`` polygons) with this JSON.
+         */
+        put: operations["replace_zones_admin_cameras__camera_id__zones_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/facilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Facilities */
+        get: operations["list_facilities_admin_facilities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/facilities/{facility_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Facility */
+        patch: operations["update_facility_admin_facilities__facility_id__patch"];
+        trace?: never;
+    };
+    "/admin/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Units */
+        get: operations["list_units_admin_units_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/units/{unit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Unit */
+        patch: operations["update_unit_admin_units__unit_id__patch"];
+        trace?: never;
+    };
+    "/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Users */
+        get: operations["list_users_admin_users_get"];
+        put?: never;
+        /** Create User */
+        post: operations["create_user_admin_users_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update User */
+        patch: operations["update_user_admin_users__user_id__patch"];
+        trace?: never;
+    };
     "/auth/login": {
         parameters: {
             query?: never;
@@ -144,6 +301,68 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/facilities/{facility_id}/prealerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Prealerts
+         * @description Incoming pre-alerts and today's arrivals of a hospital (FR-HSP-001).
+         */
+        get: operations["prealerts_facilities__facility_id__prealerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/facilities/{facility_id}/prealerts/{incident_id}/ack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Acknowledge
+         * @description The hospital confirms it saw the pre-alert; repeating it changes nothing.
+         */
+        post: operations["acknowledge_facilities__facility_id__prealerts__incident_id__ack_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/facilities/{facility_id}/readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Readiness
+         * @description Ready or Divert, from the screen (the SMS ``H <code> READY|DIVERT`` does the same).
+         *
+         *     Divert alerts the operators of every incident that selected the hospital (E-10).
+         */
+        post: operations["readiness_facilities__facility_id__readiness_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -278,6 +497,8 @@ export interface paths {
         /**
          * List Dispatches
          * @description Dispatches of the incident with the delivery status of each notification.
+         *
+         *     A responder only gets the hospital the patients go to.
          */
         get: operations["list_dispatches_incidents__incident_id__dispatches_get"];
         put?: never;
@@ -530,6 +751,189 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/internal/try/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Claim */
+        post: operations["claim_internal_try_claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/fail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Failure */
+        post: operations["post_failure_internal_try_jobs__job_id__fail_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Job File */
+        get: operations["job_file_internal_try_jobs__job_id__file_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Progress */
+        post: operations["progress_internal_try_jobs__job_id__progress_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Result */
+        post: operations["post_result_internal_try_jobs__job_id__result_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Put Video
+         * @description Store the annotated video (raw MP4 body).
+         */
+        put: operations["put_video_internal_try_jobs__job_id__video_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Active Sessions
+         * @description Live phone sessions the worker should be attached to.
+         */
+        get: operations["active_sessions_internal_try_sessions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/sessions/{session_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Session Event */
+        post: operations["session_event_internal_try_sessions__session_id__events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report Status
+         * @description The worker reports whether the Brev AI answers; the flag expires if it stops reporting.
+         */
+        post: operations["report_status_internal_try_status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/kpis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kpis
+         * @description Durations per incident and their median and p90 by period, agency and wilaya, plus the
+         *     false-alarm rate per camera. Merged incidents are duplicates and are not counted.
+         */
+        get: operations["kpis_kpis_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/map/resources": {
         parameters: {
             query?: never;
@@ -566,6 +970,163 @@ export interface paths {
          *     Re-sending the same ``Idempotency-Key`` (a double tap, a retry) returns the same report.
          */
         post: operations["post_report_public_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Job
+         * @description Upload the raw video as the request body (``Content-Type: video/*``). The upload stops
+         *     as soon as it is too large; the file is sniffed and, for MP4/MOV, its duration is read.
+         */
+        post: operations["create_job_public_try_jobs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Job */
+        get: operations["get_job_public_try_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Job
+         * @description Delete an upload and its outputs now (the owner of the link may do it before the TTL).
+         */
+        delete: operations["delete_job_public_try_jobs__job_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs/{job_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Job
+         * @description Progress of a job over SSE (FR-CIT-002).
+         */
+        get: operations["stream_job_public_try_jobs__job_id__events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs/{job_id}/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Job Video */
+        get: operations["job_video_public_try_jobs__job_id__video_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Session
+         * @description A temporary live camera: the phone publishes to ``whip_url`` and pings while it stays.
+         */
+        post: operations["create_session_public_try_sessions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/sessions/{session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Session State */
+        get: operations["get_session_state_public_try_sessions__session_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * End Session
+         * @description The phone leaves: the session and its results are deleted at once.
+         */
+        delete: operations["end_session_public_try_sessions__session_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/sessions/{session_id}/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ping Session */
+        post: operations["ping_session_public_try_sessions__session_id__ping_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Try Status
+         * @description Limits and whether the Brev AI is reachable (the page shows "AI unavailable").
+         */
+        get: operations["try_status_public_try_status_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -644,6 +1205,26 @@ export interface paths {
          * @description Rank units and hospitals near a point by road ETA; hospitals by capability, state, ETA.
          */
         get: operations["recommendations_routing_recommendations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sms/gateway": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sms Gateway
+         * @description The gateway SIM number the responder app pre-fills in the SMS fallback (FR-RSP-004).
+         */
+        get: operations["sms_gateway_sms_gateway_get"];
         put?: never;
         post?: never;
         delete?: never;
@@ -769,6 +1350,102 @@ export interface components {
              */
             not_run_reason?: string | null;
         };
+        /** AdminCamera */
+        AdminCamera: {
+            /** Heading Deg */
+            heading_deg: number;
+            /** Id */
+            id: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Road */
+            road: string;
+            /** Simulated */
+            simulated: boolean;
+            /** Status */
+            status: string;
+            /** Wilaya */
+            wilaya: string;
+            /** Zones */
+            zones: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** AdminFacility */
+        AdminFacility: {
+            /** Capabilities */
+            capabilities: {
+                [key: string]: boolean;
+            };
+            /** Contact Sms */
+            contact_sms: string | null;
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Name */
+            name: string;
+            /**
+             * Ready State
+             * @enum {string}
+             */
+            ready_state: "ready" | "divert";
+            /** Simulated */
+            simulated: boolean;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** AdminUnit */
+        AdminUnit: {
+            /** Agency */
+            agency: string;
+            /** Callsign */
+            callsign: string;
+            /** Facility Id */
+            facility_id: string;
+            /** Id */
+            id: string;
+            /** Phone */
+            phone: string | null;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "dispatched" | "busy" | "offline";
+        };
+        /** AdminUserOut */
+        AdminUserOut: {
+            /** Active */
+            active: boolean;
+            agency: components["schemas"]["Agency"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Display Name */
+            display_name: string;
+            /** Facility Id */
+            facility_id: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Phone */
+            phone: string | null;
+            role: components["schemas"]["Role"];
+            /** Username */
+            username: string;
+        };
         /**
          * Agency
          * @enum {string}
@@ -797,21 +1474,6 @@ export interface components {
          * @enum {string}
          */
         "AiStatus-Input": "confirmed" | "probable" | "possible" | "insufficient_evidence";
-        /** AiStatus */
-        "AiStatus-Output": {
-            /** Available */
-            available: boolean;
-            /**
-             * Detail
-             * @description Why the AI is unavailable (no secrets), else null
-             */
-            detail: string | null;
-            /**
-             * Model
-             * @description Served model id when available, else null
-             */
-            model: string | null;
-        };
         /** AlertRecord */
         AlertRecord: {
             /** Ai Status */
@@ -877,6 +1539,38 @@ export interface components {
             /** Start Ts */
             start_ts?: string | null;
         };
+        /** Box */
+        Box: {
+            /** Label */
+            label: string;
+            /** Track Id */
+            track_id?: number | null;
+            /** X1 */
+            x1: number;
+            /** X2 */
+            x2: number;
+            /** Y1 */
+            y1: number;
+            /** Y2 */
+            y2: number;
+        };
+        /** CameraFalseAlarms */
+        CameraFalseAlarms: {
+            /** Camera Id */
+            camera_id: string;
+            /**
+             * False Positives
+             * @description Rejected by an operator as false positive
+             */
+            false_positives: number;
+            /**
+             * Incidents
+             * @description Distinct incidents the camera raised (duplicates excluded)
+             */
+            incidents: number;
+            /** Rate */
+            rate: number | null;
+        };
         /** CameraHealthAck */
         CameraHealthAck: {
             /**
@@ -938,6 +1632,12 @@ export interface components {
             id: string;
             /** Lat */
             lat: number;
+            /**
+             * Live Demo
+             * @description A visitor's phone on the try page (sandbox, FR-CIT-003)
+             * @default false
+             */
+            live_demo: boolean;
             /** Lon */
             lon: number;
             /** Name */
@@ -963,6 +1663,23 @@ export interface components {
             zones: {
                 [key: string]: unknown;
             } | null;
+        };
+        /** CameraPatch */
+        CameraPatch: {
+            /** Heading Deg */
+            heading_deg?: number | null;
+            /** Lat */
+            lat?: number | null;
+            /** Lon */
+            lon?: number | null;
+            /** Name */
+            name?: string | null;
+            /** Pk Km */
+            pk_km?: number | null;
+            /** Road */
+            road?: string | null;
+            /** Wilaya */
+            wilaya?: string | null;
         };
         /**
          * CameraSystemStatus
@@ -1135,6 +1852,13 @@ export interface components {
              * @enum {string}
              */
             kind: "unit" | "hospital";
+            /**
+             * Lat
+             * @description Position of the unit or hospital
+             */
+            lat: number;
+            /** Lon */
+            lon: number;
             /** Name */
             name: string;
             /** Resource Id */
@@ -1287,6 +2011,33 @@ export interface components {
             /** Start Ts */
             start_ts: string | null;
         };
+        /** FacilityPatch */
+        FacilityPatch: {
+            /** Capabilities */
+            capabilities?: {
+                [key: string]: boolean;
+            } | null;
+            /** Contact Sms */
+            contact_sms?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Ready State */
+            ready_state?: ("ready" | "divert") | null;
+        };
+        /** FacilityState */
+        FacilityState: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /**
+             * Ready State
+             * @enum {string}
+             */
+            ready_state: "ready" | "divert";
+            /** Simulated */
+            simulated: boolean;
+        };
         /**
          * Finding
          * @description One statement of the verifier, tied to the frames it was read from (FR-VIS-016).
@@ -1329,6 +2080,20 @@ export interface components {
             status: string;
             /** Version */
             version: string;
+        };
+        /** HospitalBoard */
+        HospitalBoard: {
+            facility: components["schemas"]["FacilityState"];
+            /**
+             * History
+             * @description Arrivals of today (Algiers time)
+             */
+            history: components["schemas"]["PreAlert"][];
+            /**
+             * Incoming
+             * @description Hospital selected, patients not yet arrived
+             */
+            incoming: components["schemas"]["PreAlert"][];
         };
         /** HospitalChangeIn */
         HospitalChangeIn: {
@@ -1477,6 +2242,36 @@ export interface components {
              */
             ts: string;
         };
+        /** IncidentKpi */
+        IncidentKpi: {
+            /** Agencies */
+            agencies: string[];
+            /**
+             * Durations
+             * @description Seconds per metric; null when the milestone was not reached
+             */
+            durations: {
+                [key: string]: number | null;
+            };
+            /**
+             * Event Time
+             * Format: date-time
+             */
+            event_time: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Priority */
+            priority: number;
+            /** Short Code */
+            short_code: string;
+            /** Status */
+            status: string;
+            /** Wilaya */
+            wilaya: string | null;
+        };
         /** IncidentList */
         IncidentList: {
             /** Items */
@@ -1621,6 +2416,49 @@ export interface components {
             high: number;
             /** Low */
             low: number;
+        };
+        /** KpiGroup */
+        KpiGroup: {
+            /** Incidents */
+            incidents: number;
+            /** Key */
+            key: string;
+            /** Metrics */
+            metrics: {
+                [key: string]: components["schemas"]["MetricStats"];
+            };
+        };
+        /** KpiReport */
+        KpiReport: {
+            /** By Agency */
+            by_agency: components["schemas"]["KpiGroup"][];
+            /** By Period */
+            by_period: components["schemas"]["KpiGroup"][];
+            /** By Wilaya */
+            by_wilaya: components["schemas"]["KpiGroup"][];
+            /** False Alarms */
+            false_alarms: components["schemas"]["CameraFalseAlarms"][];
+            /**
+             * Incidents
+             * @description Newest 200 incidents
+             */
+            incidents: components["schemas"]["IncidentKpi"][];
+            overall: components["schemas"]["KpiGroup"];
+            /**
+             * Period
+             * @enum {string}
+             */
+            period: "day" | "week" | "month";
+            /**
+             * Since
+             * Format: date-time
+             */
+            since: string;
+            /**
+             * Until
+             * Format: date-time
+             */
+            until: string;
         };
         /** LoginRequest */
         LoginRequest: {
@@ -1803,6 +2641,18 @@ export interface components {
             /** Value */
             value?: number | null;
         };
+        /** MetricStats */
+        MetricStats: {
+            /** Median S */
+            median_s: number | null;
+            /**
+             * N
+             * @description Incidents that reached both milestones
+             */
+            n: number;
+            /** P90 S */
+            p90_s: number | null;
+        };
         /** Percentiles */
         Percentiles: {
             /** Count */
@@ -1811,6 +2661,73 @@ export interface components {
             p50?: number | null;
             /** P95 */
             p95?: number | null;
+        };
+        /**
+         * PreAlert
+         * @description One incident this hospital was selected for (FR-HSP-001).
+         */
+        PreAlert: {
+            /** Acknowledged At */
+            acknowledged_at: string | null;
+            /** Acknowledged By */
+            acknowledged_by: string | null;
+            /** Casualties */
+            casualties: components["schemas"]["VictimOut"][];
+            /**
+             * Dispatched At
+             * Format: date-time
+             */
+            dispatched_at: string;
+            /** Distance M */
+            distance_m: number;
+            /** Eta S */
+            eta_s: number;
+            /**
+             * Expected Arrival At
+             * Format: date-time
+             * @description Dispatch time plus the stored road ETA
+             */
+            expected_arrival_at: string;
+            /**
+             * Incident Id
+             * Format: uuid
+             */
+            incident_id: string;
+            /** Location Text */
+            location_text: string | null;
+            /** Mass Casualty */
+            mass_casualty: boolean;
+            /** Needs Extrication */
+            needs_extrication: boolean;
+            /** People Reported */
+            people_reported: number | null;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Priority */
+            priority: number;
+            /** Road */
+            road: string | null;
+            /** Short Code */
+            short_code: string;
+            status: components["schemas"]["IncidentStatus"];
+            /** Trapped Reported */
+            trapped_reported: boolean;
+            /** Type */
+            type: string;
+            /** Units */
+            units: components["schemas"]["PreAlertUnit"][];
+            victims: components["schemas"]["VictimCounts"];
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** PreAlertUnit */
+        PreAlertUnit: {
+            /** Agency */
+            agency: string;
+            /** Callsign */
+            callsign: string;
+            /** Simulated */
+            simulated: boolean;
         };
         /** PriorityReason */
         PriorityReason: {
@@ -1888,6 +2805,14 @@ export interface components {
              */
             source: string;
         };
+        /** ReadinessIn */
+        ReadinessIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "ready" | "divert";
+        };
         /** ReadinessResponse */
         ReadinessResponse: {
             /** Dependencies */
@@ -1929,6 +2854,106 @@ export interface components {
          * @enum {string}
          */
         Role: "operator" | "supervisor" | "responder" | "hospital" | "auditor" | "admin";
+        /**
+         * SandboxIncident
+         * @description What an operator would have been shown, kept inside the sandbox.
+         */
+        "SandboxIncident-Input": {
+            ai_status: components["schemas"]["AiStatus-Input"];
+            /** Description Ar */
+            description_ar?: string | null;
+            /** Description Fr */
+            description_fr?: string | null;
+            /** Event Time S */
+            event_time_s: number;
+            /**
+             * Trigger
+             * @description Rule trigger near the moment, if any
+             */
+            trigger?: string | null;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "collision" | "possible_incident";
+            /**
+             * Vehicles
+             * @description Detector boxes at the moment
+             */
+            vehicles?: components["schemas"]["Box"][];
+        };
+        /**
+         * SandboxIncident
+         * @description What an operator would have been shown, kept inside the sandbox.
+         */
+        "SandboxIncident-Output": {
+            ai_status: components["schemas"]["nadjet_shared__events__AiStatus"];
+            /** Description Ar */
+            description_ar?: string | null;
+            /** Description Fr */
+            description_fr?: string | null;
+            /** Event Time S */
+            event_time_s: number;
+            /**
+             * Trigger
+             * @description Rule trigger near the moment, if any
+             */
+            trigger?: string | null;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "collision" | "possible_incident";
+            /**
+             * Vehicles
+             * @description Detector boxes at the moment
+             */
+            vehicles?: components["schemas"]["Box"][];
+        };
+        /**
+         * SessionEvent
+         * @description One AI check or trigger of a live phone session (sandbox, shown on the try page).
+         */
+        "SessionEvent-Input": {
+            ai_status?: components["schemas"]["AiStatus-Input"] | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "ai_check" | "trigger";
+            /** Label */
+            label: string;
+            /** Source */
+            source: string;
+            verifier?: components["schemas"]["VerifierResult"] | null;
+        };
+        /**
+         * SessionEvent
+         * @description One AI check or trigger of a live phone session (sandbox, shown on the try page).
+         */
+        "SessionEvent-Output": {
+            ai_status?: components["schemas"]["nadjet_shared__events__AiStatus"] | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "ai_check" | "trigger";
+            /** Label */
+            label: string;
+            /** Source */
+            source: string;
+            verifier?: components["schemas"]["VerifierResult"] | null;
+        };
         /** SkippedClip */
         SkippedClip: {
             /** Id */
@@ -1943,6 +2968,14 @@ export interface components {
              * @enum {string}
              */
             status: "processed" | "duplicate" | "throttled" | "ignored";
+        };
+        /** SmsGateway */
+        SmsGateway: {
+            /**
+             * Number
+             * @description Where responders text their codes; null when unset
+             */
+            number: string | null;
         };
         /**
          * StageLatencyMs
@@ -2002,6 +3035,28 @@ export interface components {
              */
             whep_url: string;
         };
+        /**
+         * TimelineEntry
+         * @description One event of the analysed clip, in clip seconds, with the source of the value.
+         */
+        TimelineEntry: {
+            /** Detail */
+            detail?: string | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "trigger" | "ai_scan" | "ai_refine";
+            /** Label */
+            label: string;
+            /**
+             * Source
+             * @description Rule name or model id (FR-VIS-021)
+             */
+            source: string;
+            /** T */
+            t: number;
+        };
         /** TokenResponse */
         TokenResponse: {
             /** Access Token */
@@ -2030,6 +3085,197 @@ export interface components {
          * @enum {string}
          */
         TriggerType: "collision_candidate" | "hard_stop" | "stalled_vehicle" | "pedestrian_on_road" | "ai_sweep" | "citizen_report" | "operator_report";
+        /**
+         * TryAiReport
+         * @description What the try-it worker tells the API about the Brev AI (the page says "AI unavailable").
+         */
+        TryAiReport: {
+            /** Ai Available */
+            ai_available: boolean;
+        };
+        /** TryJobClaim */
+        TryJobClaim: {
+            /** Filename */
+            filename: string;
+            /** Id */
+            id: string;
+        };
+        /** TryJobFailure */
+        TryJobFailure: {
+            /** Error */
+            error: string;
+            /**
+             * Rejected
+             * @description Not a usable video: nothing was analysed
+             * @default false
+             */
+            rejected: boolean;
+        };
+        /** TryJobOut */
+        TryJobOut: {
+            /** Error */
+            error: string | null;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Has Video */
+            has_video: boolean;
+            /** Id */
+            id: string;
+            /** Progress */
+            progress: number;
+            result: components["schemas"]["TryResult-Output"] | null;
+            /** Stage */
+            stage: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "processing" | "done" | "failed" | "rejected";
+        };
+        /** TryProgress */
+        TryProgress: {
+            /** Progress */
+            progress: number;
+            /** Stage */
+            stage: string;
+        };
+        /** TryResult */
+        "TryResult-Input": {
+            /**
+             * Ai Available
+             * @description False: only the rule-based analysis is shown
+             */
+            ai_available: boolean;
+            /** Duration S */
+            duration_s: number;
+            /**
+             * Event T S
+             * @description Refined, damped and capped
+             */
+            event_t_s?: number | null;
+            /** Frames Analysed */
+            frames_analysed: number;
+            /** Models */
+            models?: {
+                [key: string]: string;
+            };
+            /** @description Pass 2: around the moment */
+            refine?: components["schemas"]["VerifierResult"] | null;
+            sandbox_incident?: components["schemas"]["SandboxIncident-Input"] | null;
+            /** @description Pass 1: whole clip, 1-2 fps */
+            scan?: components["schemas"]["VerifierResult"] | null;
+            /** Scan T S */
+            scan_t_s?: number | null;
+            /** Timeline */
+            timeline?: components["schemas"]["TimelineEntry"][];
+        };
+        /** TryResult */
+        "TryResult-Output": {
+            /**
+             * Ai Available
+             * @description False: only the rule-based analysis is shown
+             */
+            ai_available: boolean;
+            /** Duration S */
+            duration_s: number;
+            /**
+             * Event T S
+             * @description Refined, damped and capped
+             */
+            event_t_s?: number | null;
+            /** Frames Analysed */
+            frames_analysed: number;
+            /** Models */
+            models?: {
+                [key: string]: string;
+            };
+            /** @description Pass 2: around the moment */
+            refine?: components["schemas"]["VerifierResult"] | null;
+            sandbox_incident?: components["schemas"]["SandboxIncident-Output"] | null;
+            /** @description Pass 1: whole clip, 1-2 fps */
+            scan?: components["schemas"]["VerifierResult"] | null;
+            /** Scan T S */
+            scan_t_s?: number | null;
+            /** Timeline */
+            timeline?: components["schemas"]["TimelineEntry"][];
+        };
+        /** TrySessionOut */
+        TrySessionOut: {
+            /** Events */
+            events: components["schemas"]["SessionEvent-Output"][];
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Id */
+            id: string;
+            /**
+             * Path
+             * @description Video server path the phone publishes to
+             */
+            path: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "ended";
+            /** Whep Url */
+            whep_url: string;
+            /** Whip Url */
+            whip_url: string;
+        };
+        /** TrySessionRef */
+        TrySessionRef: {
+            /** Id */
+            id: string;
+            /** Path */
+            path: string;
+        };
+        /** TryStatus */
+        TryStatus: {
+            /**
+             * Ai Available
+             * @description Brev verifier reachable (reported by the worker)
+             */
+            ai_available: boolean;
+            /** Max Mb */
+            max_mb: number;
+            /** Max Seconds */
+            max_seconds: number;
+            /** Ttl S */
+            ttl_s: number;
+        };
+        /** UnitPatch */
+        UnitPatch: {
+            /** Callsign */
+            callsign?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /**
+             * Status
+             * @description `dispatched` is set by dispatch only
+             */
+            status?: ("available" | "busy" | "offline") | null;
+        };
+        /** UserCreate */
+        UserCreate: {
+            agency?: components["schemas"]["Agency"] | null;
+            /** Display Name */
+            display_name: string;
+            /** Facility Id */
+            facility_id?: string | null;
+            /** Password */
+            password: string;
+            /** Phone */
+            phone?: string | null;
+            role: components["schemas"]["Role"];
+            /** Username */
+            username: string;
+        };
         /** UserOut */
         UserOut: {
             agency: components["schemas"]["Agency"] | null;
@@ -2047,6 +3293,24 @@ export interface components {
             role: components["schemas"]["Role"];
             /** Username */
             username: string;
+        };
+        /** UserPatch */
+        UserPatch: {
+            /**
+             * Active
+             * @description false deactivates the account
+             */
+            active?: boolean | null;
+            agency?: components["schemas"]["Agency"] | null;
+            /** Display Name */
+            display_name?: string | null;
+            /** Facility Id */
+            facility_id?: string | null;
+            /** Password */
+            password?: string | null;
+            /** Phone */
+            phone?: string | null;
+            role?: components["schemas"]["Role"] | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -2127,6 +3391,49 @@ export interface components {
              */
             yes_probability?: number | null;
         };
+        /** VictimCounts */
+        VictimCounts: {
+            /** Black */
+            black: number;
+            /** Green */
+            green: number;
+            /** Red */
+            red: number;
+            /** Total */
+            total: number;
+            /** Yellow */
+            yellow: number;
+        };
+        /** VictimOut */
+        VictimOut: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Avpu */
+            avpu: ("A" | "V" | "P" | "U") | null;
+            /** Bleeding */
+            bleeding: boolean | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Notes */
+            notes: string | null;
+            /** Pulse */
+            pulse: number | null;
+            /** Resp Rate */
+            resp_rate: number | null;
+            /** Spo2 */
+            spo2: number | null;
+            /**
+             * Triage Tag
+             * @enum {string}
+             */
+            triage_tag: "red" | "yellow" | "green" | "black";
+        };
         /** WebhookEnvelope */
         WebhookEnvelope: {
             /** Event */
@@ -2165,6 +3472,27 @@ export interface components {
              */
             trapped: boolean;
         };
+        /** AiStatus */
+        nadjet_api__system__routes__AiStatus: {
+            /** Available */
+            available: boolean;
+            /**
+             * Detail
+             * @description Why the AI is unavailable (no secrets), else null
+             */
+            detail: string | null;
+            /**
+             * Model
+             * @description Served model id when available, else null
+             */
+            model: string | null;
+        };
+        /**
+         * AiStatus
+         * @description Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.
+         * @enum {string}
+         */
+        nadjet_shared__events__AiStatus: "confirmed" | "probable" | "possible" | "insufficient_evidence";
     };
     responses: never;
     parameters: never;
@@ -2174,6 +3502,492 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    list_cameras_admin_cameras_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCamera"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_camera_admin_cameras__camera_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                camera_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CameraPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCamera"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    replace_zones_admin_cameras__camera_id__zones_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                camera_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCamera"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_facilities_admin_facilities_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFacility"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_facility_admin_facilities__facility_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FacilityPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFacility"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_units_admin_units_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUnit"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_unit_admin_units__unit_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUnit"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_users_admin_users_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    create_user_admin_users_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Username taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_user_admin_users__user_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Own account */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     login_auth_login_post: {
         parameters: {
             query?: never;
@@ -2406,6 +4220,151 @@ export interface operations {
             };
         };
     };
+    prealerts_facilities__facility_id__prealerts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HospitalBoard"];
+                };
+            };
+            /** @description Not this hospital's user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    acknowledge_facilities__facility_id__prealerts__incident_id__ack_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not this hospital's user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Incident is no longer incoming */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readiness_facilities__facility_id__readiness_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReadinessIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FacilityState"];
+                };
+            };
+            /** @description Not this hospital's user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_health_get: {
         parameters: {
             query?: never;
@@ -2576,7 +4535,10 @@ export interface operations {
     add_casualty_incidents__incident_id__casualties_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Repeating a request with the same key changes nothing (offline queues) */
+                "Idempotency-Key"?: string | null;
+            };
             path: {
                 incident_id: string;
             };
@@ -2977,7 +4939,10 @@ export interface operations {
     set_status_incidents__incident_id__status_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Repeating a request with the same key changes nothing (offline queues) */
+                "Idempotency-Key"?: string | null;
+            };
             path: {
                 incident_id: string;
             };
@@ -3249,6 +5214,410 @@ export interface operations {
             };
         };
     };
+    claim_internal_try_claim_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryJobClaim"];
+                };
+            };
+            /** @description Nothing queued */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_failure_internal_try_jobs__job_id__fail_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryJobFailure"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not processing */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    job_file_internal_try_jobs__job_id__file_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Gone */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    progress_internal_try_jobs__job_id__progress_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryProgress"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not processing */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_result_internal_try_jobs__job_id__result_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryResult-Input"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not processing */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_video_internal_try_jobs__job_id__video_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown job */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    active_sessions_internal_try_sessions_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrySessionRef"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    session_event_internal_try_sessions__session_id__events_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SessionEvent-Input"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session ended */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_status_internal_try_status_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryAiReport"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    kpis_kpis_get: {
+        parameters: {
+            query?: {
+                /** @description Default: 30 days ago */
+                since?: string | null;
+                /** @description Default: now */
+                until?: string | null;
+                period?: "day" | "week" | "month";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KpiReport"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     map_resources_map_resources_get: {
         parameters: {
             query?: never;
@@ -3320,6 +5689,355 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    create_job_public_try_jobs_post: {
+        parameters: {
+            query?: {
+                filename?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "video/mp4": string;
+                "video/quicktime": string;
+                "video/webm": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryJobOut"];
+                };
+            };
+            /** @description Too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a video */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too long */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Rate limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_job_public_try_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryJobOut"];
+                };
+            };
+            /** @description Unknown or expired */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_job_public_try_jobs__job_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_job_public_try_jobs__job_id__events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Rate limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    job_video_public_try_jobs__job_id__video_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description No annotated video */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_session_public_try_sessions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrySessionOut"];
+                };
+            };
+            /** @description Rate limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_session_state_public_try_sessions__session_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrySessionOut"];
+                };
+            };
+            /** @description Ended */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    end_session_public_try_sessions__session_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ping_session_public_try_sessions__session_id__ping_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ended */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    try_status_public_try_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryStatus"];
+                };
             };
         };
     };
@@ -3455,6 +6173,26 @@ export interface operations {
             };
         };
     };
+    sms_gateway_sms_gateway_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmsGateway"];
+                };
+            };
+        };
+    };
     sms_inbound_sms_inbound_post: {
         parameters: {
             query?: {
@@ -3553,7 +6291,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AiStatus-Output"];
+                    "application/json": components["schemas"]["nadjet_api__system__routes__AiStatus"];
                 };
             };
             /** @description Not authenticated */

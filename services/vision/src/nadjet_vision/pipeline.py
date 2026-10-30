@@ -13,6 +13,7 @@ from typing import Any, Protocol
 
 import httpx
 
+from nadjet_shared import VerifierResult
 from nadjet_shared.catalogue import Camera, Zones, load_catalogue
 from nadjet_vision.annotate import AnnotatedPublisher, annotated_url, draw
 from nadjet_vision.config import VisionSettings
@@ -213,6 +214,7 @@ def build_pipeline(
     ring: PacketRing,
     verifier: AiVerifier | None = None,
     loop: asyncio.AbstractEventLoop | None = None,
+    on_check: Callable[[VerifierResult, float], None] | None = None,
 ) -> CameraPipeline:
     """The camera's pipeline: thresholds are the doc 11 defaults, the settings' cooldown and the
     camera's own ``triggers`` overrides, in that order (FR-VIS-004, FR-VIS-010)."""
@@ -230,6 +232,7 @@ def build_pipeline(
             tracker=SweepTracker(settings.sweep_yes_threshold),
             thresholds=StatusThresholds(settings.status_confirmed, settings.status_probable),
             rule_cooling_down=engine.in_cooldown,
+            on_check=on_check,
         )
     return CameraPipeline(
         zones=camera.zones,
@@ -258,9 +261,16 @@ async def run_worker(
     sink: IncidentSink | None = None,
     verifier: AiVerifier | None = None,
     api_transport: httpx.AsyncBaseTransport | None = None,
+    camera: Camera | None = None,
+    stream_path: str | None = None,
+    push_health: bool = True,
+    on_check: Callable[[VerifierResult, float], None] | None = None,
 ) -> None:
     """Run one camera until ``stop``: reconnecting reader, analysis thread, health, metrics."""
-    camera = next(c for c in load_catalogue(settings.cameras_file).cameras if c.id == camera_id)
+    camera = camera or next(
+        c for c in load_catalogue(settings.cameras_file).cameras if c.id == camera_id
+    )
+    stream_path = stream_path or camera_id
     detector = detector or load_detector(settings)
     tracker = tracker or ByteTrackTracker(settings.sample_fps, settings.detector_threshold)
     sampler = FrameSampler(settings.sample_fps)
@@ -268,7 +278,7 @@ async def run_worker(
     queue: LatestFrameQueue[SampledFrame] = LatestFrameQueue()
     state = WorkerState(camera_id, settings, lambda: len(queue), detector.model_id)
     if publisher is None and settings.annotate:
-        url = annotated_url(settings.rtsp_base, camera_id)
+        url = annotated_url(settings.rtsp_base, stream_path)
         publisher = AnnotatedPublisher(url, settings.sample_fps, settings.annotated_encoder)
     vlm: BrevVlmClient | None = None
     if verifier is None and (settings.verify_candidates or settings.sweep_enabled):
@@ -303,6 +313,7 @@ async def run_worker(
         ring=ring,
         verifier=verifier,
         loop=asyncio.get_running_loop(),
+        on_check=on_check,
     )
     if frames is None:
 
@@ -316,9 +327,11 @@ async def run_worker(
             )
 
     loop = asyncio.get_running_loop()
-    background = [
-        asyncio.create_task(push_loop(settings, state.report, stop, api_transport)),
-    ]
+    background = (
+        [asyncio.create_task(push_loop(settings, state.report, stop, api_transport))]
+        if push_health
+        else []
+    )
     server = None
     if settings.metrics_port is not None:
         server = await serve_metrics(settings.metrics_port, state.report)
@@ -329,6 +342,7 @@ async def run_worker(
             camera_id,
             settings,
             stop,
+            path=stream_path,
             frames=frames,
             on_frame=queue.put,
             on_state=state.faults.set_connected,

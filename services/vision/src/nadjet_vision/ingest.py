@@ -73,6 +73,10 @@ class SampledFrame:
     captured_at: float = field(default_factory=time.time)  # wall clock (epoch s) at decode
 
 
+def _decode_order(packet: Packet) -> float:
+    return packet.dts_s if packet.dts_s is not None else packet.pts_s
+
+
 class PacketRing:
     """The last ``window_s`` seconds of encoded packets, always starting on a keyframe.
 
@@ -94,7 +98,8 @@ class PacketRing:
 
     def append(self, packet: Packet) -> None:
         with self._lock:
-            if self._packets and packet.pts_s < self._packets[-1].pts_s:
+            # Decode order: DTS never goes back within one session, PTS does with B-frames.
+            if self._packets and _decode_order(packet) < _decode_order(self._packets[-1]):
                 self._packets.clear()  # timestamp reset after a reconnect
             self._packets.append(packet)
             self._trim(packet.pts_s)

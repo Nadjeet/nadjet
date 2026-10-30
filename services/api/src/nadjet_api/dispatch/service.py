@@ -501,7 +501,8 @@ async def handle_hospital_divert(
 _LIST = """
 SELECT d.id, d.unit_id, d.hospital_id, d.eta_s, d.distance_m, d.route, d.status,
        d.dispatched_by, d.at, u.callsign, u.agency, u.simulated AS unit_simulated,
-       f.name AS hospital_name, f.simulated AS hospital_simulated
+       f.name AS hospital_name, f.simulated AS hospital_simulated,
+       ST_Y(COALESCE(u.geom, f.geom)) AS lat, ST_X(COALESCE(u.geom, f.geom)) AS lon
 FROM dispatches d
 LEFT JOIN units u ON u.id = d.unit_id
 LEFT JOIN facilities f ON f.id = d.hospital_id
@@ -534,6 +535,8 @@ async def list_dispatches(session: AsyncSession, incident_id: uuid.UUID) -> list
                 name=r["callsign"] if is_unit else r["hospital_name"],
                 agency=r["agency"],
                 simulated=r["unit_simulated"] if is_unit else r["hospital_simulated"],
+                lat=r["lat"],
+                lon=r["lon"],
                 eta_s=r["eta_s"],
                 distance_m=r["distance_m"],
                 route_geojson=r["route"],
@@ -544,3 +547,13 @@ async def list_dispatches(session: AsyncSession, incident_id: uuid.UUID) -> list
             )
         )
     return out
+
+
+def for_responder(rows: list[DispatchOut]) -> list[DispatchOut]:
+    """What a responder may see: the hospital the patients go to, nothing about other units or
+    the notifications sent to them (FR-RSP-001)."""
+    return [
+        row.model_copy(update={"deliveries": []})
+        for row in rows
+        if row.kind == "hospital" and row.status == "dispatched"
+    ]

@@ -2,14 +2,7 @@ import { useTranslation } from "react-i18next";
 
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 
-export type PageKey =
-  | "ops.cameras"
-  | "ops.system"
-  | "respond.incidents"
-  | "respond.profile"
-  | "hospital.incoming"
-  | "public.try"
-  | "public.privacy";
+export type PageKey = "ops.cameras" | "ops.system" | "public.try" | "public.privacy";
 
 /** Placeholder screen so feature issues can plug into an existing route and shell. */
 export function PlaceholderPage({ pageKey }: { pageKey: PageKey }) {

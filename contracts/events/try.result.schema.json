@@ -1,0 +1,478 @@
+{
+  "$defs": {
+    "AiStatus": {
+      "description": "Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.",
+      "enum": [
+        "confirmed",
+        "probable",
+        "possible",
+        "insufficient_evidence"
+      ],
+      "title": "AiStatus",
+      "type": "string"
+    },
+    "Box": {
+      "additionalProperties": false,
+      "properties": {
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "track_id": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Track Id"
+        },
+        "x1": {
+          "title": "X1",
+          "type": "number"
+        },
+        "x2": {
+          "title": "X2",
+          "type": "number"
+        },
+        "y1": {
+          "title": "Y1",
+          "type": "number"
+        },
+        "y2": {
+          "title": "Y2",
+          "type": "number"
+        }
+      },
+      "required": [
+        "x1",
+        "y1",
+        "x2",
+        "y2",
+        "label"
+      ],
+      "title": "Box",
+      "type": "object"
+    },
+    "Finding": {
+      "additionalProperties": false,
+      "description": "One statement of the verifier, tied to the frames it was read from (FR-VIS-016).",
+      "properties": {
+        "basis": {
+          "pattern": "^(observed|inferred)$",
+          "title": "Basis",
+          "type": "string"
+        },
+        "frame_ids": {
+          "description": "Frames of the verifier video",
+          "items": {
+            "type": "integer"
+          },
+          "title": "Frame Ids",
+          "type": "array"
+        },
+        "statement": {
+          "minLength": 1,
+          "title": "Statement",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement",
+        "basis"
+      ],
+      "title": "Finding",
+      "type": "object"
+    },
+    "SandboxIncident": {
+      "additionalProperties": false,
+      "description": "What an operator would have been shown, kept inside the sandbox.",
+      "properties": {
+        "ai_status": {
+          "$ref": "#/$defs/AiStatus"
+        },
+        "description_ar": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description Ar"
+        },
+        "description_fr": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description Fr"
+        },
+        "event_time_s": {
+          "minimum": 0,
+          "title": "Event Time S",
+          "type": "number"
+        },
+        "trigger": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Rule trigger near the moment, if any",
+          "title": "Trigger"
+        },
+        "type": {
+          "enum": [
+            "collision",
+            "possible_incident"
+          ],
+          "title": "Type",
+          "type": "string"
+        },
+        "vehicles": {
+          "description": "Detector boxes at the moment",
+          "items": {
+            "$ref": "#/$defs/Box"
+          },
+          "title": "Vehicles",
+          "type": "array"
+        }
+      },
+      "required": [
+        "type",
+        "ai_status",
+        "event_time_s"
+      ],
+      "title": "SandboxIncident",
+      "type": "object"
+    },
+    "TimelineEntry": {
+      "additionalProperties": false,
+      "description": "One event of the analysed clip, in clip seconds, with the source of the value.",
+      "properties": {
+        "detail": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detail"
+        },
+        "kind": {
+          "enum": [
+            "trigger",
+            "ai_scan",
+            "ai_refine"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "source": {
+          "description": "Rule name or model id (FR-VIS-021)",
+          "title": "Source",
+          "type": "string"
+        },
+        "t": {
+          "minimum": 0,
+          "title": "T",
+          "type": "number"
+        }
+      },
+      "required": [
+        "t",
+        "kind",
+        "label",
+        "source"
+      ],
+      "title": "TimelineEntry",
+      "type": "object"
+    },
+    "VerifierResult": {
+      "additionalProperties": false,
+      "description": "Outcome of one call to the AI verifier (or of a failed call).",
+      "properties": {
+        "available": {
+          "description": "False when the verifier timed out or was unreachable",
+          "title": "Available",
+          "type": "boolean"
+        },
+        "collision_visible": {
+          "anyOf": [
+            {
+              "pattern": "^(yes|no|cannot_judge)$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verifier verdict",
+          "title": "Collision Visible"
+        },
+        "description_ar": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description Ar"
+        },
+        "description_fr": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description Fr"
+        },
+        "findings": {
+          "description": "Cited findings; a raise without one is ignored",
+          "items": {
+            "$ref": "#/$defs/Finding"
+          },
+          "title": "Findings",
+          "type": "array"
+        },
+        "invalid": {
+          "default": false,
+          "description": "True when the answer failed validation twice (template text)",
+          "title": "Invalid",
+          "type": "boolean"
+        },
+        "lanes_blocked": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Lanes Blocked"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Model id that produced the answer",
+          "title": "Model"
+        },
+        "not_assessable": {
+          "description": "What the video does not let anyone judge",
+          "items": {
+            "type": "string"
+          },
+          "title": "Not Assessable",
+          "type": "array"
+        },
+        "priority_raise": {
+          "default": 0,
+          "description": "Levels the verifier asks to raise priority (max 1)",
+          "maximum": 1,
+          "minimum": 0,
+          "title": "Priority Raise",
+          "type": "integer"
+        },
+        "t_contact": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Contact time in seconds on the frame stamps: relative to the rule moment for a rule candidate, to the window end for a sweep (negative = before)",
+          "title": "T Contact"
+        },
+        "type": {
+          "anyOf": [
+            {
+              "pattern": "^(collision|rollover|fire|stalled|pedestrian|none)$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "What the verifier sees",
+          "title": "Type"
+        },
+        "vehicles_involved": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vehicles Involved"
+        },
+        "yes_probability": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Probability of the 'yes' answer token (logprobs)",
+          "title": "Yes Probability"
+        }
+      },
+      "required": [
+        "available"
+      ],
+      "title": "VerifierResult",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "ai_available": {
+      "description": "False: only the rule-based analysis is shown",
+      "title": "Ai Available",
+      "type": "boolean"
+    },
+    "duration_s": {
+      "minimum": 0,
+      "title": "Duration S",
+      "type": "number"
+    },
+    "event_t_s": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Refined, damped and capped",
+      "title": "Event T S"
+    },
+    "frames_analysed": {
+      "minimum": 0,
+      "title": "Frames Analysed",
+      "type": "integer"
+    },
+    "models": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "title": "Models",
+      "type": "object"
+    },
+    "refine": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VerifierResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Pass 2: around the moment"
+    },
+    "sandbox_incident": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/SandboxIncident"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "scan": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VerifierResult"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Pass 1: whole clip, 1-2 fps"
+    },
+    "scan_t_s": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Scan T S"
+    },
+    "timeline": {
+      "items": {
+        "$ref": "#/$defs/TimelineEntry"
+      },
+      "title": "Timeline",
+      "type": "array"
+    }
+  },
+  "required": [
+    "duration_s",
+    "frames_analysed",
+    "ai_available"
+  ],
+  "title": "TryResult",
+  "type": "object"
+}

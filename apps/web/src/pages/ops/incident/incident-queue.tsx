@@ -15,8 +15,13 @@ import { Label } from "@/components/ui/label";
 import { formatAge, useLabel } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-import { locationText } from "./incident-format";
-import type { CandidateSource, Incident, IncidentStatus, QueueFilters } from "./incident-queries";
+import { locationText } from "@/lib/incident-format";
+import type {
+  CandidateSource,
+  Incident,
+  IncidentStatus,
+  QueueFilters,
+} from "@/lib/incident-queries";
 
 const STATUSES: IncidentStatus[] = [
   "candidate",

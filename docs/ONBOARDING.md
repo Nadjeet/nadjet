@@ -36,7 +36,7 @@ make migrate
 (cd services/api && uv run nadjet-api seed-users --file ../../data/seed/users.yaml)
 ```
 
-Re-running is safe: existing usernames are skipped. Sign in at http://localhost:5173/login: each role lands on its surface (`operator`, `supervisor`, `auditor`, `admin` → `/ops`; the agency users → `/respond`; `hospital` → `/hospital`). Public pages are at `/public`. The component reference sheet is at `/ops/design`; palette, contrast values and the live-events design are in `apps/web/README.md`.
+Re-running is safe: existing usernames are skipped. Sign in at http://localhost:5173/login: each role lands on its surface (`operator`, `supervisor`, `auditor`, `admin` → `/ops`; the agency users → `/respond`; `hospital` → `/hospital`). Public pages are at `/public`. The hospital view (`/hospital`) is a tablet layout: dispatch an incident to a hospital (operator console), then sign in as that hospital's user to see the pre-alert, the arrival countdown, Ready/Divert and the SMS equivalent. The responder app (`/respond`) needs a phone-sized viewport to judge; set `NADJET_SMS_GATEWAY_NUMBER` (the gateway SIM) to enable its "Send by SMS" button and generate the VAPID keys (`nadjet-api gen-vapid`) for web push; push and installation only work over HTTPS or `localhost` with the built app (`pnpm --filter @nadjet/web build && pnpm --filter @nadjet/web preview`), not the dev server. The component reference sheet is at `/ops/design`; palette, contrast values and the live-events design are in `apps/web/README.md`.
 `NADJET_JWT_SECRET` is optional locally but required (≥ 32 chars) in production.
 
 ### Incident engine
@@ -195,6 +195,11 @@ sets `camera_moving` while the camera pans, publishes the annotated stream `<cam
   plays every camera from `GET /cameras` (WebRTC, falling back to LL-HLS; each tile switches between
   the `<cam>_ai` annotated stream and the raw one). The system page adds `GET /system/ai`: the served
   model id, or "AI unavailable" when Brev is unreachable.
+- KPIs, evaluation and admin (`/ops/kpis`, `/ops/evaluation` for supervisor and admin, `/ops/admin`
+  for admin): `GET /kpis` computes response-time medians and p90 from the incident events;
+  `GET /evaluation/latest` is rendered with its date and commit; `/admin/*` edits cameras, facilities,
+  units and users and audits every change. Evidence older than `NADJET_RETENTION_DAYS` (default 90,
+  max 365) is purged hourly and audited as `retention.purge`.
 - Glass-to-glass latency (SC-007, ≤ 1.5 s): play a clip with an on-screen clock as a camera (or open a
   clock page next to the wall), film both with a phone at 60 fps, and read the difference between the
   clock on the source and the same clock inside the tile. The latency printed on the tile is only what
@@ -267,3 +272,16 @@ the others are listed under `skipped_clips`. The script refuses to run if a tuni
 id or a camera with `triggers:` overrides is bound to a held-out clip. Check reproducibility with
 `make eval-compare A=<file> B=<file>`. The supervisor reads the newest file at
 `GET /evaluation/latest`.
+
+### Try it yourself (issue #18)
+
+`/public/try` lets anyone upload a clip (≤ 60 s, ≤ 100 MB) and `/public/try/live` turns a phone into
+a camera. Both are analysed by `try-worker` (`nadjet-vision try`, part of `make brev-deploy-workers`)
+with the same detector, tracker, rules and Brev AI as the real cameras. Uploads are analysed in two
+AI passes and return the annotated video, the rule timeline, the verdict with cited frames and a
+**sandbox incident** that lives only in the job result: it never appears in the operator queue, the
+KPIs or the evaluation. Uploads, outputs and live sessions are deleted after one hour (a phone
+session when it stops pinging). A live phone shows on the operator camera wall tagged "live demo"
+with the AI boxes; the AI checks it every 4 s. Browsers need HTTPS for the phone camera (use the
+Cloudflare or Brev tunnel on stage). With vLLM stopped the page says "AI unavailable" and shows the
+rule-based result only.

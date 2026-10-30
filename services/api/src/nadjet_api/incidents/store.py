@@ -34,6 +34,10 @@ class EvidenceStore(Protocol):
         """Stream the stored bytes; raises ``EvidenceNotFoundError`` when missing."""
         ...
 
+    async def delete(self, path: str) -> None:
+        """Remove the stored file; a file that is already gone is not an error."""
+        ...
+
 
 class LocalEvidenceStore:
     def __init__(self, root: Path) -> None:
@@ -70,6 +74,9 @@ class LocalEvidenceStore:
         async with await target.open("rb") as handle:
             while chunk := await handle.read(CHUNK):
                 yield chunk
+
+    async def delete(self, path: str) -> None:
+        await anyio.Path(self._resolve(path)).unlink(missing_ok=True)
 
 
 async def sha256_of(store: EvidenceStore, path: str) -> str:

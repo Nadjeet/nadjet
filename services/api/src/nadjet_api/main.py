@@ -1,5 +1,6 @@
 """FastAPI application factory."""
 
+import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -13,6 +14,7 @@ from pydantic import BaseModel
 from redis.asyncio import Redis
 
 from nadjet_api import __version__
+from nadjet_api.admin.routes import router as admin_router
 from nadjet_api.auth.routes import router as auth_router
 from nadjet_api.cameras.internal import router as camera_internal_router
 from nadjet_api.cameras.routes import router as cameras_router
@@ -25,16 +27,23 @@ from nadjet_api.evaluation.routes import router as evaluation_router
 from nadjet_api.geo.resources import router as map_resources_router
 from nadjet_api.geo.tiles import router as tiles_router
 from nadjet_api.health import Probe, database_probe, redis_probe, run_probes
+from nadjet_api.hospital.routes import router as hospital_router
 from nadjet_api.incidents import internal
 from nadjet_api.incidents import routes as incident_routes
 from nadjet_api.incidents.signing import ChainSigner
 from nadjet_api.incidents.store import LocalEvidenceStore
+from nadjet_api.kpis.routes import router as kpis_router
 from nadjet_api.notifications.channels import build_channels
 from nadjet_api.notifications.routes import router as notifications_router
+from nadjet_api.retention import retention_loop
 from nadjet_api.routing.router import OsrmRouter, Router
 from nadjet_api.routing.routes import router as routing_router
 from nadjet_api.streams.auth import router as streams_router
 from nadjet_api.system.routes import router as system_ai_router
+from nadjet_api.tryit import service as try_service
+from nadjet_api.tryit.internal import router as try_internal_router
+from nadjet_api.tryit.routes import purge_loop
+from nadjet_api.tryit.routes import router as try_router
 
 
 class HealthResponse(BaseModel):
@@ -75,11 +84,23 @@ def create_app(
         app.state.redis = redis
         app.state.probes = {"database": database_probe(engine), "redis": redis_probe(redis)}
         app.state.channels = build_channels(settings, http)
+        stop_purge = asyncio.Event()
+        purger = asyncio.create_task(
+            purge_loop(app.state, settings.try_purge_interval_s, stop_purge)
+        )
+        stop_retention = asyncio.Event()
+        retainer = asyncio.create_task(
+            retention_loop(app.state, settings.retention_interval_s, stop_retention)
+        )
         # Notification jobs are enqueued after each dispatch (the worker runs them, TD-08).
         app.state.arq = await create_pool(RedisSettings.from_dsn(str(settings.redis_url)))
         try:
             yield
         finally:
+            stop_purge.set()
+            stop_retention.set()
+            await purger
+            await retainer
             await app.state.arq.aclose()
             await http.aclose()
             await redis.aclose()
@@ -89,6 +110,7 @@ def create_app(
     app.state.settings = settings
     app.state.signer = ChainSigner(settings.signing_seed)
     app.state.store = LocalEvidenceStore(settings.evidence_dir)
+    app.state.try_store = try_service.SandboxStore(settings.try_dir)
     app.include_router(auth_router)
     app.include_router(streams_router)
     app.include_router(cameras_router)
@@ -99,11 +121,16 @@ def create_app(
     app.include_router(notifications_router)
     app.include_router(incident_routes.router)
     app.include_router(dispatch_router)
+    app.include_router(hospital_router)
     app.include_router(internal.router)
     app.include_router(citizen_router)
     app.include_router(routing_router)
     app.include_router(evaluation_router)
+    app.include_router(kpis_router)
+    app.include_router(admin_router)
     app.include_router(map_resources_router)
+    app.include_router(try_router)
+    app.include_router(try_internal_router)
     app.include_router(tiles_router)
     app.add_middleware(
         CORSMiddleware,

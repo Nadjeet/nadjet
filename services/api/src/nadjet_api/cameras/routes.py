@@ -16,11 +16,39 @@ from nadjet_api.cameras.schemas import CameraOut, CameraStatus, CameraSystemStat
 from nadjet_api.config import Settings
 from nadjet_api.db import get_session
 from nadjet_api.incidents.deps import RedisDep
+from nadjet_api.tryit.models import TrySession
 
 router = APIRouter(prefix="/cameras", tags=["cameras"])
 system_router = APIRouter(prefix="/system", tags=["system"])
 
 OperatorUser = Annotated[User, Depends(require_roles(Role.OPERATOR, Role.SUPERVISOR, Role.ADMIN))]
+
+
+def live_camera_out(session: TrySession, settings: Settings) -> CameraOut:
+    """A phone on the try page, shown on the wall tagged as a live demo (never a real camera)."""
+    code = session.path.removeprefix("live/")
+    return CameraOut(
+        id=f"live-{code}",
+        name=f"Live demo ({code})",
+        lat=settings.live_demo_lat,
+        lon=settings.live_demo_lon,
+        road="live demo",
+        pk_km=None,
+        heading_deg=0,
+        wilaya="-",
+        zones=None,
+        # Online only once the worker posted a result from the phone stream: a session whose
+        # phone never published must not look live (FR-VIS-020).
+        status="online" if session.events else "unknown",
+        simulated=False,
+        live_demo=True,
+        stream=StreamUrls(
+            path=session.path,
+            rtsp_url=settings.rtsp_url_template.format(path=session.path),
+            whep_url=settings.whep_url_template.format(path=session.path),
+            hls_url=settings.hls_url_template.format(path=session.path),
+        ),
+    )
 
 
 def camera_out(camera: Camera, settings: Settings) -> CameraOut:
@@ -53,8 +81,13 @@ async def list_cameras(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> list[CameraOut]:
     """All registered cameras with coordinates, zones and stream URLs."""
+    settings: Settings = request.app.state.settings
     rows = await session.scalars(select(Camera).order_by(Camera.id))
-    return [camera_out(c, request.app.state.settings) for c in rows]
+    live = await session.scalars(select(TrySession).order_by(TrySession.created_at))
+    return [
+        *(camera_out(c, settings) for c in rows),
+        *(live_camera_out(s, settings) for s in live),
+    ]
 
 
 @router.get("/{camera_id}", responses={404: {"description": "Unknown camera"}})

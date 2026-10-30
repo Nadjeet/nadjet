@@ -27,10 +27,10 @@ class VisionSettings(BaseSettings):
     )
     vlm_timeout_s: float = Field(default=15.0, gt=0, description="PRD FR-VIS-009 timeout")
     vlm_budget_s: float = Field(
-        default=7.0,
+        default=15.0,
         gt=0,
-        description="Whole verification (video + call + retry) per candidate; SC-001 leaves "
-        "the AI about this much of the 10 s budget",
+        description="Whole verification (video + call + retry) per candidate; one call takes "
+        "6-8 s on the L40S alone and about 11 s next to a sweep (TD-50)",
     )
     vlm_backoff_s: float = Field(
         default=30.0,
@@ -76,7 +76,9 @@ class VisionSettings(BaseSettings):
         default=True, description="Ask the AI verifier about every rule candidate (FR-VIS-005)"
     )
     sweep_enabled: bool = Field(default=True, description="AI sweep on every camera (FR-VIS-015)")
-    sweep_every_s: float = Field(default=5.0, gt=0, description="Sweep interval per camera (TD-22)")
+    sweep_every_s: float = Field(
+        default=8.0, gt=0, description="Sweep interval per camera (TD-22, TD-50)"
+    )
     sweep_yes_threshold: float = Field(
         default=0.5, gt=0, le=1, description="Yes-token probability that counts as a sweep hit"
     )
@@ -86,6 +88,8 @@ class VisionSettings(BaseSettings):
     status_probable: float = Field(
         default=0.5, gt=0, le=1, description="Yes probability for `probable` (TQ-07, untuned)"
     )
+    live_check_s: float = Field(default=4.0, gt=0, description="Live phone AI check (FR-CIT-003)")
+    try_poll_s: float = Field(default=1.0, gt=0, description="Try-it job and session polling")
     annotate: bool = Field(default=True, description="Publish <camera>_ai annotated stream")
     annotated_encoder: str = Field(default="h264_nvenc", description="ffmpeg video encoder (TD-07)")
     metrics_port: int | None = Field(default=None, description="Serve /metrics on this port")

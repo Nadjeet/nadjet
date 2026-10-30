@@ -58,6 +58,28 @@ services:
         reservations:
           devices: [{ driver: nvidia, count: all, capabilities: [gpu, video] }]
 
+  try-worker:
+    # Public "try it yourself" worker (FR-CIT-002/003): uploaded clips and live phone cameras.
+    # Same image and AI endpoint as the camera workers; results stay in the API sandbox.
+    profiles: [workers]
+    image: ${NADJET_VISION_IMAGE:-ghcr.io/nadjeet/nadjet-vision:dev}
+    command: ["try"]
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      NADJET_RTSP_BASE: ${NADJET_RTSP_BASE:-rtsp://127.0.0.1:18554}
+      NADJET_API_URL: ${NADJET_API_URL:-http://127.0.0.1:18080}
+      NADJET_INGEST_TOKEN: ${NADJET_INGEST_TOKEN:-}
+      NADJET_VLM_BASE_URL: ${NADJET_VLM_BASE_URL:-http://127.0.0.1:8000/v1}
+      NADJET_VLM_MODEL: ${NADJET_VLM_MODEL:-Qwen/Qwen3-VL-8B-Instruct-FP8}
+    volumes: [weights:/app/weights]
+    depends_on:
+      vllm: { condition: service_healthy }
+    deploy:
+      resources:
+        reservations:
+          devices: [{ driver: nvidia, count: all, capabilities: [gpu, video] }]
+
 volumes:
   hf-cache: {}
   weights: {}

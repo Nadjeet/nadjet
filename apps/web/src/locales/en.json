@@ -34,7 +34,10 @@
     "report": "Report a crash",
     "try": "Try it",
     "privacy": "Privacy",
-    "incidents": "Incidents"
+    "incidents": "Incidents",
+    "kpis": "Response KPIs",
+    "evaluation": "AI evaluation",
+    "admin": "Administration"
   },
   "login": {
     "title": "Sign in",
@@ -137,22 +140,6 @@
         "body": "The live incident queue and detail view will appear here."
       }
     },
-    "respond": {
-      "incidents": {
-        "title": "My incidents",
-        "body": "Incidents assigned to your unit will appear here."
-      },
-      "profile": {
-        "title": "Profile",
-        "body": "Your unit and notification settings will appear here."
-      }
-    },
-    "hospital": {
-      "incoming": {
-        "title": "Incoming alerts",
-        "body": "Pre-alerts and the ready or divert switch will appear here."
-      }
-    },
     "public": {
       "home": {
         "title": "Report a crash. Help is coordinated in minutes.",
@@ -185,8 +172,52 @@
         }
       },
       "try": {
-        "title": "Try it",
-        "body": "Upload a clip and see how the detection works."
+        "title": "Try the detection",
+        "body": "Upload up to {{seconds}} s and {{mb}} MB of traffic video, or use your phone as a live camera. The same AI that watches the cameras analyses it.",
+        "consent": {
+          "title": "Before you upload",
+          "body": "Your video is analysed by Nadjet's AI on our own server, kept in an isolated sandbox for one hour and then deleted. It is never mixed with real incidents. Do not upload videos showing people you do not have the right to film."
+        },
+        "choose": "Choose a video",
+        "livePhone": "Use my phone as a camera",
+        "aiUnavailable": "AI unavailable: only the rule-based analysis is shown.",
+        "progress": "Analysis progress",
+        "annotated": "Video with detections",
+        "incident": "Result",
+        "sandbox": "Sandbox",
+        "status": "AI status",
+        "time": "Moment",
+        "vehicles": "Vehicles",
+        "frames": "frames",
+        "noCollision": "The AI sees no collision in this clip.",
+        "noRuleCollision": "No collision was detected by the rules.",
+        "timeline": "Timeline",
+        "timelineEmpty": "Nothing was detected.",
+        "delete": "Delete my video now",
+        "stages": {
+          "queued": "Waiting for a free analyser",
+          "starting": "Starting",
+          "detect": "Detecting vehicles",
+          "ai_scan": "AI scan of the whole clip",
+          "ai_refine": "AI close look at the moment",
+          "done": "Done"
+        },
+        "errors": {
+          "tooLarge": "This file is larger than {{mb}} MB.",
+          "notVideo": "This file is not a video (MP4, MOV or WebM).",
+          "tooLong": "This video is longer than {{seconds}} s.",
+          "rateLimited": "Too many attempts. Please wait a minute.",
+          "failed": "The upload failed. Try again."
+        },
+        "live": {
+          "title": "Your phone as a live camera",
+          "body": "Point your phone at a road or a screen. It appears on the operators' camera wall as a live demo, and the AI checks it every 4 seconds. The session and its results are deleted when you leave.",
+          "start": "Start the camera",
+          "stop": "Stop",
+          "on": "Live",
+          "preview": "Your camera",
+          "failed": "The camera could not be started."
+        }
       },
       "privacy": {
         "title": "Privacy",
@@ -379,7 +410,9 @@
       "system": "System",
       "hospital_diverted": "Hospital answered DIVERT",
       "hospital_changed": "Hospital changed",
-      "notification_failed": "Notification failed"
+      "notification_failed": "Notification failed",
+      "hospital_response": "Hospital set Ready or Divert",
+      "prealert_acknowledged": "Hospital acknowledged the pre-alert"
     },
     "casualties": {
       "title": "Casualties",
@@ -499,6 +532,292 @@
       "live": "Live",
       "degraded": "Degraded",
       "offline": "Offline"
+    },
+    "liveDemo": "Live demo"
+  },
+  "kpis": {
+    "title": "Response KPIs",
+    "intro": "Durations come from the signed incident timeline. Merged duplicates are not counted.",
+    "from": "From",
+    "to": "To",
+    "periodLabel": "Group by period",
+    "period": {
+      "day": "Day",
+      "week": "Week",
+      "month": "Month"
+    },
+    "loading": "Loading KPIs…",
+    "error": "KPIs could not be loaded.",
+    "none": "No data",
+    "overall": "All incidents",
+    "byPeriod": "By period",
+    "byAgency": "By agency",
+    "byWilaya": "By wilaya",
+    "group": "Group",
+    "incidents": "Incidents",
+    "median": "Median",
+    "p90": "90th percentile",
+    "samples": "n",
+    "metric": {
+      "detection_s": "Detection delay",
+      "verification_s": "Verification",
+      "acknowledge_s": "Acknowledgement",
+      "scene_s": "Time to scene",
+      "hospital_s": "Time to hospital"
+    },
+    "metricHelp": {
+      "detection_s": "Event to incident created",
+      "verification_s": "Created to verified",
+      "acknowledge_s": "Dispatch to acknowledged",
+      "scene_s": "Dispatch to on scene",
+      "hospital_s": "Dispatch to at hospital"
+    },
+    "falseAlarms": "False alarms by camera",
+    "camera": "Camera",
+    "raised": "Incidents",
+    "falsePositives": "False positives",
+    "rate": "Rate",
+    "perIncident": "Per incident",
+    "code": "Code",
+    "status": "Status",
+    "wilaya": "Wilaya",
+    "eventTime": "Event time",
+    "priority": "Priority"
+  },
+  "evaluation": {
+    "title": "AI evaluation",
+    "loading": "Loading results…",
+    "error": "Results could not be loaded.",
+    "none": "No evaluation has been run yet. Run make eval.",
+    "generated": "Run on",
+    "commit": "Commit",
+    "dirty": "uncommitted changes",
+    "seed": "Seed",
+    "samples": "Bootstrap draws",
+    "models": "Models used",
+    "cameraHours": "Negative footage (camera-hours)",
+    "targetMet": "Meets the one camera-hour target",
+    "targetMissed": "Below the one camera-hour target",
+    "ablation": "Results by configuration",
+    "configuration": "Configuration",
+    "precision": "Precision",
+    "recall": "Recall",
+    "f1": "F1",
+    "delay": "Median delay (s)",
+    "falseAlarmsPerHour": "False alarms / camera-hour",
+    "tp": "True positives",
+    "fp": "False positives",
+    "fn": "False negatives",
+    "ci": "95 % interval",
+    "notRun": "Not run",
+    "aiQuality": "Quality of AI answers",
+    "verifications": "Answered calls",
+    "validFirstTry": "Valid at first try",
+    "droppedCitations": "Findings dropped (bad frame ids)",
+    "cannotJudge": "Could not judge",
+    "unavailable": "Calls without answer",
+    "latency": "Latency (ms)",
+    "p50": "p50",
+    "p95": "p95",
+    "calls": "Calls",
+    "limits": "Honest limits",
+    "limitsNote": "These numbers come from a small test set. Read the intervals, not only the values; what was not run is listed, never estimated.",
+    "clips": "Scored clips",
+    "clip": "Clip",
+    "kind": "Kind",
+    "alerts": "Alerts",
+    "skipped": "Skipped clips"
+  },
+  "admin": {
+    "title": "Administration",
+    "intro": "Every change is written to the audit log.",
+    "tabs": {
+      "cameras": "Cameras",
+      "facilities": "Facilities",
+      "units": "Units",
+      "users": "Users"
+    },
+    "save": "Save",
+    "saved": "Saved",
+    "error": "The change was refused: {{message}}",
+    "loading": "Loading…",
+    "name": "Name",
+    "road": "Road",
+    "wilaya": "Wilaya",
+    "heading": "Heading (°)",
+    "zones": "Zones (JSON file)",
+    "zonesInvalid": "This file is not a JSON object.",
+    "readyState": "State",
+    "ready": "Ready",
+    "divert": "Divert",
+    "contactSms": "SMS contact",
+    "capabilities": "Capabilities",
+    "callsign": "Callsign",
+    "status": "Status",
+    "phone": "Phone",
+    "available": "Available",
+    "dispatched": "Dispatched",
+    "busy": "Busy",
+    "offline": "Offline",
+    "username": "Username",
+    "displayName": "Display name",
+    "password": "Password (12+ characters)",
+    "newPassword": "New password",
+    "role": "Role",
+    "agency": "Agency",
+    "facility": "Facility id",
+    "active": "Active",
+    "deactivate": "Deactivate",
+    "activate": "Activate",
+    "createUser": "Create user",
+    "noAgency": "None",
+    "roles": {
+      "operator": "Operator",
+      "supervisor": "Supervisor",
+      "responder": "Responder",
+      "hospital": "Hospital",
+      "auditor": "Auditor",
+      "admin": "Administrator"
+    },
+    "agencies": {
+      "civil_protection": "Civil Protection",
+      "gendarmerie": "Gendarmerie",
+      "police": "Police",
+      "samu": "SAMU"
+    },
+    "inactive": "Inactive"
+  },
+  "respond": {
+    "offline": "You are offline. Actions are saved on this phone and sent when the connection returns.",
+    "list": {
+      "title": "My incidents",
+      "empty": "No incident is assigned to your agency.",
+      "loadError": "The incidents could not be loaded."
+    },
+    "alerts": {
+      "enable": "Enable alerts",
+      "body": "Get a notification as soon as a unit of your agency is dispatched.",
+      "denied": "Notifications are blocked in the browser settings.",
+      "unsupported": "This browser cannot receive push alerts.",
+      "error": "Alerts could not be enabled. Try again.",
+      "on": "Alerts are on."
+    },
+    "install": {
+      "button": "Add to home screen",
+      "body": "Open Nadjet from the home screen, even with a weak connection.",
+      "done": "Installed on this phone.",
+      "manual": "In the browser menu, choose Add to home screen (iPhone: Share, then Add to Home Screen)."
+    },
+    "detail": {
+      "back": "My incidents",
+      "where": "Location",
+      "openMap": "Open in maps app",
+      "openOsm": "OpenStreetMap",
+      "hospital": "Hospital",
+      "noHospital": "No hospital assigned yet.",
+      "ai": "AI description",
+      "aiNote": "Written by the AI from the video. It is not a medical assessment.",
+      "noAi": "No AI description for this incident.",
+      "evidence": "Evidence",
+      "notFound": "This incident does not exist or is not assigned to your agency.",
+      "trapped": "Someone is trapped",
+      "people": "{{count}} people reported"
+    },
+    "action": {
+      "title": "Status",
+      "acknowledged": "Acknowledge",
+      "en_route": "En route",
+      "on_scene": "On scene",
+      "transporting": "Transporting",
+      "at_hospital": "At hospital",
+      "closed": "Close incident",
+      "closeNoTransport": "Close without transport",
+      "done": "This incident is closed.",
+      "waiting": "Waiting for dispatch.",
+      "confirmTitle": "Close {{code}}?",
+      "confirmBody": "The incident is closed for everyone and your unit becomes available again.",
+      "confirm": "Close",
+      "cancel": "Cancel",
+      "queued": "Saved on this phone. It is sent when the connection returns.",
+      "failed": "The action was refused ({{error}}).",
+      "sending": "Sending…"
+    },
+    "triage": {
+      "title": "Record a victim",
+      "recorded": "{{count}} victims recorded",
+      "tag": "START category",
+      "red": "Immediate (red)",
+      "yellow": "Delayed (yellow)",
+      "green": "Minor (green)",
+      "black": "Deceased (black)",
+      "avpu": "Consciousness (AVPU)",
+      "A": "Alert",
+      "V": "Voice",
+      "P": "Pain",
+      "U": "Unresponsive",
+      "resp": "Breaths / min",
+      "pulse": "Pulse / min",
+      "spo2": "SpO₂ % (optional)",
+      "bleeding": "Bleeding",
+      "notes": "Notes",
+      "submit": "Record victim",
+      "saved": "Victim recorded.",
+      "queued": "Saved on this phone. It is sent when the connection returns."
+    },
+    "sms": {
+      "send": "Send by SMS",
+      "body": "Opens your SMS app with this message ready:",
+      "noNumber": "The SMS number is not set up."
+    },
+    "pending": {
+      "title": "Waiting to be sent",
+      "status": "Status: {{status}}",
+      "triage": "Victim: {{tag}}",
+      "failed": "Refused: {{error}}",
+      "discard": "Remove (already sent by SMS)"
+    },
+    "profile": {
+      "title": "Profile",
+      "alerts": "Alerts",
+      "app": "Application",
+      "gateway": "SMS fallback number",
+      "queue": "Offline queue",
+      "queueHint": "Actions taken without a connection wait here and are sent once, in order, when it returns."
+    }
+  },
+  "hospital": {
+    "incomingTitle": "Incoming patients",
+    "incoming": "{{count}} incoming",
+    "none": "No pre-alert at the moment.",
+    "historyTitle": "Today's arrivals",
+    "noHistory": "No arrival yet today.",
+    "historyVictims": "{{count}} victims",
+    "massCasualty": "Possible mass casualty",
+    "massCasualtyBanner": "Possible mass casualty incoming: {{codes}}. Prepare for several patients.",
+    "noFacility": "Your account is not linked to a hospital.",
+    "loadError": "The pre-alerts could not be loaded.",
+    "error": "The action failed. Try again.",
+    "readiness": {
+      "title": "Can you receive patients?",
+      "ready": "Ready",
+      "divert": "Divert",
+      "nowReady": "Your hospital is Ready: the operators may send patients.",
+      "nowDivert": "Your hospital is on Divert: the operators will not choose it.",
+      "sms": "By SMS, reply with the incident code:",
+      "confirmTitle": "Divert patients away from your hospital?",
+      "confirmBody": "The operators are alerted at once and choose another hospital for every incoming patient group."
+    },
+    "card": {
+      "arrivesIn": "Arrives in",
+      "overdue": "Overdue by",
+      "dueAt": "Due at {{time}}",
+      "victims": "Victims",
+      "vitals": "Victims and vital signs",
+      "noVictims": "No victim reported yet. This updates as the crew records them.",
+      "noUnit": "Unit not known",
+      "extrication": "Extrication needed",
+      "acknowledge": "Acknowledge pre-alert",
+      "acknowledged": "Acknowledged by {{name}} at {{time}}"
     }
   }
 }

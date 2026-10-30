@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { components } from "@nadjet/api-client";
 
 import { api } from "@/api";
-import { camerasKey, incidentKey, incidentsKey } from "@/live/keys";
+import { camerasKey, incidentKey, incidentsKey, mapResourcesKey } from "@/live/keys";
 import { useLiveEvents } from "@/live/live-events-context";
 
 export type Incident = components["schemas"]["IncidentOut"];
@@ -18,6 +18,8 @@ export type CandidateSource = components["schemas"]["CandidateSource"];
 export type Recommendations = components["schemas"]["IncidentRecommendations"];
 export type RankedResource = components["schemas"]["RankedResource"];
 export type DispatchRow = components["schemas"]["DispatchOut"];
+export type CasualtyIn = components["schemas"]["CasualtyIn"];
+export type TriageTag = components["schemas"]["TriageTag"];
 
 export type QueueFilters = {
   /** `open` is every incident that is not rejected, merged or closed. */
@@ -35,7 +37,7 @@ export class ApiError extends Error {
 }
 
 /** While the live stream is down the data is refetched on a timer (FR-MAP-002). */
-function useFallbackPolling(): number | false {
+export function useFallbackPolling(): number | false {
   return useLiveEvents() === "live" ? false : 5_000;
 }
 
@@ -90,7 +92,7 @@ export function useCameras() {
 
 export function useMapResources() {
   return useQuery({
-    queryKey: ["map", "resources"],
+    queryKey: mapResourcesKey,
     refetchInterval: 30_000,
     queryFn: async () => {
       const { data, response } = await api.GET("/map/resources");
@@ -246,5 +248,18 @@ export function useChangeHospital(id: string) {
       return data;
     },
     onSuccess: () => refresh(id),
+  });
+}
+
+/** Number of the gateway SIM, for the SMS fallback (`null` when the API has none set). */
+export function useSmsGateway() {
+  return useQuery({
+    queryKey: ["sms-gateway"],
+    staleTime: 60 * 60 * 1000,
+    queryFn: async () => {
+      const { data, response } = await api.GET("/sms/gateway");
+      if (!data) throw new ApiError(response.status);
+      return data.number;
+    },
   });
 }

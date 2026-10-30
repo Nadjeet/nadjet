@@ -42,6 +42,283 @@
         "title": "AblationRow",
         "type": "object"
       },
+      "AdminCamera": {
+        "properties": {
+          "heading_deg": {
+            "title": "Heading Deg",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "pk_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pk Km"
+          },
+          "road": {
+            "title": "Road",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "wilaya": {
+            "title": "Wilaya",
+            "type": "string"
+          },
+          "zones": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Zones"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "lat",
+          "lon",
+          "road",
+          "pk_km",
+          "heading_deg",
+          "wilaya",
+          "zones",
+          "status",
+          "simulated"
+        ],
+        "title": "AdminCamera",
+        "type": "object"
+      },
+      "AdminFacility": {
+        "properties": {
+          "capabilities": {
+            "additionalProperties": {
+              "type": "boolean"
+            },
+            "title": "Capabilities",
+            "type": "object"
+          },
+          "contact_sms": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Sms"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ready_state": {
+            "enum": [
+              "ready",
+              "divert"
+            ],
+            "title": "Ready State",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "wilaya",
+          "capabilities",
+          "ready_state",
+          "contact_sms",
+          "simulated"
+        ],
+        "title": "AdminFacility",
+        "type": "object"
+      },
+      "AdminUnit": {
+        "properties": {
+          "agency": {
+            "title": "Agency",
+            "type": "string"
+          },
+          "callsign": {
+            "title": "Callsign",
+            "type": "string"
+          },
+          "facility_id": {
+            "title": "Facility Id",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "dispatched",
+              "busy",
+              "offline"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "facility_id",
+          "agency",
+          "callsign",
+          "status",
+          "phone",
+          "simulated"
+        ],
+        "title": "AdminUnit",
+        "type": "object"
+      },
+      "AdminUserOut": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "agency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Agency"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "created_at": {
+            "format": "date-time",
+            "title": "Created At",
+            "type": "string"
+          },
+          "display_name": {
+            "title": "Display Name",
+            "type": "string"
+          },
+          "facility_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facility Id"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "username": {
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "display_name",
+          "role",
+          "agency",
+          "facility_id",
+          "phone",
+          "active",
+          "created_at"
+        ],
+        "title": "AdminUserOut",
+        "type": "object"
+      },
       "Agency": {
         "enum": [
           "civil_protection",
@@ -98,45 +375,6 @@
         ],
         "title": "AiStatus",
         "type": "string"
-      },
-      "AiStatus-Output": {
-        "properties": {
-          "available": {
-            "title": "Available",
-            "type": "boolean"
-          },
-          "detail": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Why the AI is unavailable (no secrets), else null",
-            "title": "Detail"
-          },
-          "model": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Served model id when available, else null",
-            "title": "Model"
-          }
-        },
-        "required": [
-          "available",
-          "model",
-          "detail"
-        ],
-        "title": "AiStatus",
-        "type": "object"
       },
       "AlertRecord": {
         "additionalProperties": false,
@@ -329,6 +567,88 @@
         "title": "Body_upload_evidence_internal_evidence_post",
         "type": "object"
       },
+      "Box": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "track_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Id"
+          },
+          "x1": {
+            "title": "X1",
+            "type": "number"
+          },
+          "x2": {
+            "title": "X2",
+            "type": "number"
+          },
+          "y1": {
+            "title": "Y1",
+            "type": "number"
+          },
+          "y2": {
+            "title": "Y2",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x1",
+          "y1",
+          "x2",
+          "y2",
+          "label"
+        ],
+        "title": "Box",
+        "type": "object"
+      },
+      "CameraFalseAlarms": {
+        "properties": {
+          "camera_id": {
+            "title": "Camera Id",
+            "type": "string"
+          },
+          "false_positives": {
+            "description": "Rejected by an operator as false positive",
+            "title": "False Positives",
+            "type": "integer"
+          },
+          "incidents": {
+            "description": "Distinct incidents the camera raised (duplicates excluded)",
+            "title": "Incidents",
+            "type": "integer"
+          },
+          "rate": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rate"
+          }
+        },
+        "required": [
+          "camera_id",
+          "incidents",
+          "false_positives",
+          "rate"
+        ],
+        "title": "CameraFalseAlarms",
+        "type": "object"
+      },
       "CameraHealthAck": {
         "properties": {
           "status": {
@@ -472,6 +792,12 @@
             "title": "Lat",
             "type": "number"
           },
+          "live_demo": {
+            "default": false,
+            "description": "A visitor's phone on the try page (sandbox, FR-CIT-003)",
+            "title": "Live Demo",
+            "type": "boolean"
+          },
           "lon": {
             "title": "Lon",
             "type": "number"
@@ -545,6 +871,102 @@
           "stream"
         ],
         "title": "CameraOut",
+        "type": "object"
+      },
+      "CameraPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "heading_deg": {
+            "anyOf": [
+              {
+                "exclusiveMaximum": 360.0,
+                "minimum": 0.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Heading Deg"
+          },
+          "lat": {
+            "anyOf": [
+              {
+                "maximum": 90.0,
+                "minimum": -90.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "lon": {
+            "anyOf": [
+              {
+                "maximum": 180.0,
+                "minimum": -180.0,
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "pk_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pk Km"
+          },
+          "road": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Road"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "title": "CameraPatch",
         "type": "object"
       },
       "CameraSystemStatus": {
@@ -1023,6 +1445,15 @@
             "title": "Kind",
             "type": "string"
           },
+          "lat": {
+            "description": "Position of the unit or hospital",
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
           "name": {
             "title": "Name",
             "type": "string"
@@ -1063,6 +1494,8 @@
           "name",
           "agency",
           "simulated",
+          "lat",
+          "lon",
           "eta_s",
           "distance_m",
           "route_geojson",
@@ -1389,6 +1822,99 @@
         "title": "EvidenceOut",
         "type": "object"
       },
+      "FacilityPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "capabilities": {
+            "anyOf": [
+              {
+                "additionalProperties": {
+                  "type": "boolean"
+                },
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capabilities"
+          },
+          "contact_sms": {
+            "anyOf": [
+              {
+                "maxLength": 32,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact Sms"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 255,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          },
+          "ready_state": {
+            "anyOf": [
+              {
+                "enum": [
+                  "ready",
+                  "divert"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ready State"
+          }
+        },
+        "title": "FacilityPatch",
+        "type": "object"
+      },
+      "FacilityState": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ready_state": {
+            "enum": [
+              "ready",
+              "divert"
+            ],
+            "title": "Ready State",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "ready_state",
+          "simulated"
+        ],
+        "title": "FacilityState",
+        "type": "object"
+      },
       "Finding": {
         "additionalProperties": false,
         "description": "One statement of the verifier, tied to the frames it was read from (FR-VIS-016).",
@@ -1505,6 +2031,36 @@
           "version"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "HospitalBoard": {
+        "properties": {
+          "facility": {
+            "$ref": "#/components/schemas/FacilityState"
+          },
+          "history": {
+            "description": "Arrivals of today (Algiers time)",
+            "items": {
+              "$ref": "#/components/schemas/PreAlert"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "incoming": {
+            "description": "Hospital selected, patients not yet arrived",
+            "items": {
+              "$ref": "#/components/schemas/PreAlert"
+            },
+            "title": "Incoming",
+            "type": "array"
+          }
+        },
+        "required": [
+          "facility",
+          "incoming",
+          "history"
+        ],
+        "title": "HospitalBoard",
         "type": "object"
       },
       "HospitalChangeIn": {
@@ -1939,6 +2495,77 @@
         "title": "IncidentEventOut",
         "type": "object"
       },
+      "IncidentKpi": {
+        "properties": {
+          "agencies": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Agencies",
+            "type": "array"
+          },
+          "durations": {
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "description": "Seconds per metric; null when the milestone was not reached",
+            "title": "Durations",
+            "type": "object"
+          },
+          "event_time": {
+            "format": "date-time",
+            "title": "Event Time",
+            "type": "string"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "integer"
+          },
+          "short_code": {
+            "title": "Short Code",
+            "type": "string"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "required": [
+          "id",
+          "short_code",
+          "status",
+          "priority",
+          "wilaya",
+          "agencies",
+          "event_time",
+          "durations"
+        ],
+        "title": "IncidentKpi",
+        "type": "object"
+      },
       "IncidentList": {
         "properties": {
           "items": {
@@ -2360,6 +2987,107 @@
         "title": "Interval",
         "type": "object"
       },
+      "KpiGroup": {
+        "properties": {
+          "incidents": {
+            "title": "Incidents",
+            "type": "integer"
+          },
+          "key": {
+            "title": "Key",
+            "type": "string"
+          },
+          "metrics": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/MetricStats"
+            },
+            "title": "Metrics",
+            "type": "object"
+          }
+        },
+        "required": [
+          "key",
+          "incidents",
+          "metrics"
+        ],
+        "title": "KpiGroup",
+        "type": "object"
+      },
+      "KpiReport": {
+        "properties": {
+          "by_agency": {
+            "items": {
+              "$ref": "#/components/schemas/KpiGroup"
+            },
+            "title": "By Agency",
+            "type": "array"
+          },
+          "by_period": {
+            "items": {
+              "$ref": "#/components/schemas/KpiGroup"
+            },
+            "title": "By Period",
+            "type": "array"
+          },
+          "by_wilaya": {
+            "items": {
+              "$ref": "#/components/schemas/KpiGroup"
+            },
+            "title": "By Wilaya",
+            "type": "array"
+          },
+          "false_alarms": {
+            "items": {
+              "$ref": "#/components/schemas/CameraFalseAlarms"
+            },
+            "title": "False Alarms",
+            "type": "array"
+          },
+          "incidents": {
+            "description": "Newest 200 incidents",
+            "items": {
+              "$ref": "#/components/schemas/IncidentKpi"
+            },
+            "title": "Incidents",
+            "type": "array"
+          },
+          "overall": {
+            "$ref": "#/components/schemas/KpiGroup"
+          },
+          "period": {
+            "enum": [
+              "day",
+              "week",
+              "month"
+            ],
+            "title": "Period",
+            "type": "string"
+          },
+          "since": {
+            "format": "date-time",
+            "title": "Since",
+            "type": "string"
+          },
+          "until": {
+            "format": "date-time",
+            "title": "Until",
+            "type": "string"
+          }
+        },
+        "required": [
+          "since",
+          "until",
+          "period",
+          "overall",
+          "by_period",
+          "by_agency",
+          "by_wilaya",
+          "false_alarms",
+          "incidents"
+        ],
+        "title": "KpiReport",
+        "type": "object"
+      },
       "LoginRequest": {
         "properties": {
           "password": {
@@ -2729,6 +3457,44 @@
         "title": "Metric",
         "type": "object"
       },
+      "MetricStats": {
+        "properties": {
+          "median_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Median S"
+          },
+          "n": {
+            "description": "Incidents that reached both milestones",
+            "title": "N",
+            "type": "integer"
+          },
+          "p90_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P90 S"
+          }
+        },
+        "required": [
+          "n",
+          "median_s",
+          "p90_s"
+        ],
+        "title": "MetricStats",
+        "type": "object"
+      },
       "Percentiles": {
         "additionalProperties": false,
         "properties": {
@@ -2764,6 +3530,206 @@
           "count"
         ],
         "title": "Percentiles",
+        "type": "object"
+      },
+      "PreAlert": {
+        "description": "One incident this hospital was selected for (FR-HSP-001).",
+        "properties": {
+          "acknowledged_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged At"
+          },
+          "acknowledged_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged By"
+          },
+          "casualties": {
+            "items": {
+              "$ref": "#/components/schemas/VictimOut"
+            },
+            "title": "Casualties",
+            "type": "array"
+          },
+          "dispatched_at": {
+            "format": "date-time",
+            "title": "Dispatched At",
+            "type": "string"
+          },
+          "distance_m": {
+            "title": "Distance M",
+            "type": "number"
+          },
+          "eta_s": {
+            "title": "Eta S",
+            "type": "number"
+          },
+          "expected_arrival_at": {
+            "description": "Dispatch time plus the stored road ETA",
+            "format": "date-time",
+            "title": "Expected Arrival At",
+            "type": "string"
+          },
+          "incident_id": {
+            "format": "uuid",
+            "title": "Incident Id",
+            "type": "string"
+          },
+          "location_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Text"
+          },
+          "mass_casualty": {
+            "title": "Mass Casualty",
+            "type": "boolean"
+          },
+          "needs_extrication": {
+            "title": "Needs Extrication",
+            "type": "boolean"
+          },
+          "people_reported": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "People Reported"
+          },
+          "pk_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pk Km"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "integer"
+          },
+          "road": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Road"
+          },
+          "short_code": {
+            "title": "Short Code",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/IncidentStatus"
+          },
+          "trapped_reported": {
+            "title": "Trapped Reported",
+            "type": "boolean"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/PreAlertUnit"
+            },
+            "title": "Units",
+            "type": "array"
+          },
+          "victims": {
+            "$ref": "#/components/schemas/VictimCounts"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "required": [
+          "incident_id",
+          "short_code",
+          "status",
+          "priority",
+          "type",
+          "mass_casualty",
+          "needs_extrication",
+          "trapped_reported",
+          "people_reported",
+          "road",
+          "pk_km",
+          "wilaya",
+          "location_text",
+          "dispatched_at",
+          "eta_s",
+          "distance_m",
+          "expected_arrival_at",
+          "units",
+          "victims",
+          "casualties",
+          "acknowledged_at",
+          "acknowledged_by"
+        ],
+        "title": "PreAlert",
+        "type": "object"
+      },
+      "PreAlertUnit": {
+        "properties": {
+          "agency": {
+            "title": "Agency",
+            "type": "string"
+          },
+          "callsign": {
+            "title": "Callsign",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "callsign",
+          "agency",
+          "simulated"
+        ],
+        "title": "PreAlertUnit",
         "type": "object"
       },
       "PriorityReason": {
@@ -2964,6 +3930,23 @@
         "title": "RankedResource",
         "type": "object"
       },
+      "ReadinessIn": {
+        "properties": {
+          "state": {
+            "enum": [
+              "ready",
+              "divert"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "ReadinessIn",
+        "type": "object"
+      },
       "ReadinessResponse": {
         "properties": {
           "dependencies": {
@@ -3071,6 +4054,258 @@
         "title": "Role",
         "type": "string"
       },
+      "SandboxIncident-Input": {
+        "additionalProperties": false,
+        "description": "What an operator would have been shown, kept inside the sandbox.",
+        "properties": {
+          "ai_status": {
+            "$ref": "#/components/schemas/AiStatus-Input"
+          },
+          "description_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Ar"
+          },
+          "description_fr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Fr"
+          },
+          "event_time_s": {
+            "minimum": 0.0,
+            "title": "Event Time S",
+            "type": "number"
+          },
+          "trigger": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Rule trigger near the moment, if any",
+            "title": "Trigger"
+          },
+          "type": {
+            "enum": [
+              "collision",
+              "possible_incident"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "vehicles": {
+            "description": "Detector boxes at the moment",
+            "items": {
+              "$ref": "#/components/schemas/Box"
+            },
+            "title": "Vehicles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "type",
+          "ai_status",
+          "event_time_s"
+        ],
+        "title": "SandboxIncident",
+        "type": "object"
+      },
+      "SandboxIncident-Output": {
+        "additionalProperties": false,
+        "description": "What an operator would have been shown, kept inside the sandbox.",
+        "properties": {
+          "ai_status": {
+            "$ref": "#/components/schemas/nadjet_shared__events__AiStatus"
+          },
+          "description_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Ar"
+          },
+          "description_fr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Fr"
+          },
+          "event_time_s": {
+            "minimum": 0.0,
+            "title": "Event Time S",
+            "type": "number"
+          },
+          "trigger": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Rule trigger near the moment, if any",
+            "title": "Trigger"
+          },
+          "type": {
+            "enum": [
+              "collision",
+              "possible_incident"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "vehicles": {
+            "description": "Detector boxes at the moment",
+            "items": {
+              "$ref": "#/components/schemas/Box"
+            },
+            "title": "Vehicles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "type",
+          "ai_status",
+          "event_time_s"
+        ],
+        "title": "SandboxIncident",
+        "type": "object"
+      },
+      "SessionEvent-Input": {
+        "additionalProperties": false,
+        "description": "One AI check or trigger of a live phone session (sandbox, shown on the try page).",
+        "properties": {
+          "ai_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AiStatus-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "ai_check",
+              "trigger"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "verifier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "at",
+          "kind",
+          "label",
+          "source"
+        ],
+        "title": "SessionEvent",
+        "type": "object"
+      },
+      "SessionEvent-Output": {
+        "additionalProperties": false,
+        "description": "One AI check or trigger of a live phone session (sandbox, shown on the try page).",
+        "properties": {
+          "ai_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/nadjet_shared__events__AiStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "ai_check",
+              "trigger"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "verifier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "at",
+          "kind",
+          "label",
+          "source"
+        ],
+        "title": "SessionEvent",
+        "type": "object"
+      },
       "SkippedClip": {
         "additionalProperties": false,
         "properties": {
@@ -3107,6 +4342,27 @@
           "status"
         ],
         "title": "SmsAck",
+        "type": "object"
+      },
+      "SmsGateway": {
+        "properties": {
+          "number": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Where responders text their codes; null when unset",
+            "title": "Number"
+          }
+        },
+        "required": [
+          "number"
+        ],
+        "title": "SmsGateway",
         "type": "object"
       },
       "StageLatencyMs": {
@@ -3243,6 +4499,54 @@
         "title": "StreamUrls",
         "type": "object"
       },
+      "TimelineEntry": {
+        "additionalProperties": false,
+        "description": "One event of the analysed clip, in clip seconds, with the source of the value.",
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "kind": {
+            "enum": [
+              "trigger",
+              "ai_scan",
+              "ai_refine"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "source": {
+            "description": "Rule name or model id (FR-VIS-021)",
+            "title": "Source",
+            "type": "string"
+          },
+          "t": {
+            "minimum": 0.0,
+            "title": "T",
+            "type": "number"
+          }
+        },
+        "required": [
+          "t",
+          "kind",
+          "label",
+          "source"
+        ],
+        "title": "TimelineEntry",
+        "type": "object"
+      },
       "TokenResponse": {
         "properties": {
           "access_token": {
@@ -3295,6 +4599,558 @@
         ],
         "title": "TriggerType",
         "type": "string"
+      },
+      "TryAiReport": {
+        "additionalProperties": false,
+        "description": "What the try-it worker tells the API about the Brev AI (the page says \"AI unavailable\").",
+        "properties": {
+          "ai_available": {
+            "title": "Ai Available",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ai_available"
+        ],
+        "title": "TryAiReport",
+        "type": "object"
+      },
+      "TryJobClaim": {
+        "properties": {
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "filename"
+        ],
+        "title": "TryJobClaim",
+        "type": "object"
+      },
+      "TryJobFailure": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "maxLength": 300,
+            "title": "Error",
+            "type": "string"
+          },
+          "rejected": {
+            "default": false,
+            "description": "Not a usable video: nothing was analysed",
+            "title": "Rejected",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "TryJobFailure",
+        "type": "object"
+      },
+      "TryJobOut": {
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "has_video": {
+            "title": "Has Video",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "number"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TryResult-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "processing",
+              "done",
+              "failed",
+              "rejected"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "stage",
+          "progress",
+          "error",
+          "result",
+          "has_video",
+          "expires_at"
+        ],
+        "title": "TryJobOut",
+        "type": "object"
+      },
+      "TryProgress": {
+        "additionalProperties": false,
+        "properties": {
+          "progress": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "type": "number"
+          },
+          "stage": {
+            "maxLength": 32,
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage",
+          "progress"
+        ],
+        "title": "TryProgress",
+        "type": "object"
+      },
+      "TryResult-Input": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_available": {
+            "description": "False: only the rule-based analysis is shown",
+            "title": "Ai Available",
+            "type": "boolean"
+          },
+          "duration_s": {
+            "minimum": 0.0,
+            "title": "Duration S",
+            "type": "number"
+          },
+          "event_t_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Refined, damped and capped",
+            "title": "Event T S"
+          },
+          "frames_analysed": {
+            "minimum": 0.0,
+            "title": "Frames Analysed",
+            "type": "integer"
+          },
+          "models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Models",
+            "type": "object"
+          },
+          "refine": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass 2: around the moment"
+          },
+          "sandbox_incident": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SandboxIncident-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass 1: whole clip, 1-2 fps"
+          },
+          "scan_t_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scan T S"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineEntry"
+            },
+            "title": "Timeline",
+            "type": "array"
+          }
+        },
+        "required": [
+          "duration_s",
+          "frames_analysed",
+          "ai_available"
+        ],
+        "title": "TryResult",
+        "type": "object"
+      },
+      "TryResult-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_available": {
+            "description": "False: only the rule-based analysis is shown",
+            "title": "Ai Available",
+            "type": "boolean"
+          },
+          "duration_s": {
+            "minimum": 0.0,
+            "title": "Duration S",
+            "type": "number"
+          },
+          "event_t_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Refined, damped and capped",
+            "title": "Event T S"
+          },
+          "frames_analysed": {
+            "minimum": 0.0,
+            "title": "Frames Analysed",
+            "type": "integer"
+          },
+          "models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Models",
+            "type": "object"
+          },
+          "refine": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass 2: around the moment"
+          },
+          "sandbox_incident": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SandboxIncident-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass 1: whole clip, 1-2 fps"
+          },
+          "scan_t_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scan T S"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineEntry"
+            },
+            "title": "Timeline",
+            "type": "array"
+          }
+        },
+        "required": [
+          "duration_s",
+          "frames_analysed",
+          "ai_available"
+        ],
+        "title": "TryResult",
+        "type": "object"
+      },
+      "TrySessionOut": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SessionEvent-Output"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "path": {
+            "description": "Video server path the phone publishes to",
+            "title": "Path",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "ended"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "whep_url": {
+            "title": "Whep Url",
+            "type": "string"
+          },
+          "whip_url": {
+            "title": "Whip Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "path",
+          "whip_url",
+          "whep_url",
+          "expires_at",
+          "events"
+        ],
+        "title": "TrySessionOut",
+        "type": "object"
+      },
+      "TrySessionRef": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "path"
+        ],
+        "title": "TrySessionRef",
+        "type": "object"
+      },
+      "TryStatus": {
+        "properties": {
+          "ai_available": {
+            "description": "Brev verifier reachable (reported by the worker)",
+            "title": "Ai Available",
+            "type": "boolean"
+          },
+          "max_mb": {
+            "title": "Max Mb",
+            "type": "integer"
+          },
+          "max_seconds": {
+            "title": "Max Seconds",
+            "type": "integer"
+          },
+          "ttl_s": {
+            "title": "Ttl S",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ai_available",
+          "max_seconds",
+          "max_mb",
+          "ttl_s"
+        ],
+        "title": "TryStatus",
+        "type": "object"
+      },
+      "UnitPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "callsign": {
+            "anyOf": [
+              {
+                "maxLength": 64,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Callsign"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "maxLength": 32,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "enum": [
+                  "available",
+                  "busy",
+                  "offline"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "`dispatched` is set by dispatch only",
+            "title": "Status"
+          }
+        },
+        "title": "UnitPatch",
+        "type": "object"
+      },
+      "UserCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "agency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Agency"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "display_name": {
+            "maxLength": 128,
+            "minLength": 1,
+            "title": "Display Name",
+            "type": "string"
+          },
+          "facility_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facility Id"
+          },
+          "password": {
+            "maxLength": 128,
+            "minLength": 12,
+            "title": "Password",
+            "type": "string"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "maxLength": 32,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "role": {
+            "$ref": "#/components/schemas/Role"
+          },
+          "username": {
+            "maxLength": 64,
+            "minLength": 3,
+            "title": "Username",
+            "type": "string"
+          }
+        },
+        "required": [
+          "username",
+          "display_name",
+          "password",
+          "role"
+        ],
+        "title": "UserCreate",
+        "type": "object"
       },
       "UserOut": {
         "properties": {
@@ -3357,6 +5213,94 @@
           "phone"
         ],
         "title": "UserOut",
+        "type": "object"
+      },
+      "UserPatch": {
+        "additionalProperties": false,
+        "properties": {
+          "active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "false deactivates the account",
+            "title": "Active"
+          },
+          "agency": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Agency"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "facility_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Facility Id"
+          },
+          "password": {
+            "anyOf": [
+              {
+                "maxLength": 128,
+                "minLength": 12,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Password"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "maxLength": 32,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "role": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Role"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "title": "UserPatch",
         "type": "object"
       },
       "ValidationError": {
@@ -3555,6 +5499,148 @@
         "title": "VerifierResult",
         "type": "object"
       },
+      "VictimCounts": {
+        "properties": {
+          "black": {
+            "title": "Black",
+            "type": "integer"
+          },
+          "green": {
+            "title": "Green",
+            "type": "integer"
+          },
+          "red": {
+            "title": "Red",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "yellow": {
+            "title": "Yellow",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "red",
+          "yellow",
+          "green",
+          "black",
+          "total"
+        ],
+        "title": "VictimCounts",
+        "type": "object"
+      },
+      "VictimOut": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "avpu": {
+            "anyOf": [
+              {
+                "enum": [
+                  "A",
+                  "V",
+                  "P",
+                  "U"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avpu"
+          },
+          "bleeding": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bleeding"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "pulse": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pulse"
+          },
+          "resp_rate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resp Rate"
+          },
+          "spo2": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spo2"
+          },
+          "triage_tag": {
+            "enum": [
+              "red",
+              "yellow",
+              "green",
+              "black"
+            ],
+            "title": "Triage Tag",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "triage_tag",
+          "avpu",
+          "resp_rate",
+          "pulse",
+          "spo2",
+          "bleeding",
+          "notes",
+          "at"
+        ],
+        "title": "VictimOut",
+        "type": "object"
+      },
       "WebhookEnvelope": {
         "properties": {
           "event": {
@@ -3651,6 +5737,56 @@
         },
         "title": "Witness",
         "type": "object"
+      },
+      "nadjet_api__system__routes__AiStatus": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the AI is unavailable (no secrets), else null",
+            "title": "Detail"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Served model id when available, else null",
+            "title": "Model"
+          }
+        },
+        "required": [
+          "available",
+          "model",
+          "detail"
+        ],
+        "title": "AiStatus",
+        "type": "object"
+      },
+      "nadjet_shared__events__AiStatus": {
+        "description": "Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.",
+        "enum": [
+          "confirmed",
+          "probable",
+          "possible",
+          "insufficient_evidence"
+        ],
+        "title": "AiStatus",
+        "type": "string"
       }
     },
     "securitySchemes": {
@@ -3666,6 +5802,543 @@
   },
   "openapi": "3.1.0",
   "paths": {
+    "/admin/cameras": {
+      "get": {
+        "operationId": "list_cameras_admin_cameras_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AdminCamera"
+                  },
+                  "title": "Response List Cameras Admin Cameras Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Cameras",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/cameras/{camera_id}": {
+      "patch": {
+        "operationId": "update_camera_admin_cameras__camera_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "camera_id",
+            "required": true,
+            "schema": {
+              "title": "Camera Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CameraPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminCamera"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          },
+          "404": {
+            "description": "Unknown"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Camera",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/cameras/{camera_id}/zones": {
+      "put": {
+        "description": "Replace the camera's zones (``live_lanes`` / ``carriageway`` polygons) with this JSON.",
+        "operationId": "replace_zones_admin_cameras__camera_id__zones_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "camera_id",
+            "required": true,
+            "schema": {
+              "title": "Camera Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "additionalProperties": true,
+                "title": "Zones",
+                "type": "object"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminCamera"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          },
+          "404": {
+            "description": "Unknown"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Replace Zones",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/facilities": {
+      "get": {
+        "operationId": "list_facilities_admin_facilities_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AdminFacility"
+                  },
+                  "title": "Response List Facilities Admin Facilities Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Facilities",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/facilities/{facility_id}": {
+      "patch": {
+        "operationId": "update_facility_admin_facilities__facility_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "facility_id",
+            "required": true,
+            "schema": {
+              "title": "Facility Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FacilityPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminFacility"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          },
+          "404": {
+            "description": "Unknown"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Facility",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/units": {
+      "get": {
+        "operationId": "list_units_admin_units_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AdminUnit"
+                  },
+                  "title": "Response List Units Admin Units Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Units",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/units/{unit_id}": {
+      "patch": {
+        "operationId": "update_unit_admin_units__unit_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "unit_id",
+            "required": true,
+            "schema": {
+              "title": "Unit Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UnitPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUnit"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          },
+          "404": {
+            "description": "Unknown"
+          },
+          "409": {
+            "description": "Conflict"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update Unit",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/users": {
+      "get": {
+        "operationId": "list_users_admin_users_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/AdminUserOut"
+                  },
+                  "title": "Response List Users Admin Users Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Users",
+        "tags": [
+          "admin"
+        ]
+      },
+      "post": {
+        "operationId": "create_user_admin_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          },
+          "409": {
+            "description": "Username taken"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create User",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
+    "/admin/users/{user_id}": {
+      "patch": {
+        "operationId": "update_user_admin_users__user_id__patch",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "user_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "User Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserPatch"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminUserOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Not an admin"
+          },
+          "404": {
+            "description": "Unknown"
+          },
+          "409": {
+            "description": "Own account"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update User",
+        "tags": [
+          "admin"
+        ]
+      }
+    },
     "/auth/login": {
       "post": {
         "description": "Exchange username and password for a short-lived access token.",
@@ -3915,6 +6588,184 @@
         "summary": "Incident Events",
         "tags": [
           "incidents"
+        ]
+      }
+    },
+    "/facilities/{facility_id}/prealerts": {
+      "get": {
+        "description": "Incoming pre-alerts and today's arrivals of a hospital (FR-HSP-001).",
+        "operationId": "prealerts_facilities__facility_id__prealerts_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "facility_id",
+            "required": true,
+            "schema": {
+              "title": "Facility Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HospitalBoard"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Not this hospital's user"
+          },
+          "404": {
+            "description": "Unknown hospital"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Prealerts",
+        "tags": [
+          "hospital"
+        ]
+      }
+    },
+    "/facilities/{facility_id}/prealerts/{incident_id}/ack": {
+      "post": {
+        "description": "The hospital confirms it saw the pre-alert; repeating it changes nothing.",
+        "operationId": "acknowledge_facilities__facility_id__prealerts__incident_id__ack_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "facility_id",
+            "required": true,
+            "schema": {
+              "title": "Facility Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Not this hospital's user"
+          },
+          "404": {
+            "description": "Unknown hospital"
+          },
+          "409": {
+            "description": "Incident is no longer incoming"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Acknowledge",
+        "tags": [
+          "hospital"
+        ]
+      }
+    },
+    "/facilities/{facility_id}/readiness": {
+      "post": {
+        "description": "Ready or Divert, from the screen (the SMS ``H <code> READY|DIVERT`` does the same).\n\nDivert alerts the operators of every incident that selected the hospital (E-10).",
+        "operationId": "readiness_facilities__facility_id__readiness_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "facility_id",
+            "required": true,
+            "schema": {
+              "title": "Facility Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReadinessIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacilityState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Not this hospital's user"
+          },
+          "404": {
+            "description": "Unknown hospital"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Readiness",
+        "tags": [
+          "hospital"
         ]
       }
     },
@@ -4253,6 +7104,26 @@
               "title": "Incident Id",
               "type": "string"
             }
+          },
+          {
+            "description": "Repeating a request with the same key changes nothing (offline queues)",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 124,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Repeating a request with the same key changes nothing (offline queues)",
+              "title": "Idempotency-Key"
+            }
           }
         ],
         "requestBody": {
@@ -4364,7 +7235,7 @@
     },
     "/incidents/{incident_id}/dispatches": {
       "get": {
-        "description": "Dispatches of the incident with the delivery status of each notification.",
+        "description": "Dispatches of the incident with the delivery status of each notification.\n\nA responder only gets the hospital the patients go to.",
         "operationId": "list_dispatches_incidents__incident_id__dispatches_get",
         "parameters": [
           {
@@ -4794,6 +7665,26 @@
               "title": "Incident Id",
               "type": "string"
             }
+          },
+          {
+            "description": "Repeating a request with the same key changes nothing (offline queues)",
+            "in": "header",
+            "name": "Idempotency-Key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 124,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Repeating a request with the same key changes nothing (offline queues)",
+              "title": "Idempotency-Key"
+            }
           }
         ],
         "requestBody": {
@@ -5149,6 +8040,642 @@
         ]
       }
     },
+    "/internal/try/claim": {
+      "post": {
+        "operationId": "claim_internal_try_claim_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryJobClaim"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "204": {
+            "description": "Nothing queued"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Claim",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/fail": {
+      "post": {
+        "operationId": "post_failure_internal_try_jobs__job_id__fail_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryJobFailure"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Not processing"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Failure",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/file": {
+      "get": {
+        "operationId": "job_file_internal_try_jobs__job_id__file_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Gone"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Job File",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/progress": {
+      "post": {
+        "operationId": "progress_internal_try_jobs__job_id__progress_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryProgress"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Not processing"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Progress",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/result": {
+      "post": {
+        "operationId": "post_result_internal_try_jobs__job_id__result_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryResult-Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Not processing"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Result",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/video": {
+      "put": {
+        "description": "Store the annotated video (raw MP4 body).",
+        "operationId": "put_video_internal_try_jobs__job_id__video_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Unknown job"
+          },
+          "413": {
+            "description": "Too large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Video",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/sessions": {
+      "get": {
+        "description": "Live phone sessions the worker should be attached to.",
+        "operationId": "active_sessions_internal_try_sessions_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TrySessionRef"
+                  },
+                  "title": "Response Active Sessions Internal Try Sessions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Active Sessions",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/sessions/{session_id}/events": {
+      "post": {
+        "operationId": "session_event_internal_try_sessions__session_id__events_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionEvent-Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Session ended"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Session Event",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/status": {
+      "post": {
+        "description": "The worker reports whether the Brev AI answers; the flag expires if it stops reporting.",
+        "operationId": "report_status_internal_try_status_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryAiReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report Status",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/kpis": {
+      "get": {
+        "description": "Durations per incident and their median and p90 by period, agency and wilaya, plus the\nfalse-alarm rate per camera. Merged incidents are duplicates and are not counted.",
+        "operationId": "kpis_kpis_get",
+        "parameters": [
+          {
+            "description": "Default: 30 days ago",
+            "in": "query",
+            "name": "since",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Default: 30 days ago",
+              "title": "Since"
+            }
+          },
+          {
+            "description": "Default: now",
+            "in": "query",
+            "name": "until",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Default: now",
+              "title": "Until"
+            }
+          },
+          {
+            "in": "query",
+            "name": "period",
+            "required": false,
+            "schema": {
+              "default": "week",
+              "enum": [
+                "day",
+                "week",
+                "month"
+              ],
+              "title": "Period",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/KpiReport"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Role"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Kpis",
+        "tags": [
+          "kpis"
+        ]
+      }
+    },
     "/map/resources": {
       "get": {
         "description": "Every facility and unit with its position; ``simulated`` ones must be labelled.",
@@ -5237,6 +8764,413 @@
         "summary": "Post Report",
         "tags": [
           "public"
+        ]
+      }
+    },
+    "/public/try/jobs": {
+      "post": {
+        "description": "Upload the raw video as the request body (``Content-Type: video/*``). The upload stops\nas soon as it is too large; the file is sniffed and, for MP4/MOV, its duration is read.",
+        "operationId": "create_job_public_try_jobs_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filename",
+            "required": false,
+            "schema": {
+              "default": "clip",
+              "maxLength": 255,
+              "title": "Filename",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "video/mp4": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            },
+            "video/quicktime": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            },
+            "video/webm": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryJobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "413": {
+            "description": "Too large"
+          },
+          "415": {
+            "description": "Not a video"
+          },
+          "422": {
+            "description": "Too long"
+          },
+          "429": {
+            "description": "Rate limit"
+          }
+        },
+        "summary": "Create Job",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/jobs/{job_id}": {
+      "delete": {
+        "description": "Delete an upload and its outputs now (the owner of the link may do it before the TTL).",
+        "operationId": "delete_job_public_try_jobs__job_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Job",
+        "tags": [
+          "public-try"
+        ]
+      },
+      "get": {
+        "operationId": "get_job_public_try_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryJobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Unknown or expired"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Job",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/jobs/{job_id}/events": {
+      "get": {
+        "description": "Progress of a job over SSE (FR-CIT-002).",
+        "operationId": "stream_job_public_try_jobs__job_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit"
+          }
+        },
+        "summary": "Stream Job",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/jobs/{job_id}/video": {
+      "get": {
+        "operationId": "job_video_public_try_jobs__job_id__video_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "No annotated video"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Job Video",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/sessions": {
+      "post": {
+        "description": "A temporary live camera: the phone publishes to ``whip_url`` and pings while it stays.",
+        "operationId": "create_session_public_try_sessions_post",
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrySessionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "429": {
+            "description": "Rate limit"
+          }
+        },
+        "summary": "Create Session",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/sessions/{session_id}": {
+      "delete": {
+        "description": "The phone leaves: the session and its results are deleted at once.",
+        "operationId": "end_session_public_try_sessions__session_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "End Session",
+        "tags": [
+          "public-try"
+        ]
+      },
+      "get": {
+        "operationId": "get_session_state_public_try_sessions__session_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrySessionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Ended"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Session State",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/sessions/{session_id}/ping": {
+      "post": {
+        "operationId": "ping_session_public_try_sessions__session_id__ping_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Ended"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ping Session",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/status": {
+      "get": {
+        "description": "Limits and whether the Brev AI is reachable (the page shows \"AI unavailable\").",
+        "operationId": "try_status_public_try_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Try Status",
+        "tags": [
+          "public-try"
         ]
       }
     },
@@ -5451,6 +9385,33 @@
         ]
       }
     },
+    "/sms/gateway": {
+      "get": {
+        "description": "The gateway SIM number the responder app pre-fills in the SMS fallback (FR-RSP-004).",
+        "operationId": "sms_gateway_sms_gateway_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmsGateway"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Sms Gateway",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
     "/sms/inbound": {
       "post": {
         "description": "``sms:received`` webhook: parse the SMS, apply it, answer the sender (FR-NTF-005).",
@@ -5647,7 +9608,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AiStatus-Output"
+                  "$ref": "#/components/schemas/nadjet_api__system__routes__AiStatus"
                 }
               }
             },

@@ -178,6 +178,71 @@ def _video(
     return VerifierVideo(f"data:video/mp4;base64,{data}", len(images), relative)
 
 
+SCAN_MAX_FRAMES = 64
+SCAN_MAX_FPS = 2.0
+SCAN_LONG_SIDE = 640
+
+
+def scan_times(start_s: float, end_s: float) -> tuple[list[float], float]:
+    """Frame instants of the pass-1 scan of a whole clip: 1-2 fps, at most 64 frames (TD-23).
+
+    Returns the instants and the video frame rate (equal to the sampling rate).
+    """
+    duration = max(end_s - start_s, 0.0)
+    fps = min(SCAN_MAX_FPS, SCAN_MAX_FRAMES / duration) if duration > 0 else SCAN_MAX_FPS
+    count = max(2, min(SCAN_MAX_FRAMES, int(duration * fps) + 1))
+    step = duration / (count - 1)
+    return [start_s + i * step for i in range(count)], fps
+
+
+def build_scan_video(
+    packets: Sequence[Packet], info: StreamInfo, start_s: float, end_s: float
+) -> VerifierVideo | None:
+    """Video of the whole clip at 1-2 fps; frame times are seconds from ``start_s``."""
+    times, fps = scan_times(start_s, end_s)
+    return _video(packets, info, times, start_s, SCAN_LONG_SIDE, fps)
+
+
+class Mp4Writer:
+    """Incremental H.264 MP4 writer for the annotated video (no frame list kept in memory)."""
+
+    def __init__(self, path: str, fps: float, long_side: int = 640) -> None:
+        self._path = path
+        self._fps = fps
+        self._long_side = long_side
+        self._output: Any = None
+        self._stream: Any = None
+        self.frames = 0
+
+    def write(self, image: BgrFrame) -> None:
+        import av
+
+        if self._output is None:
+            height, width = image.shape[:2]
+            self._size = scaled_size(width, height, self._long_side)
+            self._output = av.open(self._path, "w", format="mp4")
+            self._stream = self._output.add_stream(
+                "libx264", rate=Fraction(self._fps).limit_denominator(100)
+            )
+            self._stream.width, self._stream.height = self._size
+            self._stream.pix_fmt = "yuv420p"
+            self._stream.options = {"preset": "veryfast", "crf": "26"}
+        frame = av.VideoFrame.from_ndarray(image, format="bgr24").reformat(
+            width=self._size[0], height=self._size[1]
+        )
+        for packet in self._stream.encode(frame):
+            self._output.mux(packet)
+        self.frames += 1
+
+    def close(self) -> None:
+        if self._output is None:
+            return
+        for packet in self._stream.encode(None):
+            self._output.mux(packet)
+        self._output.close()
+        self._output = None
+
+
 def build_verifier_video(
     packets: Sequence[Packet], info: StreamInfo, centre_s: float
 ) -> VerifierVideo | None:

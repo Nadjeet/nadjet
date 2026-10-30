@@ -3,6 +3,7 @@ import type { LucideIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Logo } from "@/components/brand/logo";
+import { cn } from "@/lib/utils";
 import { LiveEventsProvider } from "@/live/live-events-provider";
 
 import { AccountActions } from "./account-actions";
@@ -24,17 +25,20 @@ export function PhoneShell({
   surfaceKey,
   home,
   nav,
+  wide = false,
 }: {
   surfaceKey: "surface.respond" | "surface.hospital";
   home: "/respond" | "/hospital";
   nav: PhoneNavItem[];
+  /** Tablet layout: use the whole width (the hospital view is read at arm's length). */
+  wide?: boolean;
 }) {
   const { t } = useTranslation();
   useSurfaceTheme("light");
   return (
     <LiveEventsProvider>
       <SkipLink />
-      <div className="mx-auto flex min-h-dvh max-w-3xl flex-col">
+      <div className={cn("mx-auto flex min-h-dvh flex-col", wide ? "max-w-6xl" : "max-w-3xl")}>
         <header className="sticky top-0 z-20 flex flex-col gap-2 border-b border-border bg-background/95 px-4 py-3 backdrop-blur">
           <div className="flex items-center justify-between gap-3">
             <Link to={home} aria-label={t(surfaceKey)} className="rounded-full">
@@ -52,7 +56,7 @@ export function PhoneShell({
             aria-label={t("common.mainNavigation")}
             className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] shadow-soft"
           >
-            <ul className="mx-auto flex max-w-3xl">
+            <ul className={cn("mx-auto flex", wide ? "max-w-6xl" : "max-w-3xl")}>
               {nav.map(({ to, icon: Icon, labelKey, exact }) => (
                 <li key={to} className="flex-1">
                   <Link

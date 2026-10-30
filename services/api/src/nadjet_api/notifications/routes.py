@@ -20,6 +20,7 @@ from nadjet_api.db import get_session
 from nadjet_api.dispatch.service import make_proposer
 from nadjet_api.incidents import service
 from nadjet_api.incidents.deps import RedisDep, SignerDep, announce
+from nadjet_api.incidents.events import publish_facility
 from nadjet_api.notifications import inbound
 from nadjet_api.notifications import service as notifications
 from nadjet_api.notifications.cap import build_cap
@@ -159,6 +160,8 @@ async def sms_inbound(
         await redis.delete(dedupe_key)
         raise
     await announce(redis, result.changes)
+    for facility_id, state in result.facility_states.items():
+        await publish_facility(redis, facility_id, state)
     await _reply(request, phone, result.reply)
     return SmsAck(status="processed")
 
@@ -203,6 +206,19 @@ async def push_public_key(request: Request) -> PushPublicKey:
     if not settings.vapid_public_key:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Web push is not configured")
     return PushPublicKey(public_key=settings.vapid_public_key)
+
+
+class SmsGateway(BaseModel):
+    number: str | None = Field(description="Where responders text their codes; null when unset")
+
+
+@router.get("/sms/gateway")
+async def sms_gateway(
+    request: Request, _user: Annotated[User, Depends(current_user)]
+) -> SmsGateway:
+    """The gateway SIM number the responder app pre-fills in the SMS fallback (FR-RSP-004)."""
+    settings: Settings = request.app.state.settings
+    return SmsGateway(number=settings.sms_gateway_number)
 
 
 @router.post("/push/subscriptions", status_code=status.HTTP_201_CREATED)

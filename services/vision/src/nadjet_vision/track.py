@@ -185,7 +185,7 @@ class CameraMotionDetector:
         window = np.outer(np.hanning(grey.shape[0]), np.hanning(grey.shape[1])).astype(np.float32)
         cross = np.fft.fft2(previous * window) * np.conj(np.fft.fft2(grey * window))
         magnitude = np.abs(cross)
-        magnitude[magnitude == 0] = 1.0
+        magnitude[magnitude < 1e-6] = 1.0  # flat or tiny spectra: avoid overflow and NaN
         response = np.fft.ifft2(cross / magnitude).real
         peak = np.unravel_index(int(np.argmax(response)), response.shape)
         dy, dx = (

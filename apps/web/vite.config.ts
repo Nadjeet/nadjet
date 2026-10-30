@@ -22,6 +22,7 @@ export default defineConfig({
         "logo-mark.svg",
         "apple-touch-icon.png",
         "manifest-public.webmanifest",
+        "push-sw.js",
       ],
       manifest: {
         name: "Nadjet — نجاة",
@@ -45,6 +46,8 @@ export default defineConfig({
         globPatterns: ["**/*.{js,css,html,svg,png,woff2}"],
         navigateFallback: "/index.html",
         navigateFallbackDenylist: [/^\/api\//],
+        // Push alerts and the tap that opens the incident (FR-RSP-005).
+        importScripts: ["push-sw.js"],
       },
     }),
   ],
