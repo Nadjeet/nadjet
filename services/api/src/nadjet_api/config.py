@@ -83,6 +83,16 @@ class Settings(BaseSettings):
     try_session_idle_s: int = Field(default=30, gt=0, description="No ping for this long: ended")
     try_job_timeout_s: int = Field(default=300, gt=0, description="Worker silent: job failed")
     try_purge_interval_s: float = Field(default=60.0, gt=0)
+    try_max_open_jobs: int = Field(
+        default=20, gt=0, description="Queued or running uploads at once (disk and GPU guard)"
+    )
+    try_max_live_sessions: int = Field(
+        default=3, gt=0, description="Phone sessions at once (operator wall and GPU guard)"
+    )
+    try_events_max_s: float = Field(
+        default=120.0, gt=0, description="Life of one progress stream; the browser reconnects"
+    )
+    try_events_per_minute: int = Field(default=30, gt=0, description="Progress streams per IP")
     whip_url_template: str = Field(
         default="http://localhost:8889/{path}/whip", description="WHIP URL; {path} = stream path"
     )

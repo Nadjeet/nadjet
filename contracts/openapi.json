@@ -6449,6 +6449,9 @@
               }
             },
             "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit"
           }
         },
         "summary": "Stream Job",

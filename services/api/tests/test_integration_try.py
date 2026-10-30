@@ -352,7 +352,8 @@ async def test_a_phone_session_appears_on_the_wall_as_a_live_demo_and_ends_when_
     cameras = (await client.get("/cameras", headers=operator)).json()
     demo = next(c for c in cameras if c["live_demo"])
     assert demo["id"] == "live-" + live["path"].removeprefix("live/")
-    assert demo["stream"]["path"] == live["path"] and demo["status"] == "online"
+    # The phone has not published yet: never shown as live before the worker saw a frame.
+    assert demo["stream"]["path"] == live["path"] and demo["status"] == "unknown"
     assert all(not c["live_demo"] for c in cameras if c is not demo)
 
     event = {
@@ -365,6 +366,8 @@ async def test_a_phone_session_appears_on_the_wall_as_a_live_demo_and_ends_when_
     assert posted.status_code == 204
     state = (await client.get(f"/public/try/sessions/{live['id']}")).json()
     assert [e["label"] for e in state["events"]] == ["no collision"]
+    cameras = (await client.get("/cameras", headers=operator)).json()
+    assert next(c for c in cameras if c["live_demo"])["status"] == "online"
 
     assert (await client.post(f"/public/try/sessions/{live['id']}/ping")).status_code == 204
     assert (await client.delete(f"/public/try/sessions/{live['id']}")).status_code == 204
@@ -420,3 +423,33 @@ async def test_the_sandbox_tables_never_reference_incidents(session: AsyncSessio
     assert rows.all() == []  # no foreign key to any real table
     assert TryJob.__table__.foreign_keys == set()
     assert TrySession.__table__.foreign_keys == set()
+
+
+async def test_abuse_caps_open_jobs_and_live_sessions_globally(tmp_path: Path) -> None:
+    """Public and anonymous: beyond the caps the sandbox answers 503 instead of filling the
+    disk, the GPU worker and the operator wall."""
+    app = make_app(tmp_path, try_max_open_jobs=1, try_max_live_sessions=1)
+    async with app.router.lifespan_context(app):
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://t") as client:
+            assert (await upload(client, mp4(5.0))).status_code == 202
+            assert (await upload(client, mp4(5.0))).status_code == 503
+            assert (await client.post("/public/try/sessions")).status_code == 201
+            assert (await client.post("/public/try/sessions")).status_code == 503
+
+
+async def test_a_progress_stream_ends_after_its_lifetime(
+    sandbox: tuple[FastAPI, httpx.AsyncClient],
+) -> None:
+    """Idle public SSE connections cannot hold the database pool: the stream ends and the
+    browser reconnects."""
+    app, client = sandbox
+    job_id = (await upload(client, mp4(5.0))).json()["id"]
+    frames = [
+        f
+        async for f in job_events(
+            app.state.session_factory, uuid.UUID(job_id), poll_s=0.02, max_s=0.2
+        )
+    ]
+    assert frames[0].startswith("event: job\n")
+    assert frames[-1].startswith("retry:")

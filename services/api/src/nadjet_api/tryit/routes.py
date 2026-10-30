@@ -16,7 +16,7 @@ import anyio
 from fastapi import APIRouter, Depends, HTTPException, Query, Request, Response, status
 from fastapi.responses import FileResponse, StreamingResponse
 from redis.asyncio import Redis
-from sqlalchemy import delete
+from sqlalchemy import delete, func, select
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from nadjet_api.config import Settings
@@ -54,6 +54,11 @@ async def job_limit(request: Request) -> None:
 async def session_limit(request: Request) -> None:
     per_minute = settings_of(request).try_sessions_per_minute
     await rate_limit("try-session", per_minute=per_minute)(request)
+
+
+async def events_limit(request: Request) -> None:
+    per_minute = settings_of(request).try_events_per_minute
+    await rate_limit("try-events", per_minute=per_minute)(request)
 
 
 async def ai_available(redis: Redis) -> bool:
@@ -107,6 +112,12 @@ async def create_job(
     if declared and declared.isdigit() and int(declared) > limit:
         raise HTTPException(status.HTTP_413_CONTENT_TOO_LARGE, f"Over {s.try_max_mb} MB")
 
+    open_jobs = await db.scalar(
+        select(func.count()).select_from(TryJob).where(TryJob.status.notin_(service.FINAL))
+    )
+    if (open_jobs or 0) >= s.try_max_open_jobs:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Too many analyses running")
+
     store = store_of(request)
     job_id = uuid.uuid4()
     store.job_dir(job_id).mkdir(parents=True, exist_ok=True)
@@ -138,12 +149,13 @@ async def create_job(
                     status.HTTP_422_UNPROCESSABLE_CONTENT,
                     f"Longer than {s.try_max_seconds} s ({duration:.0f} s)",
                 )
+        # Inside the try: a failure here must not leave the file behind (no row to purge it).
+        job = await service.create_job(db, s, job_id, filename, content_type, size)
     except BaseException:
         if handle is not None:
             await handle.aclose()
         store.remove(job_id)
         raise
-    job = await service.create_job(db, s, job_id, filename, content_type, size)
     return service.job_out(job)
 
 
@@ -158,11 +170,22 @@ async def get_job(
 
 
 async def job_events(
-    factory: async_sessionmaker[AsyncSession], job_id: uuid.UUID, poll_s: float = 0.5
+    factory: async_sessionmaker[AsyncSession],
+    job_id: uuid.UUID,
+    poll_s: float = 0.5,
+    max_s: float = 120.0,
 ) -> AsyncIterator[str]:
-    """SSE frames: one per change of stage or progress, the last one when the job is final."""
+    """SSE frames: one per change of stage or progress, the last one when the job is final.
+
+    Public and unauthenticated: the stream ends after ``max_s`` (the browser's EventSource
+    reconnects), so idle connections cannot pile up and hold the database pool.
+    """
     last: tuple[str, str, float] | None = None
+    deadline = asyncio.get_running_loop().time() + max_s
     while True:
+        if asyncio.get_running_loop().time() >= deadline:
+            yield "retry: 1000\n\n"
+            return
         async with factory() as db:
             job = await db.get(TryJob, job_id)
         if job is None:
@@ -177,11 +200,19 @@ async def job_events(
         await asyncio.sleep(poll_s)
 
 
-@router.get("/jobs/{job_id}/events")
+@router.get(
+    "/jobs/{job_id}/events",
+    dependencies=[Depends(events_limit)],
+    responses={429: {"description": "Rate limit"}},
+)
 async def stream_job(job_id: uuid.UUID, request: Request) -> StreamingResponse:
     """Progress of a job over SSE (FR-CIT-002)."""
     return StreamingResponse(
-        job_events(request.app.state.session_factory, job_id),
+        job_events(
+            request.app.state.session_factory,
+            job_id,
+            max_s=settings_of(request).try_events_max_s,
+        ),
         media_type="text/event-stream",
         headers={"Cache-Control": "no-store", "X-Accel-Buffering": "no"},
     )
@@ -223,6 +254,9 @@ async def create_session(
 ) -> TrySessionOut:
     """A temporary live camera: the phone publishes to ``whip_url`` and pings while it stays."""
     s = settings_of(request)
+    active = await db.scalar(select(func.count()).select_from(TrySession))
+    if (active or 0) >= s.try_max_live_sessions:
+        raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Too many live demos right now")
     session_id = uuid.uuid4()
     row = TrySession(
         id=session_id,
