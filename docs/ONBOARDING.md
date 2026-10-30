@@ -36,7 +36,7 @@ make migrate
 (cd services/api && uv run nadjet-api seed-users --file ../../data/seed/users.yaml)
 ```
 
-Re-running is safe: existing usernames are skipped. Log in with `POST /auth/login`.
+Re-running is safe: existing usernames are skipped. Sign in at http://localhost:5173/login: each role lands on its surface (`operator`, `supervisor`, `auditor`, `admin` → `/ops`; the agency users → `/respond`; `hospital` → `/hospital`). Public pages are at `/public`. The component reference sheet is at `/ops/design`; palette, contrast values and the live-events design are in `apps/web/README.md`.
 `NADJET_JWT_SECRET` is optional locally but required (≥ 32 chars) in production.
 
 ### Incident engine

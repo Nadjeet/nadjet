@@ -20,6 +20,7 @@ from nadjet_api.incidents.signing import ChainSigner, generate_seed_hex
 from nadjet_api.main import create_app
 from nadjet_shared.catalogue import load_catalogue
 
+GRACEFUL_SHUTDOWN_S = 3
 ROOT = Path(__file__).resolve().parents[4]
 DEFAULT_OPENAPI = ROOT / "contracts" / "openapi.json"
 DEFAULT_CAMERAS = ROOT / "data" / "cameras.yaml"
@@ -129,6 +130,8 @@ def main(argv: list[str] | None = None) -> int:
             host=args.host,
             port=args.port,
             reload=args.reload,
+            # Open SSE streams (GET /events) never end on their own: do not wait for them forever.
+            timeout_graceful_shutdown=GRACEFUL_SHUTDOWN_S,
         )
         return 0
     return export_openapi(args.out, check=args.check)
