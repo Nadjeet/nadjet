@@ -68,4 +68,4 @@ None.
 | FR-VIS-017 | `services/vision/tests/test_verdict.py` | — |
 | FR-VIS-020 | `scripts/tests/test_traceability.py`, `services/api/tests/test_integration_demo_seed.py` | — |
 | FR-VIS-021 | `services/api/tests/test_notifications_unit.py` | — |
-| FR-VIS-022 | `eval/run_eval.py`, `packages/shared/tests/test_catalogue.py`, `services/vision/tests/test_integration_brev.py`, `services/vision/tests/test_run_eval.py` | — |
+| FR-VIS-022 | `packages/shared/tests/test_catalogue.py`, `services/vision/tests/test_integration_brev.py`, `services/vision/tests/test_run_eval.py` | — |
