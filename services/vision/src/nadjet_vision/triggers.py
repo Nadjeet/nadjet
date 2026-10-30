@@ -25,7 +25,7 @@ PERSON_LABEL = "person"
 
 @dataclass(frozen=True)
 class TriggerConfig:
-    """Rule thresholds. Defaults: docs/11 §6; the ones marked * are recorded in TD-38."""
+    """Rule thresholds. Defaults: docs/11 §6; the ones marked * are recorded in TD-39."""
 
     overlap_iou: float = 0.05  # collision: box IoU above this means contact
     overlap_centre_ratio: float = 0.6  # or centre distance below this x mean box width
