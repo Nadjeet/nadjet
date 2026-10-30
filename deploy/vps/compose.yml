@@ -15,6 +15,7 @@ x-api: &api
     NADJET_SMS_GATEWAY_URL: http://sms-server:3000
     NADJET_RTSP_URL_TEMPLATE: rtsp://stream.${NADJET_DOMAIN:?}:8554/{path}
     NADJET_WHEP_URL_TEMPLATE: https://stream.${NADJET_DOMAIN}/{path}/whep
+    NADJET_WHIP_URL_TEMPLATE: https://stream.${NADJET_DOMAIN}/{path}/whip
     NADJET_HLS_URL_TEMPLATE: https://hls.${NADJET_DOMAIN}/{path}/index.m3u8
     NADJET_CORS_ORIGINS: '["https://app.${NADJET_DOMAIN}","https://respond.${NADJET_DOMAIN}","https://hospital.${NADJET_DOMAIN}","https://try.${NADJET_DOMAIN}"]'
     NADJET_MAP_TILES_PATH: /data/map/algeria.pmtiles
