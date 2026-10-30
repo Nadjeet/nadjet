@@ -1,5 +1,8 @@
 """Camera registry unit tests (PRD FR-CAM-001): URL templates and the OpenAPI contract."""
 
+import pytest
+from pydantic import ValidationError
+
 from nadjet_api.cameras.models import Camera
 from nadjet_api.cameras.routes import camera_out
 from nadjet_api.cli import render_openapi
@@ -44,3 +47,11 @@ def test_openapi_lists_camera_routes() -> None:
     schema = render_openapi()
     assert '"/cameras"' in schema
     assert '"/cameras/{camera_id}"' in schema
+
+
+@pytest.mark.parametrize(
+    "template", ["http://{host}/{path}", "rtsp://localhost:8554/cam", "http://x/{path"]
+)
+def test_bad_url_templates_fail_at_startup(template: str) -> None:
+    with pytest.raises(ValidationError, match="URL template"):
+        Settings(rtsp_url_template=template)
