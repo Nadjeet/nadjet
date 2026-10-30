@@ -1,9 +1,11 @@
 """Unit: lifecycle, merge rules, short codes, signing, event chain, store, SSE scope."""
 
+import asyncio
 import itertools
 import uuid
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -225,3 +227,53 @@ async def test_local_store_refuses_path_traversal(tmp_path: Path) -> None:
     store = LocalEvidenceStore(tmp_path / "root")
     with pytest.raises(ValueError, match="escapes"):
         await store.save("../evil.bin", chunks(b"x"), max_bytes=10)
+
+
+def test_ingest_token_with_non_ascii_header_is_401_not_500() -> None:
+    from types import SimpleNamespace
+
+    from fastapi import HTTPException
+    from pydantic import SecretStr
+
+    from nadjet_api.incidents.deps import require_ingest_token
+
+    request: Any = SimpleNamespace(
+        app=SimpleNamespace(
+            state=SimpleNamespace(settings=SimpleNamespace(ingest_token=SecretStr("t")))
+        )
+    )
+    with pytest.raises(HTTPException) as exc:
+        require_ingest_token(request, "Bearer é")
+    assert exc.value.status_code == 401
+
+
+async def test_sse_heartbeat_is_not_starved_by_filtered_traffic() -> None:
+    """A scoped client still gets heartbeats while only invisible events arrive."""
+    import json
+
+    from nadjet_api.incidents.events import stream
+
+    invisible = {
+        "type": "incident.updated",
+        "incident_id": "x",
+        "version": 1,
+        "agencies": ["police"],
+        "facilities": [],
+    }
+
+    class FakePubSub:
+        async def subscribe(self, _channel: str) -> None: ...
+        async def get_message(self, **_kw: Any) -> dict[str, Any]:
+            await asyncio.sleep(0.01)
+            return {"data": json.dumps(invisible)}
+
+        async def aclose(self) -> None: ...
+
+    class FakeRedis:
+        def pubsub(self) -> FakePubSub:
+            return FakePubSub()
+
+    frames = stream(FakeRedis(), Scope(agency=Agency.SAMU), heartbeat_s=0.1)  # type: ignore[arg-type]
+    assert await anext(frames) == ": connected\n\n"
+    assert await asyncio.wait_for(anext(frames), timeout=1) == ": heartbeat\n\n"
+    await frames.aclose()
