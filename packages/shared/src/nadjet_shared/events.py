@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import StrEnum
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 Probability = Annotated[float, Field(ge=0.0, le=1.0)]
 
@@ -17,6 +17,8 @@ class TriggerType(StrEnum):
     STALLED_VEHICLE = "stalled_vehicle"
     PEDESTRIAN_ON_ROAD = "pedestrian_on_road"
     AI_SWEEP = "ai_sweep"
+    CITIZEN_REPORT = "citizen_report"
+    OPERATOR_REPORT = "operator_report"
 
 
 class CandidateSource(StrEnum):
@@ -49,6 +51,12 @@ class VerifierResult(BaseModel):
     )
     description_fr: str | None = None
     description_ar: str | None = None
+    priority_raise: int = Field(
+        default=0, ge=0, le=1, description="Levels the verifier asks to raise priority (max 1)"
+    )
+    findings: list[str] = Field(
+        default_factory=list, description="Cited findings; a raise without one is ignored"
+    )
 
 
 class Evidence(BaseModel):
@@ -59,12 +67,36 @@ class Evidence(BaseModel):
     sha256: dict[str, str] = Field(default_factory=dict, description="file path -> SHA-256")
 
 
-class IncidentCandidate(BaseModel):
-    """Published by a vision worker for every trigger or sweep detection (FR-VIS-006)."""
+class GeoLocation(BaseModel):
+    """Where the event happened (FR-INC-001)."""
 
     model_config = ConfigDict(extra="forbid")
 
-    camera_id: str = Field(min_length=1)
+    lat: float = Field(ge=-90, le=90)
+    lon: float = Field(ge=-180, le=180)
+    road: str | None = None
+    pk_km: float | None = None
+    wilaya: str | None = None
+
+
+class Witness(BaseModel):
+    """Answers from a citizen or responder on scene (FR-CIT-006)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    people_reported: int | None = Field(default=None, ge=0)
+    trapped: bool = False
+
+
+class IncidentCandidate(BaseModel):
+    """A candidate incident from a camera, a citizen or an operator (FR-VIS-006, FR-INC-001)."""
+
+    model_config = ConfigDict(extra="forbid")
+
+    source: CandidateSource = CandidateSource.CAMERA
+    camera_id: str | None = Field(default=None, min_length=1)
+    location: GeoLocation
+    witness: Witness | None = None
     trigger: TriggerType
     event_time: datetime = Field(description="Best estimate of the impact time")
     detected_at: datetime
@@ -72,6 +104,12 @@ class IncidentCandidate(BaseModel):
     signals: dict[str, float] = Field(
         default_factory=dict, description="Named rule signals and their measured values"
     )
-    verifier: VerifierResult
-    ai_status: AiStatus
+    verifier: VerifierResult = Field(default_factory=lambda: VerifierResult(available=False))
+    ai_status: AiStatus = AiStatus.INSUFFICIENT_EVIDENCE
     evidence: Evidence | None = None
+
+    @model_validator(mode="after")
+    def _camera_source_needs_camera_id(self) -> "IncidentCandidate":
+        if self.source is CandidateSource.CAMERA and self.camera_id is None:
+            raise ValueError("camera_id is required when source is camera")
+        return self
