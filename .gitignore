@@ -63,3 +63,4 @@ apps/web/public/map/
 # Evaluation runs (make eval): generated, one file per run
 eval/results/*
 !eval/results/.gitkeep
+try-sandbox/
