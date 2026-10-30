@@ -170,7 +170,7 @@ export function CameraWall() {
                 camera={camera}
                 status={
                   camera.live_demo
-                    ? "live"
+                    ? tileStatus(camera.status, false)
                     : tileStatus(row?.status ?? camera.status, row?.stale ?? false)
                 }
                 incidents={incidents.data?.get(camera.id) ?? []}

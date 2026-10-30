@@ -37,7 +37,9 @@ def live_camera_out(session: TrySession, settings: Settings) -> CameraOut:
         heading_deg=0,
         wilaya="-",
         zones=None,
-        status="online",
+        # Online only once the worker posted a result from the phone stream: a session whose
+        # phone never published must not look live (FR-VIS-020).
+        status="online" if session.events else "unknown",
         simulated=False,
         live_demo=True,
         stream=StreamUrls(
