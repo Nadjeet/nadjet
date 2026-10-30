@@ -77,7 +77,7 @@ def signature_valid(
     if abs(now - int(timestamp)) > tolerance:
         return False
     expected = hmac.new(secret.encode(), body + timestamp.encode(), hashlib.sha256).hexdigest()
-    return hmac.compare_digest(expected, signature.lower())
+    return hmac.compare_digest(expected.encode(), signature.lower().encode())
 
 
 async def verify_gateway(
@@ -91,10 +91,11 @@ async def verify_gateway(
     The token form covers private-server setups that do not sign webhooks (TQ-03).
     """
     settings: Settings = request.app.state.settings
-    if settings.sms_webhook_secret is None:
+    # `.env.example` ships `NADJET_SMS_WEBHOOK_SECRET=`: an empty secret is no secret at all.
+    secret = settings.sms_webhook_secret.get_secret_value() if settings.sms_webhook_secret else ""
+    if not secret:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "SMS gateway is not configured")
-    secret = settings.sms_webhook_secret.get_secret_value()
-    if token is not None and hmac.compare_digest(token.encode(), secret.encode()):
+    if token and hmac.compare_digest(token.encode(), secret.encode()):
         return
     body = await request.body()
     if not signature_valid(

@@ -181,6 +181,21 @@ async def test_webhook_is_unavailable_without_a_configured_secret(
     assert response.status_code == 503
 
 
+async def test_an_empty_webhook_secret_counts_as_not_configured(tmp_path: Path) -> None:
+    """``.env.example`` ships ``NADJET_SMS_WEBHOOK_SECRET=``; ``?token=`` must not match it."""
+    application = create_app(make_settings(tmp_path, sms_webhook_secret=""))
+    async with (
+        application.router.lifespan_context(application),
+        httpx.AsyncClient(
+            transport=httpx.ASGITransport(app=application), base_url="http://test"
+        ) as c,
+    ):
+        response = await c.post(
+            "/sms/inbound", params={"token": ""}, json=envelope(phone(), "OK ABC")
+        )
+    assert response.status_code == 503
+
+
 # ---------------------------------------------------------------- inbound: status, triage, hospital
 
 
