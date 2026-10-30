@@ -5,7 +5,8 @@ export class SseParser {
   private buffer = "";
 
   push(chunk: string): SseMessage[] {
-    this.buffer += chunk.replace(/\r\n?/g, "\n");
+    // Normalise after appending, but keep a trailing "\r": its "\n" may start the next chunk.
+    this.buffer = (this.buffer + chunk).replace(/\r\n|\r(?!$)/g, "\n");
     const messages: SseMessage[] = [];
     let boundary = this.buffer.indexOf("\n\n");
     while (boundary >= 0) {
