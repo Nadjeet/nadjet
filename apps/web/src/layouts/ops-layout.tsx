@@ -1,5 +1,5 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { ActivityIcon, LayoutDashboardIcon, PaletteIcon, SirenIcon, VideoIcon } from "lucide-react";
+import { ActivityIcon, PaletteIcon, SirenIcon, VideoIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Logo } from "@/components/brand/logo";
@@ -28,14 +28,8 @@ export function OpsLayout() {
             <ul className="flex gap-1 lg:flex-col">
               <li>
                 <Link to="/ops" activeOptions={{ exact: true }} className={link}>
-                  <LayoutDashboardIcon aria-hidden className="size-5" />
-                  {t("nav.overview")}
-                </Link>
-              </li>
-              <li>
-                <Link to="/ops/incidents" className={link}>
                   <SirenIcon aria-hidden className="size-5" />
-                  {t("nav.incidents")}
+                  {t("nav.overview")}
                 </Link>
               </li>
               <li>
