@@ -177,7 +177,7 @@ case "${1:-}" in
     else
       echo "Could not pull $image (not published yet, or private: run 'docker login ghcr.io' on the instance). Building on the instance"
       tarball=$(mktemp)
-      git archive --format=tar.gz -o "$tarball" HEAD pyproject.toml uv.lock packages services data/cameras.yaml data/zones .dockerignore
+      git archive --format=tar.gz -o "$tarball" HEAD pyproject.toml uv.lock models.lock.yaml packages services data/cameras.yaml data/zones .dockerignore
       brev copy "$tarball" "$INSTANCE:/home/ubuntu/nadjet-src.tgz" </dev/null >/dev/null
       rm -f "$tarball"
       remote_ok "rm -rf $REMOTE_SRC && mkdir -p $REMOTE_SRC && tar -xzf /home/ubuntu/nadjet-src.tgz -C $REMOTE_SRC && cd $REMOTE_DIR && docker compose --profile workers build workers" \

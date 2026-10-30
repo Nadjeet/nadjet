@@ -108,3 +108,24 @@ def test_deploy_workers_fails_loudly_when_the_workers_do_not_start(sandbox: Path
     code, err, _ = run(sandbox, "deploy-workers", FAKE_FAIL="up -d")
     assert code == 1
     assert "Starting the workers failed" in err
+
+
+def test_deploy_workers_build_context_holds_every_file_the_vision_image_copies() -> None:
+    """The on-instance build fallback archives a file list; a missing ``models.lock.yaml`` broke
+    every build (``"/models.lock.yaml": not found``). Each ``COPY`` source must be archived."""
+    archive = next(
+        line
+        for line in (ROOT / "scripts/brev.sh").read_text().splitlines()
+        if "git archive" in line
+    )
+    archived = archive.split("HEAD", 1)[1].split()
+    dockerfile = (ROOT / "services/vision/Dockerfile").read_text().splitlines()
+    sources = [
+        part
+        for line in dockerfile
+        if line.startswith("COPY ") and "--from=" not in line
+        for part in line.split()[1:-1]
+    ]
+    assert sources
+    for source in sources:
+        assert any(source == a or source.startswith(f"{a}/") for a in archived), source
