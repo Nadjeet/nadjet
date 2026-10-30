@@ -8,9 +8,9 @@ from pathlib import Path
 
 import httpx
 import pytest
-from nadjet_shared.catalogue import load_catalogue
 
 from nadjet_camsim.control import Controller
+from nadjet_shared.catalogue import load_catalogue
 
 pytestmark = pytest.mark.integration
 
