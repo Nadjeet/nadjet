@@ -20,6 +20,7 @@ from nadjet_api.db import get_session
 from nadjet_api.dispatch.service import make_proposer
 from nadjet_api.incidents import service
 from nadjet_api.incidents.deps import RedisDep, SignerDep, announce
+from nadjet_api.incidents.events import publish_facility
 from nadjet_api.notifications import inbound
 from nadjet_api.notifications import service as notifications
 from nadjet_api.notifications.cap import build_cap
@@ -159,6 +160,8 @@ async def sms_inbound(
         await redis.delete(dedupe_key)
         raise
     await announce(redis, result.changes)
+    for facility_id, state in result.facility_states.items():
+        await publish_facility(redis, facility_id, state)
     await _reply(request, phone, result.reply)
     return SmsAck(status="processed")
 

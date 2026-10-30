@@ -50,6 +50,8 @@ NOT_AUTHORISED = "Nadjet: not authorised for this incident. The operator was not
 class Result:
     reply: str
     changes: list[Change] = field(default_factory=list)
+    #: Hospitals whose Ready/Divert state this SMS changed (facility id -> state): announced live.
+    facility_states: dict[str, str] = field(default_factory=dict)
 
 
 async def handle_sms(
@@ -210,7 +212,11 @@ async def _hospital(
     if command.state is FacilityState.DIVERT:
         # E-10: tell the operators of every incident this hospital was selected for.
         changes += await handle_hospital_divert(session, signer, str(updated), propose)
-    return Result(f"Nadjet: {incident.short_code} {command.state.value} recorded", changes)
+    return Result(
+        f"Nadjet: {incident.short_code} {command.state.value} recorded",
+        changes,
+        {str(updated): command.state.value},
+    )
 
 
 async def _citizen_report(

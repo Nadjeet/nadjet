@@ -281,6 +281,68 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/facilities/{facility_id}/prealerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Prealerts
+         * @description Incoming pre-alerts and today's arrivals of a hospital (FR-HSP-001).
+         */
+        get: operations["prealerts_facilities__facility_id__prealerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/facilities/{facility_id}/prealerts/{incident_id}/ack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Acknowledge
+         * @description The hospital confirms it saw the pre-alert; repeating it changes nothing.
+         */
+        post: operations["acknowledge_facilities__facility_id__prealerts__incident_id__ack_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/facilities/{facility_id}/readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Readiness
+         * @description Ready or Divert, from the screen (the SMS ``H <code> READY|DIVERT`` does the same).
+         *
+         *     Divert alerts the operators of every incident that selected the hospital (E-10).
+         */
+        post: operations["readiness_facilities__facility_id__readiness_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -1922,6 +1984,20 @@ export interface components {
             /** Ready State */
             ready_state?: ("ready" | "divert") | null;
         };
+        /** FacilityState */
+        FacilityState: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /**
+             * Ready State
+             * @enum {string}
+             */
+            ready_state: "ready" | "divert";
+            /** Simulated */
+            simulated: boolean;
+        };
         /**
          * Finding
          * @description One statement of the verifier, tied to the frames it was read from (FR-VIS-016).
@@ -1964,6 +2040,20 @@ export interface components {
             status: string;
             /** Version */
             version: string;
+        };
+        /** HospitalBoard */
+        HospitalBoard: {
+            facility: components["schemas"]["FacilityState"];
+            /**
+             * History
+             * @description Arrivals of today (Algiers time)
+             */
+            history: components["schemas"]["PreAlert"][];
+            /**
+             * Incoming
+             * @description Hospital selected, patients not yet arrived
+             */
+            incoming: components["schemas"]["PreAlert"][];
         };
         /** HospitalChangeIn */
         HospitalChangeIn: {
@@ -2487,6 +2577,73 @@ export interface components {
             /** P95 */
             p95?: number | null;
         };
+        /**
+         * PreAlert
+         * @description One incident this hospital was selected for (FR-HSP-001).
+         */
+        PreAlert: {
+            /** Acknowledged At */
+            acknowledged_at: string | null;
+            /** Acknowledged By */
+            acknowledged_by: string | null;
+            /** Casualties */
+            casualties: components["schemas"]["VictimOut"][];
+            /**
+             * Dispatched At
+             * Format: date-time
+             */
+            dispatched_at: string;
+            /** Distance M */
+            distance_m: number;
+            /** Eta S */
+            eta_s: number;
+            /**
+             * Expected Arrival At
+             * Format: date-time
+             * @description Dispatch time plus the stored road ETA
+             */
+            expected_arrival_at: string;
+            /**
+             * Incident Id
+             * Format: uuid
+             */
+            incident_id: string;
+            /** Location Text */
+            location_text: string | null;
+            /** Mass Casualty */
+            mass_casualty: boolean;
+            /** Needs Extrication */
+            needs_extrication: boolean;
+            /** People Reported */
+            people_reported: number | null;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Priority */
+            priority: number;
+            /** Road */
+            road: string | null;
+            /** Short Code */
+            short_code: string;
+            status: components["schemas"]["IncidentStatus"];
+            /** Trapped Reported */
+            trapped_reported: boolean;
+            /** Type */
+            type: string;
+            /** Units */
+            units: components["schemas"]["PreAlertUnit"][];
+            victims: components["schemas"]["VictimCounts"];
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** PreAlertUnit */
+        PreAlertUnit: {
+            /** Agency */
+            agency: string;
+            /** Callsign */
+            callsign: string;
+            /** Simulated */
+            simulated: boolean;
+        };
         /** PriorityReason */
         PriorityReason: {
             /** Detail */
@@ -2562,6 +2719,14 @@ export interface components {
              * @default osrm
              */
             source: string;
+        };
+        /** ReadinessIn */
+        ReadinessIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "ready" | "divert";
         };
         /** ReadinessResponse */
         ReadinessResponse: {
@@ -3127,6 +3292,49 @@ export interface components {
              * @description Probability of the 'yes' answer token (logprobs)
              */
             yes_probability?: number | null;
+        };
+        /** VictimCounts */
+        VictimCounts: {
+            /** Black */
+            black: number;
+            /** Green */
+            green: number;
+            /** Red */
+            red: number;
+            /** Total */
+            total: number;
+            /** Yellow */
+            yellow: number;
+        };
+        /** VictimOut */
+        VictimOut: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Avpu */
+            avpu: ("A" | "V" | "P" | "U") | null;
+            /** Bleeding */
+            bleeding: boolean | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Notes */
+            notes: string | null;
+            /** Pulse */
+            pulse: number | null;
+            /** Resp Rate */
+            resp_rate: number | null;
+            /** Spo2 */
+            spo2: number | null;
+            /**
+             * Triage Tag
+             * @enum {string}
+             */
+            triage_tag: "red" | "yellow" | "green" | "black";
         };
         /** WebhookEnvelope */
         WebhookEnvelope: {
@@ -3877,6 +4085,151 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    prealerts_facilities__facility_id__prealerts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HospitalBoard"];
+                };
+            };
+            /** @description Not this hospital's user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    acknowledge_facilities__facility_id__prealerts__incident_id__ack_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not this hospital's user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Incident is no longer incoming */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readiness_facilities__facility_id__readiness_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReadinessIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FacilityState"];
+                };
+            };
+            /** @description Not this hospital's user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

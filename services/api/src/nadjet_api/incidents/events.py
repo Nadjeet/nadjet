@@ -30,6 +30,24 @@ async def publish(redis: Redis, change: Change) -> None:
         log.exception("failed to publish %s for %s", change.type, change.incident_id)
 
 
+async def publish_facility(redis: Redis, facility_id: str, ready_state: str) -> None:
+    """Announce a hospital Ready/Divert change to the operators and that hospital's users.
+
+    Best effort: clients refetch, the DB stays the truth.
+    """
+    message = {
+        "type": "facility.updated",
+        "facility_id": facility_id,
+        "ready_state": ready_state,
+        "agencies": [],
+        "facilities": [facility_id],
+    }
+    try:
+        await redis.publish(CHANNEL, json.dumps(message))
+    except Exception:
+        log.exception("failed to publish facility update for %s", facility_id)
+
+
 def visible_to(scope: Scope, message: dict[str, object]) -> bool:
     if scope.unrestricted:
         return True
@@ -42,6 +60,11 @@ def frame(message: dict[str, object]) -> str:
     if "camera_id" in message:  # camera_fault / camera_recovered (cameras/health.py)
         camera = json.dumps({"camera_id": message["camera_id"], "status": message["status"]})
         return f"event: {message['type']}\ndata: {camera}\n\n"
+    if "facility_id" in message:  # facility.updated (hospital Ready/Divert)
+        facility = json.dumps(
+            {"facility_id": message["facility_id"], "ready_state": message["ready_state"]}
+        )
+        return f"event: {message['type']}\ndata: {facility}\n\n"
     data = json.dumps({"incident_id": message["incident_id"], "version": message["version"]})
     return f"event: {message['type']}\ndata: {data}\n\n"
 

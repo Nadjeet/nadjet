@@ -1883,6 +1883,38 @@
         "title": "FacilityPatch",
         "type": "object"
       },
+      "FacilityState": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ready_state": {
+            "enum": [
+              "ready",
+              "divert"
+            ],
+            "title": "Ready State",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "ready_state",
+          "simulated"
+        ],
+        "title": "FacilityState",
+        "type": "object"
+      },
       "Finding": {
         "additionalProperties": false,
         "description": "One statement of the verifier, tied to the frames it was read from (FR-VIS-016).",
@@ -1999,6 +2031,36 @@
           "version"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "HospitalBoard": {
+        "properties": {
+          "facility": {
+            "$ref": "#/components/schemas/FacilityState"
+          },
+          "history": {
+            "description": "Arrivals of today (Algiers time)",
+            "items": {
+              "$ref": "#/components/schemas/PreAlert"
+            },
+            "title": "History",
+            "type": "array"
+          },
+          "incoming": {
+            "description": "Hospital selected, patients not yet arrived",
+            "items": {
+              "$ref": "#/components/schemas/PreAlert"
+            },
+            "title": "Incoming",
+            "type": "array"
+          }
+        },
+        "required": [
+          "facility",
+          "incoming",
+          "history"
+        ],
+        "title": "HospitalBoard",
         "type": "object"
       },
       "HospitalChangeIn": {
@@ -3410,6 +3472,206 @@
         "title": "Percentiles",
         "type": "object"
       },
+      "PreAlert": {
+        "description": "One incident this hospital was selected for (FR-HSP-001).",
+        "properties": {
+          "acknowledged_at": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged At"
+          },
+          "acknowledged_by": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Acknowledged By"
+          },
+          "casualties": {
+            "items": {
+              "$ref": "#/components/schemas/VictimOut"
+            },
+            "title": "Casualties",
+            "type": "array"
+          },
+          "dispatched_at": {
+            "format": "date-time",
+            "title": "Dispatched At",
+            "type": "string"
+          },
+          "distance_m": {
+            "title": "Distance M",
+            "type": "number"
+          },
+          "eta_s": {
+            "title": "Eta S",
+            "type": "number"
+          },
+          "expected_arrival_at": {
+            "description": "Dispatch time plus the stored road ETA",
+            "format": "date-time",
+            "title": "Expected Arrival At",
+            "type": "string"
+          },
+          "incident_id": {
+            "format": "uuid",
+            "title": "Incident Id",
+            "type": "string"
+          },
+          "location_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Text"
+          },
+          "mass_casualty": {
+            "title": "Mass Casualty",
+            "type": "boolean"
+          },
+          "needs_extrication": {
+            "title": "Needs Extrication",
+            "type": "boolean"
+          },
+          "people_reported": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "People Reported"
+          },
+          "pk_km": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pk Km"
+          },
+          "priority": {
+            "title": "Priority",
+            "type": "integer"
+          },
+          "road": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Road"
+          },
+          "short_code": {
+            "title": "Short Code",
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/IncidentStatus"
+          },
+          "trapped_reported": {
+            "title": "Trapped Reported",
+            "type": "boolean"
+          },
+          "type": {
+            "title": "Type",
+            "type": "string"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/PreAlertUnit"
+            },
+            "title": "Units",
+            "type": "array"
+          },
+          "victims": {
+            "$ref": "#/components/schemas/VictimCounts"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "required": [
+          "incident_id",
+          "short_code",
+          "status",
+          "priority",
+          "type",
+          "mass_casualty",
+          "needs_extrication",
+          "trapped_reported",
+          "people_reported",
+          "road",
+          "pk_km",
+          "wilaya",
+          "location_text",
+          "dispatched_at",
+          "eta_s",
+          "distance_m",
+          "expected_arrival_at",
+          "units",
+          "victims",
+          "casualties",
+          "acknowledged_at",
+          "acknowledged_by"
+        ],
+        "title": "PreAlert",
+        "type": "object"
+      },
+      "PreAlertUnit": {
+        "properties": {
+          "agency": {
+            "title": "Agency",
+            "type": "string"
+          },
+          "callsign": {
+            "title": "Callsign",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "callsign",
+          "agency",
+          "simulated"
+        ],
+        "title": "PreAlertUnit",
+        "type": "object"
+      },
       "PriorityReason": {
         "properties": {
           "detail": {
@@ -3606,6 +3868,23 @@
           "route_geojson"
         ],
         "title": "RankedResource",
+        "type": "object"
+      },
+      "ReadinessIn": {
+        "properties": {
+          "state": {
+            "enum": [
+              "ready",
+              "divert"
+            ],
+            "title": "State",
+            "type": "string"
+          }
+        },
+        "required": [
+          "state"
+        ],
+        "title": "ReadinessIn",
         "type": "object"
       },
       "ReadinessResponse": {
@@ -5136,6 +5415,148 @@
         "title": "VerifierResult",
         "type": "object"
       },
+      "VictimCounts": {
+        "properties": {
+          "black": {
+            "title": "Black",
+            "type": "integer"
+          },
+          "green": {
+            "title": "Green",
+            "type": "integer"
+          },
+          "red": {
+            "title": "Red",
+            "type": "integer"
+          },
+          "total": {
+            "title": "Total",
+            "type": "integer"
+          },
+          "yellow": {
+            "title": "Yellow",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "red",
+          "yellow",
+          "green",
+          "black",
+          "total"
+        ],
+        "title": "VictimCounts",
+        "type": "object"
+      },
+      "VictimOut": {
+        "properties": {
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "avpu": {
+            "anyOf": [
+              {
+                "enum": [
+                  "A",
+                  "V",
+                  "P",
+                  "U"
+                ],
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avpu"
+          },
+          "bleeding": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bleeding"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Notes"
+          },
+          "pulse": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Pulse"
+          },
+          "resp_rate": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Resp Rate"
+          },
+          "spo2": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Spo2"
+          },
+          "triage_tag": {
+            "enum": [
+              "red",
+              "yellow",
+              "green",
+              "black"
+            ],
+            "title": "Triage Tag",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "triage_tag",
+          "avpu",
+          "resp_rate",
+          "pulse",
+          "spo2",
+          "bleeding",
+          "notes",
+          "at"
+        ],
+        "title": "VictimOut",
+        "type": "object"
+      },
       "WebhookEnvelope": {
         "properties": {
           "event": {
@@ -6049,6 +6470,184 @@
         "summary": "Incident Events",
         "tags": [
           "incidents"
+        ]
+      }
+    },
+    "/facilities/{facility_id}/prealerts": {
+      "get": {
+        "description": "Incoming pre-alerts and today's arrivals of a hospital (FR-HSP-001).",
+        "operationId": "prealerts_facilities__facility_id__prealerts_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "facility_id",
+            "required": true,
+            "schema": {
+              "title": "Facility Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HospitalBoard"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Not this hospital's user"
+          },
+          "404": {
+            "description": "Unknown hospital"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Prealerts",
+        "tags": [
+          "hospital"
+        ]
+      }
+    },
+    "/facilities/{facility_id}/prealerts/{incident_id}/ack": {
+      "post": {
+        "description": "The hospital confirms it saw the pre-alert; repeating it changes nothing.",
+        "operationId": "acknowledge_facilities__facility_id__prealerts__incident_id__ack_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "facility_id",
+            "required": true,
+            "schema": {
+              "title": "Facility Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Not this hospital's user"
+          },
+          "404": {
+            "description": "Unknown hospital"
+          },
+          "409": {
+            "description": "Incident is no longer incoming"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Acknowledge",
+        "tags": [
+          "hospital"
+        ]
+      }
+    },
+    "/facilities/{facility_id}/readiness": {
+      "post": {
+        "description": "Ready or Divert, from the screen (the SMS ``H <code> READY|DIVERT`` does the same).\n\nDivert alerts the operators of every incident that selected the hospital (E-10).",
+        "operationId": "readiness_facilities__facility_id__readiness_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "facility_id",
+            "required": true,
+            "schema": {
+              "title": "Facility Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ReadinessIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FacilityState"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "403": {
+            "description": "Not this hospital's user"
+          },
+          "404": {
+            "description": "Unknown hospital"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Readiness",
+        "tags": [
+          "hospital"
         ]
       }
     },
