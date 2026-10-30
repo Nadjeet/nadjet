@@ -21,6 +21,7 @@ import { IncidentDetailPage } from "@/pages/ops/incident/incident-detail-page";
 import { SystemPage } from "@/pages/ops/system-page";
 import { PlaceholderPage } from "@/pages/placeholder-page";
 import { PublicHome } from "@/pages/public/public-home";
+import { ReportPage } from "@/pages/public/report-page";
 
 export type RouterContext = { queryClient: QueryClient };
 
@@ -131,7 +132,7 @@ const publicRoutes = [
   createRoute({
     getParentRoute: () => publicRoute,
     path: "report",
-    component: () => <PlaceholderPage pageKey="public.report" />,
+    component: ReportPage,
   }),
   createRoute({
     getParentRoute: () => publicRoute,
