@@ -265,6 +265,27 @@ def test_no_hard_stop_when_the_whole_traffic_stops_together() -> None:
     assert scene.engine.suppressed["jam"] >= 1
 
 
+def test_hard_stop_fires_even_when_traffic_brakes_because_of_the_crash() -> None:
+    """E-01 vs a real crash: followers that brake 1.5 s after the impact must not hide it.
+
+    The jam share is read just after the impact, not at fire time (stop + 2 s).
+    """
+    scene = Scene()
+
+    def frame(t: float) -> dict[int, Detection]:
+        objects = {1: box(100 + 90 * min(t, 4.0))}
+        brake_at = 4.0 + 1.5
+        objects.update(
+            {10 + k: box(100 + 200 * k + 90 * min(t, brake_at), 330) for k in range(1, 4)}
+        )
+        return objects
+
+    scene.run(10, frame)
+    stops = [e for e in scene.events if e.trigger is TriggerType.HARD_STOP]
+    assert [e.track_ids for e in stops] == [(1,)]  # the followers' own stops are a jam
+    assert stops[0].signals["others_slowed"] == 0.0
+
+
 def test_hard_stop_fires_when_few_others_slow_down() -> None:
     scene = Scene()
 
