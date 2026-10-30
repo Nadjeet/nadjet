@@ -18,7 +18,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PRD = ROOT / "PRD.md"
 RUNBOOK = ROOT / "docs" / "demo" / "RUNBOOK.md"
 OUT = ROOT / "docs" / "traceability.md"
-TEST_GLOBS = ("services/*/tests", "packages/*/tests", "scripts/tests", "eval")
+TEST_GLOBS = ("services/*/tests", "packages/*/tests", "scripts/tests")
 
 MUST = re.compile(r"\*\*((?:N?FR)-[A-Z]+-\d{3}) \[M\]\*\*")
 # FR-VIS-001, FR-VIS-001..009, FR-DSP-001/004; underscores because test names cannot hold "-".
