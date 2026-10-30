@@ -25,7 +25,7 @@ case "${1:-}" in
     ;;
   forward)
     require_brev
-    if pgrep -f "L ${LOCAL_PORT}:127.0.0.1:${REMOTE_PORT}" >/dev/null; then
+    if pgrep -f "ssh.*-L *${LOCAL_PORT}:" >/dev/null; then
       echo "Forward already running on localhost:${LOCAL_PORT}"
     else
       # brev port-forward starts ssh in the background and returns.
@@ -34,7 +34,7 @@ case "${1:-}" in
     fi
     ;;
   unforward)
-    pkill -f "L ${LOCAL_PORT}:127.0.0.1:${REMOTE_PORT}" && echo "Forward stopped" || echo "No forward running"
+    pkill -f "ssh.*-L *${LOCAL_PORT}:" && echo "Forward stopped" || echo "No forward running"
     ;;
   check)
     require_brev
