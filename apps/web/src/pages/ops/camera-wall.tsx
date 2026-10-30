@@ -81,6 +81,7 @@ function CameraTile({
           </bdi>
         </div>
         <div className="flex flex-wrap items-center gap-2">
+          {camera.live_demo ? <Badge variant="secondary">{t("cameras.liveDemo")}</Badge> : null}
           {camera.simulated ? <SimulatedLabel /> : null}
           <StatusBadge status={status} />
         </div>
@@ -167,7 +168,11 @@ export function CameraWall() {
               <CameraTile
                 key={camera.id}
                 camera={camera}
-                status={tileStatus(row?.status ?? camera.status, row?.stale ?? false)}
+                status={
+                  camera.live_demo
+                    ? "live"
+                    : tileStatus(row?.status ?? camera.status, row?.stale ?? false)
+                }
                 incidents={incidents.data?.get(camera.id) ?? []}
               />
             );

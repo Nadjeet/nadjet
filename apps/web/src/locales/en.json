@@ -163,8 +163,52 @@
         "body": "The one-tap citizen report will appear here."
       },
       "try": {
-        "title": "Try it",
-        "body": "Upload a clip and see how the detection works."
+        "title": "Try the detection",
+        "body": "Upload up to {{seconds}} s and {{mb}} MB of traffic video, or use your phone as a live camera. The same AI that watches the cameras analyses it.",
+        "consent": {
+          "title": "Before you upload",
+          "body": "Your video is analysed by Nadjet's AI on our own server, kept in an isolated sandbox for one hour and then deleted. It is never mixed with real incidents. Do not upload videos showing people you do not have the right to film."
+        },
+        "choose": "Choose a video",
+        "livePhone": "Use my phone as a camera",
+        "aiUnavailable": "AI unavailable: only the rule-based analysis is shown.",
+        "progress": "Analysis progress",
+        "annotated": "Video with detections",
+        "incident": "Result",
+        "sandbox": "Sandbox",
+        "status": "AI status",
+        "time": "Moment",
+        "vehicles": "Vehicles",
+        "frames": "frames",
+        "noCollision": "The AI sees no collision in this clip.",
+        "noRuleCollision": "No collision was detected by the rules.",
+        "timeline": "Timeline",
+        "timelineEmpty": "Nothing was detected.",
+        "delete": "Delete my video now",
+        "stages": {
+          "queued": "Waiting for a free analyser",
+          "starting": "Starting",
+          "detect": "Detecting vehicles",
+          "ai_scan": "AI scan of the whole clip",
+          "ai_refine": "AI close look at the moment",
+          "done": "Done"
+        },
+        "errors": {
+          "tooLarge": "This file is larger than {{mb}} MB.",
+          "notVideo": "This file is not a video (MP4, MOV or WebM).",
+          "tooLong": "This video is longer than {{seconds}} s.",
+          "rateLimited": "Too many attempts. Please wait a minute.",
+          "failed": "The upload failed. Try again."
+        },
+        "live": {
+          "title": "Your phone as a live camera",
+          "body": "Point your phone at a road or a screen. It appears on the operators' camera wall as a live demo, and the AI checks it every 4 seconds. The session and its results are deleted when you leave.",
+          "start": "Start the camera",
+          "stop": "Stop",
+          "on": "Live",
+          "preview": "Your camera",
+          "failed": "The camera could not be started."
+        }
       },
       "privacy": {
         "title": "Privacy",
@@ -414,6 +458,7 @@
       "live": "Live",
       "degraded": "Degraded",
       "offline": "Offline"
-    }
+    },
+    "liveDemo": "Live demo"
   }
 }

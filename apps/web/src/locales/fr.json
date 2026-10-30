@@ -163,8 +163,52 @@
         "body": "Le signalement citoyen en un geste apparaîtra ici."
       },
       "try": {
-        "title": "Essayer",
-        "body": "Importez une vidéo et voyez comment fonctionne la détection."
+        "title": "Essayer la détection",
+        "body": "Envoyez jusqu'à {{seconds}} s et {{mb}} Mo de vidéo de trafic, ou utilisez votre téléphone comme caméra en direct. La même IA que celle des caméras l'analyse.",
+        "consent": {
+          "title": "Avant d'envoyer",
+          "body": "Votre vidéo est analysée par l'IA de Nadjet sur notre propre serveur, conservée une heure dans un bac à sable isolé puis supprimée. Elle n'est jamais mélangée aux incidents réels. N'envoyez pas de vidéos de personnes que vous n'avez pas le droit de filmer."
+        },
+        "choose": "Choisir une vidéo",
+        "livePhone": "Utiliser mon téléphone comme caméra",
+        "aiUnavailable": "IA indisponible : seule l'analyse par règles est affichée.",
+        "progress": "Progression de l'analyse",
+        "annotated": "Vidéo avec détections",
+        "incident": "Résultat",
+        "sandbox": "Bac à sable",
+        "status": "Statut IA",
+        "time": "Instant",
+        "vehicles": "Véhicules",
+        "frames": "images",
+        "noCollision": "L'IA ne voit pas de collision dans ce clip.",
+        "noRuleCollision": "Les règles n'ont détecté aucune collision.",
+        "timeline": "Chronologie",
+        "timelineEmpty": "Rien n'a été détecté.",
+        "delete": "Supprimer ma vidéo maintenant",
+        "stages": {
+          "queued": "En attente d'un analyseur libre",
+          "starting": "Démarrage",
+          "detect": "Détection des véhicules",
+          "ai_scan": "Balayage IA du clip entier",
+          "ai_refine": "Regard IA précis sur l'instant",
+          "done": "Terminé"
+        },
+        "errors": {
+          "tooLarge": "Ce fichier dépasse {{mb}} Mo.",
+          "notVideo": "Ce fichier n'est pas une vidéo (MP4, MOV ou WebM).",
+          "tooLong": "Cette vidéo dépasse {{seconds}} s.",
+          "rateLimited": "Trop de tentatives. Patientez une minute.",
+          "failed": "L'envoi a échoué. Réessayez."
+        },
+        "live": {
+          "title": "Votre téléphone en caméra live",
+          "body": "Dirigez votre téléphone vers une route ou un écran. Il apparaît sur le mur de caméras des opérateurs comme démo en direct, et l'IA le vérifie toutes les 4 secondes. La session et ses résultats sont supprimés quand vous partez.",
+          "start": "Démarrer la caméra",
+          "stop": "Arrêter",
+          "on": "En direct",
+          "preview": "Votre caméra",
+          "failed": "La caméra n'a pas pu démarrer."
+        }
       },
       "privacy": {
         "title": "Confidentialité",
@@ -414,6 +458,7 @@
       "live": "En direct",
       "degraded": "Dégradée",
       "offline": "Hors ligne"
-    }
+    },
+    "liveDemo": "Démo en direct"
   }
 }
