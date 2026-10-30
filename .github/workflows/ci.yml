@@ -128,6 +128,10 @@ jobs:
           fetch-depth: 0
       - name: Integrity (no fabricated AI, Brev-only inference, no frontend tests)
         run: bash scripts/check-integrity.sh
+      - name: Traceability report ([M] requirements to tests, informational)
+        continue-on-error: true
+        run: |
+          python3 scripts/traceability.py --check | tee -a "$GITHUB_STEP_SUMMARY"
       - name: One-line Conventional Commits without co-authors
         if: github.event_name == 'pull_request'
         run: |
