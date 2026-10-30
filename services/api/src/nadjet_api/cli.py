@@ -17,6 +17,7 @@ from nadjet_api.config import get_settings
 from nadjet_api.db import create_engine, create_session_factory
 from nadjet_api.incidents.ingest import CandidateConsumer
 from nadjet_api.incidents.signing import ChainSigner, generate_seed_hex
+from nadjet_api.geo.seed import load_capabilities, load_facilities, load_units, seed_geo
 from nadjet_api.main import create_app
 from nadjet_shared.catalogue import load_catalogue
 
@@ -24,6 +25,7 @@ GRACEFUL_SHUTDOWN_S = 3
 ROOT = Path(__file__).resolve().parents[4]
 DEFAULT_OPENAPI = ROOT / "contracts" / "openapi.json"
 DEFAULT_CAMERAS = ROOT / "data" / "cameras.yaml"
+DEFAULT_SEED_DIR = ROOT / "data" / "seed"
 
 
 def render_openapi() -> str:
@@ -88,6 +90,19 @@ async def run_seed_cameras(path: Path) -> None:
     print(f"seed-cameras: {count} camera(s) synced from {path}")
 
 
+async def run_seed_geo(directory: Path) -> None:
+    facilities = load_facilities(directory / "facilities.csv")
+    capabilities = load_capabilities(directory / "capabilities.csv")
+    units = load_units(directory / "units.csv")
+    engine = create_engine(get_settings())
+    try:
+        async with create_session_factory(engine)() as session:
+            counts = await seed_geo(session, facilities, capabilities, units)
+    finally:
+        await engine.dispose()
+    print("seed-geo: {} facilities, {} capabilities, {} units upserted".format(*counts))
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="nadjet-api")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -109,6 +124,9 @@ def main(argv: list[str] | None = None) -> int:
     sub.add_parser("consume", help="persist candidates from the Redis Stream")
     sub.add_parser("gen-signing-key", help="print a new Ed25519 seed for NADJET_SIGNING_KEY")
 
+    geo = sub.add_parser("seed-geo", help="import facilities and units from data/seed CSV files")
+    geo.add_argument("--dir", type=Path, default=DEFAULT_SEED_DIR)
+
     args = parser.parse_args(argv)
     if args.command == "gen-signing-key":
         print(generate_seed_hex())
@@ -119,6 +137,9 @@ def main(argv: list[str] | None = None) -> int:
         return 0
     if args.command == "seed-cameras":
         asyncio.run(run_seed_cameras(args.file))
+        return 0
+    if args.command == "seed-geo":
+        asyncio.run(run_seed_geo(args.dir))
         return 0
     if args.command == "seed-users":
         asyncio.run(run_seed_users(args.file))

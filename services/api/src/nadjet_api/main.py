@@ -3,6 +3,7 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import httpx
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -14,11 +15,14 @@ from nadjet_api.auth.routes import router as auth_router
 from nadjet_api.cameras.routes import router as cameras_router
 from nadjet_api.config import Settings, get_settings
 from nadjet_api.db import create_engine, create_session_factory
+from nadjet_api.geo.tiles import router as tiles_router
 from nadjet_api.health import Probe, database_probe, redis_probe, run_probes
 from nadjet_api.incidents import internal
 from nadjet_api.incidents import routes as incident_routes
 from nadjet_api.incidents.signing import ChainSigner
 from nadjet_api.incidents.store import LocalEvidenceStore
+from nadjet_api.routing.router import OsrmRouter, Router
+from nadjet_api.routing.routes import router as routing_router
 
 
 class HealthResponse(BaseModel):
@@ -36,16 +40,23 @@ class ReadinessResponse(BaseModel):
     dependencies: dict[str, DependencyStatus]
 
 
-def create_app(settings: Settings | None = None, probes: dict[str, Probe] | None = None) -> FastAPI:
-    """Build the app. Tests pass ``probes`` to avoid real infrastructure."""
+def create_app(
+    settings: Settings | None = None,
+    probes: dict[str, Probe] | None = None,
+    road_router: Router | None = None,
+) -> FastAPI:
+    """Build the app. Tests pass ``probes`` / ``road_router`` to avoid real infrastructure."""
     settings = settings or get_settings()
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         if probes is not None:
             app.state.probes = probes
+            app.state.router = road_router
             yield
             return
+        http = httpx.AsyncClient(timeout=settings.routing_timeout_s)
+        app.state.router = road_router or OsrmRouter(http, settings.osrm_url)
         engine = create_engine(settings)
         redis: Redis = Redis.from_url(str(settings.redis_url), decode_responses=True)
         app.state.session_factory = create_session_factory(engine)
@@ -54,6 +65,7 @@ def create_app(settings: Settings | None = None, probes: dict[str, Probe] | None
         try:
             yield
         finally:
+            await http.aclose()
             await redis.aclose()
             await engine.dispose()
 
@@ -65,6 +77,8 @@ def create_app(settings: Settings | None = None, probes: dict[str, Probe] | None
     app.include_router(cameras_router)
     app.include_router(incident_routes.router)
     app.include_router(internal.router)
+    app.include_router(routing_router)
+    app.include_router(tiles_router)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,
