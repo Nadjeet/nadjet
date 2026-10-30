@@ -16,7 +16,8 @@ import { LoginPage } from "@/pages/login-page";
 import { NotFound } from "@/pages/not-found";
 import { CameraWall } from "@/pages/ops/camera-wall";
 import { DesignSystemPage } from "@/pages/ops/design-system-page";
-import { OpsOverview } from "@/pages/ops/ops-overview";
+import { ConsolePage } from "@/pages/ops/console-page";
+import { IncidentDetailPage } from "@/pages/ops/incident/incident-detail-page";
 import { SystemPage } from "@/pages/ops/system-page";
 import { PlaceholderPage } from "@/pages/placeholder-page";
 import { PublicHome } from "@/pages/public/public-home";
@@ -66,11 +67,18 @@ const opsRoute = createRoute({
   component: OpsLayout,
 });
 const opsRoutes = [
-  createRoute({ getParentRoute: () => opsRoute, path: "/", component: OpsOverview }),
+  createRoute({ getParentRoute: () => opsRoute, path: "/", component: ConsolePage }),
   createRoute({
     getParentRoute: () => opsRoute,
     path: "incidents",
-    component: () => <PlaceholderPage pageKey="ops.incidents" />,
+    beforeLoad: () => {
+      throw redirect({ to: "/ops", replace: true });
+    },
+  }),
+  createRoute({
+    getParentRoute: () => opsRoute,
+    path: "incidents/$incidentId",
+    component: IncidentDetailPage,
   }),
   createRoute({ getParentRoute: () => opsRoute, path: "cameras", component: CameraWall }),
   createRoute({ getParentRoute: () => opsRoute, path: "system", component: SystemPage }),

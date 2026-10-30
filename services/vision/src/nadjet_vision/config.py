@@ -26,6 +26,18 @@ class VisionSettings(BaseSettings):
         description="Extra hostnames of Brev instances allowed besides loopback",
     )
     vlm_timeout_s: float = Field(default=15.0, gt=0, description="PRD FR-VIS-009 timeout")
+    vlm_budget_s: float = Field(
+        default=7.0,
+        gt=0,
+        description="Whole verification (video + call + retry) per candidate; SC-001 leaves "
+        "the AI about this much of the 10 s budget",
+    )
+    vlm_backoff_s: float = Field(
+        default=30.0,
+        ge=0,
+        description="After the AI times out or is unreachable, answer 'unavailable' at once "
+        "for this long instead of making every candidate wait (FR-VIS-009)",
+    )
     rtsp_base: str = Field(
         default="rtsp://127.0.0.1:8554",
         description="RTSP base URL; cameras are read from <base>/<camera-id>",
@@ -59,6 +71,20 @@ class VisionSettings(BaseSettings):
     )
     trigger_cooldown_s: float = Field(
         default=120.0, ge=0, description="Repeat-trigger cooldown per camera (FR-VIS-010)"
+    )
+    verify_candidates: bool = Field(
+        default=True, description="Ask the AI verifier about every rule candidate (FR-VIS-005)"
+    )
+    sweep_enabled: bool = Field(default=True, description="AI sweep on every camera (FR-VIS-015)")
+    sweep_every_s: float = Field(default=5.0, gt=0, description="Sweep interval per camera (TD-22)")
+    sweep_yes_threshold: float = Field(
+        default=0.5, gt=0, le=1, description="Yes-token probability that counts as a sweep hit"
+    )
+    status_confirmed: float = Field(
+        default=0.8, gt=0, le=1, description="Yes probability for `confirmed` (TQ-07, untuned)"
+    )
+    status_probable: float = Field(
+        default=0.5, gt=0, le=1, description="Yes probability for `probable` (TQ-07, untuned)"
     )
     annotate: bool = Field(default=True, description="Publish <camera>_ai annotated stream")
     annotated_encoder: str = Field(default="h264_nvenc", description="ffmpeg video encoder (TD-07)")

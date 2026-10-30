@@ -122,7 +122,7 @@ def compute_priority(
         if (
             verifier.available
             and verifier.priority_raise > 0
-            and verifier.findings
+            and any(f.frame_ids for f in verifier.findings)
             and not bump
             and verifier.model
         ):
@@ -130,7 +130,7 @@ def compute_priority(
                 Reason(
                     "ai_raise",
                     max(level - 1, 1),
-                    "AI raise: " + "; ".join(verifier.findings),
+                    "AI raise: " + "; ".join(f.statement for f in verifier.findings),
                     verifier.model,
                 )
             )

@@ -81,6 +81,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/evaluation/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Latest Evaluation
+         * @description Precision, recall, F1, delay, false alarms per camera-hour and the ablation table of the
+         *     newest run on the evaluation clips, with what was not run and the limitations.
+         */
+        get: operations["latest_evaluation_evaluation_latest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/events": {
         parameters: {
             query?: never;
@@ -247,6 +268,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/incidents/{incident_id}/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Merge Incident
+         * @description Operator merges a candidate into another open incident (FR-INC-002, E-14).
+         */
+        post: operations["merge_incident_incidents__incident_id__merge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/incidents/{incident_id}/reject": {
         parameters: {
             query?: never;
@@ -363,6 +404,26 @@ export interface paths {
          *     Identify the incident by ``incident_id`` or by the ``idempotency_key`` of its candidate.
          */
         post: operations["upload_evidence_internal_evidence_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/map/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Map Resources
+         * @description Every facility and unit with its position; ``simulated`` ones must be labelled.
+         */
+        get: operations["map_resources_map_resources_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -553,11 +614,41 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AblationRow */
+        AblationRow: {
+            /** Description */
+            description: string;
+            metrics?: components["schemas"]["EventMetrics"] | null;
+            /** Name */
+            name: string;
+            /**
+             * Not Run Reason
+             * @description Why there is no metrics
+             */
+            not_run_reason?: string | null;
+        };
         /**
          * Agency
          * @enum {string}
          */
         Agency: "civil_protection" | "gendarmerie" | "police" | "samu";
+        /** AiQuality */
+        AiQuality: {
+            cannot_judge_share: components["schemas"]["Metric"];
+            /** @description Findings dropped for invalid frame ids */
+            dropped_citation_share: components["schemas"]["Metric"];
+            /**
+             * Unavailable
+             * @description Calls with no answer (timeout, server down)
+             */
+            unavailable: number;
+            valid_first_try: components["schemas"]["Metric"];
+            /**
+             * Verifications
+             * @description Verifier and sweep calls that were answered
+             */
+            verifications: number;
+        };
         /**
          * AiStatus
          * @description Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.
@@ -578,6 +669,35 @@ export interface components {
              * @description Served model id when available, else null
              */
             model: string | null;
+        };
+        /** AlertRecord */
+        AlertRecord: {
+            /** Ai Status */
+            ai_status: string;
+            /** Collision Visible */
+            collision_visible?: string | null;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "rule" | "sweep";
+            /**
+             * T Fire
+             * @description Stream seconds when the alert was raised
+             */
+            t_fire: number;
+            /**
+             * T Peak
+             * @description Stream seconds of the estimated impact
+             */
+            t_peak: number;
+            /** Trigger */
+            trigger: string;
+            /**
+             * Verifier Available
+             * @default false
+             */
+            verifier_available: boolean;
         };
         /** Body_upload_evidence_internal_evidence_post */
         Body_upload_evidence_internal_evidence_post: {
@@ -774,12 +894,116 @@ export interface components {
             spo2?: number | null;
             triage_tag: components["schemas"]["TriageTag"];
         };
+        /** ClipSummary */
+        ClipSummary: {
+            /** Alerts */
+            alerts?: components["schemas"]["AlertRecord"][];
+            /** Duration S */
+            duration_s: number;
+            /** Id */
+            id: string;
+            /** Impact S */
+            impact_s?: number | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "crash" | "stalled" | "negative";
+        };
         /** DependencyStatus */
         DependencyStatus: {
             /** Detail */
             detail: string;
             /** Ok */
             ok: boolean;
+        };
+        /** EvaluationResults */
+        EvaluationResults: {
+            /** Ablation */
+            ablation: components["schemas"]["AblationRow"][];
+            ai_quality?: components["schemas"]["AiQuality"] | null;
+            /** Bootstrap Samples */
+            bootstrap_samples: number;
+            /** Camera Hours */
+            camera_hours: number;
+            /** Clips */
+            clips: components["schemas"]["ClipSummary"][];
+            /**
+             * Dirty
+             * @description Uncommitted changes when the run started
+             */
+            dirty: boolean;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Git Sha */
+            git_sha: string;
+            /** Latency Ms */
+            latency_ms?: {
+                [key: string]: components["schemas"]["Percentiles"];
+            };
+            /** Limitations */
+            limitations?: string[];
+            /**
+             * Meets Camera Hour Target
+             * @description At least one camera-hour of negatives
+             */
+            meets_camera_hour_target: boolean;
+            /**
+             * Models
+             * @description Role -> model id used (source of every AI value)
+             */
+            models: {
+                [key: string]: string;
+            };
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             */
+            schema_version: 1;
+            /** Seed */
+            seed: number;
+            /** Skipped Clips */
+            skipped_clips?: components["schemas"]["SkippedClip"][];
+            /** Window After S */
+            window_after_s: number;
+            /** Window Before S */
+            window_before_s: number;
+        };
+        /** EventMetrics */
+        EventMetrics: {
+            /**
+             * Alerts
+             * @description Alerts counted in this configuration
+             */
+            alerts: number;
+            /**
+             * Camera Hours
+             * @description Negative footage the false alarms are over
+             */
+            camera_hours: number;
+            f1: components["schemas"]["Metric"];
+            false_alarms_per_camera_hour: components["schemas"]["Metric"];
+            /** False Negatives */
+            false_negatives: number;
+            /** False Positives */
+            false_positives: number;
+            /**
+             * Ground Truth
+             * @description Annotated events scored
+             */
+            ground_truth: number;
+            /** @description Detected impact time minus annotated impact */
+            mean_peak_error_s: components["schemas"]["Metric"];
+            /** @description Alert time minus annotated impact (crash clips) */
+            median_delay_s: components["schemas"]["Metric"];
+            precision: components["schemas"]["Metric"];
+            recall: components["schemas"]["Metric"];
+            /** True Positives */
+            true_positives: number;
         };
         /** Evidence */
         Evidence: {
@@ -822,6 +1046,21 @@ export interface components {
             size_bytes: number;
             /** Start Ts */
             start_ts: string | null;
+        };
+        /**
+         * Finding
+         * @description One statement of the verifier, tied to the frames it was read from (FR-VIS-016).
+         */
+        Finding: {
+            /** Basis */
+            basis: string;
+            /**
+             * Frame Ids
+             * @description Frames of the verifier video
+             */
+            frame_ids?: number[];
+            /** Statement */
+            statement: string;
         };
         /**
          * GeoLocation
@@ -972,6 +1211,11 @@ export interface components {
         IncidentEventOut: {
             /** Actor Id */
             actor_id: string | null;
+            /**
+             * Actor Name
+             * @description Display name of the actor
+             */
+            actor_name?: string | null;
             /** Hash */
             hash: string;
             /** Id */
@@ -1104,6 +1348,13 @@ export interface components {
              */
             status: "valid" | "invalid";
         };
+        /** Interval */
+        Interval: {
+            /** High */
+            high: number;
+            /** Low */
+            low: number;
+        };
         /** LoginRequest */
         LoginRequest: {
             /** Password */
@@ -1133,6 +1384,11 @@ export interface components {
             flames: boolean;
             location: components["schemas"]["GeoLocation"];
             /**
+             * Notes
+             * @description Call notes
+             */
+            notes?: string | null;
+            /**
              * Overturned
              * @default false
              */
@@ -1161,6 +1417,88 @@ export interface components {
             trapped: boolean;
             /** Vehicle Count */
             vehicle_count?: number | null;
+        };
+        /** MapFacility */
+        MapFacility: {
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "hospital" | "civil_protection" | "gendarmerie" | "police";
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /**
+             * Ready State
+             * @enum {string}
+             */
+            ready_state: "ready" | "divert";
+            /** Simulated */
+            simulated: boolean;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** MapResources */
+        MapResources: {
+            /** Facilities */
+            facilities: components["schemas"]["MapFacility"][];
+            /** Units */
+            units: components["schemas"]["MapUnit"][];
+        };
+        /** MapUnit */
+        MapUnit: {
+            /**
+             * Agency
+             * @enum {string}
+             */
+            agency: "civil_protection" | "gendarmerie" | "police" | "samu";
+            /** Callsign */
+            callsign: string;
+            /** Id */
+            id: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "dispatched" | "busy" | "offline";
+        };
+        /** MergeIn */
+        MergeIn: {
+            /**
+             * Into
+             * Format: uuid
+             * @description The open incident that absorbs this candidate
+             */
+            into: string;
+        };
+        /**
+         * Metric
+         * @description A value and its bootstrap 95 % interval; ``None`` when it is undefined (no events).
+         */
+        Metric: {
+            ci?: components["schemas"]["Interval"] | null;
+            /** Value */
+            value?: number | null;
+        };
+        /** Percentiles */
+        Percentiles: {
+            /** Count */
+            count: number;
+            /** P50 */
+            p50?: number | null;
+            /** P95 */
+            p95?: number | null;
         };
         /** PriorityReason */
         PriorityReason: {
@@ -1270,6 +1608,13 @@ export interface components {
          * @enum {string}
          */
         Role: "operator" | "supervisor" | "responder" | "hospital" | "auditor" | "admin";
+        /** SkippedClip */
+        SkippedClip: {
+            /** Id */
+            id: string;
+            /** Reason */
+            reason: string;
+        };
         /** SmsAck */
         SmsAck: {
             /**
@@ -1405,18 +1750,43 @@ export interface components {
              * Findings
              * @description Cited findings; a raise without one is ignored
              */
-            findings?: string[];
+            findings?: components["schemas"]["Finding"][];
+            /**
+             * Invalid
+             * @description True when the answer failed validation twice (template text)
+             * @default false
+             */
+            invalid: boolean;
+            /** Lanes Blocked */
+            lanes_blocked?: number | null;
             /**
              * Model
              * @description Model id that produced the answer
              */
             model?: string | null;
             /**
+             * Not Assessable
+             * @description What the video does not let anyone judge
+             */
+            not_assessable?: string[];
+            /**
              * Priority Raise
              * @description Levels the verifier asks to raise priority (max 1)
              * @default 0
              */
             priority_raise: number;
+            /**
+             * T Contact
+             * @description Contact time in seconds on the frame stamps: relative to the rule moment for a rule candidate, to the window end for a sweep (negative = before)
+             */
+            t_contact?: number | null;
+            /**
+             * Type
+             * @description What the verifier sees
+             */
+            type?: string | null;
+            /** Vehicles Involved */
+            vehicles_involved?: number | null;
             /**
              * Yes Probability
              * @description Probability of the 'yes' answer token (logprobs)
@@ -1606,6 +1976,47 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    latest_evaluation_evaluation_latest_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvaluationResults"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No evaluation has been run */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -1911,6 +2322,55 @@ export interface operations {
             };
         };
     };
+    merge_incident_incidents__incident_id__merge_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MergeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Cannot merge */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     reject_incident_incidents__incident_id__reject_post: {
         parameters: {
             query?: never;
@@ -2184,6 +2644,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    map_resources_map_resources_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapResources"];
                 };
             };
         };

@@ -8,7 +8,7 @@ import io
 import threading
 import time
 from collections import deque
-from collections.abc import Callable, Iterator
+from collections.abc import Callable, Iterator, Mapping
 from dataclasses import dataclass, field, replace
 from typing import Any, cast
 
@@ -171,11 +171,18 @@ def iter_frames(
     sampler: FrameSampler,
     ring: PacketRing,
     on_open: Callable[[], None] | None = None,
+    options: Mapping[str, str] | None = None,
+    open_timeout: tuple[float, float] | None = OPEN_TIMEOUT_S,
 ) -> Iterator[SampledFrame]:
-    """Blocking PyAV reader: demux, keep packets, decode and yield sampled frames."""
+    """Blocking PyAV reader: demux, keep packets, decode and yield sampled frames.
+
+    Defaults suit an RTSP camera; a file replay passes ``options={}`` and ``open_timeout=None``.
+    """
     import av  # gpu extra, imported lazily so local tools and tests do not need it
 
-    with av.open(url, options=RTSP_OPTIONS, timeout=OPEN_TIMEOUT_S) as container:
+    with av.open(
+        url, options=dict(RTSP_OPTIONS if options is None else options), timeout=open_timeout
+    ) as container:
         ring.clear()
         if on_open is not None:
             on_open()

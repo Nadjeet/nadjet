@@ -18,6 +18,7 @@ from nadjet_vision.annotate import AnnotatedPublisher, annotated_url, draw
 from nadjet_vision.config import VisionSettings
 from nadjet_vision.detect import Detector, load_detector
 from nadjet_vision.health import WorkerState, push_loop, serve_metrics
+from nadjet_vision.inference import BrevVlmClient
 from nadjet_vision.ingest import (
     BgrFrame,
     FrameSampler,
@@ -26,7 +27,15 @@ from nadjet_vision.ingest import (
     SampledFrame,
     iter_frames,
 )
-from nadjet_vision.publish import IncidentPublisher, IncidentSink, build_candidate, candidate_key
+from nadjet_vision.publish import (
+    IncidentPublisher,
+    IncidentSink,
+    VerifyContext,
+    build_candidate,
+    candidate_key,
+)
+from nadjet_vision.status import StatusThresholds
+from nadjet_vision.sweep import Sweeper, SweepTracker
 from nadjet_vision.track import (
     ByteTrackTracker,
     CameraMotionDetector,
@@ -37,6 +46,7 @@ from nadjet_vision.track import (
     zone_membership,
 )
 from nadjet_vision.triggers import Observation, TriggerConfig, TriggerEngine, TriggerEvent
+from nadjet_vision.verifier import AiVerifier
 from nadjet_vision.worker import check_api, run_camera
 
 log = logging.getLogger("nadjet_vision.pipeline")
@@ -82,6 +92,7 @@ class CameraPipeline:
         sink: IncidentSink | None = None,
         ring: PacketRing | None = None,
         evidence_after_s: float = 5.0,
+        sweeper: Sweeper | None = None,
     ) -> None:
         self.zones = zones
         self.detector = detector
@@ -96,6 +107,7 @@ class CameraPipeline:
         self.sink = sink
         self.ring = ring
         self._evidence_after_s = evidence_after_s
+        self.sweeper = sweeper
         self._pending: list[_PendingEvidence] = []
         self._last_pts: float | None = None
 
@@ -124,6 +136,8 @@ class CameraPipeline:
             for event in events:
                 self._publish(event)
         self._flush_evidence(frame.pts_s)
+        if self.sweeper is not None and self.ring is not None and not moving:
+            self.sweeper.maybe_start(frame.pts_s, frame.captured_at, self.ring)
         timers.record("track", (time.perf_counter() - started) * 1000)
 
         annotated: BgrFrame | None = None
@@ -142,7 +156,12 @@ class CameraPipeline:
         if self.sink is None or self.camera is None:
             return
         key = candidate_key(self.camera.id, event)
-        self.sink.publish_candidate(build_candidate(self.camera, event), key)
+        context = VerifyContext(
+            event,
+            self.ring.snapshot() if self.ring else [],
+            self.ring.stream if self.ring else None,
+        )
+        self.sink.publish_candidate(build_candidate(self.camera, event), key, context)
         self._pending.append(
             _PendingEvidence(key, event, event.evidence_t + self._evidence_after_s)
         )
@@ -192,10 +211,26 @@ def build_pipeline(
     publisher: FramePublisher | None,
     sink: IncidentSink | None,
     ring: PacketRing,
+    verifier: AiVerifier | None = None,
+    loop: asyncio.AbstractEventLoop | None = None,
 ) -> CameraPipeline:
     """The camera's pipeline: thresholds are the doc 11 defaults, the settings' cooldown and the
     camera's own ``triggers`` overrides, in that order (FR-VIS-004, FR-VIS-010)."""
     thresholds = {"cooldown_s": settings.trigger_cooldown_s, **camera.triggers}
+    engine = TriggerEngine(TriggerConfig.with_overrides(thresholds))
+    sweeper: Sweeper | None = None
+    if settings.sweep_enabled and verifier is not None and sink is not None and loop is not None:
+        sweeper = Sweeper(
+            camera,
+            verifier,
+            sink,
+            loop,
+            every_s=settings.sweep_every_s,
+            cooldown_s=engine.config.cooldown_s,
+            tracker=SweepTracker(settings.sweep_yes_threshold),
+            thresholds=StatusThresholds(settings.status_confirmed, settings.status_probable),
+            rule_cooling_down=engine.in_cooldown,
+        )
     return CameraPipeline(
         zones=camera.zones,
         detector=detector,
@@ -203,10 +238,11 @@ def build_pipeline(
         state=state,
         publisher=publisher,
         camera=camera,
-        triggers=TriggerEngine(TriggerConfig.with_overrides(thresholds)),
+        triggers=engine,
         sink=sink,
         ring=ring,
         evidence_after_s=settings.evidence_after_s,
+        sweeper=sweeper,
     )
 
 
@@ -220,6 +256,7 @@ async def run_worker(
     frames: Callable[[str, Callable[[], bool]], Iterator[Any]] | None = None,
     publisher: FramePublisher | None = None,
     sink: IncidentSink | None = None,
+    verifier: AiVerifier | None = None,
     api_transport: httpx.AsyncBaseTransport | None = None,
 ) -> None:
     """Run one camera until ``stop``: reconnecting reader, analysis thread, health, metrics."""
@@ -233,12 +270,39 @@ async def run_worker(
     if publisher is None and settings.annotate:
         url = annotated_url(settings.rtsp_base, camera_id)
         publisher = AnnotatedPublisher(url, settings.sample_fps, settings.annotated_encoder)
+    vlm: BrevVlmClient | None = None
+    if verifier is None and (settings.verify_candidates or settings.sweep_enabled):
+        vlm = BrevVlmClient(settings)  # refuses any endpoint that is not Brev
+        verifier = AiVerifier(
+            vlm,
+            settings.vlm_model,
+            budget_s=settings.vlm_budget_s,
+            backoff_s=settings.vlm_backoff_s,
+        )
+        try:
+            await vlm.check()
+        except Exception as exc:
+            log.warning("AI unavailable: %s (candidates go out with the rules only)", exc)
     incidents: IncidentPublisher | None = None
     if sink is None and settings.publish_candidates:
-        incidents = IncidentPublisher(settings, asyncio.get_running_loop(), transport=api_transport)
+        incidents = IncidentPublisher(
+            settings,
+            asyncio.get_running_loop(),
+            transport=api_transport,
+            verifier=verifier if settings.verify_candidates else None,
+        )
         sink = incidents
     pipeline = build_pipeline(
-        camera, settings, detector, tracker, state, publisher=publisher, sink=sink, ring=ring
+        camera,
+        settings,
+        detector,
+        tracker,
+        state,
+        publisher=publisher,
+        sink=sink,
+        ring=ring,
+        verifier=verifier,
+        loop=asyncio.get_running_loop(),
     )
     if frames is None:
 
@@ -279,3 +343,5 @@ async def run_worker(
             publisher.close()
         if incidents is not None:
             await incidents.aclose()
+        if vlm is not None:
+            await vlm.aclose()

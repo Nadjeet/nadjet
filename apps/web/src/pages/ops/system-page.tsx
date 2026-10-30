@@ -7,7 +7,7 @@ import { AiSourceTag } from "@/components/incident/ai-source-tag";
 import { SimulatedLabel } from "@/components/incident/simulated-label";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
-import { camerasKey } from "@/live/keys";
+import { systemCamerasKey } from "@/live/keys";
 
 import { fetchSystemCameras } from "./system-data";
 import { SystemStatusCard } from "./system-status-card";
@@ -62,7 +62,7 @@ function ms(value: number | null | undefined): string {
 function CamerasCard() {
   const { t } = useTranslation();
   const { data, isPending, isError } = useQuery({
-    queryKey: camerasKey,
+    queryKey: systemCamerasKey,
     queryFn: fetchSystemCameras,
     refetchInterval: 5_000,
     // Age of the last frame when the data was fetched (select is not part of rendering).

@@ -59,7 +59,9 @@ class FakeSink:
         self.candidates: list[tuple[IncidentCandidate, str]] = []
         self.evidence: list[tuple[str, TriggerEvent, list[Packet], StreamInfo | None]] = []
 
-    def publish_candidate(self, candidate: IncidentCandidate, key: str) -> None:
+    def publish_candidate(
+        self, candidate: IncidentCandidate, key: str, verify: object = None
+    ) -> None:
         self.candidates.append((candidate, key))
 
     def submit_evidence(

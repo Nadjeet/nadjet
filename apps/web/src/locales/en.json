@@ -24,7 +24,6 @@
   },
   "nav": {
     "overview": "Overview",
-    "incidents": "Incidents",
     "cameras": "Camera wall",
     "system": "System health",
     "design": "Design system",
@@ -34,7 +33,8 @@
     "home": "Home",
     "report": "Report a crash",
     "try": "Try it",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "incidents": "Incidents"
   },
   "login": {
     "title": "Sign in",
@@ -120,14 +120,6 @@
   "pages": {
     "soon": "This screen is built in a later step. The shell, navigation, language and live updates are ready for it.",
     "ops": {
-      "overview": {
-        "title": "Operator console",
-        "body": "Map, incident queue and camera wall will appear here."
-      },
-      "incidents": {
-        "title": "Incidents",
-        "body": "The live incident queue and detail view will appear here."
-      },
       "cameras": {
         "title": "Camera wall",
         "body": "Camera feeds and detections will appear here."
@@ -135,6 +127,14 @@
       "system": {
         "title": "System health",
         "body": "Service health, latency and evaluation will appear here."
+      },
+      "overview": {
+        "title": "Operator console",
+        "body": "Map, incident queue and camera wall will appear here."
+      },
+      "incidents": {
+        "title": "Incidents",
+        "body": "The live incident queue and detail view will appear here."
       }
     },
     "respond": {
@@ -208,6 +208,192 @@
     "dialogBody": "Dialogs use a 24 px radius, a title and clear actions.",
     "cancel": "Cancel",
     "confirm": "Confirm"
+  },
+  "ops": {
+    "console": {
+      "title": "Operations",
+      "queue": "Incident queue",
+      "map": "Live map",
+      "count": "{{count}} incidents",
+      "empty": "No incidents match these filters.",
+      "loadError": "The incident list could not be loaded.",
+      "newIncident": "New incident",
+      "mapLegend": "Labels show priority (P1–P4) and camera status. Facilities and units marked simulated are demo data."
+    },
+    "filters": {
+      "status": "Status",
+      "priority": "Priority",
+      "source": "Source",
+      "all": "All",
+      "open": "Open incidents"
+    },
+    "source": {
+      "camera": "Camera",
+      "citizen": "Citizen",
+      "operator": "Operator"
+    },
+    "type": {
+      "crash": "Crash",
+      "stalled_vehicle": "Stalled vehicle",
+      "pedestrian_on_road": "Person on road"
+    },
+    "col": {
+      "code": "Code",
+      "priority": "Priority",
+      "type": "Type",
+      "ai": "AI status",
+      "source": "Source",
+      "location": "Location",
+      "age": "Age",
+      "reports": "Reports"
+    },
+    "aiStatus": {
+      "confirmed": "Confirmed",
+      "probable": "Probable",
+      "possible": "Possible",
+      "insufficient_evidence": "Insufficient evidence",
+      "none": "Not applicable"
+    },
+    "uncertain": "Uncertain",
+    "confidence": {
+      "label": "AI confidence",
+      "low": "Low",
+      "medium": "Medium",
+      "high": "High"
+    },
+    "verdict": {
+      "label": "Verifier answer",
+      "yes": "Collision visible",
+      "no": "No collision visible",
+      "cannot_judge": "Cannot judge",
+      "findings": "Findings",
+      "noFindings": "No findings recorded.",
+      "frames": "(frames {{frames}})",
+      "notAssessable": "Could not be assessed",
+      "notApplicable": "No AI analysis: this incident was created by an operator."
+    },
+    "degraded": {
+      "verifier": "Verifier: unavailable. The AI could not check this incident; decide from the evidence and the rules.",
+      "contradiction": "Contradiction: the rules raised this incident but the AI verifier sees no collision. Review the evidence before deciding."
+    },
+    "cameraStatus": {
+      "unknown": "unknown",
+      "online": "online",
+      "degraded": "degraded",
+      "offline": "offline"
+    },
+    "create": {
+      "title": "New incident from a call",
+      "description": "Place the incident on the map or enter its coordinates, then answer what the caller said.",
+      "lat": "Latitude",
+      "lon": "Longitude",
+      "pick": "Pick on map",
+      "pickHint": "Click the map to place the incident. Press Escape to go back.",
+      "scene": "What the caller reports",
+      "flags": {
+        "bus_involved": "Bus involved",
+        "person_on_road": "Person on the road",
+        "flames": "Flames",
+        "smoke": "Smoke",
+        "overturned": "Vehicle overturned",
+        "stopped_in_lane": "Vehicle stopped in lane",
+        "trapped": "Someone is trapped"
+      },
+      "vehicles": "Vehicles",
+      "people": "People involved",
+      "notes": "Call notes",
+      "submit": "Create incident"
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "reject": "Reject",
+      "merge": "Merge into…",
+      "rejectTitle": "Reject {{code}}",
+      "rejectBody": "Choose why this candidate is not an incident. The reason is recorded with your name.",
+      "reason": "Reason",
+      "mergeTitle": "Merge {{code}}",
+      "mergeBody": "The candidate is closed as merged and its reports and signals join the chosen incident.",
+      "mergeTarget": "Incident to merge into",
+      "mergePlaceholder": "Choose an incident",
+      "mergeNone": "There is no other open incident."
+    },
+    "reject": {
+      "false_positive": "False positive",
+      "duplicate": "Duplicate",
+      "not_emergency": "Not an emergency",
+      "other": "Other"
+    },
+    "errors": {
+      "generic": "The action failed. Try again.",
+      "conflict": "The incident changed in the meantime and this action is no longer allowed.",
+      "forbidden": "Your role cannot do this."
+    },
+    "evidence": {
+      "none": "No evidence attached yet.",
+      "audited": "Viewing and downloading evidence is recorded in the audit log.",
+      "loadClip": "Load clip",
+      "clip": "Evidence clip",
+      "keyframe": "Keyframe {{index}}",
+      "download": "Download",
+      "failed": "The file could not be loaded."
+    },
+    "signals": {
+      "none": "No rule signals recorded."
+    },
+    "flags": {
+      "to_assess": "To assess",
+      "mass_casualty": "Possible mass casualty",
+      "needs_extrication": "Needs extrication"
+    },
+    "event": {
+      "created": "Created",
+      "status_changed": "Status changed",
+      "merged_candidate": "Report merged in",
+      "incident_merged_in": "Another incident merged in",
+      "casualty_added": "Casualty recorded",
+      "evidence_added": "Evidence added",
+      "system": "System"
+    },
+    "casualties": {
+      "title": "Casualties",
+      "none": "No casualties recorded.",
+      "tag": "Triage",
+      "avpu": "AVPU",
+      "resp": "Resp. rate",
+      "pulse": "Pulse",
+      "spo2": "SpO₂",
+      "bleeding": "Bleeding",
+      "time": "Time"
+    },
+    "triage": {
+      "red": "Red",
+      "yellow": "Yellow",
+      "green": "Green",
+      "black": "Black"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "integrity": {
+      "title": "Evidence integrity",
+      "verify": "Verify integrity",
+      "valid": "Valid",
+      "invalid": "Invalid",
+      "checked": "{{events}} events and {{files}} files checked."
+    },
+    "detail": {
+      "back": "Back to the console",
+      "notFound": "This incident does not exist or you cannot open it.",
+      "evidence": "Evidence",
+      "rules": "Rule signals",
+      "ai": "AI verdict",
+      "priority": "Priority and reasons",
+      "timeline": "Timeline",
+      "reports": "{{count}} reports",
+      "rejectedFor": "Rejected: {{reason}}",
+      "mergedInto": "Merged into another incident.",
+      "openTarget": "Open it"
+    }
   },
   "stream": {
     "connecting": "Connecting…",

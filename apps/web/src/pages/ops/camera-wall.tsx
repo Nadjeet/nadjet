@@ -10,10 +10,11 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
-import { camerasKey, incidentsKey } from "@/live/keys";
+import { incidentsKey, systemCamerasKey } from "@/live/keys";
 import { cn } from "@/lib/utils";
 
 import { streamUrls, tileStatus, type Camera, type TileStatus, type View } from "./camera-status";
+import { useCameras } from "./incident/incident-queries";
 import { fetchSystemCameras } from "./system-data";
 
 const STATUS_ICON = { live: CircleCheckIcon, degraded: CircleAlertIcon, offline: CircleOffIcon };
@@ -121,12 +122,6 @@ function CameraTile({
   );
 }
 
-async function fetchCameras(): Promise<Camera[]> {
-  const { data, error } = await api.GET("/cameras");
-  if (!data) throw new Error(`cameras: ${JSON.stringify(error)}`);
-  return data;
-}
-
 /** Open incidents keyed by camera so their tile can be highlighted (FR-MAP-006). */
 async function fetchOpenIncidentsByCamera(): Promise<Map<string, string[]>> {
   const { data } = await api.GET("/incidents", {
@@ -145,9 +140,9 @@ async function fetchOpenIncidentsByCamera(): Promise<Map<string, string[]>> {
 
 export function CameraWall() {
   const { t } = useTranslation();
-  const cameras = useQuery({ queryKey: ["cameras"], queryFn: fetchCameras });
+  const cameras = useCameras();
   const health = useQuery({
-    queryKey: camerasKey,
+    queryKey: systemCamerasKey,
     queryFn: fetchSystemCameras,
     refetchInterval: 5_000,
   });

@@ -84,6 +84,7 @@ def test_verdict_values_are_restricted() -> None:
 def test_export_writes_then_reports_no_drift(tmp_path: Path) -> None:
     assert sorted(export(tmp_path, check=False)) == [
         "camera.health.schema.json",
+        "evaluation.results.schema.json",
         "incident.candidate.schema.json",
     ]
     assert export(tmp_path, check=True) == []
@@ -103,3 +104,22 @@ def test_candidate_rejects_naive_timestamps() -> None:
     """Naive times would break merge arithmetic and be stored in the DB session's zone."""
     with pytest.raises(ValidationError):
         make_candidate(event_time=datetime(2026, 10, 30, 12, 0))
+
+
+def test_findings_are_structured_and_legacy_strings_still_load() -> None:
+    from nadjet_shared import Finding
+
+    structured = VerifierResult(
+        available=True,
+        findings=[Finding(statement="Cars touch", basis="observed", frame_ids=[3, 4])],
+    )
+    assert VerifierResult.model_validate_json(structured.model_dump_json()) == structured
+    legacy = VerifierResult.model_validate({"available": True, "findings": ["old text"]})
+    assert legacy.findings == [Finding(statement="old text", basis="inferred", frame_ids=[])]
+
+
+def test_a_finding_basis_is_observed_or_inferred() -> None:
+    from nadjet_shared import Finding
+
+    with pytest.raises(ValidationError):
+        Finding(statement="x", basis="guessed", frame_ids=[])

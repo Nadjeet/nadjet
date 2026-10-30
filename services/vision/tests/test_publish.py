@@ -3,6 +3,7 @@
 import asyncio
 import hashlib
 import json
+import time
 from email.parser import BytesParser
 from email.policy import HTTP
 
@@ -10,15 +11,18 @@ import httpx
 import pytest
 from pydantic import SecretStr
 
-from nadjet_shared import AiStatus, IncidentCandidate, TriggerType
+from nadjet_shared import AiStatus, IncidentCandidate, TriggerType, VerifierResult
 from nadjet_shared.catalogue import Camera, GeoPoint
 from nadjet_vision.config import VisionSettings
+from nadjet_vision.inference import BrevVlmClient
 from nadjet_vision.publish import (
     IncidentPublisher,
+    VerifyContext,
     build_candidate,
     candidate_key,
 )
 from nadjet_vision.triggers import TriggerEvent
+from nadjet_vision.verifier import AiVerifier
 
 from .conftest import StreamFactory
 
@@ -263,3 +267,144 @@ def test_a_crashing_background_post_is_logged(caplog: pytest.LogCaptureFixture) 
     caplog.set_level("ERROR")
     _log_failure(future)
     assert "background publish failed" in caplog.text
+
+
+# ---------------------------------------------------------------- AI verification path
+
+
+class FakeVerifier:
+    def __init__(self, result: VerifierResult | Exception) -> None:
+        self.result = result
+        self.calls: list[tuple[float, TriggerType]] = []
+
+    async def verify_event(
+        self, packets: object, info: object, centre_s: float, trigger: TriggerType
+    ):  # type: ignore[no-untyped-def]
+        self.calls.append((centre_s, trigger))
+        if isinstance(self.result, Exception):
+            raise self.result
+        return self.result
+
+
+def verified(api: Api, verifier: FakeVerifier) -> IncidentPublisher:
+    return IncidentPublisher(
+        settings(),
+        asyncio.get_running_loop(),
+        transport=httpx.MockTransport(api),
+        retry_delays_s=(0.0,),
+        verifier=verifier,  # type: ignore[arg-type]
+    )
+
+
+def yes_result(p: float) -> VerifierResult:
+    return VerifierResult(available=True, model="m", collision_visible="yes", yes_probability=p)
+
+
+async def post(sink: IncidentPublisher) -> None:
+    ev = event()
+    sink.publish_candidate(build_candidate(camera(), ev), "k", VerifyContext(ev, [], None))
+    await sink.aclose()
+
+
+@pytest.mark.parametrize(
+    ("p", "status"),
+    [(0.95, AiStatus.CONFIRMED), (0.6, AiStatus.PROBABLE), (0.2, AiStatus.POSSIBLE)],
+)
+async def test_every_rule_candidate_carries_a_real_verdict_and_its_status(
+    p: float, status: AiStatus
+) -> None:
+    api = Api()
+    verifier = FakeVerifier(yes_result(p))
+    await post(verified(api, verifier))
+    [(_, received)] = api.candidates
+    assert verifier.calls == [(10.0, TriggerType.COLLISION_CANDIDATE)]
+    assert received.verifier.available and received.verifier.collision_visible == "yes"
+    assert received.ai_status is status
+
+
+async def test_AC_VIS_007_1_rule_fires_and_ai_says_no_is_possible_with_both_signals() -> None:
+    api = Api()
+    no = VerifierResult(available=True, model="m", collision_visible="no", yes_probability=0.03)
+    await post(verified(api, FakeVerifier(no)))
+    [(_, received)] = api.candidates
+    assert received.ai_status is AiStatus.POSSIBLE
+    assert received.trigger is TriggerType.COLLISION_CANDIDATE  # the rule signal stays
+    assert received.signals["vehicle_count"] == 2.0
+    assert received.verifier.collision_visible == "no"  # and so does the AI's
+
+
+async def test_cannot_judge_is_insufficient_evidence() -> None:
+    api = Api()
+    result = VerifierResult(available=True, model="m", collision_visible="cannot_judge")
+    await post(verified(api, FakeVerifier(result)))
+    assert api.candidates[0][1].ai_status is AiStatus.INSUFFICIENT_EVIDENCE
+
+
+async def test_AC_VIS_009_1_a_verifier_that_fails_never_blocks_or_drops_the_candidate() -> None:
+    api = Api()
+    await post(verified(api, FakeVerifier(RuntimeError("vllm is down"))))
+    [(_, received)] = api.candidates
+    assert received.verifier.available is False
+    assert received.ai_status is AiStatus.PROBABLE  # rule signals only
+
+
+async def test_AC_VIS_009_1_with_vllm_stopped_the_candidate_arrives_fast_and_no_other_host_is_called() -> (
+    None
+):
+    hosts: list[str] = []
+
+    def vllm_down(request: httpx.Request) -> httpx.Response:
+        hosts.append(request.url.host)
+        raise httpx.ConnectError("refused", request=request)
+
+    client = BrevVlmClient(VisionSettings(), transport=httpx.MockTransport(vllm_down))
+    api = Api()
+    sink = verified(api, AiVerifier(client, "m"))
+    ev = event()
+    packets, info = synthetic_stream_for_publish()
+    started = time.monotonic()
+    sink.publish_candidate(build_candidate(camera(), ev), "k", VerifyContext(ev, packets, info))
+    await sink.aclose()
+    await client.aclose()
+    assert time.monotonic() - started < 5.0
+    assert api.candidates[0][1].verifier.available is False
+    assert set(hosts) <= {"127.0.0.1"}  # the Brev tunnel only
+
+
+def synthetic_stream_for_publish():  # type: ignore[no-untyped-def]
+    from .conftest import make_stream
+
+    return make_stream(seconds=14)
+
+
+async def test_without_a_verifier_the_candidate_is_published_as_before() -> None:
+    api = Api()
+    sink = publisher(api)
+    ev = event()
+    sink.publish_candidate(build_candidate(camera(), ev), "k", VerifyContext(ev, [], None))
+    await sink.aclose()
+    assert api.candidates[0][1].verifier.available is False
+
+
+async def test_AC_VIS_009_1_a_hanging_vllm_costs_one_budget_then_is_skipped() -> None:
+    """vLLM accepts the connection and never answers (saturated GPU, stuck tunnel): the first
+    candidate waits only the verification budget; the next ones skip the AI at once."""
+
+    async def hang(request: httpx.Request) -> httpx.Response:
+        await asyncio.sleep(60)
+        raise AssertionError("unreachable")
+
+    client = BrevVlmClient(VisionSettings(), transport=httpx.MockTransport(hang))
+    verifier = AiVerifier(client, "m", budget_s=0.3, backoff_s=30.0)
+    packets, info = synthetic_stream_for_publish()
+
+    started = time.monotonic()
+    first = await verifier.verify_event(packets, info, 15.0, TriggerType.HARD_STOP)
+    first_s = time.monotonic() - started
+    started = time.monotonic()
+    second = await verifier.verify_event(packets, info, 15.0, TriggerType.HARD_STOP)
+    second_s = time.monotonic() - started
+    await client.aclose()
+
+    assert first.available is False and first_s < 2.0
+    assert second.available is False and second_s < 0.1

@@ -1,6 +1,47 @@
 {
   "components": {
     "schemas": {
+      "AblationRow": {
+        "additionalProperties": false,
+        "properties": {
+          "description": {
+            "title": "Description",
+            "type": "string"
+          },
+          "metrics": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/EventMetrics"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "not_run_reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why there is no metrics",
+            "title": "Not Run Reason"
+          }
+        },
+        "required": [
+          "name",
+          "description"
+        ],
+        "title": "AblationRow",
+        "type": "object"
+      },
       "Agency": {
         "enum": [
           "civil_protection",
@@ -10,6 +51,42 @@
         ],
         "title": "Agency",
         "type": "string"
+      },
+      "AiQuality": {
+        "additionalProperties": false,
+        "properties": {
+          "cannot_judge_share": {
+            "$ref": "#/components/schemas/Metric"
+          },
+          "dropped_citation_share": {
+            "$ref": "#/components/schemas/Metric",
+            "description": "Findings dropped for invalid frame ids"
+          },
+          "unavailable": {
+            "description": "Calls with no answer (timeout, server down)",
+            "minimum": 0.0,
+            "title": "Unavailable",
+            "type": "integer"
+          },
+          "valid_first_try": {
+            "$ref": "#/components/schemas/Metric"
+          },
+          "verifications": {
+            "description": "Verifier and sweep calls that were answered",
+            "minimum": 0.0,
+            "title": "Verifications",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "verifications",
+          "valid_first_try",
+          "dropped_citation_share",
+          "cannot_judge_share",
+          "unavailable"
+        ],
+        "title": "AiQuality",
+        "type": "object"
       },
       "AiStatus-Input": {
         "description": "Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.",
@@ -59,6 +136,62 @@
           "detail"
         ],
         "title": "AiStatus",
+        "type": "object"
+      },
+      "AlertRecord": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_status": {
+            "title": "Ai Status",
+            "type": "string"
+          },
+          "collision_visible": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Collision Visible"
+          },
+          "source": {
+            "enum": [
+              "rule",
+              "sweep"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "t_fire": {
+            "description": "Stream seconds when the alert was raised",
+            "title": "T Fire",
+            "type": "number"
+          },
+          "t_peak": {
+            "description": "Stream seconds of the estimated impact",
+            "title": "T Peak",
+            "type": "number"
+          },
+          "trigger": {
+            "title": "Trigger",
+            "type": "string"
+          },
+          "verifier_available": {
+            "default": false,
+            "title": "Verifier Available",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "source",
+          "trigger",
+          "t_fire",
+          "t_peak",
+          "ai_status"
+        ],
+        "title": "AlertRecord",
         "type": "object"
       },
       "Body_upload_evidence_internal_evidence_post": {
@@ -650,6 +783,54 @@
         "title": "CasualtyOut",
         "type": "object"
       },
+      "ClipSummary": {
+        "additionalProperties": false,
+        "properties": {
+          "alerts": {
+            "items": {
+              "$ref": "#/components/schemas/AlertRecord"
+            },
+            "title": "Alerts",
+            "type": "array"
+          },
+          "duration_s": {
+            "minimum": 0.0,
+            "title": "Duration S",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "impact_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Impact S"
+          },
+          "kind": {
+            "enum": [
+              "crash",
+              "stalled",
+              "negative"
+            ],
+            "title": "Kind",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "duration_s"
+        ],
+        "title": "ClipSummary",
+        "type": "object"
+      },
       "DependencyStatus": {
         "properties": {
           "detail": {
@@ -666,6 +847,201 @@
           "detail"
         ],
         "title": "DependencyStatus",
+        "type": "object"
+      },
+      "EvaluationResults": {
+        "additionalProperties": false,
+        "properties": {
+          "ablation": {
+            "items": {
+              "$ref": "#/components/schemas/AblationRow"
+            },
+            "title": "Ablation",
+            "type": "array"
+          },
+          "ai_quality": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AiQuality"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "bootstrap_samples": {
+            "exclusiveMinimum": 0.0,
+            "title": "Bootstrap Samples",
+            "type": "integer"
+          },
+          "camera_hours": {
+            "minimum": 0.0,
+            "title": "Camera Hours",
+            "type": "number"
+          },
+          "clips": {
+            "items": {
+              "$ref": "#/components/schemas/ClipSummary"
+            },
+            "title": "Clips",
+            "type": "array"
+          },
+          "dirty": {
+            "description": "Uncommitted changes when the run started",
+            "title": "Dirty",
+            "type": "boolean"
+          },
+          "generated_at": {
+            "format": "date-time",
+            "title": "Generated At",
+            "type": "string"
+          },
+          "git_sha": {
+            "title": "Git Sha",
+            "type": "string"
+          },
+          "latency_ms": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/Percentiles"
+            },
+            "title": "Latency Ms",
+            "type": "object"
+          },
+          "limitations": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Limitations",
+            "type": "array"
+          },
+          "meets_camera_hour_target": {
+            "description": "At least one camera-hour of negatives",
+            "title": "Meets Camera Hour Target",
+            "type": "boolean"
+          },
+          "models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "description": "Role -> model id used (source of every AI value)",
+            "title": "Models",
+            "type": "object"
+          },
+          "schema_version": {
+            "const": 1,
+            "default": 1,
+            "title": "Schema Version",
+            "type": "integer"
+          },
+          "seed": {
+            "title": "Seed",
+            "type": "integer"
+          },
+          "skipped_clips": {
+            "items": {
+              "$ref": "#/components/schemas/SkippedClip"
+            },
+            "title": "Skipped Clips",
+            "type": "array"
+          },
+          "window_after_s": {
+            "title": "Window After S",
+            "type": "number"
+          },
+          "window_before_s": {
+            "title": "Window Before S",
+            "type": "number"
+          }
+        },
+        "required": [
+          "generated_at",
+          "git_sha",
+          "dirty",
+          "seed",
+          "bootstrap_samples",
+          "window_before_s",
+          "window_after_s",
+          "models",
+          "clips",
+          "camera_hours",
+          "meets_camera_hour_target",
+          "ablation"
+        ],
+        "title": "EvaluationResults",
+        "type": "object"
+      },
+      "EventMetrics": {
+        "additionalProperties": false,
+        "properties": {
+          "alerts": {
+            "description": "Alerts counted in this configuration",
+            "minimum": 0.0,
+            "title": "Alerts",
+            "type": "integer"
+          },
+          "camera_hours": {
+            "description": "Negative footage the false alarms are over",
+            "minimum": 0.0,
+            "title": "Camera Hours",
+            "type": "number"
+          },
+          "f1": {
+            "$ref": "#/components/schemas/Metric"
+          },
+          "false_alarms_per_camera_hour": {
+            "$ref": "#/components/schemas/Metric"
+          },
+          "false_negatives": {
+            "minimum": 0.0,
+            "title": "False Negatives",
+            "type": "integer"
+          },
+          "false_positives": {
+            "minimum": 0.0,
+            "title": "False Positives",
+            "type": "integer"
+          },
+          "ground_truth": {
+            "description": "Annotated events scored",
+            "minimum": 0.0,
+            "title": "Ground Truth",
+            "type": "integer"
+          },
+          "mean_peak_error_s": {
+            "$ref": "#/components/schemas/Metric",
+            "description": "Detected impact time minus annotated impact"
+          },
+          "median_delay_s": {
+            "$ref": "#/components/schemas/Metric",
+            "description": "Alert time minus annotated impact (crash clips)"
+          },
+          "precision": {
+            "$ref": "#/components/schemas/Metric"
+          },
+          "recall": {
+            "$ref": "#/components/schemas/Metric"
+          },
+          "true_positives": {
+            "minimum": 0.0,
+            "title": "True Positives",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ground_truth",
+          "alerts",
+          "true_positives",
+          "false_positives",
+          "false_negatives",
+          "camera_hours",
+          "precision",
+          "recall",
+          "f1",
+          "median_delay_s",
+          "mean_peak_error_s",
+          "false_alarms_per_camera_hour"
+        ],
+        "title": "EventMetrics",
         "type": "object"
       },
       "Evidence": {
@@ -766,6 +1142,36 @@
           "created_at"
         ],
         "title": "EvidenceOut",
+        "type": "object"
+      },
+      "Finding": {
+        "additionalProperties": false,
+        "description": "One statement of the verifier, tied to the frames it was read from (FR-VIS-016).",
+        "properties": {
+          "basis": {
+            "pattern": "^(observed|inferred)$",
+            "title": "Basis",
+            "type": "string"
+          },
+          "frame_ids": {
+            "description": "Frames of the verifier video",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Frame Ids",
+            "type": "array"
+          },
+          "statement": {
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          }
+        },
+        "required": [
+          "statement",
+          "basis"
+        ],
+        "title": "Finding",
         "type": "object"
       },
       "GeoLocation": {
@@ -1229,6 +1635,18 @@
             ],
             "title": "Actor Id"
           },
+          "actor_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Display name of the actor",
+            "title": "Actor Name"
+          },
           "hash": {
             "title": "Hash",
             "type": "string"
@@ -1620,6 +2038,25 @@
         "title": "IntegrityOut",
         "type": "object"
       },
+      "Interval": {
+        "additionalProperties": false,
+        "properties": {
+          "high": {
+            "title": "High",
+            "type": "number"
+          },
+          "low": {
+            "title": "Low",
+            "type": "number"
+          }
+        },
+        "required": [
+          "low",
+          "high"
+        ],
+        "title": "Interval",
+        "type": "object"
+      },
       "LoginRequest": {
         "properties": {
           "password": {
@@ -1670,6 +2107,19 @@
           },
           "location": {
             "$ref": "#/components/schemas/GeoLocation"
+          },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Call notes",
+            "title": "Notes"
           },
           "overturned": {
             "default": false,
@@ -1726,6 +2176,231 @@
           "location"
         ],
         "title": "ManualIncidentIn",
+        "type": "object"
+      },
+      "MapFacility": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "hospital",
+              "civil_protection",
+              "gendarmerie",
+              "police"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ready_state": {
+            "enum": [
+              "ready",
+              "divert"
+            ],
+            "title": "Ready State",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "wilaya",
+          "ready_state",
+          "simulated",
+          "lat",
+          "lon"
+        ],
+        "title": "MapFacility",
+        "type": "object"
+      },
+      "MapResources": {
+        "properties": {
+          "facilities": {
+            "items": {
+              "$ref": "#/components/schemas/MapFacility"
+            },
+            "title": "Facilities",
+            "type": "array"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/MapUnit"
+            },
+            "title": "Units",
+            "type": "array"
+          }
+        },
+        "required": [
+          "facilities",
+          "units"
+        ],
+        "title": "MapResources",
+        "type": "object"
+      },
+      "MapUnit": {
+        "properties": {
+          "agency": {
+            "enum": [
+              "civil_protection",
+              "gendarmerie",
+              "police",
+              "samu"
+            ],
+            "title": "Agency",
+            "type": "string"
+          },
+          "callsign": {
+            "title": "Callsign",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "dispatched",
+              "busy",
+              "offline"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "callsign",
+          "agency",
+          "status",
+          "simulated",
+          "lat",
+          "lon"
+        ],
+        "title": "MapUnit",
+        "type": "object"
+      },
+      "MergeIn": {
+        "properties": {
+          "into": {
+            "description": "The open incident that absorbs this candidate",
+            "format": "uuid",
+            "title": "Into",
+            "type": "string"
+          }
+        },
+        "required": [
+          "into"
+        ],
+        "title": "MergeIn",
+        "type": "object"
+      },
+      "Metric": {
+        "additionalProperties": false,
+        "description": "A value and its bootstrap 95 % interval; ``None`` when it is undefined (no events).",
+        "properties": {
+          "ci": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Interval"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Value"
+          }
+        },
+        "title": "Metric",
+        "type": "object"
+      },
+      "Percentiles": {
+        "additionalProperties": false,
+        "properties": {
+          "count": {
+            "minimum": 0.0,
+            "title": "Count",
+            "type": "integer"
+          },
+          "p50": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P50"
+          },
+          "p95": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "P95"
+          }
+        },
+        "required": [
+          "count"
+        ],
+        "title": "Percentiles",
         "type": "object"
       },
       "PriorityReason": {
@@ -2009,6 +2684,25 @@
         ],
         "title": "Role",
         "type": "string"
+      },
+      "SkippedClip": {
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "reason": {
+            "title": "Reason",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "reason"
+        ],
+        "title": "SkippedClip",
+        "type": "object"
       },
       "SmsAck": {
         "properties": {
@@ -2342,10 +3036,28 @@
           "findings": {
             "description": "Cited findings; a raise without one is ignored",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Finding"
             },
             "title": "Findings",
             "type": "array"
+          },
+          "invalid": {
+            "default": false,
+            "description": "True when the answer failed validation twice (template text)",
+            "title": "Invalid",
+            "type": "boolean"
+          },
+          "lanes_blocked": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lanes Blocked"
           },
           "model": {
             "anyOf": [
@@ -2359,6 +3071,14 @@
             "description": "Model id that produced the answer",
             "title": "Model"
           },
+          "not_assessable": {
+            "description": "What the video does not let anyone judge",
+            "items": {
+              "type": "string"
+            },
+            "title": "Not Assessable",
+            "type": "array"
+          },
           "priority_raise": {
             "default": 0,
             "description": "Levels the verifier asks to raise priority (max 1)",
@@ -2366,6 +3086,43 @@
             "minimum": 0.0,
             "title": "Priority Raise",
             "type": "integer"
+          },
+          "t_contact": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Contact time in seconds on the frame stamps: relative to the rule moment for a rule candidate, to the window end for a sweep (negative = before)",
+            "title": "T Contact"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "pattern": "^(collision|rollover|fire|stalled|pedestrian|none)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What the verifier sees",
+            "title": "Type"
+          },
+          "vehicles_involved": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicles Involved"
           },
           "yes_probability": {
             "anyOf": [
@@ -2658,6 +3415,42 @@
         "summary": "Get Camera",
         "tags": [
           "cameras"
+        ]
+      }
+    },
+    "/evaluation/latest": {
+      "get": {
+        "description": "Precision, recall, F1, delay, false alarms per camera-hour and the ablation table of the\nnewest run on the evaluation clips, with what was not run and the limitations.",
+        "operationId": "latest_evaluation_evaluation_latest_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/EvaluationResults"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Role"
+          },
+          "404": {
+            "description": "No evaluation has been run"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Latest Evaluation",
+        "tags": [
+          "evaluation"
         ]
       }
     },
@@ -3171,6 +3964,71 @@
         ]
       }
     },
+    "/incidents/{incident_id}/merge": {
+      "post": {
+        "description": "Operator merges a candidate into another open incident (FR-INC-002, E-14).",
+        "operationId": "merge_incident_incidents__incident_id__merge_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Cannot merge"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Merge Incident",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
     "/incidents/{incident_id}/reject": {
       "post": {
         "description": "Operator rejects a candidate with a reason label (FR-INC-006).",
@@ -3556,6 +4414,33 @@
         "summary": "Upload Evidence",
         "tags": [
           "internal"
+        ]
+      }
+    },
+    "/map/resources": {
+      "get": {
+        "description": "Every facility and unit with its position; ``simulated`` ones must be labelled.",
+        "operationId": "map_resources_map_resources_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapResources"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Map Resources",
+        "tags": [
+          "map"
         ]
       }
     },

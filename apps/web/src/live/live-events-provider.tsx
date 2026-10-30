@@ -19,8 +19,10 @@ const INCIDENT_EVENTS = new Set([
   "incident.status_changed",
 ]);
 
+const CAMERA_EVENTS = new Set(["camera_fault", "camera_recovered"]);
+
 function handleMessage(queryClient: QueryClient, event: string, data: string) {
-  if (event === "camera_fault" || event === "camera_recovered") {
+  if (CAMERA_EVENTS.has(event)) {
     void queryClient.invalidateQueries({ queryKey: camerasKey });
     return;
   }
@@ -121,6 +123,7 @@ export function LiveEventsProvider({ children }: { children: ReactNode }) {
           setStatus("live");
           // Anything missed while disconnected: refetch the queue.
           void queryClient.invalidateQueries({ queryKey: incidentsKey });
+          void queryClient.invalidateQueries({ queryKey: camerasKey });
         });
         if (signal.aborted) return;
         setStatus("reconnecting");

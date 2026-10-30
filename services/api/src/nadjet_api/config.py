@@ -67,6 +67,11 @@ class Settings(BaseSettings):
     candidate_claim_idle_ms: int = Field(
         default=30_000, ge=0, description="Re-claim stream entries pending longer than this"
     )
+    evaluation_dir: Path = Field(
+        # Anchored on the repository, not the API's working directory (`services/api` in tests).
+        default=Path(__file__).resolve().parents[4] / "eval" / "results",
+        description="Evaluation results written by `make eval`",
+    )
     osrm_url: str = Field(default="http://localhost:55000", description="Self-hosted OSRM base URL")
     routing_timeout_s: float = Field(default=5.0, gt=0)
     routing_urban_multiplier: float = Field(

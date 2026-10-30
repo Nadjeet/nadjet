@@ -29,7 +29,7 @@ build: `PRD.md` (requirement IDs like `FR-VIS-007`). **How**: `docs/11-technical
 
 `make setup` · `make dev` · `make stop` · `make test` · `make test-unit` · `make lint` ·
 `make typecheck` · `make format` · `make gen` · `make check-contracts` · `make build` ·
-`make ci` · `make doctor` · `make brev-forward` · `make brev-check` · `make help` for all.
+`make ci` · `make doctor` · `make brev-forward` · `make brev-check` · `make eval` · `make help` for all.
 
 Definition of done for any change: `make format && make lint && make typecheck &&
 make check-contracts && make test` all pass locally (plus `make build` when build files change).
