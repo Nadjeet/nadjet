@@ -58,6 +58,27 @@ jobs:
           mkdir -p data/videos
           uv run nadjet-camsim render
           docker compose -f deploy/local/compose.yml --profile video up -d --wait mediamtx
+
+      - name: OSRM from the committed test extract (routing integration tests)
+        env:
+          OSRM_IMAGE: ghcr.io/project-osrm/osrm-backend:v6.0.0
+        run: |
+          # Outside the repo: root-owned graph files would break `uv build` below.
+          data="$RUNNER_TEMP/osrm"
+          mkdir -p "$data"
+          cp services/api/tests/data/boumerdes.osm.pbf "$data/"
+          osrm() { docker run --rm -v "$data:/data" "$OSRM_IMAGE" "$@"; }
+          osrm osrm-extract -p /opt/car.lua /data/boumerdes.osm.pbf
+          osrm osrm-partition /data/boumerdes.osrm
+          osrm osrm-customize /data/boumerdes.osrm
+          docker run -d --name osrm -p 55000:5000 -v "$data:/data:ro" "$OSRM_IMAGE" \
+            osrm-routed --algorithm mld /data/boumerdes.osrm
+          for _ in $(seq 30); do
+            curl -fs "http://localhost:55000/nearest/v1/driving/3.47,36.76" >/dev/null && exit 0
+            sleep 1
+          done
+          docker logs osrm
+          exit 1
       - name: Tests (unit + integration, no Brev)
         run: uv run pytest -m "not brev" --cov --cov-report=term --cov-report=xml
       - run: uv build --all-packages --out-dir dist

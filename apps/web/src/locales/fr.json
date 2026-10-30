@@ -63,6 +63,9 @@
     "model": "Modèle",
     "sourceLabel": "Source de cette valeur IA"
   },
+  "map": {
+    "unavailable": "Fond de carte indisponible : lancez make map-data, puis redémarrez l'API."
+  },
   "simulated": {
     "label": "Données simulées"
   },

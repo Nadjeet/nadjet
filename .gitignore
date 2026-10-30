@@ -52,3 +52,10 @@ CLAUDE.local.md
 # Real seed users (copy of users.example.yaml with local passwords)
 data/seed/users.yaml
 weights/
+
+# Self-hosted map data and assets (make map-data / routing-data)
+data/map/
+apps/web/public/map/
+
+# Committed routing test extract
+!services/api/tests/data/*.osm.pbf

@@ -63,6 +63,9 @@
     "model": "Model",
     "sourceLabel": "Source of this AI value"
   },
+  "map": {
+    "unavailable": "Basemap unavailable: run make map-data, then restart the API."
+  },
   "simulated": {
     "label": "Simulated data"
   },
