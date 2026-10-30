@@ -1,0 +1,187 @@
+{
+  "app": {
+    "name": "Nadjet",
+    "tagline": "Road-crash detection and emergency coordination"
+  },
+  "common": {
+    "logout": "Sign out",
+    "language": "Language",
+    "loading": "Loading…",
+    "retry": "Try again",
+    "backHome": "Back to start",
+    "notFoundTitle": "Page not found",
+    "notFoundBody": "This address does not exist or you cannot open it.",
+    "skipToContent": "Skip to content",
+    "mainNavigation": "Main navigation",
+    "signedInAs": "Signed in as {{name}}",
+    "close": "Close"
+  },
+  "surface": {
+    "ops": "Operator console",
+    "respond": "Responder app",
+    "hospital": "Hospital view",
+    "public": "Public pages"
+  },
+  "nav": {
+    "overview": "Overview",
+    "incidents": "Incidents",
+    "cameras": "Camera wall",
+    "system": "System health",
+    "design": "Design system",
+    "myIncidents": "My incidents",
+    "profile": "Profile",
+    "incoming": "Incoming alerts",
+    "home": "Home",
+    "report": "Report a crash",
+    "try": "Try it",
+    "privacy": "Privacy"
+  },
+  "login": {
+    "title": "Sign in",
+    "subtitle": "Use the account given to you by your control centre.",
+    "username": "Username",
+    "password": "Password",
+    "submit": "Sign in",
+    "invalid": "Invalid username or password.",
+    "unavailable": "The service is not reachable. Try again in a moment."
+  },
+  "live": {
+    "label": "Live updates",
+    "live": "Live",
+    "connecting": "Connecting",
+    "reconnecting": "Reconnecting"
+  },
+  "priority": {
+    "label": "Priority",
+    "p1": "Critical",
+    "p2": "Urgent",
+    "p3": "Moderate",
+    "p4": "Low"
+  },
+  "ai": {
+    "rule": "Rule",
+    "model": "Model",
+    "sourceLabel": "Source of this AI value"
+  },
+  "simulated": {
+    "label": "Simulated data"
+  },
+  "status": {
+    "candidate": "Candidate",
+    "verified": "Verified",
+    "rejected": "Rejected",
+    "merged": "Merged",
+    "dispatched": "Dispatched",
+    "acknowledged": "Acknowledged",
+    "en_route": "En route",
+    "on_scene": "On scene",
+    "transporting": "Transporting",
+    "at_hospital": "At hospital",
+    "closed": "Closed"
+  },
+  "timeline": {
+    "label": "Incident timeline",
+    "pending": "Pending",
+    "done": "Done",
+    "current": "Current step"
+  },
+  "system": {
+    "title": "System status",
+    "checking": "Checking the API…",
+    "unreachable": "The API is unreachable. Run `make dev`.",
+    "ok": "OK",
+    "down": "Down"
+  },
+  "pages": {
+    "soon": "This screen is built in a later step. The shell, navigation, language and live updates are ready for it.",
+    "ops": {
+      "overview": {
+        "title": "Operator console",
+        "body": "Map, incident queue and camera wall will appear here."
+      },
+      "incidents": {
+        "title": "Incidents",
+        "body": "The live incident queue and detail view will appear here."
+      },
+      "cameras": {
+        "title": "Camera wall",
+        "body": "Camera feeds and detections will appear here."
+      },
+      "system": {
+        "title": "System health",
+        "body": "Service health, latency and evaluation will appear here."
+      }
+    },
+    "respond": {
+      "incidents": {
+        "title": "My incidents",
+        "body": "Incidents assigned to your unit will appear here."
+      },
+      "profile": {
+        "title": "Profile",
+        "body": "Your unit and notification settings will appear here."
+      }
+    },
+    "hospital": {
+      "incoming": {
+        "title": "Incoming alerts",
+        "body": "Pre-alerts and the ready or divert switch will appear here."
+      }
+    },
+    "public": {
+      "home": {
+        "title": "Report a crash. Help is coordinated in minutes.",
+        "body": "Nadjet detects road crashes on existing cameras, collects citizen reports and coordinates the emergency response."
+      },
+      "report": {
+        "title": "Report a crash",
+        "body": "The one-tap citizen report will appear here."
+      },
+      "try": {
+        "title": "Try it",
+        "body": "Upload a clip and see how the detection works."
+      },
+      "privacy": {
+        "title": "Privacy",
+        "body": "How reports, locations and evidence are handled will be explained here."
+      },
+      "cta": "Report a crash",
+      "learn": "Try the detection"
+    }
+  },
+  "design": {
+    "title": "Design system",
+    "intro": "Tokens and components used by every surface. Source: the Nadjet Figma file.",
+    "buttons": "Buttons",
+    "inputs": "Inputs",
+    "controls": "Selection controls",
+    "badges": "Badges and labels",
+    "cards": "Cards and dialogs",
+    "primary": "Primary",
+    "secondary": "Secondary",
+    "subtle": "Subtle",
+    "text": "Text",
+    "success": "Success",
+    "error": "Error",
+    "disabled": "Disabled",
+    "loading": "Loading",
+    "email": "Email address",
+    "emailError": "Enter a valid email address.",
+    "message": "Message",
+    "choose": "Choose an option",
+    "optionA": "Option A",
+    "optionB": "Option B",
+    "accordionTitle": "Why is the colour never alone?",
+    "accordionBody": "Priority and status always carry text and an icon so they stay readable for everyone.",
+    "checkbox": "Notify me",
+    "toggle": "Live updates",
+    "slider": "Volume",
+    "cardTitle": "Sample card",
+    "cardBody": "Surfaces use a 20 px radius and a soft shadow.",
+    "openDialog": "Open dialog",
+    "dialogTitle": "Confirm the action",
+    "dialogBody": "Dialogs use a 24 px radius, a title and clear actions.",
+    "cancel": "Cancel",
+    "confirm": "Confirm"
+  }
+}

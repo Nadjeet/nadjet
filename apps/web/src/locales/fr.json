@@ -1,0 +1,187 @@
+{
+  "app": {
+    "name": "Nadjet",
+    "tagline": "Détection d'accidents de la route et coordination des secours"
+  },
+  "common": {
+    "logout": "Se déconnecter",
+    "language": "Langue",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "backHome": "Retour à l'accueil",
+    "notFoundTitle": "Page introuvable",
+    "notFoundBody": "Cette adresse n'existe pas ou vous ne pouvez pas l'ouvrir.",
+    "skipToContent": "Aller au contenu",
+    "mainNavigation": "Navigation principale",
+    "signedInAs": "Connecté en tant que {{name}}",
+    "close": "Fermer"
+  },
+  "surface": {
+    "ops": "Console opérateur",
+    "respond": "Application secouriste",
+    "hospital": "Vue hôpital",
+    "public": "Pages publiques"
+  },
+  "nav": {
+    "overview": "Vue d'ensemble",
+    "incidents": "Incidents",
+    "cameras": "Mur de caméras",
+    "system": "État du système",
+    "design": "Système de design",
+    "myIncidents": "Mes incidents",
+    "profile": "Profil",
+    "incoming": "Alertes entrantes",
+    "home": "Accueil",
+    "report": "Signaler un accident",
+    "try": "Essayer",
+    "privacy": "Confidentialité"
+  },
+  "login": {
+    "title": "Connexion",
+    "subtitle": "Utilisez le compte fourni par votre centre de contrôle.",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "invalid": "Nom d'utilisateur ou mot de passe incorrect.",
+    "unavailable": "Le service est injoignable. Réessayez dans un instant."
+  },
+  "live": {
+    "label": "Mises à jour en direct",
+    "live": "En direct",
+    "connecting": "Connexion",
+    "reconnecting": "Reconnexion"
+  },
+  "priority": {
+    "label": "Priorité",
+    "p1": "Critique",
+    "p2": "Urgent",
+    "p3": "Modéré",
+    "p4": "Faible"
+  },
+  "ai": {
+    "rule": "Règle",
+    "model": "Modèle",
+    "sourceLabel": "Source de cette valeur IA"
+  },
+  "simulated": {
+    "label": "Données simulées"
+  },
+  "status": {
+    "candidate": "Candidat",
+    "verified": "Vérifié",
+    "rejected": "Rejeté",
+    "merged": "Fusionné",
+    "dispatched": "Engagé",
+    "acknowledged": "Pris en compte",
+    "en_route": "En route",
+    "on_scene": "Sur place",
+    "transporting": "Transport en cours",
+    "at_hospital": "À l'hôpital",
+    "closed": "Clôturé"
+  },
+  "timeline": {
+    "label": "Chronologie de l'incident",
+    "pending": "À venir",
+    "done": "Terminé",
+    "current": "Étape en cours"
+  },
+  "system": {
+    "title": "État du système",
+    "checking": "Vérification de l'API…",
+    "unreachable": "L'API est injoignable. Lancez `make dev`.",
+    "ok": "OK",
+    "down": "Hors service"
+  },
+  "pages": {
+    "soon": "Cet écran sera réalisé dans une prochaine étape. La structure, la navigation, la langue et le direct sont prêts.",
+    "ops": {
+      "overview": {
+        "title": "Console opérateur",
+        "body": "La carte, la file d'incidents et le mur de caméras apparaîtront ici."
+      },
+      "incidents": {
+        "title": "Incidents",
+        "body": "La file d'incidents en direct et le détail apparaîtront ici."
+      },
+      "cameras": {
+        "title": "Mur de caméras",
+        "body": "Les flux caméra et les détections apparaîtront ici."
+      },
+      "system": {
+        "title": "État du système",
+        "body": "La santé des services, la latence et l'évaluation apparaîtront ici."
+      }
+    },
+    "respond": {
+      "incidents": {
+        "title": "Mes incidents",
+        "body": "Les incidents confiés à votre unité apparaîtront ici."
+      },
+      "profile": {
+        "title": "Profil",
+        "body": "Votre unité et vos notifications apparaîtront ici."
+      }
+    },
+    "hospital": {
+      "incoming": {
+        "title": "Alertes entrantes",
+        "body": "Les pré-alertes et le bouton prêt ou dérouter apparaîtront ici."
+      }
+    },
+    "public": {
+      "home": {
+        "title": "Signalez un accident. Les secours sont coordonnés en quelques minutes.",
+        "body": "Nadjet détecte les accidents sur les caméras existantes, recueille les signalements citoyens et coordonne l'intervention des secours."
+      },
+      "report": {
+        "title": "Signaler un accident",
+        "body": "Le signalement citoyen en un geste apparaîtra ici."
+      },
+      "try": {
+        "title": "Essayer",
+        "body": "Importez une vidéo et voyez comment fonctionne la détection."
+      },
+      "privacy": {
+        "title": "Confidentialité",
+        "body": "Le traitement des signalements, positions et preuves sera expliqué ici."
+      },
+      "cta": "Signaler un accident",
+      "learn": "Essayer la détection"
+    }
+  },
+  "design": {
+    "title": "Système de design",
+    "intro": "Jetons et composants utilisés par toutes les surfaces. Source : le fichier Figma de Nadjet.",
+    "buttons": "Boutons",
+    "inputs": "Champs",
+    "controls": "Contrôles de sélection",
+    "badges": "Badges et étiquettes",
+    "cards": "Cartes et boîtes de dialogue",
+    "primary": "Principal",
+    "secondary": "Secondaire",
+    "subtle": "Discret",
+    "text": "Texte",
+    "success": "Succès",
+    "error": "Erreur",
+    "disabled": "Désactivé",
+    "loading": "Chargement",
+    "email": "Adresse e-mail",
+    "emailError": "Saisissez une adresse e-mail valide.",
+    "message": "Message",
+    "choose": "Choisissez une option",
+    "optionA": "Option A",
+    "optionB": "Option B",
+    "accordionTitle": "Pourquoi la couleur n'est-elle jamais seule ?",
+    "accordionBody": "La priorité et le statut portent toujours un texte et une icône pour rester lisibles par tous.",
+    "checkbox": "Me notifier",
+    "toggle": "Mises à jour en direct",
+    "slider": "Volume",
+    "cardTitle": "Carte d'exemple",
+    "cardBody": "Les surfaces ont un rayon de 20 px et une ombre douce.",
+    "openDialog": "Ouvrir la boîte de dialogue",
+    "dialogTitle": "Confirmer l'action",
+    "dialogBody": "Les boîtes de dialogue ont un rayon de 24 px, un titre et des actions claires.",
+    "cancel": "Annuler",
+    "confirm": "Confirmer"
+  }
+}
