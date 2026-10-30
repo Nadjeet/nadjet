@@ -59,3 +59,7 @@ apps/web/public/map/
 
 # Committed routing test extract
 !services/api/tests/data/*.osm.pbf
+
+# Evaluation runs (make eval): generated, one file per run
+eval/results/*
+!eval/results/.gitkeep

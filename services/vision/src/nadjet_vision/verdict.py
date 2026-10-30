@@ -7,6 +7,7 @@ the video it was shown (others are dropped and logged); every free text goes thr
 """
 
 import logging
+from dataclasses import dataclass
 from typing import Any, Literal
 
 from pydantic import BaseModel, ConfigDict, Field
@@ -60,11 +61,31 @@ def _keep(text: str, field: str) -> bool:
     return True
 
 
+@dataclass
+class VerifyStats:
+    """Counters of the verifier's answers: AI quality metrics (doc 04 §5)."""
+
+    answered: int = 0  # valid answers
+    valid_first_try: int = 0
+    invalid: int = 0  # two invalid answers in a row (template used)
+    unavailable: int = 0  # no answer: timeout, server down
+    findings_total: int = 0
+    findings_dropped: int = 0  # no valid frame id left
+    cannot_judge: int = 0
+
+
 def finalize(
-    answer: VerifierAnswer, frame_count: int, model: str, yes_probability: float | None
+    answer: VerifierAnswer,
+    frame_count: int,
+    model: str,
+    yes_probability: float | None,
+    stats: VerifyStats | None = None,
 ) -> VerifierResult:
     """Apply the TD-24 rules to a schema-valid answer."""
     findings: list[Finding] = []
+    if stats is not None:
+        stats.findings_total += len(answer.findings)
+        stats.cannot_judge += answer.collision_visible == "cannot_judge"
     for item in answer.findings:
         valid = sorted({i for i in item.frame_ids if 0 <= i < frame_count})
         if len(valid) != len(set(item.frame_ids)):
@@ -76,6 +97,8 @@ def finalize(
             )
         if not valid:
             log.warning("finding dropped, no valid frame cited: %r", item.statement)
+            if stats is not None:
+                stats.findings_dropped += 1
             continue
         if not _keep(item.statement, "finding"):
             continue

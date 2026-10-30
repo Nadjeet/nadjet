@@ -236,3 +236,15 @@ candidate carries the verdict, the cited findings and the AI status (`confirmed`
 `possible_incident` for crashes the rules miss (never a `collision`); `NADJET_SWEEP_ENABLED=false`
 turns it off and `NADJET_VERIFY_CANDIDATES=false` skips verification. `make test-brev` runs the live
 check against the real endpoint (uses GPU credits).
+
+### Evaluate on the held-out clips (issue #19)
+
+`make eval` replays every scorable clip of `eval/heldout.json` through the real pipeline and writes
+`eval/results/<date>-<git-sha>.json` and a Markdown summary (needs the GPU extra and
+`make brev-forward`; `EVAL_ARGS="--no-ai"` runs the rules only, `--camera <id>` gives clips with no
+camera of their own the zones of one). Clips need their video (`data/videos/<camera video>` for the
+demo clips, `data/eval/<clip id>.mp4` for the others) and, for crashes, an annotated impact time;
+the others are listed under `skipped_clips`. The script refuses to run if a tuning file names a clip
+id or a camera with `triggers:` overrides is bound to a held-out clip. Check reproducibility with
+`make eval-compare A=<file> B=<file>`. The supervisor reads the newest file at
+`GET /evaluation/latest`.
