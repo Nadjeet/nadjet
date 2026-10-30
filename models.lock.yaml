@@ -11,3 +11,12 @@ models:
     sha256: 749ff6071828aaffac63e204c4f4135ed3d6cdae4d702e086c360edc3b5768c8
     licence: Apache-2.0
     notes: COCO weights published by Roboflow; md5 7223f764a87b863f02eb8d52bf0ce2ee matches rfdetr 1.11.2.
+  - id: qwen3-vl-8b-instruct-fp8
+    role: verifier
+    default: true
+    served_by: vllm
+    package: vllm/vllm-openai:v0.11.2
+    source: https://huggingface.co/Qwen/Qwen3-VL-8B-Instruct-FP8
+    revision: 9cdc6310a8cb770ce18efaf4e9935334512aee45
+    licence: Apache-2.0
+    notes: Served by vLLM on the Brev instance (deploy/gpu/compose.yml); vLLM downloads the weights, so the pin is the Hugging Face revision, last modified 2025-11-26.
