@@ -11,13 +11,16 @@ import { HospitalLayout } from "@/layouts/hospital-layout";
 import { OpsLayout } from "@/layouts/ops-layout";
 import { PublicLayout } from "@/layouts/public-layout";
 import { RespondLayout } from "@/layouts/respond-layout";
-import { authStore, homeFor, surfaceFor, type Surface } from "@/lib/auth-store";
+import { authStore, homeFor, surfaceFor, type Role, type Surface } from "@/lib/auth-store";
 import { LoginPage } from "@/pages/login-page";
 import { NotFound } from "@/pages/not-found";
+import { AdminPage } from "@/pages/ops/admin-page";
 import { CameraWall } from "@/pages/ops/camera-wall";
 import { DesignSystemPage } from "@/pages/ops/design-system-page";
 import { ConsolePage } from "@/pages/ops/console-page";
+import { EvaluationPage } from "@/pages/ops/evaluation-page";
 import { IncidentDetailPage } from "@/pages/ops/incident/incident-detail-page";
+import { KpisPage } from "@/pages/ops/kpis-page";
 import { SystemPage } from "@/pages/ops/system-page";
 import { PlaceholderPage } from "@/pages/placeholder-page";
 import { PublicHome } from "@/pages/public/public-home";
@@ -31,6 +34,15 @@ const rootRoute = createRootRouteWithContext<RouterContext>()({
   component: Outlet,
   notFoundComponent: NotFound,
 });
+
+/** Inside the console: only these roles may open the page, the others go back to `/ops`. */
+function requireRoles(...roles: Role[]) {
+  return () => {
+    const session = authStore.current();
+    if (!session || !roles.includes(session.user.role))
+      throw redirect({ to: "/ops", replace: true });
+  };
+}
 
 /** Signed out goes to `/login`; signed in with another role goes to its own surface. */
 function requireSurface(surface: Surface) {
@@ -85,6 +97,24 @@ const opsRoutes = [
   }),
   createRoute({ getParentRoute: () => opsRoute, path: "cameras", component: CameraWall }),
   createRoute({ getParentRoute: () => opsRoute, path: "system", component: SystemPage }),
+  createRoute({
+    getParentRoute: () => opsRoute,
+    path: "kpis",
+    beforeLoad: requireRoles("supervisor", "admin"),
+    component: KpisPage,
+  }),
+  createRoute({
+    getParentRoute: () => opsRoute,
+    path: "evaluation",
+    beforeLoad: requireRoles("supervisor", "admin"),
+    component: EvaluationPage,
+  }),
+  createRoute({
+    getParentRoute: () => opsRoute,
+    path: "admin",
+    beforeLoad: requireRoles("admin"),
+    component: AdminPage,
+  }),
   createRoute({ getParentRoute: () => opsRoute, path: "design", component: DesignSystemPage }),
 ];
 
