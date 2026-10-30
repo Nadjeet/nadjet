@@ -1,12 +1,16 @@
 """``nadjet-api`` command line: run the server or export the OpenAPI contract."""
 
 import argparse
+import asyncio
 import json
 import sys
 from pathlib import Path
 
 import uvicorn
 
+from nadjet_api.auth.seed import load_seed_file, seed_users
+from nadjet_api.config import get_settings
+from nadjet_api.db import create_engine, create_session_factory
 from nadjet_api.main import create_app
 
 DEFAULT_OPENAPI = Path(__file__).resolve().parents[4] / "contracts" / "openapi.json"
@@ -30,6 +34,17 @@ def export_openapi(path: Path, *, check: bool) -> int:
     return 0
 
 
+async def run_seed_users(path: Path) -> None:
+    users = load_seed_file(path)
+    engine = create_engine(get_settings())
+    try:
+        async with create_session_factory(engine)() as session:
+            created, skipped = await seed_users(session, users)
+    finally:
+        await engine.dispose()
+    print(f"seed-users: {created} created, {skipped} already existed")
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="nadjet-api")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -43,7 +58,13 @@ def main(argv: list[str] | None = None) -> int:
     openapi.add_argument("--check", action="store_true", help="fail if the file is out of date")
     openapi.add_argument("--out", type=Path, default=DEFAULT_OPENAPI)
 
+    seed = sub.add_parser("seed-users", help="create dev/demo users from a YAML file")
+    seed.add_argument("--file", type=Path, required=True)
+
     args = parser.parse_args(argv)
+    if args.command == "seed-users":
+        asyncio.run(run_seed_users(args.file))
+        return 0
     if args.command == "serve":
         uvicorn.run(
             "nadjet_api.main:create_app",
