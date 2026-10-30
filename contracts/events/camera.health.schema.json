@@ -1,0 +1,158 @@
+{
+  "$defs": {
+    "StageLatencyMs": {
+      "additionalProperties": false,
+      "description": "Median per-stage latency over the last window; ``None`` before the first frame.",
+      "properties": {
+        "annotate": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Annotate"
+        },
+        "decode": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Decode"
+        },
+        "detect": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Detect"
+        },
+        "track": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Track"
+        }
+      },
+      "title": "StageLatencyMs",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "at": {
+      "format": "date-time",
+      "title": "At",
+      "type": "string"
+    },
+    "camera_id": {
+      "maxLength": 63,
+      "minLength": 1,
+      "title": "Camera Id",
+      "type": "string"
+    },
+    "camera_moving": {
+      "default": false,
+      "description": "Global camera motion (FR-VIS-011)",
+      "title": "Camera Moving",
+      "type": "boolean"
+    },
+    "connected": {
+      "title": "Connected",
+      "type": "boolean"
+    },
+    "detector": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Detector model id (source of AI values)",
+      "title": "Detector"
+    },
+    "fault": {
+      "default": false,
+      "title": "Fault",
+      "type": "boolean"
+    },
+    "fault_reason": {
+      "anyOf": [
+        {
+          "enum": [
+            "stall",
+            "disconnect"
+          ],
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Fault Reason"
+    },
+    "fps": {
+      "description": "Analysed frames per second",
+      "minimum": 0,
+      "title": "Fps",
+      "type": "number"
+    },
+    "last_frame_at": {
+      "anyOf": [
+        {
+          "format": "date-time",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Last Frame At"
+    },
+    "latency_ms": {
+      "$ref": "#/$defs/StageLatencyMs"
+    },
+    "queue_depth": {
+      "minimum": 0,
+      "title": "Queue Depth",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "camera_id",
+    "at",
+    "connected",
+    "fps",
+    "queue_depth"
+  ],
+  "title": "CameraHealthReport",
+  "type": "object"
+}
