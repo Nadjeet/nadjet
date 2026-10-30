@@ -207,6 +207,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/incidents/{incident_id}/dispatch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Dispatch Incident
+         * @description Dispatch units and one hospital in one action (FR-DSP-003, FR-NTF-001, FR-NTF-006).
+         */
+        post: operations["dispatch_incident_incidents__incident_id__dispatch_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/dispatches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Dispatches
+         * @description Dispatches of the incident with the delivery status of each notification.
+         */
+        get: operations["list_dispatches_incidents__incident_id__dispatches_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/incidents/{incident_id}/evidence/{evidence_id}": {
         parameters: {
             query?: never;
@@ -221,6 +261,26 @@ export interface paths {
         get: operations["download_evidence_incidents__incident_id__evidence__evidence_id__get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/hospital": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change Hospital
+         * @description Send the patients to another hospital, e.g. after a DIVERT (E-10).
+         */
+        post: operations["change_hospital_incidents__incident_id__hospital_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -261,6 +321,26 @@ export interface paths {
          * @description Operator merges a candidate into another open incident (FR-INC-002, E-14).
          */
         post: operations["merge_incident_incidents__incident_id__merge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recommendations
+         * @description Units and hospitals ranked by road ETA for this incident's needs (FR-DSP-001/002).
+         */
+        get: operations["recommendations_incidents__incident_id__recommendations_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -779,12 +859,92 @@ export interface components {
             spo2?: number | null;
             triage_tag: components["schemas"]["TriageTag"];
         };
+        /** DeliveryOut */
+        DeliveryOut: {
+            /** Attempts */
+            attempts: number;
+            /**
+             * Channel
+             * @enum {string}
+             */
+            channel: "sms" | "push" | "telegram";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "sent" | "delivered" | "failed";
+        };
         /** DependencyStatus */
         DependencyStatus: {
             /** Detail */
             detail: string;
             /** Ok */
             ok: boolean;
+        };
+        /** DispatchIn */
+        DispatchIn: {
+            /**
+             * Hospital Id
+             * @description The hospital that receives the patients
+             */
+            hospital_id: string;
+            /**
+             * Unit Ids
+             * @description Units to send
+             */
+            unit_ids: string[];
+        };
+        /** DispatchOut */
+        DispatchOut: {
+            /** Agency */
+            agency: string | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Deliveries */
+            deliveries: components["schemas"]["DeliveryOut"][];
+            /**
+             * Dispatched By
+             * Format: uuid
+             */
+            dispatched_by: string;
+            /** Distance M */
+            distance_m: number;
+            /** Eta S */
+            eta_s: number;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "unit" | "hospital";
+            /** Name */
+            name: string;
+            /** Resource Id */
+            resource_id: string;
+            /** Route Geojson */
+            route_geojson: {
+                [key: string]: unknown;
+            } | null;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "dispatched" | "replaced";
+        };
+        /** DispatchResult */
+        DispatchResult: {
+            /** Dispatches */
+            dispatches: components["schemas"]["DispatchOut"][];
+            incident: components["schemas"]["IncidentOut"];
         };
         /** Evidence */
         Evidence: {
@@ -870,6 +1030,11 @@ export interface components {
             status: string;
             /** Version */
             version: string;
+        };
+        /** HospitalChangeIn */
+        HospitalChangeIn: {
+            /** Hospital Id */
+            hospital_id: string;
         };
         /**
          * IncidentCandidate
@@ -1097,6 +1262,28 @@ export interface components {
             version: number;
             /** Wilaya */
             wilaya: string | null;
+        };
+        /**
+         * IncidentRecommendations
+         * @description Ranked resources for one incident, with the need that filtered them.
+         */
+        IncidentRecommendations: {
+            /**
+             * Hospital Need
+             * @description Capability hospitals are ranked by
+             */
+            hospital_need: string;
+            /** Hospitals */
+            hospitals: components["schemas"]["RankedResource"][];
+            /**
+             * Unit Agencies
+             * @description Agencies whose units can answer
+             */
+            unit_agencies: string[];
+            /** Units */
+            units: components["schemas"]["RankedResource"][];
+            /** Urban Multiplier */
+            urban_multiplier: number;
         };
         /**
          * IncidentStatus
@@ -1950,6 +2137,98 @@ export interface operations {
             };
         };
     };
+    dispatch_incident_incidents__incident_id__dispatch_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DispatchIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchResult"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not dispatchable or unit not available */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown unit or hospital */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Routing service unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_dispatches_incidents__incident_id__dispatches_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchOut"][];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     download_evidence_incidents__incident_id__evidence__evidence_id__get: {
         parameters: {
             query?: never;
@@ -1984,6 +2263,60 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    change_hospital_incidents__incident_id__hospital_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HospitalChangeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchResult"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Hospital cannot be changed now */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Routing service unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
@@ -2057,6 +2390,53 @@ export interface operations {
                 content?: never;
             };
             /** @description Cannot merge */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    recommendations_incidents__incident_id__recommendations_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentRecommendations"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not dispatchable */
             409: {
                 headers: {
                     [name: string]: unknown;

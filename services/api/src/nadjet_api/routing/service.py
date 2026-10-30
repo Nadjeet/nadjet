@@ -1,6 +1,7 @@
 """Resource recommendation: PostGIS KNN prefilter, OSRM road ETAs, then ranking rules."""
 
 import asyncio
+from collections.abc import Sequence
 from dataclasses import dataclass
 from typing import Any
 
@@ -20,7 +21,7 @@ _SELECT_UNITS = """
 SELECT u.id, u.callsign, u.agency, u.status, u.phone, u.simulated, u.facility_id,
        f.name AS facility_name, ST_Y(u.geom) AS lat, ST_X(u.geom) AS lon
 FROM units u JOIN facilities f ON f.id = u.facility_id
-WHERE u.status = 'available'
+WHERE u.status = 'available' AND u.agency = ANY(:agencies)
 ORDER BY u.geom <-> ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)
 LIMIT :k
 """
@@ -59,10 +60,27 @@ def _point(record: dict[str, Any]) -> Point:
     return Point(record["lat"], record["lon"])
 
 
+ALL_AGENCIES = ("civil_protection", "gendarmerie", "police", "samu")
+
+
 async def rank_units(
-    session: AsyncSession, router: Router, scene: Point, *, limit: int, multiplier: float
+    session: AsyncSession,
+    router: Router,
+    scene: Point,
+    *,
+    limit: int,
+    multiplier: float,
+    agencies: Sequence[str] = ALL_AGENCIES,
 ) -> list[Ranked]:
-    rows = await _rows(session, _SELECT_UNITS, lat=scene.lat, lon=scene.lon, k=KNN_CANDIDATES)
+    """Available units of ``agencies`` by road ETA to ``scene``."""
+    rows = await _rows(
+        session,
+        _SELECT_UNITS,
+        lat=scene.lat,
+        lon=scene.lon,
+        k=KNN_CANDIDATES,
+        agencies=list(agencies),
+    )
     if not rows:
         return []
     matrix = await router.table([_point(r) for r in rows], [scene])

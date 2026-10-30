@@ -42,7 +42,7 @@ class Recommendations(BaseModel):
     hospitals: list[RankedResource]
 
 
-def _unit(item: Ranked) -> RankedResource:
+def unit_resource(item: Ranked) -> RankedResource:
     r = item.record
     return RankedResource(
         id=r["id"],
@@ -59,7 +59,7 @@ def _unit(item: Ranked) -> RankedResource:
     )
 
 
-def _hospital(item: Ranked) -> RankedResource:
+def hospital_resource(item: Ranked) -> RankedResource:
     r = item.record
     return RankedResource(
         id=r["id"],
@@ -117,6 +117,6 @@ async def recommendations(
         raise HTTPException(503, f"Routing service unavailable: {exc}") from exc
     return Recommendations(
         urban_multiplier=mult,
-        units=[_unit(u) for u in units],
-        hospitals=[_hospital(h) for h in hospitals],
+        units=[unit_resource(u) for u in units],
+        hospitals=[hospital_resource(h) for h in hospitals],
     )

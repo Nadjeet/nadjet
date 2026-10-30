@@ -611,6 +611,40 @@
         "title": "CasualtyOut",
         "type": "object"
       },
+      "DeliveryOut": {
+        "properties": {
+          "attempts": {
+            "title": "Attempts",
+            "type": "integer"
+          },
+          "channel": {
+            "enum": [
+              "sms",
+              "push",
+              "telegram"
+            ],
+            "title": "Channel",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "sent",
+              "delivered",
+              "failed"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "channel",
+          "status",
+          "attempts"
+        ],
+        "title": "DeliveryOut",
+        "type": "object"
+      },
       "DependencyStatus": {
         "properties": {
           "detail": {
@@ -627,6 +661,153 @@
           "detail"
         ],
         "title": "DependencyStatus",
+        "type": "object"
+      },
+      "DispatchIn": {
+        "properties": {
+          "hospital_id": {
+            "description": "The hospital that receives the patients",
+            "title": "Hospital Id",
+            "type": "string"
+          },
+          "unit_ids": {
+            "description": "Units to send",
+            "items": {
+              "type": "string"
+            },
+            "maxItems": 10,
+            "minItems": 1,
+            "title": "Unit Ids",
+            "type": "array"
+          }
+        },
+        "required": [
+          "unit_ids",
+          "hospital_id"
+        ],
+        "title": "DispatchIn",
+        "type": "object"
+      },
+      "DispatchOut": {
+        "properties": {
+          "agency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agency"
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "deliveries": {
+            "items": {
+              "$ref": "#/components/schemas/DeliveryOut"
+            },
+            "title": "Deliveries",
+            "type": "array"
+          },
+          "dispatched_by": {
+            "format": "uuid",
+            "title": "Dispatched By",
+            "type": "string"
+          },
+          "distance_m": {
+            "title": "Distance M",
+            "type": "number"
+          },
+          "eta_s": {
+            "title": "Eta S",
+            "type": "number"
+          },
+          "id": {
+            "format": "uuid",
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "unit",
+              "hospital"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "resource_id": {
+            "title": "Resource Id",
+            "type": "string"
+          },
+          "route_geojson": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Geojson"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "dispatched",
+              "replaced"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "resource_id",
+          "name",
+          "agency",
+          "simulated",
+          "eta_s",
+          "distance_m",
+          "route_geojson",
+          "status",
+          "dispatched_by",
+          "at",
+          "deliveries"
+        ],
+        "title": "DispatchOut",
+        "type": "object"
+      },
+      "DispatchResult": {
+        "properties": {
+          "dispatches": {
+            "items": {
+              "$ref": "#/components/schemas/DispatchOut"
+            },
+            "title": "Dispatches",
+            "type": "array"
+          },
+          "incident": {
+            "$ref": "#/components/schemas/IncidentOut"
+          }
+        },
+        "required": [
+          "incident",
+          "dispatches"
+        ],
+        "title": "DispatchResult",
         "type": "object"
       },
       "Evidence": {
@@ -845,6 +1026,19 @@
           "version"
         ],
         "title": "HealthResponse",
+        "type": "object"
+      },
+      "HospitalChangeIn": {
+        "properties": {
+          "hospital_id": {
+            "title": "Hospital Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "hospital_id"
+        ],
+        "title": "HospitalChangeIn",
         "type": "object"
       },
       "IncidentCandidate": {
@@ -1541,6 +1735,51 @@
           "created_at"
         ],
         "title": "IncidentOut",
+        "type": "object"
+      },
+      "IncidentRecommendations": {
+        "description": "Ranked resources for one incident, with the need that filtered them.",
+        "properties": {
+          "hospital_need": {
+            "description": "Capability hospitals are ranked by",
+            "title": "Hospital Need",
+            "type": "string"
+          },
+          "hospitals": {
+            "items": {
+              "$ref": "#/components/schemas/RankedResource"
+            },
+            "title": "Hospitals",
+            "type": "array"
+          },
+          "unit_agencies": {
+            "description": "Agencies whose units can answer",
+            "items": {
+              "type": "string"
+            },
+            "title": "Unit Agencies",
+            "type": "array"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/RankedResource"
+            },
+            "title": "Units",
+            "type": "array"
+          },
+          "urban_multiplier": {
+            "title": "Urban Multiplier",
+            "type": "number"
+          }
+        },
+        "required": [
+          "unit_agencies",
+          "hospital_need",
+          "urban_multiplier",
+          "units",
+          "hospitals"
+        ],
+        "title": "IncidentRecommendations",
         "type": "object"
       },
       "IncidentStatus": {
@@ -3296,6 +3535,123 @@
         ]
       }
     },
+    "/incidents/{incident_id}/dispatch": {
+      "post": {
+        "description": "Dispatch units and one hospital in one action (FR-DSP-003, FR-NTF-001, FR-NTF-006).",
+        "operationId": "dispatch_incident_incidents__incident_id__dispatch_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DispatchIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispatchResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Not dispatchable or unit not available"
+          },
+          "422": {
+            "description": "Unknown unit or hospital"
+          },
+          "503": {
+            "description": "Routing service unavailable"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Dispatch Incident",
+        "tags": [
+          "dispatch"
+        ]
+      }
+    },
+    "/incidents/{incident_id}/dispatches": {
+      "get": {
+        "description": "Dispatches of the incident with the delivery status of each notification.",
+        "operationId": "list_dispatches_incidents__incident_id__dispatches_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/DispatchOut"
+                  },
+                  "title": "Response List Dispatches Incidents  Incident Id  Dispatches Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List Dispatches",
+        "tags": [
+          "dispatch"
+        ]
+      }
+    },
     "/incidents/{incident_id}/evidence/{evidence_id}": {
       "get": {
         "description": "Stream an evidence file; every view or download is audited (FR-SEC-004).",
@@ -3348,6 +3704,67 @@
         "summary": "Download Evidence",
         "tags": [
           "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}/hospital": {
+      "post": {
+        "description": "Send the patients to another hospital, e.g. after a DIVERT (E-10).",
+        "operationId": "change_hospital_incidents__incident_id__hospital_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/HospitalChangeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DispatchResult"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Hospital cannot be changed now"
+          },
+          "422": {
+            "description": "Unknown hospital"
+          },
+          "503": {
+            "description": "Routing service unavailable"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Change Hospital",
+        "tags": [
+          "dispatch"
         ]
       }
     },
@@ -3465,6 +3882,73 @@
         "summary": "Merge Incident",
         "tags": [
           "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}/recommendations": {
+      "get": {
+        "description": "Units and hospitals ranked by road ETA for this incident's needs (FR-DSP-001/002).",
+        "operationId": "recommendations_incidents__incident_id__recommendations_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "maximum": 10,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentRecommendations"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Not dispatchable"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Recommendations",
+        "tags": [
+          "dispatch"
         ]
       }
     },

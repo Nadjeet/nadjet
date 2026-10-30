@@ -10,7 +10,8 @@ e.g. `7F3`), case-insensitive on input.
 
 | Message | Meaning |
 |---|---|
-| `ACC\|P<n>\|<lat>,<lon>\|<road> PK<km>\|<k>V\|<code>` | Alert to a responder or hospital. Example: `ACC\|P1\|36.64800,3.32900\|A1 PK42\|2V\|7F3`. The road/PK part and the vehicle count are omitted when unknown. |
+| `ACC\|P<n>\|<lat>,<lon>\|<road> PK<km>\|<k>V\|<code>` | Alert to a responder. Example: `ACC\|P1\|36.64800,3.32900\|A1 PK42\|2V\|7F3`. The road/PK part and the vehicle count are omitted when unknown. |
+| `PRE\|P<n>\|<lat>,<lon>\|<road> PK<km>\|<k>V\|E<min>\|<code>` | Pre-alert to the selected hospital (FR-NTF-006): same fields as `ACC` plus `E<min>`, the ambulance ETA in minutes. Example: `PRE\|P1\|36.64800,3.32900\|A1 PK42\|2V\|E12\|7F3`. |
 | `Nadjet: <code> <status> recorded` | Confirmation of a status, triage or hospital reply. |
 | `Nadjet: report received, code <code>` | Confirmation of a citizen `ACCIDENT` report. |
 | `Nadjet: OK\|ER\|OS\|TR\|AH\|CL <code> ; T <code> R# Y# G# B# ; H <code> READY\|DIVERT` | Help, sent for a message outside the grammar (E-08). |

@@ -34,6 +34,7 @@ from nadjet_api.notifications.models import (
 )
 
 KIND_ALERT = "alert"
+KIND_PREALERT = "prealert"
 
 
 # ---------------------------------------------------------------- retry policy (pure)
@@ -83,12 +84,22 @@ async def queue_notification(
     return await session.get(Notification, row_id, populate_existing=True)
 
 
-def alert_text(incident: Incident, vehicles: int | None = None) -> str:
-    """The outbound SMS line (FR-NTF-002); position-less incidents are not alertable."""
+def alert_text(
+    incident: Incident,
+    vehicles: int | None = None,
+    *,
+    kind: str = "ACC",
+    eta_s: float | None = None,
+) -> str:
+    """The outbound SMS line (FR-NTF-002); position-less incidents are not alertable.
+
+    ``kind="PRE"`` with ``eta_s`` is the hospital pre-alert (FR-NTF-006).
+    """
     if incident.lat is None or incident.lon is None:
         raise ValueError("incident has no position yet (call-back pending)")
     return format_alert(
-        kind="ACC",
+        kind=kind,
+        eta_min=None if eta_s is None else max(1, round(eta_s / 60)),
         priority=incident.priority,
         lat=incident.lat,
         lon=incident.lon,
@@ -105,13 +116,21 @@ def _vehicles(incident: Incident) -> int | None:
 
 
 async def queue_alerts(
-    session: AsyncSession, incident: Incident, users: list[User], *, kind: str = KIND_ALERT
+    session: AsyncSession,
+    incident: Incident,
+    users: list[User],
+    *,
+    kind: str = KIND_ALERT,
+    text: str | None = None,
+    meta: dict[str, Any] | None = None,
 ) -> list[Notification]:
     """SMS and push alerts for ``users`` (FR-NTF-001); duplicates are skipped.
 
-    The caller commits, then enqueues the returned notifications (``jobs.enqueue_all``).
+    ``text`` overrides the default alert line (e.g. the hospital pre-alert); ``meta`` is kept on
+    every row (the dispatch it belongs to). The caller commits, then enqueues the returned
+    notifications (``jobs.enqueue_all``).
     """
-    text = alert_text(incident)
+    text = text if text is not None else alert_text(incident)
     created: list[Notification] = []
     for user in users:
         if user.phone:
@@ -122,6 +141,7 @@ async def queue_alerts(
                 channel=SMS,
                 recipient=normalize_phone(user.phone),
                 text=text,
+                meta=meta,
             )
             if sms:
                 created.append(sms)
@@ -136,7 +156,7 @@ async def queue_alerts(
                 channel=PUSH,
                 recipient=sub.endpoint,
                 text=text,
-                meta={"p256dh": sub.p256dh, "auth": sub.auth},
+                meta={**(meta or {}), "p256dh": sub.p256dh, "auth": sub.auth},
             )
             if push:
                 created.append(push)
