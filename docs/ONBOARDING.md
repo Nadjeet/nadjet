@@ -75,7 +75,7 @@ TD-38). Regenerating `data/seed/facilities.csv` is a one-off developer task:
 [SMS Gateway for Android](https://docs.sms-gate.app/) app.
 
 1. Set `NADJET_SMS_PRIVATE_TOKEN` and `NADJET_SMS_DB_PASSWORD` in `.env`, then `make infra-sms`
-   (capcom6 server + MariaDB, port `NADJET_SMS_PORT`, default 3000).
+   (capcom6 server + MariaDB, port `NADJET_SMS_PORT`, default 53000).
 2. The phone must reach the server over HTTPS (reverse proxy, or a tunnel for a laptop demo).
    In the app: Settings > Cloud Server: API URL `https://<host>/api/mobile/v1`, private token =
    `NADJET_SMS_PRIVATE_TOKEN`; enable "Cloud server", Start, choose **Sign Up**. The app then shows a

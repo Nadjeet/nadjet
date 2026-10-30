@@ -59,7 +59,7 @@ services:
   sms-server:
     image: ghcr.io/android-sms-gateway/server:1.34.2
     configs: [{ source: sms_config, target: /app/config.yml }]
-    ports: ["${NADJET_SMS_PORT:-3000}:3000"]
+    ports: ["${NADJET_SMS_PORT:-53000}:3000"]
     depends_on:
       sms-db: { condition: service_healthy }
     profiles: [sms]
