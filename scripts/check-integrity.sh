@@ -26,5 +26,14 @@ if find apps packages/api-client -path '*/node_modules' -prune -o \
   status=1
 fi
 
+# Held-out demo clips are never used for tuning (PRD FR-VIS-022): only the catalogue validators
+# and the published evaluation script may mention the held-out list.
+heldout_readers='^(packages/shared/src/nadjet_shared/(heldout|catalogue)\.py|services/camsim/src/nadjet_camsim/cli\.py|eval/run_eval\.py):'
+if grep -rnIE 'held-?out(\.json)?' $src_dirs apps/web/src scripts/videos eval --include='*.py' --include='*.ts' --include='*.tsx' --include='*.sh' --include='*.json' 2>/dev/null |
+  grep -vE "$heldout_readers"; then
+  echo "FAIL: only the catalogue validators and eval/run_eval.py may reference the held-out list (FR-VIS-022)." >&2
+  status=1
+fi
+
 [ $status -eq 0 ] && echo "Integrity checks passed."
 exit $status

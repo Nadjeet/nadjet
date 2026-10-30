@@ -8,7 +8,9 @@ COMPOSE := docker compose -f deploy/local/compose.yml $(if $(wildcard .env),--en
 PYTEST := uv run pytest
 UNIT := -m "not integration and not brev"
 
-.PHONY: help setup doctor env dev stop down infra infra-logs ps camsim migrate gen check-contracts \
+.PHONY: help setup doctor env dev stop down infra infra-video infra-logs ps camsim migrate \
+	seed-cameras camsim-list camsim-restart camsim-freeze camsim-unfreeze camsim-outage \
+	camsim-restore camsim-swap gen check-contracts \
 	test test-unit test-integration test-brev coverage lint format typecheck build ci clean reset-db \
 	brev-status brev-up brev-forward brev-unforward brev-check
 
@@ -33,6 +35,7 @@ doctor: ## Check tools, Docker, Brev login and project files
 dev: env camsim ## Start the full dev environment (infra + API + web; Ctrl-C to stop apps)
 	$(COMPOSE) --profile video up -d --wait
 	$(MAKE) migrate
+	$(MAKE) seed-cameras
 	@echo "API http://localhost:8080/docs · Web http://localhost:5173 · MediaMTX http://localhost:8889"
 	uv run honcho -f Procfile.dev start
 
@@ -45,6 +48,9 @@ down: ## Stop and remove containers (keeps data volumes)
 
 infra: env ## Start PostGIS and Redis only, wait until healthy
 	$(COMPOSE) up -d --wait db redis
+
+infra-video: env camsim ## Start MediaMTX (simulated cameras) on top of the infrastructure
+	$(COMPOSE) --profile video up -d --wait mediamtx
 
 infra-logs: ## Follow infrastructure logs
 	$(COMPOSE) --profile video logs -f
@@ -59,6 +65,37 @@ camsim: ## Render the MediaMTX config from data/cameras.yaml
 migrate: ## Apply database migrations
 	cd services/api && uv run alembic upgrade head
 
+seed-cameras: ## Sync the camera registry from data/cameras.yaml (needs make migrate)
+	uv run nadjet-api seed-cameras
+
+# Simulator controls (FR-CAM-004), e.g. `make camsim-freeze CAM=cam-a1-pk42`. Needs make dev.
+camsim-list: ## Show every simulated camera and whether it is live
+	uv run nadjet-camsim list
+
+camsim-restart: ## Restart a camera's clip from the start: CAM=<id>
+	@test -n "$(CAM)" || { echo "usage: make $@ CAM=<camera-id>"; exit 1; }
+	uv run nadjet-camsim restart $(CAM)
+
+camsim-freeze: ## Freeze a camera (no new frames, session stays open): CAM=<id>
+	@test -n "$(CAM)" || { echo "usage: make $@ CAM=<camera-id>"; exit 1; }
+	uv run nadjet-camsim freeze $(CAM)
+
+camsim-unfreeze: ## Resume a frozen camera: CAM=<id>
+	@test -n "$(CAM)" || { echo "usage: make $@ CAM=<camera-id>"; exit 1; }
+	uv run nadjet-camsim unfreeze $(CAM)
+
+camsim-outage: ## Drop a camera's stream path (camera offline): CAM=<id>
+	@test -n "$(CAM)" || { echo "usage: make $@ CAM=<camera-id>"; exit 1; }
+	uv run nadjet-camsim outage $(CAM)
+
+camsim-restore: ## Bring a camera back after an outage: CAM=<id>
+	@test -n "$(CAM)" || { echo "usage: make $@ CAM=<camera-id>"; exit 1; }
+	uv run nadjet-camsim restore $(CAM)
+
+camsim-swap: ## Play another clip from data/videos on a camera: CAM=<id> VIDEO=<file>
+	@test -n "$(CAM)" -a -n "$(VIDEO)" || { echo "usage: make $@ CAM=<camera-id> VIDEO=<file>"; exit 1; }
+	uv run nadjet-camsim swap $(CAM) $(VIDEO)
+
 # ---------------------------------------------------------------- contracts
 gen: ## Regenerate contracts (event schemas, OpenAPI) and the TS client
 	uv run nadjet-export-schemas
@@ -72,13 +109,13 @@ check-contracts: ## Fail if generated contracts or the TS client are out of date
 	@git diff --exit-code -- packages/api-client/src/schema.d.ts || (echo "TS client out of date: run make gen" && exit 1)
 
 # ---------------------------------------------------------------- quality
-test: infra migrate ## Run all non-frontend tests (unit + integration) with coverage
+test: infra infra-video migrate ## Run all non-frontend tests (unit + integration) with coverage
 	$(PYTEST) -m "not brev" --cov --cov-report=term --cov-report=xml
 
 test-unit: ## Run unit tests only (no infrastructure needed)
 	$(PYTEST) $(UNIT)
 
-test-integration: infra migrate ## Run integration tests against local PostGIS and Redis
+test-integration: infra infra-video migrate ## Run integration tests against local PostGIS and Redis
 	$(PYTEST) -m integration
 
 test-brev: ## Live check of the Brev AI endpoint (needs make brev-forward; uses GPU credits)
@@ -91,6 +128,7 @@ lint: ## Lint Python and TypeScript, check formatting and repository rules
 	pnpm format:check
 	@bash scripts/check-integrity.sh
 	@bash scripts/check-migrations.sh
+	uv run nadjet-camsim check
 
 typecheck: ## Type-check Python (mypy strict) and TypeScript
 	uv run mypy
