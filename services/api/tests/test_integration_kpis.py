@@ -142,6 +142,9 @@ async def test_kpis_are_for_supervisors_and_admins_only(
     client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
 ) -> None:
     assert (await client.get("/kpis")).status_code == 401
+    supervisor = await login(client, await make_user(session, role="supervisor"))
+    naive = {"since": "2026-01-01T00:00:00"}  # no offset: rejected, not a 500 from the driver
+    assert (await client.get("/kpis", params=naive, headers=supervisor)).status_code == 422
     for role, expected in (
         ("operator", 403),
         ("auditor", 403),

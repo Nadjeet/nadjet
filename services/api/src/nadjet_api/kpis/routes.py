@@ -6,7 +6,7 @@ from datetime import UTC, datetime, timedelta
 from typing import Annotated, Literal
 
 from fastapi import APIRouter, Depends, Query
-from pydantic import BaseModel, Field
+from pydantic import AwareDatetime, BaseModel, Field
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -87,8 +87,8 @@ def _group(key: str, rows: list[Row]) -> KpiGroup:
 async def kpis(
     _user: SupervisorUser,
     session: Annotated[AsyncSession, Depends(get_session)],
-    since: Annotated[datetime | None, Query(description="Default: 30 days ago")] = None,
-    until: Annotated[datetime | None, Query(description="Default: now")] = None,
+    since: Annotated[AwareDatetime | None, Query(description="Default: 30 days ago")] = None,
+    until: Annotated[AwareDatetime | None, Query(description="Default: now")] = None,
     period: Literal["day", "week", "month"] = "week",
 ) -> KpiReport:
     """Durations per incident and their median and p90 by period, agency and wilaya, plus the
