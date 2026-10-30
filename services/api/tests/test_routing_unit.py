@@ -71,10 +71,8 @@ async def test_table_parses_matrix_and_unreachable_cells() -> None:
     assert legs == [[Leg(10.0, 100.0), None]]
 
 
-async def test_route_returns_geometry_and_none_for_no_route() -> None:
+async def test_route_returns_geometry() -> None:
     def handle(request: httpx.Request) -> httpx.Response:
-        if "fail" in str(request.url.params.get("overview")):
-            return httpx.Response(200, json={"code": "NoRoute"})
         return httpx.Response(
             200,
             json={
@@ -110,6 +108,16 @@ async def test_unreachable_osrm_raises_router_unavailable() -> None:
 
 async def test_osrm_server_error_raises_router_unavailable() -> None:
     transport = httpx.MockTransport(lambda r: httpx.Response(500, text="boom"))
+    with pytest.raises(RouterUnavailableError):
+        await osrm(transport).route(A, B)
+
+
+async def test_invalid_json_from_osrm_raises_router_unavailable() -> None:
+    transport = httpx.MockTransport(
+        lambda r: httpx.Response(
+            200, content=b"<html>", headers={"content-type": "application/json"}
+        )
+    )
     with pytest.raises(RouterUnavailableError):
         await osrm(transport).route(A, B)
 

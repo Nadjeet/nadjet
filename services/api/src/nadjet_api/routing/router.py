@@ -60,7 +60,10 @@ class OsrmRouter:
             raise RouterUnavailableError(f"OSRM unreachable: {type(exc).__name__}") from exc
         body: dict[str, Any] = {}
         if response.headers.get("content-type", "").startswith("application/json"):
-            body = response.json()
+            try:
+                body = response.json()
+            except ValueError as exc:
+                raise RouterUnavailableError("OSRM answered invalid JSON") from exc
         if response.status_code >= 500 or (response.status_code != 200 and not body):
             raise RouterUnavailableError(f"OSRM answered HTTP {response.status_code}")
         return body
