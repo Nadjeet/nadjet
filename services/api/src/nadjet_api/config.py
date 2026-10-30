@@ -24,6 +24,13 @@ class Settings(BaseSettings):
     redis_url: RedisDsn = Field(default=RedisDsn("redis://localhost:56379/0"))
     cors_origins: list[str] = Field(default=["http://localhost:5173"])
     readiness_timeout_s: float = Field(default=2.0, gt=0)
+    rtsp_url_template: str = Field(
+        default="rtsp://localhost:8554/{path}", description="Camera RTSP URL; {path} = stream path"
+    )
+    whep_url_template: str = Field(
+        default="http://localhost:8889/{path}/whep",
+        description="Camera WebRTC WHEP URL for the browser; {path} = stream path",
+    )
     jwt_secret: SecretStr | None = Field(
         default=None,
         description="HS256 signing key; required (>= 32 chars) outside development/test",
