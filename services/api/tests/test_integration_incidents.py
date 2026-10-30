@@ -236,6 +236,28 @@ async def test_pending_entry_is_reclaimed_after_a_failed_persist(app: FastAPI) -
     assert pending["pending"] == 0
 
 
+async def test_entry_failing_every_delivery_is_dead_lettered(app: FastAPI) -> None:
+    """NFR-REL-002: a poison entry is parked for humans instead of retried forever."""
+    redis = app.state.redis
+    await make_consumer(app, name="poison").setup()
+
+    def broken() -> Any:
+        raise RuntimeError("cannot persist")
+
+    consumer = CandidateConsumer(
+        redis, broken, app.state.signer, name="poison", claim_idle_ms=0, max_deliveries=3
+    )
+    key = uuid.uuid4().hex
+    lat, lon = fresh_spot()
+    await enqueue(redis, candidate(lat, lon), key)
+    for _ in range(6):
+        await consumer.poll_once(block_ms=50)
+    dead = await redis.xrange("incidents.candidates.dead")
+    assert any(fields.get("key") == key for _id, fields in dead)
+    pending = await redis.xpending_range(STREAM, "api", "-", "+", 100, consumername="poison")
+    assert pending == []
+
+
 async def test_malformed_entry_is_dead_lettered_not_retried(app: FastAPI) -> None:
     redis = app.state.redis
     consumer = make_consumer(app, name="dl")
@@ -530,6 +552,23 @@ async def test_FR_SEC_003_file_and_db_hash_tampered_together_is_detected(
     report = (await client.get(f"/incidents/{incident.id}/integrity", headers=auditor)).json()
     assert report["status"] == "invalid"
     assert report["failures"][0]["detail"] == "hash not in signed chain"
+
+
+async def test_FR_SEC_003_deleted_evidence_row_is_detected(
+    app: FastAPI, client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
+) -> None:
+    auditor = await login(client, await make_user(session, role="auditor"))
+    lat, lon = fresh_spot()
+    incident = await ingest(app, candidate(lat, lon))
+    evidence = (await upload(client, incident.id, b"\x00keep" * 20)).json()
+    await session.execute(text("DELETE FROM evidence WHERE id=:i"), {"i": evidence["id"]})
+    await session.commit()
+
+    report = (await client.get(f"/incidents/{incident.id}/integrity", headers=auditor)).json()
+    assert report["status"] == "invalid"
+    assert report["failures"] == [
+        {"kind": "file", "ref": evidence["id"], "detail": "evidence record missing"}
+    ]
 
 
 async def test_evidence_upload_validation(
