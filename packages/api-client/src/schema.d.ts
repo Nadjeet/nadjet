@@ -4,6 +4,163 @@
  */
 
 export interface paths {
+    "/admin/cameras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Cameras */
+        get: operations["list_cameras_admin_cameras_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/cameras/{camera_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Camera */
+        patch: operations["update_camera_admin_cameras__camera_id__patch"];
+        trace?: never;
+    };
+    "/admin/cameras/{camera_id}/zones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace Zones
+         * @description Replace the camera's zones (``live_lanes`` / ``carriageway`` polygons) with this JSON.
+         */
+        put: operations["replace_zones_admin_cameras__camera_id__zones_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/facilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Facilities */
+        get: operations["list_facilities_admin_facilities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/facilities/{facility_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Facility */
+        patch: operations["update_facility_admin_facilities__facility_id__patch"];
+        trace?: never;
+    };
+    "/admin/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Units */
+        get: operations["list_units_admin_units_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/units/{unit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Unit */
+        patch: operations["update_unit_admin_units__unit_id__patch"];
+        trace?: never;
+    };
+    "/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Users */
+        get: operations["list_users_admin_users_get"];
+        put?: never;
+        /** Create User */
+        post: operations["create_user_admin_users_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update User */
+        patch: operations["update_user_admin_users__user_id__patch"];
+        trace?: never;
+    };
     "/auth/login": {
         parameters: {
             query?: never;
@@ -652,6 +809,27 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/kpis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kpis
+         * @description Durations per incident and their median and p90 by period, agency and wilaya, plus the
+         *     false-alarm rate per camera. Merged incidents are duplicates and are not counted.
+         */
+        get: operations["kpis_kpis_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/map/resources": {
         parameters: {
             query?: never;
@@ -1048,6 +1226,102 @@ export interface components {
              */
             not_run_reason?: string | null;
         };
+        /** AdminCamera */
+        AdminCamera: {
+            /** Heading Deg */
+            heading_deg: number;
+            /** Id */
+            id: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Road */
+            road: string;
+            /** Simulated */
+            simulated: boolean;
+            /** Status */
+            status: string;
+            /** Wilaya */
+            wilaya: string;
+            /** Zones */
+            zones: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** AdminFacility */
+        AdminFacility: {
+            /** Capabilities */
+            capabilities: {
+                [key: string]: boolean;
+            };
+            /** Contact Sms */
+            contact_sms: string | null;
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Name */
+            name: string;
+            /**
+             * Ready State
+             * @enum {string}
+             */
+            ready_state: "ready" | "divert";
+            /** Simulated */
+            simulated: boolean;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** AdminUnit */
+        AdminUnit: {
+            /** Agency */
+            agency: string;
+            /** Callsign */
+            callsign: string;
+            /** Facility Id */
+            facility_id: string;
+            /** Id */
+            id: string;
+            /** Phone */
+            phone: string | null;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "dispatched" | "busy" | "offline";
+        };
+        /** AdminUserOut */
+        AdminUserOut: {
+            /** Active */
+            active: boolean;
+            agency: components["schemas"]["Agency"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Display Name */
+            display_name: string;
+            /** Facility Id */
+            facility_id: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Phone */
+            phone: string | null;
+            role: components["schemas"]["Role"];
+            /** Username */
+            username: string;
+        };
         /**
          * Agency
          * @enum {string}
@@ -1156,6 +1430,23 @@ export interface components {
             /** Y2 */
             y2: number;
         };
+        /** CameraFalseAlarms */
+        CameraFalseAlarms: {
+            /** Camera Id */
+            camera_id: string;
+            /**
+             * False Positives
+             * @description Rejected by an operator as false positive
+             */
+            false_positives: number;
+            /**
+             * Incidents
+             * @description Distinct incidents the camera raised (duplicates excluded)
+             */
+            incidents: number;
+            /** Rate */
+            rate: number | null;
+        };
         /** CameraHealthAck */
         CameraHealthAck: {
             /**
@@ -1248,6 +1539,23 @@ export interface components {
             zones: {
                 [key: string]: unknown;
             } | null;
+        };
+        /** CameraPatch */
+        CameraPatch: {
+            /** Heading Deg */
+            heading_deg?: number | null;
+            /** Lat */
+            lat?: number | null;
+            /** Lon */
+            lon?: number | null;
+            /** Name */
+            name?: string | null;
+            /** Pk Km */
+            pk_km?: number | null;
+            /** Road */
+            road?: string | null;
+            /** Wilaya */
+            wilaya?: string | null;
         };
         /**
          * CameraSystemStatus
@@ -1572,6 +1880,19 @@ export interface components {
             /** Start Ts */
             start_ts: string | null;
         };
+        /** FacilityPatch */
+        FacilityPatch: {
+            /** Capabilities */
+            capabilities?: {
+                [key: string]: boolean;
+            } | null;
+            /** Contact Sms */
+            contact_sms?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Ready State */
+            ready_state?: ("ready" | "divert") | null;
+        };
         /**
          * Finding
          * @description One statement of the verifier, tied to the frames it was read from (FR-VIS-016).
@@ -1762,6 +2083,36 @@ export interface components {
              */
             ts: string;
         };
+        /** IncidentKpi */
+        IncidentKpi: {
+            /** Agencies */
+            agencies: string[];
+            /**
+             * Durations
+             * @description Seconds per metric; null when the milestone was not reached
+             */
+            durations: {
+                [key: string]: number | null;
+            };
+            /**
+             * Event Time
+             * Format: date-time
+             */
+            event_time: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Priority */
+            priority: number;
+            /** Short Code */
+            short_code: string;
+            /** Status */
+            status: string;
+            /** Wilaya */
+            wilaya: string | null;
+        };
         /** IncidentList */
         IncidentList: {
             /** Items */
@@ -1907,6 +2258,49 @@ export interface components {
             /** Low */
             low: number;
         };
+        /** KpiGroup */
+        KpiGroup: {
+            /** Incidents */
+            incidents: number;
+            /** Key */
+            key: string;
+            /** Metrics */
+            metrics: {
+                [key: string]: components["schemas"]["MetricStats"];
+            };
+        };
+        /** KpiReport */
+        KpiReport: {
+            /** By Agency */
+            by_agency: components["schemas"]["KpiGroup"][];
+            /** By Period */
+            by_period: components["schemas"]["KpiGroup"][];
+            /** By Wilaya */
+            by_wilaya: components["schemas"]["KpiGroup"][];
+            /** False Alarms */
+            false_alarms: components["schemas"]["CameraFalseAlarms"][];
+            /**
+             * Incidents
+             * @description Newest 200 incidents
+             */
+            incidents: components["schemas"]["IncidentKpi"][];
+            overall: components["schemas"]["KpiGroup"];
+            /**
+             * Period
+             * @enum {string}
+             */
+            period: "day" | "week" | "month";
+            /**
+             * Since
+             * Format: date-time
+             */
+            since: string;
+            /**
+             * Until
+             * Format: date-time
+             */
+            until: string;
+        };
         /** LoginRequest */
         LoginRequest: {
             /** Password */
@@ -2042,6 +2436,18 @@ export interface components {
             ci?: components["schemas"]["Interval"] | null;
             /** Value */
             value?: number | null;
+        };
+        /** MetricStats */
+        MetricStats: {
+            /** Median S */
+            median_s: number | null;
+            /**
+             * N
+             * @description Incidents that reached both milestones
+             */
+            n: number;
+            /** P90 S */
+            p90_s: number | null;
         };
         /** Percentiles */
         Percentiles: {
@@ -2543,6 +2949,33 @@ export interface components {
             /** Ttl S */
             ttl_s: number;
         };
+        /** UnitPatch */
+        UnitPatch: {
+            /** Callsign */
+            callsign?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /**
+             * Status
+             * @description `dispatched` is set by dispatch only
+             */
+            status?: ("available" | "busy" | "offline") | null;
+        };
+        /** UserCreate */
+        UserCreate: {
+            agency?: components["schemas"]["Agency"] | null;
+            /** Display Name */
+            display_name: string;
+            /** Facility Id */
+            facility_id?: string | null;
+            /** Password */
+            password: string;
+            /** Phone */
+            phone?: string | null;
+            role: components["schemas"]["Role"];
+            /** Username */
+            username: string;
+        };
         /** UserOut */
         UserOut: {
             agency: components["schemas"]["Agency"] | null;
@@ -2560,6 +2993,24 @@ export interface components {
             role: components["schemas"]["Role"];
             /** Username */
             username: string;
+        };
+        /** UserPatch */
+        UserPatch: {
+            /**
+             * Active
+             * @description false deactivates the account
+             */
+            active?: boolean | null;
+            agency?: components["schemas"]["Agency"] | null;
+            /** Display Name */
+            display_name?: string | null;
+            /** Facility Id */
+            facility_id?: string | null;
+            /** Password */
+            password?: string | null;
+            /** Phone */
+            phone?: string | null;
+            role?: components["schemas"]["Role"] | null;
         };
         /** ValidationError */
         ValidationError: {
@@ -2708,6 +3159,492 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    list_cameras_admin_cameras_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCamera"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_camera_admin_cameras__camera_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                camera_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CameraPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCamera"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    replace_zones_admin_cameras__camera_id__zones_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                camera_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCamera"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_facilities_admin_facilities_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFacility"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_facility_admin_facilities__facility_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FacilityPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFacility"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_units_admin_units_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUnit"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_unit_admin_units__unit_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUnit"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_users_admin_users_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    create_user_admin_users_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Username taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_user_admin_users__user_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Own account */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     login_auth_login_post: {
         parameters: {
             query?: never;
@@ -4048,6 +4985,55 @@ export interface operations {
         responses: {
             /** @description Successful Response */
             204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    kpis_kpis_get: {
+        parameters: {
+            query?: {
+                /** @description Default: 30 days ago */
+                since?: string | null;
+                /** @description Default: now */
+                until?: string | null;
+                period?: "day" | "week" | "month";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KpiReport"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };

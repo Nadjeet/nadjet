@@ -14,6 +14,7 @@ from pydantic import BaseModel
 from redis.asyncio import Redis
 
 from nadjet_api import __version__
+from nadjet_api.admin.routes import router as admin_router
 from nadjet_api.auth.routes import router as auth_router
 from nadjet_api.cameras.internal import router as camera_internal_router
 from nadjet_api.cameras.routes import router as cameras_router
@@ -30,8 +31,10 @@ from nadjet_api.incidents import internal
 from nadjet_api.incidents import routes as incident_routes
 from nadjet_api.incidents.signing import ChainSigner
 from nadjet_api.incidents.store import LocalEvidenceStore
+from nadjet_api.kpis.routes import router as kpis_router
 from nadjet_api.notifications.channels import build_channels
 from nadjet_api.notifications.routes import router as notifications_router
+from nadjet_api.retention import retention_loop
 from nadjet_api.routing.router import OsrmRouter, Router
 from nadjet_api.routing.routes import router as routing_router
 from nadjet_api.system.routes import router as system_ai_router
@@ -83,13 +86,19 @@ def create_app(
         purger = asyncio.create_task(
             purge_loop(app.state, settings.try_purge_interval_s, stop_purge)
         )
+        stop_retention = asyncio.Event()
+        retainer = asyncio.create_task(
+            retention_loop(app.state, settings.retention_interval_s, stop_retention)
+        )
         # Notification jobs are enqueued after each dispatch (the worker runs them, TD-08).
         app.state.arq = await create_pool(RedisSettings.from_dsn(str(settings.redis_url)))
         try:
             yield
         finally:
             stop_purge.set()
+            stop_retention.set()
             await purger
+            await retainer
             await app.state.arq.aclose()
             await http.aclose()
             await redis.aclose()
@@ -113,6 +122,8 @@ def create_app(
     app.include_router(citizen_router)
     app.include_router(routing_router)
     app.include_router(evaluation_router)
+    app.include_router(kpis_router)
+    app.include_router(admin_router)
     app.include_router(map_resources_router)
     app.include_router(try_router)
     app.include_router(try_internal_router)
