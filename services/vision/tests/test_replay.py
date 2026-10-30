@@ -116,3 +116,12 @@ async def test_a_replay_is_repeatable() -> None:
     first = await run(Verifier(yes(), [yes(), no()]))
     second = await run(Verifier(yes(), [yes(), no()]))
     assert first.alerts == second.alerts
+
+
+async def test_unavailable_ai_answers_are_counted_so_the_run_can_refuse_them() -> None:
+    """A timed-out or down verifier must not silently turn '+ verifier' into 'rules only'."""
+    down = VerifierResult(available=False, model="m")
+    result = await run(Verifier(down, [down]))
+    assert result.ai_unavailable == 1 + len(result.sweep_ms)
+    healthy = await run(Verifier(no(), [no()]))
+    assert healthy.ai_unavailable == 0

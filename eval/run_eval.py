@@ -134,11 +134,16 @@ async def run(args: argparse.Namespace) -> int:
                 f"AI unavailable ({exc}); run `make brev-forward` or use --no-ai.", file=sys.stderr
             )
             return 4
-        verifier = AiVerifier(client, settings.vlm_model)
+        # No back-off: in the live worker a down AI is skipped for 30 s, here every answer must
+        # come from the model or the run fails (see the check after the replay).
+        verifier = AiVerifier(client, settings.vlm_model, backoff_s=0.0)
 
     detector = load_detector(settings)
     outcomes: list[ClipOutcome] = []
     latency: dict[str, list[float]] = {"frame": [], "verify": [], "sweep": []}
+    ai_unavailable = 0
+    started_at = datetime.now(UTC)
+    dirty = bool(git("status", "--porcelain", "--", ".", ":!eval/results"))
     for plan in plans:
         print(f"replaying {plan.clip.id} ({plan.video.name})", flush=True)
         ring = PacketRing(settings.evidence_buffer_s)
@@ -162,6 +167,7 @@ async def run(args: argparse.Namespace) -> int:
         latency["frame"] += replayed.frame_ms
         latency["verify"] += replayed.verify_ms
         latency["sweep"] += replayed.sweep_ms
+        ai_unavailable += replayed.ai_unavailable
         outcomes.append(
             ClipOutcome(
                 plan.clip.id,
@@ -174,6 +180,14 @@ async def run(args: argparse.Namespace) -> int:
     stats = client.stats if client is not None else None
     if client is not None:
         await client.aclose()
+    if ai_unavailable:
+        print(
+            f"AI unavailable for {ai_unavailable} verification(s) during the run (timeout or "
+            "server down): the '+ verifier' / '+ sweep' rows would silently fall back to rules "
+            "only. No results written; fix Brev and rerun, or use --no-ai.",
+            file=sys.stderr,
+        )
+        return 4
     now = datetime.now(UTC)
     sha = git("rev-parse", "--short", "HEAD") or "unknown"
     results = build_results(
@@ -182,7 +196,7 @@ async def run(args: argparse.Namespace) -> int:
         stats=stats,
         latency_ms=latency,
         git_sha=sha,
-        dirty=bool(git("status", "--porcelain")),
+        dirty=dirty,
         seed=args.seed,
         samples=args.samples,
         models=models,
@@ -190,7 +204,8 @@ async def run(args: argparse.Namespace) -> int:
     )
     out = args.out
     out.mkdir(parents=True, exist_ok=True)
-    stem = f"{now:%Y-%m-%d}-{sha}"
+    # Time in the name: two runs of one commit (the reproducibility check) must not overwrite.
+    stem = f"{started_at:%Y-%m-%d-%H%M%S}-{sha}"
     (out / f"{stem}.json").write_text(results.model_dump_json(indent=2) + "\n")
     (out / f"{stem}.md").write_text(render_markdown(results))
     print(render_markdown(results))

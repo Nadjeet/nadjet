@@ -63,6 +63,9 @@ class ReplayResult:
     frame_ms: list[float] = field(default_factory=list)
     verify_ms: list[float] = field(default_factory=list)
     sweep_ms: list[float] = field(default_factory=list)
+    # Verifier or sweep answers that were "unavailable" (timeout, server down): a run with any
+    # of these would quietly score part of "+ verifier" / "+ sweep" as rules only.
+    ai_unavailable: int = 0
 
 
 def _record(
@@ -134,6 +137,8 @@ async def replay_clip(
                 item.packets, item.info, item.event.evidence_t, item.event.trigger
             )
             result.verify_ms.append((time.perf_counter() - started) * 1000)
+            if not verdict.available:
+                result.ai_unavailable += 1
             status = classify(rule_fired=True, verifier=verdict, thresholds=thresholds).value
         result.alerts.append(_record(item.event, "rule", verdict, status))
         rule_walls.append(item.event.fire_wall)
@@ -159,6 +164,8 @@ async def _sweep_alerts(
         started = time.perf_counter()
         verdict = await verifier.sweep(packets, info, end_s)
         result.sweep_ms.append((time.perf_counter() - started) * 1000)
+        if not verdict.available:
+            result.ai_unavailable += 1
         hits = tracker.record(verdict)
         if not hits:
             continue
