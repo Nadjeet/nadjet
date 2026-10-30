@@ -20,7 +20,8 @@ from nadjet_api.auth.security import (
     hash_password,
     verify_password,
 )
-from nadjet_api.config import DEV_JWT_SECRET, Settings
+from nadjet_api.config import DEV_JWT_SECRET, DEV_SIGNING_SEED, Settings
+from nadjet_api.main import create_app
 
 KEY = "k" * 40
 
@@ -103,9 +104,12 @@ def test_production_requires_strong_jwt_secret() -> None:
     for secret in (None, "short", DEV_JWT_SECRET):
         with pytest.raises(ValidationError):
             Settings(env="production", jwt_secret=secret)  # type: ignore[arg-type]
-    ok = Settings(env="production", jwt_secret="p" * 40)  # type: ignore[arg-type]
-    assert ok.signing_key == "p" * 40
-    assert Settings(env="development").signing_key == DEV_JWT_SECRET
+    for seed in (None, "abc", DEV_SIGNING_SEED):
+        with pytest.raises(ValidationError):
+            Settings(env="production", jwt_secret="p" * 40, signing_key=seed)  # type: ignore[arg-type]
+    ok = Settings(env="production", jwt_secret="p" * 40, signing_key="ab" * 32)  # type: ignore[arg-type]
+    assert ok.jwt_key == "p" * 40
+    assert Settings(env="development").jwt_key == DEV_JWT_SECRET
 
 
 def test_audit_hash_is_deterministic_and_chained() -> None:
@@ -124,3 +128,9 @@ def test_audit_hash_is_deterministic_and_chained() -> None:
     h1 = chain_hash(GENESIS_HASH, first)
     assert len(h1) == 64
     assert chain_hash(h1, first) != h1
+
+
+def test_internal_endpoints_are_disabled_without_an_ingest_token() -> None:
+    with TestClient(create_app(Settings(env="test"), probes={})) as client:
+        response = client.post("/internal/candidates", json={}, headers={"Idempotency-Key": "k"})
+    assert response.status_code == 503

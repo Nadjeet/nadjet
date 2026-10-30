@@ -3,14 +3,19 @@
 import argparse
 import asyncio
 import json
+import logging
+import signal
 import sys
 from pathlib import Path
 
 import uvicorn
+from redis.asyncio import Redis
 
 from nadjet_api.auth.seed import load_seed_file, seed_users
 from nadjet_api.config import get_settings
 from nadjet_api.db import create_engine, create_session_factory
+from nadjet_api.incidents.ingest import CandidateConsumer
+from nadjet_api.incidents.signing import ChainSigner, generate_seed_hex
 from nadjet_api.main import create_app
 
 DEFAULT_OPENAPI = Path(__file__).resolve().parents[4] / "contracts" / "openapi.json"
@@ -45,6 +50,28 @@ async def run_seed_users(path: Path) -> None:
     print(f"seed-users: {created} created, {skipped} already existed")
 
 
+async def run_consume() -> None:
+    """Persist candidates from the Redis Stream until SIGINT/SIGTERM."""
+    settings = get_settings()
+    engine = create_engine(settings)
+    redis: Redis = Redis.from_url(str(settings.redis_url), decode_responses=True)
+    stop = asyncio.Event()
+    loop = asyncio.get_running_loop()
+    for sig in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(sig, stop.set)
+    consumer = CandidateConsumer(
+        redis,
+        create_session_factory(engine),
+        ChainSigner(settings.signing_seed),
+        claim_idle_ms=settings.candidate_claim_idle_ms,
+    )
+    try:
+        await consumer.run(stop)
+    finally:
+        await redis.aclose()
+        await engine.dispose()
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="nadjet-api")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -61,7 +88,17 @@ def main(argv: list[str] | None = None) -> int:
     seed = sub.add_parser("seed-users", help="create dev/demo users from a YAML file")
     seed.add_argument("--file", type=Path, required=True)
 
+    sub.add_parser("consume", help="persist candidates from the Redis Stream")
+    sub.add_parser("gen-signing-key", help="print a new Ed25519 seed for NADJET_SIGNING_KEY")
+
     args = parser.parse_args(argv)
+    if args.command == "gen-signing-key":
+        print(generate_seed_hex())
+        return 0
+    if args.command == "consume":
+        logging.basicConfig(level=logging.INFO)
+        asyncio.run(run_consume())
+        return 0
     if args.command == "seed-users":
         asyncio.run(run_seed_users(args.file))
         return 0

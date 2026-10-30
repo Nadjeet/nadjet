@@ -14,6 +14,10 @@ from nadjet_api.auth.routes import router as auth_router
 from nadjet_api.config import Settings, get_settings
 from nadjet_api.db import create_engine, create_session_factory
 from nadjet_api.health import Probe, database_probe, redis_probe, run_probes
+from nadjet_api.incidents import internal
+from nadjet_api.incidents import routes as incident_routes
+from nadjet_api.incidents.signing import ChainSigner
+from nadjet_api.incidents.store import LocalEvidenceStore
 
 
 class HealthResponse(BaseModel):
@@ -42,7 +46,7 @@ def create_app(settings: Settings | None = None, probes: dict[str, Probe] | None
             yield
             return
         engine = create_engine(settings)
-        redis: Redis = Redis.from_url(str(settings.redis_url))
+        redis: Redis = Redis.from_url(str(settings.redis_url), decode_responses=True)
         app.state.session_factory = create_session_factory(engine)
         app.state.redis = redis
         app.state.probes = {"database": database_probe(engine), "redis": redis_probe(redis)}
@@ -54,7 +58,11 @@ def create_app(settings: Settings | None = None, probes: dict[str, Probe] | None
 
     app = FastAPI(title="Nadjet API", version=__version__, lifespan=lifespan)
     app.state.settings = settings
+    app.state.signer = ChainSigner(settings.signing_seed)
+    app.state.store = LocalEvidenceStore(settings.evidence_dir)
     app.include_router(auth_router)
+    app.include_router(incident_routes.router)
+    app.include_router(internal.router)
     app.add_middleware(
         CORSMiddleware,
         allow_origins=settings.cors_origins,

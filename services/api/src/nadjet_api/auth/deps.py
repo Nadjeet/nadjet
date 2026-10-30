@@ -33,7 +33,7 @@ async def current_user(
         raise _unauthorized()
     settings: Settings = request.app.state.settings
     try:
-        claims = decode_token(credentials.credentials, key=settings.signing_key)
+        claims = decode_token(credentials.credentials, key=settings.jwt_key)
     except InvalidTokenError:
         raise _unauthorized() from None
     user = await session.get(User, claims.user_id)
