@@ -1,0 +1,35 @@
+name: Bug
+description: Something does not work as the PRD or docs say
+labels: ["bug"]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behaviour (with PRD requirement ID if any)
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      value: |
+        1.
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria for the fix
+      value: |
+        - [ ] A test reproduces the bug and passes after the fix
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs / environment
+      render: shell

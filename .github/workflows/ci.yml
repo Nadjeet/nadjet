@@ -1,0 +1,94 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python (lint, types, contracts, tests)
+    runs-on: ubuntu-latest
+    services:
+      db:
+        image: imresamu/postgis:17-3.5
+        env:
+          POSTGRES_USER: nadjet
+          POSTGRES_PASSWORD: nadjet
+          POSTGRES_DB: nadjet
+        ports: ["55432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U nadjet -d nadjet" --health-interval 2s --health-retries 30
+      redis:
+        image: redis:8-alpine
+        ports: ["56379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 2s --health-retries 30
+    env:
+      NADJET_ENV: test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10
+        with:
+          enable-cache: true
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy
+      - name: Contracts are up to date
+        run: |
+          uv run nadjet-export-schemas --check
+          uv run nadjet-api export-openapi --check
+      - name: Migrations
+        working-directory: services/api
+        run: uv run alembic upgrade head
+      - name: Tests (unit + integration, no Brev)
+        run: uv run pytest -m "not brev" --cov --cov-report=term --cov-report=xml
+      - run: uv build --all-packages --out-dir dist
+
+  web:
+    name: Web (lint, types, client, build — no frontend tests)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Generated API client is up to date
+        run: |
+          pnpm gen:client
+          git diff --exit-code -- packages/api-client/src/schema.d.ts
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm format:check
+      - run: pnpm build
+
+  rules:
+    name: Repository rules
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Integrity (no fabricated AI, Brev-only inference, no frontend tests)
+        run: bash scripts/check-integrity.sh
+      - name: One-line Conventional Commits without co-authors
+        if: github.event_name == 'pull_request'
+        run: |
+          status=0
+          for sha in $(git rev-list --no-merges "origin/${{ github.base_ref }}..HEAD"); do
+            git log -1 --format=%B "$sha" > /tmp/msg
+            python3 .githooks/commit-msg /tmp/msg || { echo "::error::commit $sha"; status=1; }
+          done
+          exit $status
