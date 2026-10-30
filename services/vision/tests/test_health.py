@@ -111,6 +111,7 @@ def test_prometheus_text_has_one_sample_per_metric() -> None:
 
 
 async def test_metrics_endpoint_serves_prometheus_text() -> None:
+    """FR-VIS-014: workers serve per-camera frame rate and stage latency as Prometheus metrics."""
     state = make_state()
     server = await serve_metrics(0, state.report, host="127.0.0.1")
     port = server.sockets[0].getsockname()[1]
