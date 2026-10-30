@@ -147,3 +147,23 @@ async def test_verify_timeout_means_unavailable() -> None:
     result = await client.verify("file:///clips/a.mp4", frame_count=20)
     await client.aclose()
     assert result.available is False
+
+
+def test_FR_VIS_009_default_budget_fits_a_measured_verifier_call() -> None:
+    """One verifier call took 6.2-6.7 s on the L40S (TD-50); the old 7 s budget, which also
+    covers building the clip, made every live candidate 'unavailable'. The budget stays within
+    the doc 11 §6 verifier timeout."""
+    settings = VisionSettings()
+    assert 10.0 <= settings.vlm_budget_s <= settings.vlm_timeout_s
+
+
+def test_FR_CIT_002_verifier_default_budget_is_the_configured_one() -> None:
+    """The try-it worker built ``AiVerifier`` without a budget and got a hardcoded 7 s, so the
+    second (refine) pass always timed out (TD-50)."""
+    import inspect
+
+    from nadjet_vision.verifier import AiVerifier
+
+    defaults = inspect.signature(AiVerifier.__init__).parameters
+    assert defaults["budget_s"].default == VisionSettings.model_fields["vlm_budget_s"].default
+    assert defaults["backoff_s"].default == VisionSettings.model_fields["vlm_backoff_s"].default

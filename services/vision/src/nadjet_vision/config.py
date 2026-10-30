@@ -27,10 +27,10 @@ class VisionSettings(BaseSettings):
     )
     vlm_timeout_s: float = Field(default=15.0, gt=0, description="PRD FR-VIS-009 timeout")
     vlm_budget_s: float = Field(
-        default=7.0,
+        default=12.0,
         gt=0,
-        description="Whole verification (video + call + retry) per candidate; SC-001 leaves "
-        "the AI about this much of the 10 s budget",
+        description="Whole verification (video + call + retry) per candidate; one call takes "
+        "6-7 s on the L40S (TD-50), so 7 s answered 'unavailable' to every candidate",
     )
     vlm_backoff_s: float = Field(
         default=30.0,
@@ -76,7 +76,9 @@ class VisionSettings(BaseSettings):
         default=True, description="Ask the AI verifier about every rule candidate (FR-VIS-005)"
     )
     sweep_enabled: bool = Field(default=True, description="AI sweep on every camera (FR-VIS-015)")
-    sweep_every_s: float = Field(default=5.0, gt=0, description="Sweep interval per camera (TD-22)")
+    sweep_every_s: float = Field(
+        default=8.0, gt=0, description="Sweep interval per camera (TD-22, TD-50)"
+    )
     sweep_yes_threshold: float = Field(
         default=0.5, gt=0, le=1, description="Yes-token probability that counts as a sweep hit"
     )

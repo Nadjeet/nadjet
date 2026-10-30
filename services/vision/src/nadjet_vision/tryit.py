@@ -730,7 +730,12 @@ async def run_try_worker(settings: VisionSettings, stop: asyncio.Event) -> None:
 
     detector = LockedDetector(load_detector(settings))
     client = BrevVlmClient(settings)  # refuses any endpoint that is not Brev
-    verifier = AiVerifier(client, settings.vlm_model)
+    verifier = AiVerifier(
+        client,
+        settings.vlm_model,
+        budget_s=settings.vlm_budget_s,
+        backoff_s=settings.vlm_backoff_s,
+    )
     api = TryApi(settings)
 
     def make_tracker() -> Tracker:
