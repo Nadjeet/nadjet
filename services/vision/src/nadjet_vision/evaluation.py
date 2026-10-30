@@ -8,9 +8,12 @@ nothing here reads a clip list or a video.
 Counting rules (documented in TD-42):
 - Alert time is ``t_fire`` (when the alert was raised); the impact estimate is ``t_peak``.
 - A crash clip scores a true positive when a ``collision_candidate``, ``hard_stop`` or sweep
-  alert is raised within [impact - 2 s, impact + 10 s]; further alerts of that clip are false
-  positives, including those outside the window. No such alert is a false negative.
-- A stalled-vehicle clip has no impact time: any ``stalled_vehicle`` alert is a true positive.
+  alert is raised within [impact - 2 s, impact + 10 s] (the earliest one is scored). Further
+  crash alerts inside the window are duplicates of the same event, which the API merges into
+  one incident (60 s / 50 m): neither true nor false positives. Alerts outside the window, or of
+  another trigger, are false positives. No crash alert in the window is a false negative.
+- A stalled-vehicle clip has no impact time: any ``stalled_vehicle`` alert is a true positive
+  (repeats are duplicates); alerts of other triggers are false positives.
 - Alerts on normal or congested clips are false alarms, counted over the camera-hours.
 """
 
