@@ -206,7 +206,7 @@ class TriggerEngine:
         emitted: list[TriggerEvent] = []
         for event in sorted(candidates, key=lambda e: e.t_peak):
             event = replace(event, peak_wall=event.t_peak + offset, fire_wall=obs.wall)
-            if self._in_cooldown(obs.wall) and not self._escalates(event, obs.wall):
+            if self.in_cooldown(obs.wall) and not self._escalates(event, obs.wall):
                 self.suppressed["cooldown"] += 1
                 continue
             self._last_emit_wall = obs.wall
@@ -230,7 +230,7 @@ class TriggerEngine:
             track.speeds.clear()
         self._contacts.clear()
 
-    def _in_cooldown(self, wall: float) -> bool:
+    def in_cooldown(self, wall: float) -> bool:
         return (
             self._last_emit_wall is not None
             and 0 <= wall - self._last_emit_wall < self.config.cooldown_s
