@@ -93,7 +93,29 @@
     "checking": "Checking the API…",
     "unreachable": "The API is unreachable. Run `make dev`.",
     "ok": "OK",
-    "down": "Down"
+    "down": "Down",
+    "ai": "AI endpoint (NVIDIA Brev)",
+    "aiAvailable": "AI available",
+    "aiUnavailable": "AI unavailable",
+    "cameras": "Cameras and analysis pipeline",
+    "camera": "Camera",
+    "state": "State",
+    "fps": "FPS",
+    "queue": "Queue",
+    "frameAge": "Last frame",
+    "detector": "Detector",
+    "healthy": "Healthy",
+    "silent": "Worker silent",
+    "stage": {
+      "decode": "Decode",
+      "detect": "Detect",
+      "track": "Track",
+      "annotate": "Annotate"
+    },
+    "fault": {
+      "stall": "Stalled",
+      "disconnect": "Disconnected"
+    }
   },
   "pages": {
     "soon": "This screen is built in a later step. The shell, navigation, language and live updates are ready for it.",
@@ -186,5 +208,26 @@
     "dialogBody": "Dialogs use a 24 px radius, a title and clear actions.",
     "cancel": "Cancel",
     "confirm": "Confirm"
+  },
+  "stream": {
+    "connecting": "Connecting…",
+    "playing": "Live",
+    "reconnecting": "Reconnecting…",
+    "fallback": "WebRTC unavailable, using fallback",
+    "latency": "≈ {{ms}} ms"
+  },
+  "cameras": {
+    "annotated": "AI boxes",
+    "raw": "Raw",
+    "view": "Video view",
+    "fullscreen": "Full screen",
+    "loadFailed": "The camera list could not be loaded.",
+    "videoOf": "{{name}} ({{view}})",
+    "incident": "Open incident: {{codes}}",
+    "status": {
+      "live": "Live",
+      "degraded": "Degraded",
+      "offline": "Offline"
+    }
   }
 }

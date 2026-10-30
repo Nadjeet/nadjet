@@ -14,8 +14,10 @@ import { RespondLayout } from "@/layouts/respond-layout";
 import { authStore, homeFor, surfaceFor, type Surface } from "@/lib/auth-store";
 import { LoginPage } from "@/pages/login-page";
 import { NotFound } from "@/pages/not-found";
+import { CameraWall } from "@/pages/ops/camera-wall";
 import { DesignSystemPage } from "@/pages/ops/design-system-page";
 import { OpsOverview } from "@/pages/ops/ops-overview";
+import { SystemPage } from "@/pages/ops/system-page";
 import { PlaceholderPage } from "@/pages/placeholder-page";
 import { PublicHome } from "@/pages/public/public-home";
 
@@ -70,16 +72,8 @@ const opsRoutes = [
     path: "incidents",
     component: () => <PlaceholderPage pageKey="ops.incidents" />,
   }),
-  createRoute({
-    getParentRoute: () => opsRoute,
-    path: "cameras",
-    component: () => <PlaceholderPage pageKey="ops.cameras" />,
-  }),
-  createRoute({
-    getParentRoute: () => opsRoute,
-    path: "system",
-    component: () => <PlaceholderPage pageKey="ops.system" />,
-  }),
+  createRoute({ getParentRoute: () => opsRoute, path: "cameras", component: CameraWall }),
+  createRoute({ getParentRoute: () => opsRoute, path: "system", component: SystemPage }),
   createRoute({ getParentRoute: () => opsRoute, path: "design", component: DesignSystemPage }),
 ];
 
