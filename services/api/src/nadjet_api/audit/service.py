@@ -93,7 +93,9 @@ async def verify_chain(session: AsyncSession) -> ChainStatus:
     """Recompute every hash in order; report the first broken row."""
     prev_hash = GENESIS_HASH
     checked = 0
-    result = await session.stream_scalars(select(AuditLog).order_by(AuditLog.id))
+    # populate_existing: verify what is stored, not rows cached in this session's identity map.
+    query = select(AuditLog).order_by(AuditLog.id).execution_options(populate_existing=True)
+    result = await session.stream_scalars(query)
     async for row in result:
         canonical = canonical_json(
             actor_id=row.actor_id,

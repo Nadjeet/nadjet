@@ -142,6 +142,24 @@ async def test_audit_log_is_append_only_and_chain_verifies(session: AsyncSession
     assert (await verify_chain(session)).ok
 
 
+async def test_verify_chain_reports_first_tampered_row(session: AsyncSession) -> None:
+    """NFR-SEC-002: a row altered behind the trigger's back breaks the chain at that row."""
+    entry = await audit(session, None, "tamper.test", details={"n": 1})
+    await audit(session, None, "tamper.test", details={"n": 2})
+    await session.commit()
+    entry_id = entry.id
+    # DDL is transactional in Postgres: the trigger is back once we roll back.
+    await session.execute(text("ALTER TABLE audit_log DISABLE TRIGGER audit_log_append_only"))
+    await session.execute(
+        text("UPDATE audit_log SET details='{\"n\": 99}' WHERE id=:i"), {"i": entry_id}
+    )
+    status = await verify_chain(session)
+    await session.rollback()
+    assert not status.ok
+    assert status.broken_at == entry_id
+    assert (await verify_chain(session)).ok
+
+
 async def test_concurrent_audit_writes_keep_one_chain(app: FastAPI) -> None:
     async def write(n: int) -> None:
         async with app.state.session_factory() as s:
