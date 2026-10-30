@@ -12,9 +12,13 @@ api.use({
     return request;
   },
   onResponse({ request, response }) {
-    // A rejected token ends the session; a failed login attempt is not a rejected token.
+    // Only the token that was rejected ends the session: a late 401 for an older token
+    // must not sign out a session opened since. A failed login is not a rejected token.
     const isLogin = new URL(request.url).pathname.endsWith("/auth/login");
-    if (response.status === 401 && !isLogin) authStore.logout();
+    const current = authStore.current();
+    const sentCurrentToken =
+      current !== null && request.headers.get("Authorization") === `Bearer ${current.token}`;
+    if (response.status === 401 && !isLogin && sentCurrentToken) authStore.logout();
     return response;
   },
 });

@@ -36,24 +36,32 @@ function persist(session: Session | null) {
 }
 
 let session: Session | null = load();
+let expiryTimer: ReturnType<typeof setTimeout> | undefined;
 
 function emit() {
   listeners.forEach((listener) => listener());
 }
 
+/** Sign out exactly when the token expires, even if the app makes no request meanwhile. */
+function scheduleExpiry() {
+  clearTimeout(expiryTimer);
+  if (session) expiryTimer = setTimeout(() => authStore.logout(), session.expiresAt - Date.now());
+}
+
 /** Token and user live in memory and in `sessionStorage` (cleared when the tab closes). */
 export const authStore = {
-  /** The current session, or `null` once it is missing or expired. */
+  /** The current session, or `null` once it is missing or expired. Pure: safe as a snapshot. */
   current(): Session | null {
-    if (session && !isFresh(session)) authStore.logout();
-    return session;
+    return session && isFresh(session) ? session : null;
   },
   setSession(token: string, user: User, expiresInSeconds: number) {
     session = { token, user, expiresAt: Date.now() + expiresInSeconds * 1000 };
     persist(session);
+    scheduleExpiry();
     emit();
   },
   logout() {
+    clearTimeout(expiryTimer);
     if (!session) return;
     session = null;
     persist(null);
@@ -64,6 +72,8 @@ export const authStore = {
     return () => listeners.delete(listener);
   },
 };
+
+scheduleExpiry();
 
 export function useSession(): Session | null {
   return useSyncExternalStore(authStore.subscribe, authStore.current);
