@@ -8,6 +8,8 @@ import { VitePWA } from "vite-plugin-pwa";
 const apiTarget = process.env.NADJET_API_URL ?? "http://127.0.0.1:8080";
 
 export default defineConfig({
+  // `VITE_*` variables live in the repository's `.env` (see `.env.example`).
+  envDir: path.resolve(import.meta.dirname, "../.."),
   plugins: [
     react(),
     tailwindcss(),

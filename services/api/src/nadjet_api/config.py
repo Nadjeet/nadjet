@@ -83,6 +83,13 @@ class Settings(BaseSettings):
         default=Path("data/map/algeria.pmtiles"), description="PMTiles file served at /tiles"
     )
 
+    # --- Citizen reports (FR-CIT-004) ---
+    public_report_rate_limit: int = Field(
+        default=5, gt=0, description="Citizen reports allowed per client IP per window"
+    )
+    public_report_window_s: int = Field(default=600, gt=0)
+    public_photo_max_mb: int = Field(default=10, gt=0)
+
     # --- Notifications (FR-NTF, TD-13/14) ---
     sms_gateway_url: str | None = Field(
         default=None, description="capcom6 SMS Gateway server base URL; SMS disabled when unset"

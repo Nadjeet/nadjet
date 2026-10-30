@@ -92,6 +92,14 @@ TD-38). Regenerating `data/seed/facilities.csv` is a one-off developer task:
 Local mode (phone on the same LAN as the laptop) is only for the offline fallback. The message
 grammar is in `contracts/sms-grammar.md`. A user is recognised by `users.phone`.
 
+**Citizen web report (FR-CIT-001/006).** `/public/report` needs no login. Set
+`VITE_SMS_GATEWAY_NUMBER` (the gateway SIM, international format) in `.env` **before building** the web app: the
+SMS fallback uses it when the phone has no data. Tune `NADJET_PUBLIC_REPORT_RATE_LIMIT`,
+`NADJET_PUBLIC_REPORT_WINDOW_S` and `NADJET_PUBLIC_PHOTO_MAX_MB` if needed. Poster QR code:
+`uv run --script scripts/gen_report_qr.py https://<public host>/public/report` (writes `docs/demo/qr-report.png`).
+Manual check of the offline path: open the page once online, switch the phone to airplane mode, tap
+**Report a crash**: the SMS app opens with `ACCIDENT <lat>,<lon> P<n> C<0|1>`.
+
 **Web push.** `uv run nadjet-api gen-vapid`, copy both lines to `.env`. Browsers subscribe with
 `GET /push/public-key` + `POST /push/subscriptions`. Manual check: subscribe a browser, then
 queue an alert for that user (`queue_alerts` + `enqueue_all` from `nadjet_api.notifications`).

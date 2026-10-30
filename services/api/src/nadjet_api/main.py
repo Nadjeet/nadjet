@@ -17,6 +17,7 @@ from nadjet_api.auth.routes import router as auth_router
 from nadjet_api.cameras.internal import router as camera_internal_router
 from nadjet_api.cameras.routes import router as cameras_router
 from nadjet_api.cameras.routes import system_router as system_cameras_router
+from nadjet_api.citizen.routes import router as citizen_router
 from nadjet_api.config import Settings, get_settings
 from nadjet_api.db import create_engine, create_session_factory
 from nadjet_api.dispatch.routes import router as dispatch_router
@@ -97,6 +98,7 @@ def create_app(
     app.include_router(incident_routes.router)
     app.include_router(dispatch_router)
     app.include_router(internal.router)
+    app.include_router(citizen_router)
     app.include_router(routing_router)
     app.include_router(evaluation_router)
     app.include_router(map_resources_router)
