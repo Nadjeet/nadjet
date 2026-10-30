@@ -131,6 +131,8 @@ def test_audit_hash_is_deterministic_and_chained() -> None:
 
 
 def test_internal_endpoints_are_disabled_without_an_ingest_token() -> None:
-    with TestClient(create_app(Settings(env="test"), probes={})) as client:
+    # _env_file=None: a developer's or CI's .env (copied from .env.example) sets a token.
+    settings = Settings(env="test", _env_file=None)  # type: ignore[call-arg]
+    with TestClient(create_app(settings, probes={})) as client:
         response = client.post("/internal/candidates", json={}, headers={"Idempotency-Key": "k"})
     assert response.status_code == 503
