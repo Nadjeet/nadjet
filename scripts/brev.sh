@@ -5,6 +5,10 @@
 #   scripts/brev.sh forward     localhost:$LOCAL_PORT -> instance:8000 (vLLM)
 #   scripts/brev.sh unforward   stop the forward
 #   scripts/brev.sh check       verify the forwarded endpoint serves the configured model
+#   scripts/brev.sh tunnel      vLLM to local (-L) and local MediaMTX + API to the instance (-R)
+#   scripts/brev.sh untunnel    cancel all three forwards
+#   scripts/brev.sh deploy-workers   pull (or build on the instance) the vision image, start workers
+#   scripts/brev.sh logs [-f]   vision worker logs from the instance
 # Starting/stopping the instance itself (credits) stays manual: brev start|stop <instance>.
 set -euo pipefail
 
@@ -15,6 +19,11 @@ INSTANCE="${NADJET_BREV_INSTANCE:-nadjet-gpu}"
 LOCAL_PORT="${NADJET_VLM_LOCAL_PORT:-18000}"
 REMOTE_PORT=8000
 REMOTE_DIR="/home/ubuntu/nadjet-gpu"
+REMOTE_SRC="/home/ubuntu/nadjet-src"   # build context when the image is built on the instance
+RTSP_LOCAL_PORT="${NADJET_RTSP_LOCAL_PORT:-8554}"   # local MediaMTX RTSP
+API_LOCAL_PORT="${NADJET_API_LOCAL_PORT:-8080}"     # local API
+RTSP_REMOTE_PORT="${NADJET_RTSP_REMOTE_PORT:-18554}" # seen from the instance
+API_REMOTE_PORT="${NADJET_API_REMOTE_PORT:-18080}"
 WAIT_S="${NADJET_BREV_WAIT_S:-300}"
 
 require_brev() {
@@ -37,6 +46,18 @@ forward_listening() {
   lsof -nP -iTCP:"$LOCAL_PORT" -sTCP:LISTEN >/dev/null 2>&1
 }
 
+# Does something listen on this port ON the instance? (rides the multiplexed ssh connection)
+remote_listening() {
+  ssh "$INSTANCE" "ss -ltn | grep -q ':$1 '" </dev/null >/dev/null 2>&1
+}
+
+# Open the Brev ssh master connection if it is not up yet (port-forward starts one).
+ensure_master() {
+  ssh -O check "$INSTANCE" </dev/null >/dev/null 2>&1 && return 0
+  brev port-forward "$INSTANCE" -p "${LOCAL_PORT}:${REMOTE_PORT}" </dev/null 2>&1 | grep -v "waiting for SSH" || true
+  ssh -O check "$INSTANCE" </dev/null >/dev/null 2>&1 || { echo "No ssh connection to $INSTANCE" >&2; exit 1; }
+}
+
 case "${1:-}" in
   status)
     require_brev
@@ -46,7 +67,7 @@ case "${1:-}" in
     require_brev
     require_running
     brev copy deploy/gpu "$INSTANCE:$REMOTE_DIR" </dev/null >/dev/null
-    brev exec "$INSTANCE" "cd $REMOTE_DIR && docker compose up -d" </dev/null 2>&1 | grep -v "waiting for SSH" || true
+    brev exec "$INSTANCE" "cd $REMOTE_DIR && docker compose up -d vllm" </dev/null 2>&1 | grep -v "waiting for SSH" || true
     echo "Waiting up to ${WAIT_S}s for vLLM to load the model..."
     deadline=$((SECONDS + WAIT_S))
     until brev exec "$INSTANCE" "curl -fsS -m 5 -o /dev/null http://localhost:$REMOTE_PORT/v1/models" </dev/null >/dev/null 2>&1; do
@@ -91,8 +112,76 @@ case "${1:-}" in
       sleep 10
     done
     ;;
+  tunnel)
+    require_brev
+    require_running
+    ensure_master
+    if ! forward_listening; then
+      ssh -O forward -L "${LOCAL_PORT}:127.0.0.1:${REMOTE_PORT}" "$INSTANCE" </dev/null
+    fi
+    if ! remote_listening "$RTSP_REMOTE_PORT"; then
+      ssh -O forward -R "${RTSP_REMOTE_PORT}:127.0.0.1:${RTSP_LOCAL_PORT}" "$INSTANCE" </dev/null
+    fi
+    if ! remote_listening "$API_REMOTE_PORT"; then
+      ssh -O forward -R "${API_REMOTE_PORT}:127.0.0.1:${API_LOCAL_PORT}" "$INSTANCE" </dev/null
+    fi
+    echo "localhost:${LOCAL_PORT} -> ${INSTANCE}:${REMOTE_PORT} (vLLM)"
+    echo "${INSTANCE}:${RTSP_REMOTE_PORT} -> localhost:${RTSP_LOCAL_PORT} (MediaMTX RTSP)"
+    echo "${INSTANCE}:${API_REMOTE_PORT} -> localhost:${API_LOCAL_PORT} (API)"
+    ;;
+  untunnel)
+    for host in 127.0.0.1 localhost; do
+      ssh -O cancel -L "${LOCAL_PORT}:${host}:${REMOTE_PORT}" "$INSTANCE" </dev/null >/dev/null 2>&1 || true
+    done
+    ssh -O cancel -R "${RTSP_REMOTE_PORT}:127.0.0.1:${RTSP_LOCAL_PORT}" "$INSTANCE" </dev/null >/dev/null 2>&1 || true
+    ssh -O cancel -R "${API_REMOTE_PORT}:127.0.0.1:${API_LOCAL_PORT}" "$INSTANCE" </dev/null >/dev/null 2>&1 || true
+    if forward_listening; then
+      echo "Local forward on ${LOCAL_PORT} still listening: lsof -nP -iTCP:${LOCAL_PORT} -sTCP:LISTEN" >&2
+      exit 1
+    fi
+    if ssh -O check "$INSTANCE" </dev/null >/dev/null 2>&1 &&
+      { remote_listening "$RTSP_REMOTE_PORT" || remote_listening "$API_REMOTE_PORT"; }; then
+      echo "A remote forward is still listening on the instance (${RTSP_REMOTE_PORT}/${API_REMOTE_PORT})" >&2
+      exit 1
+    fi
+    echo "Tunnels closed"
+    ;;
+  deploy-workers)
+    require_brev
+    require_running
+    brev copy deploy/gpu "$INSTANCE:$REMOTE_DIR" </dev/null >/dev/null
+    # Secrets travel in a 0600 env file on the instance, never on a command line or in logs.
+    envfile=$(mktemp)
+    trap 'rm -f "$envfile"' EXIT
+    { echo "NADJET_INGEST_TOKEN=${NADJET_INGEST_TOKEN:-}"
+      echo "NADJET_VLM_MODEL=${NADJET_VLM_MODEL:-Qwen/Qwen3-VL-8B-Instruct-FP8}"
+      echo "NADJET_BUILD_CONTEXT=$REMOTE_SRC"
+      [ -n "${NADJET_VISION_IMAGE:-}" ] && echo "NADJET_VISION_IMAGE=$NADJET_VISION_IMAGE"
+    } >"$envfile"
+    brev copy "$envfile" "$INSTANCE:$REMOTE_DIR/.env" </dev/null >/dev/null
+    brev exec "$INSTANCE" "chmod 600 $REMOTE_DIR/.env" </dev/null >/dev/null 2>&1
+    if brev exec "$INSTANCE" "cd $REMOTE_DIR && docker compose pull workers" </dev/null >/dev/null 2>&1; then
+      echo "Pulled the vision image from the registry"
+    else
+      echo "No registry image yet: building on the instance"
+      tarball=$(mktemp)
+      git archive --format=tar.gz -o "$tarball" HEAD pyproject.toml uv.lock packages services data/cameras.yaml data/zones .dockerignore
+      brev copy "$tarball" "$INSTANCE:/home/ubuntu/nadjet-src.tgz" </dev/null >/dev/null
+      rm -f "$tarball"
+      brev exec "$INSTANCE" "rm -rf $REMOTE_SRC && mkdir -p $REMOTE_SRC && tar -xzf /home/ubuntu/nadjet-src.tgz -C $REMOTE_SRC && cd $REMOTE_DIR && docker compose build workers" </dev/null 2>&1 | grep -v "waiting for SSH" | tail -5
+    fi
+    brev exec "$INSTANCE" "cd $REMOTE_DIR && docker compose up -d" </dev/null 2>&1 | grep -v "waiting for SSH" || true
+    echo "Workers started. Logs: make brev-logs"
+    ;;
+  logs)
+    require_brev
+    require_running
+    follow=""
+    [ "${2:-}" = "-f" ] && follow="-f"
+    brev exec "$INSTANCE" "cd $REMOTE_DIR && docker compose logs --tail 100 $follow workers" </dev/null
+    ;;
   *)
-    echo "usage: scripts/brev.sh {status|up|forward|unforward|check}" >&2
+    echo "usage: scripts/brev.sh {status|up|forward|unforward|check|tunnel|untunnel|deploy-workers|logs}" >&2
     exit 2
     ;;
 esac

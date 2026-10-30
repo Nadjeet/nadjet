@@ -1,6 +1,7 @@
 # Runs ON the NVIDIA Brev GPU instance (not locally). All Nadjet AI inference uses this server.
 #   brev shell <instance>  →  git clone … && cd nadjet/deploy/gpu && docker compose up -d
 # Locally, reach it with `make brev-forward` (localhost:18000 → instance:8000).
+# Workers: `make brev-tunnel && make brev-deploy-workers` (docs/ONBOARDING.md).
 name: nadjet-gpu
 
 services:
@@ -29,6 +30,29 @@ services:
       resources:
         reservations:
           devices: [{ driver: nvidia, count: all, capabilities: [gpu] }]
+
+  workers:
+    # Vision workers (PRD NFR-PERF-001). Host networking: reaches the dev tunnels on 127.0.0.1
+    # (rtsp 18554, api 18080, see `make brev-tunnel`) and the vLLM port on loopback.
+    image: ${NADJET_VISION_IMAGE:-ghcr.io/nadjeet/nadjet-vision:dev}
+    build:
+      context: ${NADJET_BUILD_CONTEXT:-../..}
+      dockerfile: services/vision/Dockerfile
+    command: ["camera", "--all"]
+    network_mode: host
+    restart: unless-stopped
+    environment:
+      NADJET_RTSP_BASE: ${NADJET_RTSP_BASE:-rtsp://127.0.0.1:18554}
+      NADJET_API_URL: ${NADJET_API_URL:-http://127.0.0.1:18080}
+      NADJET_INGEST_TOKEN: ${NADJET_INGEST_TOKEN:-}
+      NADJET_VLM_BASE_URL: ${NADJET_VLM_BASE_URL:-http://127.0.0.1:8000/v1}
+      NADJET_VLM_MODEL: ${NADJET_VLM_MODEL:-Qwen/Qwen3-VL-8B-Instruct-FP8}
+    depends_on:
+      vllm: { condition: service_healthy }
+    deploy:
+      resources:
+        reservations:
+          devices: [{ driver: nvidia, count: all, capabilities: [gpu, video] }]
 
 volumes:
   hf-cache: {}
