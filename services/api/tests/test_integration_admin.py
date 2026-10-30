@@ -248,6 +248,9 @@ async def test_user_validation_and_self_protection(
     for body in ({"active": False}, {"role": "operator"}):
         response = await client.patch(f"/admin/users/{actor.id}", json=body, headers=headers)
         assert response.status_code == 409, body
+    for body in ({"display_name": None}, {"active": None}, {"role": None}):
+        response = await client.patch(f"/admin/users/{actor.id}", json=body, headers=headers)
+        assert response.status_code == 422, body
     assert (
         await client.patch(f"/admin/users/{uuid.uuid4()}", json={}, headers=headers)
     ).status_code == 404
