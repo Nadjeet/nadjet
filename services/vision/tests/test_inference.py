@@ -154,7 +154,7 @@ def test_FR_VIS_009_default_budget_fits_a_measured_verifier_call() -> None:
     covers building the clip, made every live candidate 'unavailable'. The budget stays within
     the doc 11 §6 verifier timeout."""
     settings = VisionSettings()
-    assert 10.0 <= settings.vlm_budget_s <= settings.vlm_timeout_s
+    assert 12.0 <= settings.vlm_budget_s <= settings.vlm_timeout_s
 
 
 def test_FR_CIT_002_verifier_default_budget_is_the_configured_one() -> None:

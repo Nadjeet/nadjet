@@ -27,10 +27,10 @@ class VisionSettings(BaseSettings):
     )
     vlm_timeout_s: float = Field(default=15.0, gt=0, description="PRD FR-VIS-009 timeout")
     vlm_budget_s: float = Field(
-        default=12.0,
+        default=15.0,
         gt=0,
         description="Whole verification (video + call + retry) per candidate; one call takes "
-        "6-7 s on the L40S (TD-50), so 7 s answered 'unavailable' to every candidate",
+        "6-8 s on the L40S alone and about 11 s next to a sweep (TD-50)",
     )
     vlm_backoff_s: float = Field(
         default=30.0,
