@@ -979,12 +979,37 @@
             "type": "string"
           },
           "lat": {
-            "title": "Lat",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "location_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Text"
           },
           "lon": {
-            "title": "Lon",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
           },
           "mass_casualty": {
             "title": "Mass Casualty",
@@ -1125,6 +1150,7 @@
           "needs_extrication",
           "lat",
           "lon",
+          "location_text",
           "road",
           "pk_km",
           "wilaya",
@@ -1281,12 +1307,37 @@
             "type": "string"
           },
           "lat": {
-            "title": "Lat",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lat"
+          },
+          "location_text": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Location Text"
           },
           "lon": {
-            "title": "Lon",
-            "type": "number"
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lon"
           },
           "mass_casualty": {
             "title": "Mass Casualty",
@@ -1427,6 +1478,7 @@
           "needs_extrication",
           "lat",
           "lon",
+          "location_text",
           "road",
           "pk_km",
           "wilaya",
@@ -1666,6 +1718,60 @@
         "title": "PriorityReason",
         "type": "object"
       },
+      "PushKeys": {
+        "properties": {
+          "auth": {
+            "minLength": 1,
+            "title": "Auth",
+            "type": "string"
+          },
+          "p256dh": {
+            "minLength": 1,
+            "title": "P256Dh",
+            "type": "string"
+          }
+        },
+        "required": [
+          "p256dh",
+          "auth"
+        ],
+        "title": "PushKeys",
+        "type": "object"
+      },
+      "PushPublicKey": {
+        "properties": {
+          "public_key": {
+            "title": "Public Key",
+            "type": "string"
+          }
+        },
+        "required": [
+          "public_key"
+        ],
+        "title": "PushPublicKey",
+        "type": "object"
+      },
+      "PushSubscriptionIn": {
+        "description": "The browser's ``PushSubscription.toJSON()``.",
+        "properties": {
+          "endpoint": {
+            "maxLength": 2048,
+            "minLength": 1,
+            "pattern": "^https://",
+            "title": "Endpoint",
+            "type": "string"
+          },
+          "keys": {
+            "$ref": "#/components/schemas/PushKeys"
+          }
+        },
+        "required": [
+          "endpoint",
+          "keys"
+        ],
+        "title": "PushSubscriptionIn",
+        "type": "object"
+      },
       "RankedResource": {
         "properties": {
           "agency": {
@@ -1864,6 +1970,25 @@
         ],
         "title": "Role",
         "type": "string"
+      },
+      "SmsAck": {
+        "properties": {
+          "status": {
+            "enum": [
+              "processed",
+              "duplicate",
+              "throttled",
+              "ignored"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status"
+        ],
+        "title": "SmsAck",
+        "type": "object"
       },
       "StageLatencyMs": {
         "additionalProperties": false,
@@ -2216,6 +2341,78 @@
           "available"
         ],
         "title": "VerifierResult",
+        "type": "object"
+      },
+      "WebhookEnvelope": {
+        "properties": {
+          "event": {
+            "title": "Event",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "payload": {
+            "$ref": "#/components/schemas/WebhookPayload"
+          }
+        },
+        "required": [
+          "event"
+        ],
+        "title": "WebhookEnvelope",
+        "type": "object"
+      },
+      "WebhookPayload": {
+        "description": "The ``payload`` of a capcom6 webhook; fields differ per event, all optional here.",
+        "properties": {
+          "message": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Message"
+          },
+          "messageId": {
+            "default": "",
+            "title": "Messageid",
+            "type": "string"
+          },
+          "reason": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reason"
+          },
+          "sender": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sender"
+          }
+        },
+        "title": "WebhookPayload",
         "type": "object"
       },
       "Witness": {
@@ -2709,6 +2906,54 @@
         "summary": "Get Incident",
         "tags": [
           "incidents"
+        ]
+      }
+    },
+    "/incidents/{incident_id}.cap.xml": {
+      "get": {
+        "description": "The incident as an OASIS CAP 1.2 alert, in Arabic and French (FR-INC-009).",
+        "operationId": "incident_cap_incidents__incident_id__cap_xml_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/cap+xml": {}
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Incident Cap",
+        "tags": [
+          "notifications"
         ]
       }
     },
@@ -3269,6 +3514,76 @@
         ]
       }
     },
+    "/push/public-key": {
+      "get": {
+        "description": "The VAPID public key the browser needs to subscribe (``applicationServerKey``).",
+        "operationId": "push_public_key_push_public_key_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PushPublicKey"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "description": "Web push is not configured"
+          }
+        },
+        "summary": "Push Public Key",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/push/subscriptions": {
+      "post": {
+        "description": "Register the caller's browser for push alerts; re-posting an endpoint updates it.",
+        "operationId": "subscribe_push_push_subscriptions_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PushSubscriptionIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Subscribe Push",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
     "/ready": {
       "get": {
         "description": "Readiness: every dependency answers.",
@@ -3407,6 +3722,193 @@
         "summary": "Recommendations",
         "tags": [
           "routing"
+        ]
+      }
+    },
+    "/sms/inbound": {
+      "post": {
+        "description": "``sms:received`` webhook: parse the SMS, apply it, answer the sender (FR-NTF-005).",
+        "operationId": "sms_inbound_sms_inbound_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Token"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-signature",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Signature"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-timestamp",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Timestamp"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEnvelope"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmsAck"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Invalid webhook signature"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sms Inbound",
+        "tags": [
+          "notifications"
+        ]
+      }
+    },
+    "/sms/status": {
+      "post": {
+        "description": "``sms:sent|delivered|failed`` webhooks: record the delivery status (FR-NTF-003).",
+        "operationId": "sms_status_sms_status_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "token",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Token"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-signature",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Signature"
+            }
+          },
+          {
+            "in": "header",
+            "name": "x-timestamp",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "X-Timestamp"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WebhookEnvelope"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SmsAck"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Sms Status",
+        "tags": [
+          "notifications"
         ]
       }
     },

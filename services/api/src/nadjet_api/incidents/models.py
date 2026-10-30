@@ -42,8 +42,10 @@ class Incident(Base):
     to_assess: Mapped[bool] = mapped_column(Boolean, default=False)
     mass_casualty: Mapped[bool] = mapped_column(Boolean, default=False)
     needs_extrication: Mapped[bool] = mapped_column(Boolean, default=False)
-    lat: Mapped[float] = mapped_column(Float)
-    lon: Mapped[float] = mapped_column(Float)
+    # NULL for an SMS report that only gave a free-text location (flagged for call-back).
+    lat: Mapped[float | None] = mapped_column(Float)
+    lon: Mapped[float | None] = mapped_column(Float)
+    location_text: Mapped[str | None] = mapped_column(Text)
     road: Mapped[str | None] = mapped_column(String(64))
     pk_km: Mapped[float | None] = mapped_column(Float)
     wilaya: Mapped[str | None] = mapped_column(String(64))
