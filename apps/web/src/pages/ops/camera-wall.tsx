@@ -95,6 +95,7 @@ function CameraTile({
         </p>
       ) : null}
       <LiveStream
+        key={view}
         urls={urls}
         label={t("cameras.videoOf", { name: camera.name, view: t(`cameras.${view}`) })}
         className="aspect-video rounded-lg"
@@ -111,6 +112,7 @@ function CameraTile({
           <DialogTitle>{camera.name}</DialogTitle>
           <DialogDescription>{where}</DialogDescription>
           <LiveStream
+            key={view}
             urls={urls}
             label={t("cameras.videoOf", { name: camera.name, view: t(`cameras.${view}`) })}
             className="aspect-video rounded-lg"
