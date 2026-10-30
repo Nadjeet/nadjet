@@ -350,6 +350,64 @@ async def create_manual(
     return IngestResult(incident, True, False, [_change(CREATED, incident)])
 
 
+async def create_callback_incident(
+    session: AsyncSession,
+    signer: ChainSigner,
+    *,
+    location_text: str,
+    phone: str,
+    event_time: datetime,
+    key: str,
+) -> IngestResult:
+    """Unverified citizen SMS report with no coordinates, flagged for operator call-back.
+
+    It has no position, so it is never merged (FR-NTF-005). Idempotent on ``key``.
+    """
+    existing = await session.scalar(
+        select(Incident)
+        .join(IncidentEvent, IncidentEvent.incident_id == Incident.id)
+        .where(IncidentEvent.idempotency_key == key)
+    )
+    if existing:
+        return IngestResult(existing, created=False, duplicate=True, changes=[])
+    await session.execute(text("SELECT pg_advisory_xact_lock(:k)"), {"k": _CREATE_LOCK_KEY})
+    incident_id = uuid.uuid4()
+    taken = set(
+        await session.scalars(
+            select(Incident.short_code).where(Incident.status.in_(OPEN_STATUS_VALUES))
+        )
+    )
+    verifier = VerifierResult(available=False)
+    result = compute_priority({}, verifier, AiStatus.INSUFFICIENT_EVIDENCE, None, None)
+    columns = _result_columns(result)
+    columns["quality_flags"] = [*columns["quality_flags"], "callback_needed"]
+    incident = Incident(
+        id=incident_id,
+        short_code=pick_short_code(incident_id, taken),
+        type="crash",
+        status=IncidentStatus.CANDIDATE.value,
+        lat=None,
+        lon=None,
+        location_text=location_text,
+        source=CandidateSource.CITIZEN.value,
+        event_time=event_time,
+        last_event_time=event_time,
+        detected_at=event_time,
+        ai_status=AiStatus.INSUFFICIENT_EVIDENCE.value,
+        ai_signals={},
+        verifier_result=verifier.model_dump(mode="json"),
+        trapped_reported=False,
+        report_count=1,
+        version=1,
+        **columns,
+    )
+    session.add(incident)
+    await session.flush()
+    payload = {"sms": {"phone": phone, "location_text": location_text}}
+    await append_event(session, signer, incident, "created", None, payload, idempotency_key=key)
+    return IngestResult(incident, True, False, [_change(CREATED, incident)])
+
+
 # ---------------------------------------------------------------- lifecycle
 
 

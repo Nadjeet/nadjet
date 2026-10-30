@@ -6,8 +6,10 @@ import json
 import logging
 import signal
 import sys
+import uuid
 from pathlib import Path
 
+import httpx
 import uvicorn
 from redis.asyncio import Redis
 
@@ -19,6 +21,9 @@ from nadjet_api.geo.seed import load_capabilities, load_facilities, load_units, 
 from nadjet_api.incidents.ingest import CandidateConsumer
 from nadjet_api.incidents.signing import ChainSigner, generate_seed_hex
 from nadjet_api.main import create_app
+from nadjet_api.notifications.channels import SMS, DeliveryRequest, build_channels
+from nadjet_api.notifications.grammar import normalize_phone
+from nadjet_api.notifications.vapid import generate_vapid
 from nadjet_shared.catalogue import load_catalogue
 
 GRACEFUL_SHUTDOWN_S = 3
@@ -103,6 +108,26 @@ async def run_seed_geo(directory: Path) -> None:
     print("seed-geo: {} facilities, {} capabilities, {} units upserted".format(*counts))
 
 
+async def run_send_test_sms(to: str) -> int:
+    """Send one SMS through the configured gateway to check the setup (FR-NTF-003)."""
+    async with httpx.AsyncClient() as client:
+        channel = build_channels(get_settings(), client).get(SMS)
+        if channel is None:
+            print(
+                "send-test-sms: set NADJET_SMS_GATEWAY_URL and NADJET_SMS_GATEWAY_PASSWORD",
+                file=sys.stderr,
+            )
+            return 1
+        request = DeliveryRequest(None, normalize_phone(to), "Nadjet: test SMS", str(uuid.uuid4()))
+        try:
+            await channel.send(request)
+        except Exception as exc:
+            print(f"send-test-sms: failed: {exc}", file=sys.stderr)
+            return 1
+    print(f"send-test-sms: accepted by the gateway for {request.recipient}")
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="nadjet-api")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -127,7 +152,26 @@ def main(argv: list[str] | None = None) -> int:
     geo = sub.add_parser("seed-geo", help="import facilities and units from data/seed CSV files")
     geo.add_argument("--dir", type=Path, default=DEFAULT_SEED_DIR)
 
+    sub.add_parser("gen-vapid", help="print a new Web Push VAPID key pair for NADJET_VAPID_*")
+    sub.add_parser("worker", help="run the notification worker (arq)")
+    test_sms = sub.add_parser("send-test-sms", help="send a test SMS through the gateway")
+    test_sms.add_argument("--to", required=True, help="recipient phone number")
+
     args = parser.parse_args(argv)
+    if args.command == "gen-vapid":
+        private, public = generate_vapid()
+        print(f"NADJET_VAPID_PRIVATE_KEY={private}\nNADJET_VAPID_PUBLIC_KEY={public}")
+        return 0
+    if args.command == "send-test-sms":
+        return asyncio.run(run_send_test_sms(args.to))
+    if args.command == "worker":
+        logging.basicConfig(level=logging.INFO)
+        from arq.worker import run_worker
+
+        from nadjet_api.notifications.jobs import WorkerSettings
+
+        run_worker(WorkerSettings)  # type: ignore[arg-type]
+        return 0
     if args.command == "gen-signing-key":
         print(generate_seed_hex())
         return 0

@@ -167,6 +167,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/incidents/{incident_id}.cap.xml": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Incident Cap
+         * @description The incident as an OASIS CAP 1.2 alert, in Arabic and French (FR-INC-009).
+         */
+        get: operations["incident_cap_incidents__incident_id__cap_xml_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/incidents/{incident_id}/casualties": {
         parameters: {
             query?: never;
@@ -349,6 +369,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/push/public-key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Push Public Key
+         * @description The VAPID public key the browser needs to subscribe (``applicationServerKey``).
+         */
+        get: operations["push_public_key_push_public_key_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/push/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Subscribe Push
+         * @description Register the caller's browser for push alerts; re-posting an endpoint updates it.
+         */
+        post: operations["subscribe_push_push_subscriptions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/ready": {
         parameters: {
             query?: never;
@@ -383,6 +443,46 @@ export interface paths {
         get: operations["recommendations_routing_recommendations_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sms/inbound": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sms Inbound
+         * @description ``sms:received`` webhook: parse the SMS, apply it, answer the sender (FR-NTF-005).
+         */
+        post: operations["sms_inbound_sms_inbound_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sms/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sms Status
+         * @description ``sms:sent|delivered|failed`` webhooks: record the delivery status (FR-NTF-003).
+         */
+        post: operations["sms_status_sms_status_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -805,9 +905,11 @@ export interface components {
              */
             id: string;
             /** Lat */
-            lat: number;
+            lat: number | null;
+            /** Location Text */
+            location_text: string | null;
             /** Lon */
-            lon: number;
+            lon: number | null;
             /** Mass Casualty */
             mass_casualty: boolean;
             /** Merged Into */
@@ -908,9 +1010,11 @@ export interface components {
              */
             id: string;
             /** Lat */
-            lat: number;
+            lat: number | null;
+            /** Location Text */
+            location_text: string | null;
             /** Lon */
-            lon: number;
+            lon: number | null;
             /** Mass Casualty */
             mass_casualty: boolean;
             /** Merged Into */
@@ -1052,6 +1156,27 @@ export interface components {
              */
             source: string;
         };
+        /** PushKeys */
+        PushKeys: {
+            /** Auth */
+            auth: string;
+            /** P256Dh */
+            p256dh: string;
+        };
+        /** PushPublicKey */
+        PushPublicKey: {
+            /** Public Key */
+            public_key: string;
+        };
+        /**
+         * PushSubscriptionIn
+         * @description The browser's ``PushSubscription.toJSON()``.
+         */
+        PushSubscriptionIn: {
+            /** Endpoint */
+            endpoint: string;
+            keys: components["schemas"]["PushKeys"];
+        };
         /** RankedResource */
         RankedResource: {
             /** Agency */
@@ -1125,6 +1250,14 @@ export interface components {
          * @enum {string}
          */
         Role: "operator" | "supervisor" | "responder" | "hospital" | "auditor" | "admin";
+        /** SmsAck */
+        SmsAck: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "processed" | "duplicate" | "throttled" | "ignored";
+        };
         /**
          * StageLatencyMs
          * @description Median per-stage latency over the last window; ``None`` before the first frame.
@@ -1289,6 +1422,31 @@ export interface components {
              * @description Probability of the 'yes' answer token (logprobs)
              */
             yes_probability?: number | null;
+        };
+        /** WebhookEnvelope */
+        WebhookEnvelope: {
+            /** Event */
+            event: string;
+            /** Id */
+            id?: string | null;
+            payload?: components["schemas"]["WebhookPayload"];
+        };
+        /**
+         * WebhookPayload
+         * @description The ``payload`` of a capcom6 webhook; fields differ per event, all optional here.
+         */
+        WebhookPayload: {
+            /** Message */
+            message?: string | null;
+            /**
+             * Messageid
+             * @default
+             */
+            messageId: string;
+            /** Reason */
+            reason?: string | null;
+            /** Sender */
+            sender?: string | null;
         };
         /**
          * Witness
@@ -1578,6 +1736,44 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["IncidentDetail"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    incident_cap_incidents__incident_id__cap_xml_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/cap+xml": unknown;
                 };
             };
             /** @description Not found */
@@ -1992,6 +2188,66 @@ export interface operations {
             };
         };
     };
+    push_public_key_push_public_key_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushPublicKey"];
+                };
+            };
+            /** @description Web push is not configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    subscribe_push_push_subscriptions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PushSubscriptionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     ready_ready_get: {
         parameters: {
             query?: never;
@@ -2061,6 +2317,89 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    sms_inbound_sms_inbound_post: {
+        parameters: {
+            query?: {
+                token?: string | null;
+            };
+            header?: {
+                "x-signature"?: string | null;
+                "x-timestamp"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookEnvelope"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmsAck"];
+                };
+            };
+            /** @description Invalid webhook signature */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sms_status_sms_status_post: {
+        parameters: {
+            query?: {
+                token?: string | null;
+            };
+            header?: {
+                "x-signature"?: string | null;
+                "x-timestamp"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookEnvelope"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmsAck"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
             };
         };
     };

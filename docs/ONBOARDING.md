@@ -66,6 +66,39 @@ has no live traffic, so ETAs use an urban multiplier (`NADJET_ROUTING_URBAN_MULT
 TD-38). Regenerating `data/seed/facilities.csv` is a one-off developer task:
 `python3 scripts/osm/export_facilities.py` (see `data/seed/README.md`, ODbL).
 
+### Notifications: SMS gateway and web push (FR-NTF, TD-13)
+
+`make dev` also runs `nadjet-api worker` (arq): it sends notifications, re-checks delivery after
+30 s, retries 3 times with back-off, then raises an operator alert on the incident timeline.
+
+**SMS gateway (own SIM, no third-party provider).** Needs an Android phone with a SIM and the
+[SMS Gateway for Android](https://docs.sms-gate.app/) app.
+
+1. Set `NADJET_SMS_PRIVATE_TOKEN` and `NADJET_SMS_DB_PASSWORD` in `.env`, then `make infra-sms`
+   (capcom6 server + MariaDB, port `NADJET_SMS_PORT`, default 53000).
+2. The phone must reach the server over HTTPS (reverse proxy, or a tunnel for a laptop demo).
+   In the app: Settings > Cloud Server: API URL `https://<host>/api/mobile/v1`, private token =
+   `NADJET_SMS_PRIVATE_TOKEN`; enable "Cloud server", Start, choose **Sign Up**. The app then shows a
+   generated username and password.
+3. Put them in `.env`: `NADJET_SMS_GATEWAY_URL=https://<host>`, `NADJET_SMS_GATEWAY_USER`,
+   `NADJET_SMS_GATEWAY_PASSWORD`. Set `NADJET_SMS_WEBHOOK_SECRET` and use the same value as the app's
+   webhook signing key (Settings > Webhooks).
+4. Register the webhooks (Basic auth with the app credentials), pointing at the API:
+   `POST <gateway>/api/3rdparty/v1/webhooks` with `{"id":"in","url":"https://<api>/sms/inbound","event":"sms:received"}`
+   and one each for `sms:sent`, `sms:delivered`, `sms:failed` with url `https://<api>/sms/status`.
+   If your build does not sign webhooks, append `?token=<NADJET_SMS_WEBHOOK_SECRET>` to the URLs.
+5. Check: `uv run nadjet-api send-test-sms --to +213XXXXXXXXX`.
+
+Local mode (phone on the same LAN as the laptop) is only for the offline fallback. The message
+grammar is in `contracts/sms-grammar.md`. A user is recognised by `users.phone`.
+
+**Web push.** `uv run nadjet-api gen-vapid`, copy both lines to `.env`. Browsers subscribe with
+`GET /push/public-key` + `POST /push/subscriptions`. Manual check: subscribe a browser, then
+queue an alert for that user (`queue_alerts` + `enqueue_all` from `nadjet_api.notifications`).
+
+**CAP 1.2.** `GET /incidents/<id>.cap.xml` (bearer token) returns the incident as a CAP alert
+with Arabic and French `info` blocks.
+
 ### Demo videos (optional for most work)
 
 Cameras are defined in `data/cameras.yaml` (zones in `data/zones/<camera-id>.json`, demo clips

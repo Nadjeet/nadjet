@@ -1,3 +1,4 @@
 api: uv run nadjet-api serve --reload --port 8080
 web: pnpm --filter @nadjet/web dev
 consume: uv run nadjet-api consume
+worker: uv run nadjet-api worker

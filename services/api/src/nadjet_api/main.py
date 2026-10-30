@@ -23,6 +23,8 @@ from nadjet_api.incidents import internal
 from nadjet_api.incidents import routes as incident_routes
 from nadjet_api.incidents.signing import ChainSigner
 from nadjet_api.incidents.store import LocalEvidenceStore
+from nadjet_api.notifications.channels import build_channels
+from nadjet_api.notifications.routes import router as notifications_router
 from nadjet_api.routing.router import OsrmRouter, Router
 from nadjet_api.routing.routes import router as routing_router
 
@@ -64,6 +66,7 @@ def create_app(
         app.state.session_factory = create_session_factory(engine)
         app.state.redis = redis
         app.state.probes = {"database": database_probe(engine), "redis": redis_probe(redis)}
+        app.state.channels = build_channels(settings, http)
         try:
             yield
         finally:
@@ -79,6 +82,8 @@ def create_app(
     app.include_router(cameras_router)
     app.include_router(system_cameras_router)
     app.include_router(camera_internal_router)
+    # Before the incident routes: `/incidents/{id}.cap.xml` must win over `/incidents/{id}`.
+    app.include_router(notifications_router)
     app.include_router(incident_routes.router)
     app.include_router(internal.router)
     app.include_router(routing_router)
