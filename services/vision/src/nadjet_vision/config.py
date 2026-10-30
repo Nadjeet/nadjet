@@ -6,8 +6,9 @@ loopback. Any other host must be an explicitly allowed Brev host; there is no ot
 """
 
 from functools import lru_cache
+from pathlib import Path
 
-from pydantic import Field, HttpUrl
+from pydantic import Field, HttpUrl, SecretStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -25,6 +26,17 @@ class VisionSettings(BaseSettings):
         description="Extra hostnames of Brev instances allowed besides loopback",
     )
     vlm_timeout_s: float = Field(default=15.0, gt=0, description="PRD FR-VIS-009 timeout")
+    rtsp_base: str = Field(
+        default="rtsp://127.0.0.1:8554",
+        description="RTSP base URL; cameras are read from <base>/<camera-id>",
+    )
+    api_url: HttpUrl = Field(
+        default=HttpUrl("http://127.0.0.1:8080"), description="Coordination API base URL"
+    )
+    ingest_token: SecretStr | None = Field(
+        default=None, description="Service token for /internal/* (never logged)"
+    )
+    cameras_file: Path = Field(default=Path("data/cameras.yaml"), description="Camera catalogue")
 
 
 @lru_cache
