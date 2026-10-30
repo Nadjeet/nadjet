@@ -47,7 +47,18 @@ class VisionSettings(BaseSettings):
     detector_threshold: float = Field(default=0.4, gt=0, lt=1, description="Min confidence")
     sample_fps: float = Field(default=5.0, gt=0, le=30, description="Analysed frames per second")
     evidence_buffer_s: float = Field(
-        default=15.0, gt=0, description="Encoded packet ring (FR-VIS-006)"
+        default=20.0,
+        gt=0,
+        description="Encoded packet ring; must exceed before + after with slack (FR-VIS-005)",
+    )
+    evidence_before_s: float = Field(default=10.0, ge=0, description="Clip before the peak")
+    evidence_after_s: float = Field(default=5.0, ge=0, description="Clip after the peak")
+    evidence_keyframes: int = Field(default=6, ge=1, le=12, description="JPEG keyframes per clip")
+    publish_candidates: bool = Field(
+        default=True, description="Post candidates and evidence to the API (FR-VIS-006)"
+    )
+    trigger_cooldown_s: float = Field(
+        default=120.0, ge=0, description="Repeat-trigger cooldown per camera (FR-VIS-010)"
     )
     annotate: bool = Field(default=True, description="Publish <camera>_ai annotated stream")
     annotated_encoder: str = Field(default="h264_nvenc", description="ffmpeg video encoder (TD-07)")
