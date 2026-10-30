@@ -1,33 +1,94 @@
-"""``nadjet-camsim render``: build the MediaMTX config from ``data/cameras.yaml``."""
+"""``nadjet-camsim``: render the MediaMTX config and control the simulated cameras."""
 
 import argparse
 import sys
 from pathlib import Path
 
+import httpx
 import yaml
 from pydantic import ValidationError
 
-from nadjet_camsim.config import load_catalogue, render_mediamtx
+from nadjet_camsim.config import render_mediamtx
+from nadjet_camsim.control import ControlError, Controller, Runner, run_subprocess
+from nadjet_shared.catalogue import Catalogue, CatalogueError, load_catalogue
+from nadjet_shared.heldout import check_demo_clips, load_heldout
 
 ROOT = Path(__file__).resolve().parents[4]
+DEFAULT_API = "http://localhost:9997"
+CAMERA_COMMANDS = ("restart", "freeze", "unfreeze", "outage", "restore")
 
 
-def main(argv: list[str] | None = None) -> int:
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="nadjet-camsim")
+    parser.add_argument("--cameras", type=Path, default=ROOT / "data" / "cameras.yaml")
+    parser.add_argument("--videos", type=Path, default=ROOT / "data" / "videos")
     sub = parser.add_subparsers(dest="command", required=True)
+
     render = sub.add_parser("render", help="write the MediaMTX config for the simulated cameras")
-    render.add_argument("--cameras", type=Path, default=ROOT / "data" / "cameras.yaml")
-    render.add_argument("--videos", type=Path, default=ROOT / "data" / "videos")
     render.add_argument(
         "--out", type=Path, default=ROOT / "deploy" / "local" / "mediamtx.generated.yml"
     )
-    args = parser.parse_args(argv)
 
+    check = sub.add_parser("check", help="validate catalogue, zones and the held-out list")
+    check.add_argument("--heldout", type=Path, default=ROOT / "eval" / "heldout.json")
+
+    control = argparse.ArgumentParser(add_help=False)
+    control.add_argument("--api", default=DEFAULT_API, help="MediaMTX control API base URL")
+    control.add_argument(
+        "--compose-file", type=Path, default=ROOT / "deploy" / "local" / "compose.yml"
+    )
+    control.add_argument("--service", default="mediamtx", help="compose service running MediaMTX")
+
+    sub.add_parser("list", parents=[control], help="show every camera and whether it is live")
+    for name in CAMERA_COMMANDS:
+        sub.add_parser(name, parents=[control], help=f"{name} one camera").add_argument("camera")
+    swap = sub.add_parser("swap", parents=[control], help="play another clip on a camera")
+    swap.add_argument("camera")
+    swap.add_argument("video", help="file name inside the videos directory")
+    return parser
+
+
+def run_control(args: argparse.Namespace, catalogue: Catalogue, run: Runner) -> int:
+    with httpx.Client(base_url=args.api, timeout=5.0) as api:
+        controller = Controller(
+            catalogue, args.videos, api, args.compose_file, args.service, run=run
+        )
+        try:
+            if args.command == "list":
+                for state in controller.list_states():
+                    status = "live" if state.online else "offline"
+                    print(f"{state.id:<28} {status:<8} readers={state.readers} {state.source}")
+            elif args.command == "swap":
+                controller.swap(args.camera, args.video)
+                print(f"{args.camera}: now playing {args.video}")
+            else:
+                getattr(controller, args.command)(args.camera)
+                print(f"{args.camera}: {args.command} done")
+        except ControlError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 1
+    return 0
+
+
+def main(argv: list[str] | None = None, run: Runner = run_subprocess) -> int:
+    args = build_parser().parse_args(argv)
     try:
         catalogue = load_catalogue(args.cameras)
-    except (OSError, ValidationError, yaml.YAMLError) as exc:
+    except (OSError, ValidationError, CatalogueError, yaml.YAMLError) as exc:
         print(f"Invalid camera catalogue {args.cameras}: {exc}", file=sys.stderr)
         return 1
+    if args.command == "check":
+        try:
+            check_demo_clips(catalogue, load_heldout(args.heldout))
+        except (OSError, CatalogueError) as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 1
+        zoned = sum(1 for c in catalogue.cameras if c.zones)
+        print(f"Catalogue OK: {len(catalogue.cameras)} camera(s), {zoned} with zones.")
+        return 0
+    if args.command != "render":
+        return run_control(args, catalogue, run)
+
     config, skipped = render_mediamtx(catalogue, args.videos)
     args.out.parent.mkdir(parents=True, exist_ok=True)
     args.out.write_text(

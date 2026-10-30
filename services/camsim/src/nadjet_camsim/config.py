@@ -1,58 +1,20 @@
 """Camera catalogue (``data/cameras.yaml``) and MediaMTX config rendering."""
 
-import re
 from pathlib import Path
 from typing import Any
 
-import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from nadjet_shared.catalogue import Camera, Catalogue, load_catalogue
 
-PATH_NAME = re.compile(r"^[a-z0-9][a-z0-9-]{1,62}$")
+__all__ = [
+    "Camera",
+    "Catalogue",
+    "load_catalogue",
+    "path_config",
+    "publisher_command",
+    "render_mediamtx",
+]
 
-
-class GeoPoint(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    lat: float = Field(ge=18.9, le=37.2, description="Inside Algeria's bounding box")
-    lon: float = Field(ge=-8.7, le=12.0)
-
-
-class Camera(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    name: str
-    video: str = Field(description="File name inside the videos directory")
-    geo: GeoPoint
-    road: str
-    pk_km: float | None = None
-    heading_deg: float = Field(default=0, ge=0, lt=360)
-    wilaya: str
-
-    @field_validator("id")
-    @classmethod
-    def valid_path_name(cls, value: str) -> str:
-        if not PATH_NAME.match(value):
-            raise ValueError("id must be lowercase letters, digits and dashes (MediaMTX path)")
-        return value
-
-
-class Catalogue(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    cameras: list[Camera]
-
-    @field_validator("cameras")
-    @classmethod
-    def unique_ids(cls, cameras: list[Camera]) -> list[Camera]:
-        ids = [c.id for c in cameras]
-        if len(ids) != len(set(ids)):
-            raise ValueError("camera ids must be unique")
-        return cameras
-
-
-def load_catalogue(path: Path) -> Catalogue:
-    return Catalogue.model_validate(yaml.safe_load(path.read_text()))
+CONTAINER_VIDEOS_DIR = "/videos"
 
 
 def publisher_command(video_in_container: str) -> str:
@@ -63,8 +25,13 @@ def publisher_command(video_in_container: str) -> str:
     )
 
 
+def path_config(video_in_container: str) -> dict[str, Any]:
+    """MediaMTX path settings that publish ``video_in_container`` as a looping camera."""
+    return {"runOnInit": publisher_command(video_in_container), "runOnInitRestart": True}
+
+
 def render_mediamtx(
-    catalogue: Catalogue, videos_dir: Path, container_videos_dir: str = "/videos"
+    catalogue: Catalogue, videos_dir: Path, container_videos_dir: str = CONTAINER_VIDEOS_DIR
 ) -> tuple[dict[str, Any], list[str]]:
     """Return (mediamtx config, ids of cameras skipped because their video file is missing)."""
     paths: dict[str, Any] = {}
@@ -73,10 +40,7 @@ def render_mediamtx(
         if not (videos_dir / cam.video).is_file():
             skipped.append(cam.id)
             continue
-        paths[cam.id] = {
-            "runOnInit": publisher_command(f"{container_videos_dir}/{cam.video}"),
-            "runOnInitRestart": True,
-        }
+        paths[cam.id] = path_config(f"{container_videos_dir}/{cam.video}")
     config: dict[str, Any] = {
         "logLevel": "info",
         "api": True,
