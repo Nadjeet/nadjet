@@ -3,7 +3,7 @@
 import pytest
 
 from nadjet_api.incidents.priority import TriageTag, compute_priority
-from nadjet_shared.events import AiStatus, VerifierResult, Witness
+from nadjet_shared.events import AiStatus, Finding, VerifierResult, Witness
 
 NO_AI = VerifierResult(available=False)
 AI_RAISE = VerifierResult(
@@ -12,7 +12,7 @@ AI_RAISE = VerifierResult(
     collision_visible="yes",
     yes_probability=0.93,
     priority_raise=1,
-    findings=["frame f12: vehicle on its side"],
+    findings=[Finding(statement="vehicle on its side", basis="observed", frame_ids=[12])],
 )
 PROBABLE = AiStatus.PROBABLE
 

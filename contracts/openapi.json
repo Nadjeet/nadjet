@@ -729,6 +729,36 @@
         "title": "EvidenceOut",
         "type": "object"
       },
+      "Finding": {
+        "additionalProperties": false,
+        "description": "One statement of the verifier, tied to the frames it was read from (FR-VIS-016).",
+        "properties": {
+          "basis": {
+            "pattern": "^(observed|inferred)$",
+            "title": "Basis",
+            "type": "string"
+          },
+          "frame_ids": {
+            "description": "Frames of the verifier video",
+            "items": {
+              "type": "integer"
+            },
+            "title": "Frame Ids",
+            "type": "array"
+          },
+          "statement": {
+            "minLength": 1,
+            "title": "Statement",
+            "type": "string"
+          }
+        },
+        "required": [
+          "statement",
+          "basis"
+        ],
+        "title": "Finding",
+        "type": "object"
+      },
       "GeoLocation": {
         "additionalProperties": false,
         "description": "Where the event happened (FR-INC-001).",
@@ -2172,10 +2202,28 @@
           "findings": {
             "description": "Cited findings; a raise without one is ignored",
             "items": {
-              "type": "string"
+              "$ref": "#/components/schemas/Finding"
             },
             "title": "Findings",
             "type": "array"
+          },
+          "invalid": {
+            "default": false,
+            "description": "True when the answer failed validation twice (template text)",
+            "title": "Invalid",
+            "type": "boolean"
+          },
+          "lanes_blocked": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Lanes Blocked"
           },
           "model": {
             "anyOf": [
@@ -2189,6 +2237,14 @@
             "description": "Model id that produced the answer",
             "title": "Model"
           },
+          "not_assessable": {
+            "description": "What the video does not let anyone judge",
+            "items": {
+              "type": "string"
+            },
+            "title": "Not Assessable",
+            "type": "array"
+          },
           "priority_raise": {
             "default": 0,
             "description": "Levels the verifier asks to raise priority (max 1)",
@@ -2196,6 +2252,43 @@
             "minimum": 0.0,
             "title": "Priority Raise",
             "type": "integer"
+          },
+          "t_contact": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Seconds from the start of the verifier video to the contact",
+            "title": "T Contact"
+          },
+          "type": {
+            "anyOf": [
+              {
+                "pattern": "^(collision|rollover|fire|stalled|pedestrian|none)$",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "What the verifier sees",
+            "title": "Type"
+          },
+          "vehicles_involved": {
+            "anyOf": [
+              {
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Vehicles Involved"
           },
           "yes_probability": {
             "anyOf": [
