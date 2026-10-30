@@ -66,6 +66,21 @@ async def camera(
     return await supervise(ids, settings, stop)
 
 
+async def try_worker(duration_s: float | None, settings: VisionSettings | None = None) -> int:
+    """The public try-it worker: uploaded clips and live phone cameras (FR-CIT-002/003)."""
+    from nadjet_vision.tryit import run_try_worker
+
+    settings = settings or get_settings()
+    stop = asyncio.Event()
+    loop = asyncio.get_running_loop()
+    for signum in (signal.SIGINT, signal.SIGTERM):
+        loop.add_signal_handler(signum, stop.set)
+    if duration_s is not None:
+        loop.call_later(duration_s, stop.set)
+    await run_try_worker(settings, stop)
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog="nadjet-vision")
     sub = parser.add_subparsers(dest="command", required=True)
@@ -77,6 +92,8 @@ def main(argv: list[str] | None = None) -> int:
     cam.add_argument("--duration", type=float, help="stop after this many seconds")
     cam.add_argument("--inline", action="store_true", help="one camera in this process")
     cam.add_argument("--metrics-port", type=int, help="serve /metrics on this port (--inline)")
+    tryit = sub.add_parser("try", help="serve the public try-it page: uploads and phone cameras")
+    tryit.add_argument("--duration", type=float, help="stop after this many seconds")
     args = parser.parse_args(argv)
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     if args.command == "check-inference":
@@ -89,6 +106,11 @@ def main(argv: list[str] | None = None) -> int:
             return asyncio.run(
                 camera(args.id, args.all, args.duration, inline=args.inline, settings=settings)
             )
+        except KeyboardInterrupt:
+            return 0
+    if args.command == "try":
+        try:
+            return asyncio.run(try_worker(args.duration))
         except KeyboardInterrupt:
             return 0
     return 2

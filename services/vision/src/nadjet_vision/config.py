@@ -86,6 +86,8 @@ class VisionSettings(BaseSettings):
     status_probable: float = Field(
         default=0.5, gt=0, le=1, description="Yes probability for `probable` (TQ-07, untuned)"
     )
+    live_check_s: float = Field(default=4.0, gt=0, description="Live phone AI check (FR-CIT-003)")
+    try_poll_s: float = Field(default=1.0, gt=0, description="Try-it job and session polling")
     annotate: bool = Field(default=True, description="Publish <camera>_ai annotated stream")
     annotated_encoder: str = Field(default="h264_nvenc", description="ffmpeg video encoder (TD-07)")
     metrics_port: int | None = Field(default=None, description="Serve /metrics on this port")

@@ -12,7 +12,12 @@ import time
 from collections.abc import Awaitable, Callable, Sequence
 
 from nadjet_shared import TriggerType, VerifierResult
-from nadjet_vision.clipvideo import VerifierVideo, build_sweep_video, build_verifier_video
+from nadjet_vision.clipvideo import (
+    VerifierVideo,
+    build_scan_video,
+    build_sweep_video,
+    build_verifier_video,
+)
 from nadjet_vision.inference import BrevVlmClient
 from nadjet_vision.ingest import Packet, StreamInfo
 
@@ -94,3 +99,12 @@ class AiVerifier:
                 lambda: build_sweep_video(packets, info, end_s), TriggerType.AI_SWEEP
             )
         )
+
+    async def scan(
+        self, packets: Sequence[Packet], info: StreamInfo | None, start_s: float, end_s: float
+    ) -> VerifierResult:
+        """Pass 1 of an upload: the whole clip at 1-2 fps; ``t_contact`` counts from the start."""
+        if info is None:
+            return self._unavailable()
+        video = await asyncio.to_thread(build_scan_video, packets, info, start_s, end_s)
+        return await self._ask(video, TriggerType.AI_SWEEP)
