@@ -1,8 +1,17 @@
 import { Link, Outlet } from "@tanstack/react-router";
-import { ActivityIcon, PaletteIcon, SirenIcon, VideoIcon } from "lucide-react";
+import {
+  ActivityIcon,
+  BarChart3Icon,
+  FlaskConicalIcon,
+  PaletteIcon,
+  SirenIcon,
+  UsersIcon,
+  VideoIcon,
+} from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Logo } from "@/components/brand/logo";
+import { authStore } from "@/lib/auth-store";
 import { LiveEventsProvider } from "@/live/live-events-provider";
 
 import { AccountActions } from "./account-actions";
@@ -16,6 +25,8 @@ const link =
 export function OpsLayout() {
   const { t } = useTranslation();
   useSurfaceTheme("dark");
+  const role = authStore.current()?.user.role;
+  const analyst = role === "supervisor" || role === "admin";
   return (
     <LiveEventsProvider>
       <SkipLink />
@@ -44,6 +55,30 @@ export function OpsLayout() {
                   {t("nav.system")}
                 </Link>
               </li>
+              {analyst ? (
+                <>
+                  <li>
+                    <Link to="/ops/kpis" className={link}>
+                      <BarChart3Icon aria-hidden className="size-5" />
+                      {t("nav.kpis")}
+                    </Link>
+                  </li>
+                  <li>
+                    <Link to="/ops/evaluation" className={link}>
+                      <FlaskConicalIcon aria-hidden className="size-5" />
+                      {t("nav.evaluation")}
+                    </Link>
+                  </li>
+                </>
+              ) : null}
+              {role === "admin" ? (
+                <li>
+                  <Link to="/ops/admin" className={link}>
+                    <UsersIcon aria-hidden className="size-5" />
+                    {t("nav.admin")}
+                  </Link>
+                </li>
+              ) : null}
               <li>
                 <Link to="/ops/design" className={link}>
                   <PaletteIcon aria-hidden className="size-5" />
