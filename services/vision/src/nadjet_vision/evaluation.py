@@ -5,7 +5,7 @@ impact-time error, false alarms per camera-hour and cluster-bootstrap 95 % inter
 whole clips, seeded so a rerun gives the same interval). ``eval/run_eval.py`` records the alerts;
 nothing here reads a clip list or a video.
 
-Counting rules (documented in TD-41):
+Counting rules (documented in TD-42):
 - Alert time is ``t_fire`` (when the alert was raised); the impact estimate is ``t_peak``.
 - A crash clip scores a true positive when a ``collision_candidate``, ``hard_stop`` or sweep
   alert is raised within [impact - 2 s, impact + 10 s]; further alerts of that clip are false

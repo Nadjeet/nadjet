@@ -23,8 +23,7 @@
     "public": "Pages publiques"
   },
   "nav": {
-    "overview": "Vue d'ensemble",
-    "incidents": "Incidents",
+    "overview": "Opérations",
     "cameras": "Mur de caméras",
     "system": "État du système",
     "design": "Système de design",
@@ -98,14 +97,6 @@
   "pages": {
     "soon": "Cet écran sera réalisé dans une prochaine étape. La structure, la navigation, la langue et le direct sont prêts.",
     "ops": {
-      "overview": {
-        "title": "Console opérateur",
-        "body": "La carte, la file d'incidents et le mur de caméras apparaîtront ici."
-      },
-      "incidents": {
-        "title": "Incidents",
-        "body": "La file d'incidents en direct et le détail apparaîtront ici."
-      },
       "cameras": {
         "title": "Mur de caméras",
         "body": "Les flux caméra et les détections apparaîtront ici."
@@ -186,5 +177,191 @@
     "dialogBody": "Les boîtes de dialogue ont un rayon de 24 px, un titre et des actions claires.",
     "cancel": "Annuler",
     "confirm": "Confirmer"
+  },
+  "ops": {
+    "console": {
+      "title": "Opérations",
+      "queue": "File des incidents",
+      "map": "Carte en direct",
+      "count": "{{count}} incidents",
+      "empty": "Aucun incident ne correspond à ces filtres.",
+      "loadError": "La liste des incidents n'a pas pu être chargée.",
+      "newIncident": "Nouvel incident",
+      "mapLegend": "Les étiquettes indiquent la priorité (P1–P4) et l'état des caméras. Les établissements et unités marqués simulés sont des données de démonstration."
+    },
+    "filters": {
+      "status": "Statut",
+      "priority": "Priorité",
+      "source": "Source",
+      "all": "Tous",
+      "open": "Incidents ouverts"
+    },
+    "source": {
+      "camera": "Caméra",
+      "citizen": "Citoyen",
+      "operator": "Opérateur"
+    },
+    "type": {
+      "crash": "Accident",
+      "stalled_vehicle": "Véhicule à l'arrêt",
+      "pedestrian_on_road": "Personne sur la route"
+    },
+    "col": {
+      "code": "Code",
+      "priority": "Priorité",
+      "type": "Type",
+      "ai": "Statut IA",
+      "source": "Source",
+      "location": "Lieu",
+      "age": "Âge",
+      "reports": "Signalements"
+    },
+    "aiStatus": {
+      "confirmed": "Confirmé",
+      "probable": "Probable",
+      "possible": "Possible",
+      "insufficient_evidence": "Preuves insuffisantes",
+      "none": "Sans objet"
+    },
+    "uncertain": "Incertain",
+    "confidence": {
+      "label": "Confiance de l'IA",
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée"
+    },
+    "verdict": {
+      "label": "Réponse du vérificateur",
+      "yes": "Collision visible",
+      "no": "Aucune collision visible",
+      "cannot_judge": "Ne peut pas juger",
+      "findings": "Constats",
+      "noFindings": "Aucun constat enregistré.",
+      "frames": "(images {{frames}})",
+      "notAssessable": "Non évaluable",
+      "notApplicable": "Pas d'analyse IA : cet incident a été créé par un opérateur."
+    },
+    "degraded": {
+      "verifier": "Vérificateur : indisponible. L'IA n'a pas pu contrôler cet incident ; décidez à partir des preuves et des règles.",
+      "contradiction": "Contradiction : les règles ont levé cet incident mais le vérificateur IA ne voit aucune collision. Examinez les preuves avant de décider."
+    },
+    "cameraStatus": {
+      "unknown": "inconnue",
+      "online": "en ligne",
+      "degraded": "dégradée",
+      "offline": "hors ligne"
+    },
+    "create": {
+      "title": "Nouvel incident depuis un appel",
+      "description": "Placez l'incident sur la carte ou saisissez ses coordonnées, puis notez ce que dit l'appelant.",
+      "lat": "Latitude",
+      "lon": "Longitude",
+      "pick": "Choisir sur la carte",
+      "pickHint": "Cliquez sur la carte pour placer l'incident. Appuyez sur Échap pour revenir.",
+      "scene": "Ce que signale l'appelant",
+      "flags": {
+        "bus_involved": "Autobus impliqué",
+        "person_on_road": "Personne sur la route",
+        "flames": "Flammes",
+        "smoke": "Fumée",
+        "overturned": "Véhicule renversé",
+        "stopped_in_lane": "Véhicule arrêté sur la voie",
+        "trapped": "Une personne est coincée"
+      },
+      "vehicles": "Véhicules",
+      "people": "Personnes impliquées",
+      "notes": "Notes d'appel",
+      "submit": "Créer l'incident"
+    },
+    "actions": {
+      "cancel": "Annuler",
+      "confirm": "Confirmer",
+      "reject": "Rejeter",
+      "merge": "Fusionner dans…",
+      "rejectTitle": "Rejeter {{code}}",
+      "rejectBody": "Indiquez pourquoi ce candidat n'est pas un incident. Le motif est enregistré avec votre nom.",
+      "reason": "Motif",
+      "mergeTitle": "Fusionner {{code}}",
+      "mergeBody": "Le candidat est clos comme fusionné et ses signalements et signaux rejoignent l'incident choisi.",
+      "mergeTarget": "Incident de destination",
+      "mergePlaceholder": "Choisir un incident",
+      "mergeNone": "Il n'y a aucun autre incident ouvert."
+    },
+    "reject": {
+      "false_positive": "Faux positif",
+      "duplicate": "Doublon",
+      "not_emergency": "Pas une urgence",
+      "other": "Autre"
+    },
+    "errors": {
+      "generic": "L'action a échoué. Réessayez.",
+      "conflict": "L'incident a changé entre-temps et cette action n'est plus autorisée.",
+      "forbidden": "Votre rôle ne permet pas cette action."
+    },
+    "evidence": {
+      "none": "Aucune preuve jointe pour le moment.",
+      "audited": "La consultation et le téléchargement des preuves sont enregistrés dans le journal d'audit.",
+      "loadClip": "Charger la vidéo",
+      "clip": "Vidéo de preuve",
+      "keyframe": "Image clé {{index}}",
+      "download": "Télécharger",
+      "failed": "Le fichier n'a pas pu être chargé."
+    },
+    "signals": {
+      "none": "Aucun signal de règle enregistré."
+    },
+    "flags": {
+      "to_assess": "À évaluer",
+      "mass_casualty": "Possible afflux de victimes",
+      "needs_extrication": "Désincarcération nécessaire"
+    },
+    "event": {
+      "created": "Créé",
+      "status_changed": "Statut modifié",
+      "merged_candidate": "Signalement fusionné",
+      "incident_merged_in": "Autre incident fusionné",
+      "casualty_added": "Victime enregistrée",
+      "evidence_added": "Preuve ajoutée",
+      "system": "Système"
+    },
+    "casualties": {
+      "title": "Victimes",
+      "none": "Aucune victime enregistrée.",
+      "tag": "Triage",
+      "avpu": "AVPU",
+      "resp": "Fréq. resp.",
+      "pulse": "Pouls",
+      "spo2": "SpO₂",
+      "bleeding": "Saignement",
+      "time": "Heure"
+    },
+    "triage": {
+      "red": "Rouge",
+      "yellow": "Jaune",
+      "green": "Vert",
+      "black": "Noir"
+    },
+    "yes": "Oui",
+    "no": "Non",
+    "integrity": {
+      "title": "Intégrité des preuves",
+      "verify": "Vérifier l'intégrité",
+      "valid": "Valide",
+      "invalid": "Invalide",
+      "checked": "{{events}} événements et {{files}} fichiers vérifiés."
+    },
+    "detail": {
+      "back": "Retour à la console",
+      "notFound": "Cet incident n'existe pas ou vous ne pouvez pas l'ouvrir.",
+      "evidence": "Preuves",
+      "rules": "Signaux des règles",
+      "ai": "Verdict de l'IA",
+      "priority": "Priorité et raisons",
+      "timeline": "Chronologie",
+      "reports": "{{count}} signalements",
+      "rejectedFor": "Rejeté : {{reason}}",
+      "mergedInto": "Fusionné dans un autre incident.",
+      "openTarget": "L'ouvrir"
+    }
   }
 }

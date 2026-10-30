@@ -4,7 +4,7 @@ import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { api } from "@/api";
 import { useSession } from "@/lib/auth-store";
 
-import { incidentKey, incidentsKey } from "./keys";
+import { camerasKey, incidentKey, incidentsKey } from "./keys";
 import { LiveEventsContext, type LiveStatus } from "./live-events-context";
 import { SseParser } from "./sse";
 
@@ -19,7 +19,13 @@ const INCIDENT_EVENTS = new Set([
   "incident.status_changed",
 ]);
 
+const CAMERA_EVENTS = new Set(["camera_fault", "camera_recovered"]);
+
 function handleMessage(queryClient: QueryClient, event: string, data: string) {
+  if (CAMERA_EVENTS.has(event)) {
+    void queryClient.invalidateQueries({ queryKey: camerasKey });
+    return;
+  }
   if (!INCIDENT_EVENTS.has(event)) return;
   void queryClient.invalidateQueries({ queryKey: incidentsKey });
   try {
@@ -117,6 +123,7 @@ export function LiveEventsProvider({ children }: { children: ReactNode }) {
           setStatus("live");
           // Anything missed while disconnected: refetch the queue.
           void queryClient.invalidateQueries({ queryKey: incidentsKey });
+          void queryClient.invalidateQueries({ queryKey: camerasKey });
         });
         if (signal.aborted) return;
         setStatus("reconnecting");

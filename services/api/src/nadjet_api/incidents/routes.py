@@ -30,6 +30,7 @@ from nadjet_api.incidents.schemas import (
     IntegrityFailureOut,
     IntegrityOut,
     ManualIncidentIn,
+    MergeIn,
     RejectIn,
     StatusIn,
 )
@@ -62,7 +63,7 @@ async def _run[T](session: AsyncSession, work: Awaitable[T]) -> T:
     except service.NotFoundError:
         await session.rollback()
         raise NOT_FOUND from None
-    except IllegalTransitionError as exc:
+    except (IllegalTransitionError, service.MergeError) as exc:
         await session.rollback()
         raise HTTPException(status.HTTP_409_CONFLICT, str(exc)) from None
     return outcome
@@ -112,9 +113,19 @@ async def get_incident(
     casualty_rows = await session.scalars(
         select(Casualty).where(Casualty.incident_id == incident_id).order_by(Casualty.at)
     )
+    events_out = [IncidentEventOut.model_validate(e) for e in event_rows]
+    actor_ids = {e.actor_id for e in events_out if e.actor_id}
+    names: dict[uuid.UUID, str] = {}
+    if actor_ids:
+        rows = await session.execute(
+            select(User.id, User.display_name).where(User.id.in_(actor_ids))
+        )
+        names = {row.id: row.display_name for row in rows}
+    for event in events_out:
+        event.actor_name = names.get(event.actor_id) if event.actor_id else None
     return IncidentDetail(
         **IncidentOut.model_validate(incident).model_dump(),
-        events=[IncidentEventOut.model_validate(e) for e in event_rows],
+        events=events_out,
         evidence=[EvidenceOut.model_validate(e) for e in evidence_rows],
         casualties=[CasualtyOut.model_validate(c) for c in casualty_rows],
     )
@@ -153,7 +164,9 @@ async def create_incident(
         detected_at=now,
         signals=signals,
     )
-    result = await _run(session, service.create_manual(session, signer, user, candidate))
+    result = await _run(
+        session, service.create_manual(session, signer, user, candidate, body.notes)
+    )
     await announce(redis, result.changes)
     return IncidentOut.model_validate(result.incident)
 
@@ -201,6 +214,27 @@ async def reject_incident(
         request,
         body.reason,
     )
+
+
+@router.post(
+    "/incidents/{incident_id}/merge",
+    responses={404: {"description": "Not found"}, 409: {"description": "Cannot merge"}},
+)
+async def merge_incident(
+    incident_id: uuid.UUID,
+    body: MergeIn,
+    session: SessionDep,
+    redis: RedisDep,
+    signer: SignerDep,
+    scope: ScopeDep,
+    user: Annotated[User, Depends(require_roles(*DISPATCHERS))],
+) -> IncidentOut:
+    """Operator merges a candidate into another open incident (FR-INC-002, E-14)."""
+    changes = await _run(
+        session, service.merge_into(session, signer, incident_id, body.into, user, scope)
+    )
+    await announce(redis, changes)
+    return IncidentOut.model_validate(await service.get_visible(session, body.into, scope))
 
 
 @router.post(

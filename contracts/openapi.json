@@ -1596,6 +1596,18 @@
             ],
             "title": "Actor Id"
           },
+          "actor_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Display name of the actor",
+            "title": "Actor Name"
+          },
           "hash": {
             "title": "Hash",
             "type": "string"
@@ -2057,6 +2069,19 @@
           "location": {
             "$ref": "#/components/schemas/GeoLocation"
           },
+          "notes": {
+            "anyOf": [
+              {
+                "maxLength": 1000,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Call notes",
+            "title": "Notes"
+          },
           "overturned": {
             "default": false,
             "title": "Overturned",
@@ -2112,6 +2137,165 @@
           "location"
         ],
         "title": "ManualIncidentIn",
+        "type": "object"
+      },
+      "MapFacility": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "hospital",
+              "civil_protection",
+              "gendarmerie",
+              "police"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ready_state": {
+            "enum": [
+              "ready",
+              "divert"
+            ],
+            "title": "Ready State",
+            "type": "string"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "wilaya": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Wilaya"
+          }
+        },
+        "required": [
+          "id",
+          "kind",
+          "name",
+          "wilaya",
+          "ready_state",
+          "simulated",
+          "lat",
+          "lon"
+        ],
+        "title": "MapFacility",
+        "type": "object"
+      },
+      "MapResources": {
+        "properties": {
+          "facilities": {
+            "items": {
+              "$ref": "#/components/schemas/MapFacility"
+            },
+            "title": "Facilities",
+            "type": "array"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/MapUnit"
+            },
+            "title": "Units",
+            "type": "array"
+          }
+        },
+        "required": [
+          "facilities",
+          "units"
+        ],
+        "title": "MapResources",
+        "type": "object"
+      },
+      "MapUnit": {
+        "properties": {
+          "agency": {
+            "enum": [
+              "civil_protection",
+              "gendarmerie",
+              "police",
+              "samu"
+            ],
+            "title": "Agency",
+            "type": "string"
+          },
+          "callsign": {
+            "title": "Callsign",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "status": {
+            "enum": [
+              "available",
+              "dispatched",
+              "busy",
+              "offline"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "callsign",
+          "agency",
+          "status",
+          "simulated",
+          "lat",
+          "lon"
+        ],
+        "title": "MapUnit",
+        "type": "object"
+      },
+      "MergeIn": {
+        "properties": {
+          "into": {
+            "description": "The open incident that absorbs this candidate",
+            "format": "uuid",
+            "title": "Into",
+            "type": "string"
+          }
+        },
+        "required": [
+          "into"
+        ],
+        "title": "MergeIn",
         "type": "object"
       },
       "Metric": {
@@ -3735,6 +3919,71 @@
         ]
       }
     },
+    "/incidents/{incident_id}/merge": {
+      "post": {
+        "description": "Operator merges a candidate into another open incident (FR-INC-002, E-14).",
+        "operationId": "merge_incident_incidents__incident_id__merge_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "incident_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Incident Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MergeIn"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IncidentOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Not found"
+          },
+          "409": {
+            "description": "Cannot merge"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Merge Incident",
+        "tags": [
+          "incidents"
+        ]
+      }
+    },
     "/incidents/{incident_id}/reject": {
       "post": {
         "description": "Operator rejects a candidate with a reason label (FR-INC-006).",
@@ -4120,6 +4369,33 @@
         "summary": "Upload Evidence",
         "tags": [
           "internal"
+        ]
+      }
+    },
+    "/map/resources": {
+      "get": {
+        "description": "Every facility and unit with its position; ``simulated`` ones must be labelled.",
+        "operationId": "map_resources_map_resources_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MapResources"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Map Resources",
+        "tags": [
+          "map"
         ]
       }
     },

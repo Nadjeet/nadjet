@@ -66,6 +66,7 @@ class IncidentEventOut(BaseModel):
     id: int
     kind: str
     actor_id: uuid.UUID | None
+    actor_name: str | None = Field(default=None, description="Display name of the actor")
     payload: dict[str, Any]
     ts: datetime
     hash: str
@@ -123,6 +124,11 @@ class ManualIncidentIn(BaseModel):
     stopped_in_lane: bool = False
     trapped: bool = False
     people_reported: int | None = Field(default=None, ge=0)
+    notes: str | None = Field(default=None, max_length=1000, description="Call notes")
+
+
+class MergeIn(BaseModel):
+    into: uuid.UUID = Field(description="The open incident that absorbs this candidate")
 
 
 class RejectIn(BaseModel):

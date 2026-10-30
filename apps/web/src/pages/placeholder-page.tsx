@@ -3,8 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 
 export type PageKey =
-  | "ops.overview"
-  | "ops.incidents"
   | "ops.cameras"
   | "ops.system"
   | "respond.incidents"

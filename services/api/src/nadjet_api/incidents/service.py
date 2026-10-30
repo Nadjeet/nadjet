@@ -332,11 +332,17 @@ async def _new_incident(
 
 
 async def create_manual(
-    session: AsyncSession, signer: ChainSigner, actor: User, candidate: IncidentCandidate
+    session: AsyncSession,
+    signer: ChainSigner,
+    actor: User,
+    candidate: IncidentCandidate,
+    notes: str | None = None,
 ) -> IngestResult:
     """Operator-created incident from a phone call: already verified (FR-INC-007)."""
     await session.execute(text("SELECT pg_advisory_xact_lock(:k)"), {"k": _CREATE_LOCK_KEY})
-    payload = {"candidate": candidate.model_dump(mode="json")}
+    payload: dict[str, Any] = {"candidate": candidate.model_dump(mode="json")}
+    if notes:
+        payload["notes"] = notes
     incident = await _new_incident(
         session,
         signer,
@@ -472,6 +478,75 @@ async def transition(
         payload["reason"] = reason.value
     await append_event(session, signer, incident, "status_changed", actor, payload)
     return _change(STATUS_CHANGED, incident)
+
+
+class MergeError(Exception):
+    """The merge target is the incident itself or is no longer open."""
+
+
+async def merge_into(
+    session: AsyncSession,
+    signer: ChainSigner,
+    incident_id: uuid.UUID,
+    target_id: uuid.UUID,
+    actor: User,
+    scope: Scope,
+) -> list[Change]:
+    """Operator merges a candidate into another open incident (FR-INC-002, E-14).
+
+    The candidate becomes ``merged``; the target keeps one report more per source report and
+    recomputes its priority from the combined signals.
+    """
+    if incident_id == target_id:
+        raise MergeError("cannot merge an incident into itself")
+    # Lock in id order so two opposite merges cannot deadlock.
+    first, second = sorted((incident_id, target_id), key=str)
+    await get_visible(session, first, scope, lock=True)
+    await get_visible(session, second, scope, lock=True)
+    source = await get_visible(session, incident_id, scope)
+    target = await get_visible(session, target_id, scope)
+    current = IncidentStatus(source.status)
+    check_transition(current, IncidentStatus.MERGED)
+    if IncidentStatus(target.status) in CLOSED_STATUSES:
+        raise MergeError(f"cannot merge into a {target.status} incident")
+
+    source.status = IncidentStatus.MERGED.value
+    source.merged_into = target.id
+    source.version += 1
+    await append_event(
+        session,
+        signer,
+        source,
+        "status_changed",
+        actor,
+        {"from": current.value, "to": IncidentStatus.MERGED.value, "into": str(target.id)},
+    )
+
+    target.report_count += source.report_count
+    target.last_event_time = max(target.last_event_time, source.last_event_time)
+    target.ai_signals = merge_signals(target.ai_signals, source.ai_signals)
+    target.verifier_result = best_verifier(
+        VerifierResult.model_validate(target.verifier_result),
+        VerifierResult.model_validate(source.verifier_result),
+    ).model_dump(mode="json")
+    if target.ai_status and source.ai_status:
+        target.ai_status = best_ai_status(
+            AiStatus(target.ai_status), AiStatus(source.ai_status)
+        ).value
+    target.trapped_reported = target.trapped_reported or source.trapped_reported
+    if source.people_reported is not None:
+        target.people_reported = max(target.people_reported or 0, source.people_reported)
+    old, new = await recompute_priority(session, target)
+    target.version += 1
+    await append_event(
+        session,
+        signer,
+        target,
+        "incident_merged_in",
+        actor,
+        {"source": str(source.id), "priority": {"from": old, "to": new}},
+    )
+    return [_change(STATUS_CHANGED, source), _change(UPDATED, target)]
 
 
 async def add_casualty(

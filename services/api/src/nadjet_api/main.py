@@ -18,6 +18,7 @@ from nadjet_api.cameras.routes import system_router as system_cameras_router
 from nadjet_api.config import Settings, get_settings
 from nadjet_api.db import create_engine, create_session_factory
 from nadjet_api.evaluation.routes import router as evaluation_router
+from nadjet_api.geo.resources import router as map_resources_router
 from nadjet_api.geo.tiles import router as tiles_router
 from nadjet_api.health import Probe, database_probe, redis_probe, run_probes
 from nadjet_api.incidents import internal
@@ -89,6 +90,7 @@ def create_app(
     app.include_router(internal.router)
     app.include_router(routing_router)
     app.include_router(evaluation_router)
+    app.include_router(map_resources_router)
     app.include_router(tiles_router)
     app.add_middleware(
         CORSMiddleware,

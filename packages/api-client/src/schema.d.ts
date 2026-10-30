@@ -268,6 +268,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/incidents/{incident_id}/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Merge Incident
+         * @description Operator merges a candidate into another open incident (FR-INC-002, E-14).
+         */
+        post: operations["merge_incident_incidents__incident_id__merge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/incidents/{incident_id}/reject": {
         parameters: {
             query?: never;
@@ -384,6 +404,26 @@ export interface paths {
          *     Identify the incident by ``incident_id`` or by the ``idempotency_key`` of its candidate.
          */
         post: operations["upload_evidence_internal_evidence_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/map/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Map Resources
+         * @description Every facility and unit with its position; ``simulated`` ones must be labelled.
+         */
+        get: operations["map_resources_map_resources_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -1136,6 +1176,11 @@ export interface components {
         IncidentEventOut: {
             /** Actor Id */
             actor_id: string | null;
+            /**
+             * Actor Name
+             * @description Display name of the actor
+             */
+            actor_name?: string | null;
             /** Hash */
             hash: string;
             /** Id */
@@ -1304,6 +1349,11 @@ export interface components {
             flames: boolean;
             location: components["schemas"]["GeoLocation"];
             /**
+             * Notes
+             * @description Call notes
+             */
+            notes?: string | null;
+            /**
              * Overturned
              * @default false
              */
@@ -1332,6 +1382,70 @@ export interface components {
             trapped: boolean;
             /** Vehicle Count */
             vehicle_count?: number | null;
+        };
+        /** MapFacility */
+        MapFacility: {
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "hospital" | "civil_protection" | "gendarmerie" | "police";
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /**
+             * Ready State
+             * @enum {string}
+             */
+            ready_state: "ready" | "divert";
+            /** Simulated */
+            simulated: boolean;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** MapResources */
+        MapResources: {
+            /** Facilities */
+            facilities: components["schemas"]["MapFacility"][];
+            /** Units */
+            units: components["schemas"]["MapUnit"][];
+        };
+        /** MapUnit */
+        MapUnit: {
+            /**
+             * Agency
+             * @enum {string}
+             */
+            agency: "civil_protection" | "gendarmerie" | "police" | "samu";
+            /** Callsign */
+            callsign: string;
+            /** Id */
+            id: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "dispatched" | "busy" | "offline";
+        };
+        /** MergeIn */
+        MergeIn: {
+            /**
+             * Into
+             * Format: uuid
+             * @description The open incident that absorbs this candidate
+             */
+            into: string;
         };
         /**
          * Metric
@@ -2168,6 +2282,55 @@ export interface operations {
             };
         };
     };
+    merge_incident_incidents__incident_id__merge_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MergeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Cannot merge */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     reject_incident_incidents__incident_id__reject_post: {
         parameters: {
             query?: never;
@@ -2441,6 +2604,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    map_resources_map_resources_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapResources"];
                 };
             };
         };
