@@ -140,12 +140,6 @@
         "body": "The live incident queue and detail view will appear here."
       }
     },
-    "hospital": {
-      "incoming": {
-        "title": "Incoming alerts",
-        "body": "Pre-alerts and the ready or divert switch will appear here."
-      }
-    },
     "public": {
       "home": {
         "title": "Report a crash. Help is coordinated in minutes.",
@@ -416,7 +410,9 @@
       "system": "System",
       "hospital_diverted": "Hospital answered DIVERT",
       "hospital_changed": "Hospital changed",
-      "notification_failed": "Notification failed"
+      "notification_failed": "Notification failed",
+      "hospital_response": "Hospital set Ready or Divert",
+      "prealert_acknowledged": "Hospital acknowledged the pre-alert"
     },
     "casualties": {
       "title": "Casualties",
@@ -787,6 +783,41 @@
       "gateway": "SMS fallback number",
       "queue": "Offline queue",
       "queueHint": "Actions taken without a connection wait here and are sent once, in order, when it returns."
+    }
+  },
+  "hospital": {
+    "incomingTitle": "Incoming patients",
+    "incoming": "{{count}} incoming",
+    "none": "No pre-alert at the moment.",
+    "historyTitle": "Today's arrivals",
+    "noHistory": "No arrival yet today.",
+    "historyVictims": "{{count}} victims",
+    "massCasualty": "Possible mass casualty",
+    "massCasualtyBanner": "Possible mass casualty incoming: {{codes}}. Prepare for several patients.",
+    "noFacility": "Your account is not linked to a hospital.",
+    "loadError": "The pre-alerts could not be loaded.",
+    "error": "The action failed. Try again.",
+    "readiness": {
+      "title": "Can you receive patients?",
+      "ready": "Ready",
+      "divert": "Divert",
+      "nowReady": "Your hospital is Ready: the operators may send patients.",
+      "nowDivert": "Your hospital is on Divert: the operators will not choose it.",
+      "sms": "By SMS, reply with the incident code:",
+      "confirmTitle": "Divert patients away from your hospital?",
+      "confirmBody": "The operators are alerted at once and choose another hospital for every incoming patient group."
+    },
+    "card": {
+      "arrivesIn": "Arrives in",
+      "overdue": "Overdue by",
+      "dueAt": "Due at {{time}}",
+      "victims": "Victims",
+      "vitals": "Victims and vital signs",
+      "noVictims": "No victim reported yet. This updates as the crew records them.",
+      "noUnit": "Unit not known",
+      "extrication": "Extrication needed",
+      "acknowledge": "Acknowledge pre-alert",
+      "acknowledged": "Acknowledged by {{name}} at {{time}}"
     }
   }
 }

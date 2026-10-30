@@ -3,7 +3,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import type { components } from "@nadjet/api-client";
 
 import { api } from "@/api";
-import { camerasKey, incidentKey, incidentsKey } from "@/live/keys";
+import { camerasKey, incidentKey, incidentsKey, mapResourcesKey } from "@/live/keys";
 import { useLiveEvents } from "@/live/live-events-context";
 
 export type Incident = components["schemas"]["IncidentOut"];
@@ -37,7 +37,7 @@ export class ApiError extends Error {
 }
 
 /** While the live stream is down the data is refetched on a timer (FR-MAP-002). */
-function useFallbackPolling(): number | false {
+export function useFallbackPolling(): number | false {
   return useLiveEvents() === "live" ? false : 5_000;
 }
 
@@ -92,7 +92,7 @@ export function useCameras() {
 
 export function useMapResources() {
   return useQuery({
-    queryKey: ["map", "resources"],
+    queryKey: mapResourcesKey,
     refetchInterval: 30_000,
     queryFn: async () => {
       const { data, response } = await api.GET("/map/resources");
