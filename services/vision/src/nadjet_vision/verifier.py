@@ -18,10 +18,15 @@ from nadjet_vision.clipvideo import (
     build_sweep_video,
     build_verifier_video,
 )
+from nadjet_vision.config import VisionSettings
 from nadjet_vision.inference import BrevVlmClient
 from nadjet_vision.ingest import Packet, StreamInfo
 
 log = logging.getLogger("nadjet_vision.verifier")
+
+# One source for the defaults: a separate 7 s literal here cut every try-it refine pass (TD-50).
+_DEFAULT_BUDGET_S: float = VisionSettings.model_fields["vlm_budget_s"].default
+_DEFAULT_BACKOFF_S: float = VisionSettings.model_fields["vlm_backoff_s"].default
 
 
 class AiVerifier:
@@ -30,8 +35,8 @@ class AiVerifier:
         client: BrevVlmClient,
         model: str,
         *,
-        budget_s: float = 7.0,
-        backoff_s: float = 30.0,
+        budget_s: float = _DEFAULT_BUDGET_S,
+        backoff_s: float = _DEFAULT_BACKOFF_S,
         clock: Callable[[], float] = time.monotonic,
     ) -> None:
         self._client = client

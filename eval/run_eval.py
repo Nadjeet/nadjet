@@ -136,7 +136,9 @@ async def run(args: argparse.Namespace) -> int:
             return 4
         # No back-off: in the live worker a down AI is skipped for 30 s, here every answer must
         # come from the model or the run fails (see the check after the replay).
-        verifier = AiVerifier(client, settings.vlm_model, backoff_s=0.0)
+        verifier = AiVerifier(
+            client, settings.vlm_model, budget_s=settings.vlm_budget_s, backoff_s=0.0
+        )
 
     detector = load_detector(settings)
     outcomes: list[ClipOutcome] = []
