@@ -1,6 +1,6 @@
 # Nadjet (نجاة) — AI Road-Incident Detection & Emergency Coordination for Algeria
 
-These are research and design documents for SolveX 3.0, **Thematic 1: "Road accidents: improving emergency response."** They are current as of 2026-10-29. The product is named **Nadjet** (Arabic **نجاة**, "survival, being saved"). The product requirements live in [`../PRD.md`](../PRD.md).
+These are research and design documents for SolveX 3.0, **Thematic 1: "Road accidents: improving emergency response."** They are current as of 2026-10-29. The product is named **Nadjet** (Arabic **نجاة**, "survival, being saved"). The product requirements (technology-neutral) live in [`../PRD.md`](../PRD.md). The technical choices live in [11-technical-decisions.md](11-technical-decisions.md). The non-technical creative brief for design and film is [`../BRIEF.md`](../BRIEF.md).
 
 ## Executive summary
 
@@ -47,6 +47,7 @@ These are research and design documents for SolveX 3.0, **Thematic 1: "Road acci
 | 08 | [Demo scenario, risks & deployment strategy](08-demo-and-risks.md) | 11, 12 |
 | 09 | [GitHub org: repositories & per-repo stack](09-repositories-and-stack.md) | repos, CI/CD |
 | 10 | [Live stage deployment (Dokploy + Brev) & no-training model stack](10-live-deployment-and-models.md) | deploy, models, "try it" demo |
+| 11 | [Technical decisions register (TD-xx)](11-technical-decisions.md) | the canonical "how": wins over docs 04–10 where they differ |
 
 > **Update (doc 10):** there is no time to train, so the crash verifier is now the pretrained open-weights VLM **Qwen3-VL-8B** (Apache-2.0) served by vLLM on a Brev GPU. It replaces the fine-tuned VideoMAE described in docs 04 and 07. The detector is **RF-DETR** (Apache-2.0).
 
