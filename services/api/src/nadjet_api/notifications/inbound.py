@@ -72,7 +72,7 @@ async def handle_sms(
     if incident is None:
         log.info("inbound sms from %s: unknown code %s", phone, command.code)
         return Result(f"Nadjet: unknown code {command.code}. " + help_message())
-    user = await session.scalar(select(User).where(User.phone == phone, User.active.is_(True)))
+    user = await _user_by_phone(session, phone)
     allowed = _roles_for(command)
     if (
         user is None
@@ -89,6 +89,14 @@ async def handle_sms(
         return await _hospital(session, signer, incident, user, command)
     except IllegalTransitionError as exc:
         return Result(f"Nadjet: {incident.short_code} refused, {exc}")
+
+
+async def _user_by_phone(session: AsyncSession, phone: str) -> User | None:
+    """Phones are stored as typed (``0550...`` or ``+213550...``): compare them normalised."""
+    candidates = await session.scalars(
+        select(User).where(User.phone.like(f"%{phone[-9:]}"), User.active.is_(True))
+    )
+    return next((u for u in candidates if u.phone and normalize_phone(u.phone) == phone), None)
 
 
 def _roles_for(command: StatusUpdate | Triage | HospitalResponse) -> tuple[Role, ...]:

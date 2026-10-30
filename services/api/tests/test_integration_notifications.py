@@ -218,6 +218,21 @@ async def test_ok_reply_acknowledges_and_confirms_by_sms(
     assert len(reply.text) <= 160
 
 
+async def test_a_phone_stored_in_national_format_is_recognised(
+    gw: httpx.AsyncClient, gw_app: FastAPI, make_user: MakeUser, session: AsyncSession
+) -> None:
+    """The gateway sends ``+213550...``; the user was saved as ``0550...``."""
+    number = phone()
+    await make_user(
+        session, role="responder", agency="civil_protection", phone="0" + number[len("+213") :]
+    )
+    incident = await dispatched_incident(gw_app)
+
+    await post_sms(gw, number, f"OK {incident.short_code}")
+
+    assert (await fresh(gw_app, incident.id)).status == "acknowledged"
+
+
 async def test_status_codes_walk_the_lifecycle(
     gw: httpx.AsyncClient, gw_app: FastAPI, make_user: MakeUser, session: AsyncSession
 ) -> None:
