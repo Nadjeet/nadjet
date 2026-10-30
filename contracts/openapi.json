@@ -155,6 +155,70 @@
         "title": "AlertRecord",
         "type": "object"
       },
+      "Body_post_report_public_reports_post": {
+        "properties": {
+          "lat": {
+            "maximum": 90.0,
+            "minimum": -90.0,
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "maximum": 180.0,
+            "minimum": -180.0,
+            "title": "Lon",
+            "type": "number"
+          },
+          "people_reported": {
+            "anyOf": [
+              {
+                "maximum": 99.0,
+                "minimum": 0.0,
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "People Reported"
+          },
+          "phone": {
+            "anyOf": [
+              {
+                "maxLength": 20,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Phone"
+          },
+          "photo": {
+            "anyOf": [
+              {
+                "contentMediaType": "application/octet-stream",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Photo"
+          },
+          "trapped": {
+            "default": false,
+            "title": "Trapped",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "lat",
+          "lon"
+        ],
+        "title": "Body_post_report_public_reports_post",
+        "type": "object"
+      },
       "Body_upload_evidence_internal_evidence_post": {
         "properties": {
           "end_ts": {
@@ -2923,6 +2987,29 @@
         ],
         "title": "RejectReason",
         "type": "string"
+      },
+      "ReportAccepted": {
+        "properties": {
+          "merged": {
+            "title": "Merged",
+            "type": "boolean"
+          },
+          "photo_saved": {
+            "title": "Photo Saved",
+            "type": "boolean"
+          },
+          "short_code": {
+            "title": "Short Code",
+            "type": "string"
+          }
+        },
+        "required": [
+          "short_code",
+          "merged",
+          "photo_saved"
+        ],
+        "title": "ReportAccepted",
+        "type": "object"
       },
       "Role": {
         "enum": [
@@ -6261,6 +6348,70 @@
         "summary": "Map Resources",
         "tags": [
           "map"
+        ]
+      }
+    },
+    "/public/reports": {
+      "post": {
+        "description": "Create an unverified citizen incident at ``lat``/``lon``, merged with a nearby one.\n\nRe-sending the same ``Idempotency-Key`` (a double tap, a retry) returns the same report.",
+        "operationId": "post_report_public_reports_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "idempotency-key",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "maxLength": 128,
+                  "minLength": 1,
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Idempotency-Key"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_post_report_public_reports_post"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReportAccepted"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "413": {
+            "description": "Photo too large"
+          },
+          "415": {
+            "description": "Photo is not a JPEG or PNG"
+          },
+          "422": {
+            "description": "Position outside Algeria or invalid field"
+          },
+          "429": {
+            "description": "Rate limit exceeded"
+          }
+        },
+        "summary": "Post Report",
+        "tags": [
+          "public"
         ]
       }
     },

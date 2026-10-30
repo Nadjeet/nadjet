@@ -8,7 +8,6 @@ export type PageKey =
   | "respond.incidents"
   | "respond.profile"
   | "hospital.incoming"
-  | "public.report"
   | "public.try"
   | "public.privacy";
 

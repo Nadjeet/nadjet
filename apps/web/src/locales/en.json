@@ -160,7 +160,29 @@
       },
       "report": {
         "title": "Report a crash",
-        "body": "The one-tap citizen report will appear here."
+        "hint": "One tap sends your exact position to the emergency operators. Answering the questions is optional but speeds up the response.",
+        "locating": "Finding your position…",
+        "sending": "Sending…",
+        "questions": "What do you see? (optional)",
+        "people": "How many people are involved?",
+        "trapped": "Is anyone trapped?",
+        "phone": "Your phone number, so we can call you back (optional)",
+        "photo": "Photo of the scene (optional)",
+        "place": "Where is it? Road, kilometre, town (Latin letters)",
+        "consent": "By reporting you agree that your position, answers, photo and phone number are shared with the emergency services and kept as evidence. Nothing is used for anything else.",
+        "viaSms": "Send by SMS instead",
+        "sendPicked": "Send the position I picked",
+        "doneTitle": "Report received",
+        "doneBody": "The operators were alerted. Stay safe and away from traffic.",
+        "code": "Your report code:",
+        "merged": "Other witnesses already reported this crash: your report was added to it.",
+        "emergency": "If a life is in danger, also call Civil Protection on 14 or the police on 17.",
+        "fail": {
+          "location": "We could not read your position. Tap the map where the crash is, or describe the place and send an SMS.",
+          "network": "No connection to Nadjet. Send the report by SMS: your phone opens a ready message.",
+          "limit": "Too many reports from this connection. Please wait a few minutes, or call 14.",
+          "invalid": "This position is outside Algeria or a field is invalid. Check it and try again."
+        }
       },
       "try": {
         "title": "Try the detection",

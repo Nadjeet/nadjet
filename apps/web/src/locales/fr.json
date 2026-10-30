@@ -160,7 +160,29 @@
       },
       "report": {
         "title": "Signaler un accident",
-        "body": "Le signalement citoyen en un geste apparaîtra ici."
+        "hint": "Un seul appui envoie votre position exacte aux opérateurs. Répondre aux questions est facultatif mais accélère les secours.",
+        "locating": "Recherche de votre position…",
+        "sending": "Envoi…",
+        "questions": "Que voyez-vous ? (facultatif)",
+        "people": "Combien de personnes sont concernées ?",
+        "trapped": "Quelqu'un est-il coincé ?",
+        "phone": "Votre numéro, pour vous rappeler (facultatif)",
+        "photo": "Photo de la scène (facultatif)",
+        "place": "Où est-ce ? Route, kilomètre, ville (lettres latines)",
+        "consent": "En signalant, vous acceptez que votre position, vos réponses, votre photo et votre numéro soient transmis aux secours et conservés comme preuve. Rien n'est utilisé à d'autres fins.",
+        "viaSms": "Envoyer plutôt par SMS",
+        "sendPicked": "Envoyer la position choisie",
+        "doneTitle": "Signalement reçu",
+        "doneBody": "Les opérateurs sont alertés. Restez en sécurité, loin de la circulation.",
+        "code": "Votre code de signalement :",
+        "merged": "D'autres témoins ont déjà signalé cet accident : votre signalement y a été ajouté.",
+        "emergency": "Si une vie est en danger, appelez aussi la Protection civile au 14 ou la police au 17.",
+        "fail": {
+          "location": "Impossible de lire votre position. Touchez la carte à l'endroit de l'accident, ou décrivez le lieu et envoyez un SMS.",
+          "network": "Pas de connexion à Nadjet. Envoyez le signalement par SMS : votre téléphone ouvre un message prêt.",
+          "limit": "Trop de signalements depuis cette connexion. Patientez quelques minutes ou appelez le 14.",
+          "invalid": "Cette position est hors d'Algérie ou un champ est invalide. Vérifiez et réessayez."
+        }
       },
       "try": {
         "title": "Essayer la détection",

@@ -672,6 +672,28 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/public/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Report
+         * @description Create an unverified citizen incident at ``lat``/``lon``, merged with a nearby one.
+         *
+         *     Re-sending the same ``Idempotency-Key`` (a double tap, a retry) returns the same report.
+         */
+        post: operations["post_report_public_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/public/try/jobs": {
         parameters: {
             query?: never;
@@ -1082,6 +1104,24 @@ export interface components {
              * @default false
              */
             verifier_available: boolean;
+        };
+        /** Body_post_report_public_reports_post */
+        Body_post_report_public_reports_post: {
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** People Reported */
+            people_reported?: number | null;
+            /** Phone */
+            phone?: string | null;
+            /** Photo */
+            photo?: string | null;
+            /**
+             * Trapped
+             * @default false
+             */
+            trapped: boolean;
         };
         /** Body_upload_evidence_internal_evidence_post */
         Body_upload_evidence_internal_evidence_post: {
@@ -2115,6 +2155,15 @@ export interface components {
          * @enum {string}
          */
         RejectReason: "false_positive" | "duplicate" | "not_emergency" | "other";
+        /** ReportAccepted */
+        ReportAccepted: {
+            /** Merged */
+            merged: boolean;
+            /** Photo Saved */
+            photo_saved: boolean;
+            /** Short Code */
+            short_code: string;
+        };
         /**
          * Role
          * @enum {string}
@@ -4032,6 +4081,60 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["MapResources"];
                 };
+            };
+        };
+    };
+    post_report_public_reports_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "idempotency-key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_post_report_public_reports_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportAccepted"];
+                };
+            };
+            /** @description Photo too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Photo is not a JPEG or PNG */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Position outside Algeria or invalid field */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
