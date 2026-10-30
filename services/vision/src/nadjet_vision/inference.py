@@ -8,40 +8,34 @@ Rules (AGENTS.md "AI inference"):
 """
 
 import ipaddress
+import logging
 import math
 from typing import Any
 
 import httpx
-from pydantic import BaseModel
+from pydantic import ValidationError
 
-from nadjet_shared import VerifierResult
+from nadjet_shared import TriggerType, VerifierResult
 from nadjet_vision.config import VisionSettings
+from nadjet_vision.verdict import VerifierAnswer, answer_schema, finalize, template_result
+
+log = logging.getLogger("nadjet_vision.inference")
 
 VERDICTS = ("yes", "no", "cannot_judge")
 
-VERIFIER_SCHEMA: dict[str, Any] = {
-    "type": "object",
-    "properties": {
-        "collision_visible": {"type": "string", "enum": list(VERDICTS)},
-        "description_fr": {"type": "string"},
-        "description_ar": {"type": "string"},
-    },
-    "required": ["collision_visible", "description_fr", "description_ar"],
-    "additionalProperties": False,
-}
-
 NEUTRAL_PROMPT = (
-    "Describe only what is visible in this road camera video. Is a collision between road "
-    "users visible? Answer collision_visible with yes, no, or cannot_judge (if the image is "
-    "too dark, blurred or small). Then give a short factual description in French and Arabic. "
-    "Do not guess about people's health."
+    "You see a road camera video made of numbered frames; each frame shows its number (#n) and "
+    "its time in seconds relative to the moment of interest. Describe only what is visible. "
+    "Is a collision between road users visible? Answer collision_visible with yes, no, or "
+    "cannot_judge (if the image is too dark, blurred or small); no collision is a valid answer. "
+    "Give t_contact (seconds on the frame timestamps, null if none), the type of event "
+    "(collision, rollover, fire, stalled, pedestrian or none), vehicles_involved, lanes_blocked "
+    "and findings. Each finding is one short English statement with basis observed or inferred "
+    "and the frame_ids (the #n numbers) it is read from. List in not_assessable what cannot be "
+    "seen (occupants, people behind intact windows, fuel leaks). Use priority_raise 1 only when "
+    "a finding shows a more serious situation. Write description_fr and description_ar as short "
+    "factual descriptions. Never state or guess people's health or death."
 )
-
-
-class VerifierAnswer(BaseModel):
-    collision_visible: str
-    description_fr: str
-    description_ar: str
 
 
 class InferenceConfigError(RuntimeError):
@@ -110,7 +104,7 @@ class BrevVlmClient:
             )
         return self._settings.vlm_model
 
-    async def verify(self, video_url: str) -> VerifierResult:
+    async def _ask(self, video_url: str, prompt: str) -> dict[str, Any]:
         payload = {
             "model": self._settings.vlm_model,
             "messages": [
@@ -118,31 +112,52 @@ class BrevVlmClient:
                     "role": "user",
                     "content": [
                         {"type": "video_url", "video_url": {"url": video_url}},
-                        {"type": "text", "text": NEUTRAL_PROMPT},
+                        {"type": "text", "text": prompt},
                     ],
                 }
             ],
             "response_format": {
                 "type": "json_schema",
-                "json_schema": {"name": "verdict", "schema": VERIFIER_SCHEMA},
+                "json_schema": {"name": "verdict", "schema": answer_schema()},
             },
             "temperature": 0,
-            "max_tokens": 256,
+            "max_tokens": 700,
             "logprobs": True,
             "top_logprobs": 5,
         }
-        try:
-            response = await self._client.post("/chat/completions", json=payload)
-            response.raise_for_status()
-            choice = response.json()["choices"][0]
-            answer = VerifierAnswer.model_validate_json(choice["message"]["content"])
-        except (httpx.HTTPError, KeyError, IndexError, ValueError):
-            return VerifierResult(available=False, model=self._settings.vlm_model)
-        return VerifierResult(
-            available=True,
-            model=self._settings.vlm_model,
-            collision_visible=answer.collision_visible,
-            yes_probability=yes_probability(choice.get("logprobs")),
-            description_fr=answer.description_fr,
-            description_ar=answer.description_ar,
-        )
+        response = await self._client.post("/chat/completions", json=payload)
+        response.raise_for_status()
+        choice: dict[str, Any] = response.json()["choices"][0]
+        return choice
+
+    async def verify(
+        self, video_url: str, *, frame_count: int, trigger: TriggerType = TriggerType.AI_SWEEP
+    ) -> VerifierResult:
+        """Ask the verifier about one video of ``frame_count`` numbered frames (TD-24).
+
+        Unreachable or timed out: ``available=False`` (FR-VIS-009). An answer that fails the
+        schema is asked again once with the validation error; if it fails again the result is
+        ``invalid`` with a template description from the rule trigger (FR-VIS-016).
+        """
+        model = self._settings.vlm_model
+        prompt = NEUTRAL_PROMPT
+        for attempt in (1, 2):
+            try:
+                choice = await self._ask(video_url, prompt)
+                raw = choice["message"]["content"]
+            except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError):
+                return VerifierResult(available=False, model=model)
+            try:
+                answer = VerifierAnswer.model_validate_json(raw)
+            except ValidationError as exc:
+                reason = "; ".join(
+                    f"{'.'.join(map(str, e['loc']))}: {e['msg']}" for e in exc.errors()[:5]
+                )
+                log.warning("verifier answer invalid (attempt %d): %s", attempt, reason)
+                prompt = (
+                    f"{NEUTRAL_PROMPT}\nYour previous answer was rejected ({reason}). "
+                    "Answer again in the exact format."
+                )
+                continue
+            return finalize(answer, frame_count, model, yes_probability(choice.get("logprobs")))
+        return template_result(trigger, model)

@@ -32,8 +32,15 @@ def completion(content: dict[str, Any], logprobs: dict[str, Any] | None) -> dict
     return {"choices": [{"message": {"content": json.dumps(content)}, "logprobs": logprobs}]}
 
 
-ANSWER = {
+ANSWER: dict[str, Any] = {
     "collision_visible": "yes",
+    "t_contact": 0.5,
+    "type": "collision",
+    "vehicles_involved": 2,
+    "lanes_blocked": 1,
+    "findings": [{"statement": "Two cars touch", "basis": "observed", "frame_ids": [3, 4]}],
+    "not_assessable": ["occupants"],
+    "priority_raise": 0,
     "description_fr": "Deux voitures.",
     "description_ar": "سيارتان.",
 }
@@ -102,7 +109,7 @@ async def test_verify_sends_structured_request_and_parses_answer() -> None:
         return httpx.Response(200, json=completion(ANSWER, lp))
 
     client = BrevVlmClient(settings(), transport=transport(handler))
-    result = await client.verify("file:///clips/a.mp4")
+    result = await client.verify("file:///clips/a.mp4", frame_count=20)
     await client.aclose()
 
     assert seen["model"] == MODEL
@@ -126,7 +133,7 @@ async def test_verify_failures_mean_unavailable_never_another_provider(
     response: httpx.Response,
 ) -> None:
     client = BrevVlmClient(settings(), transport=transport(lambda r: response))
-    result = await client.verify("file:///clips/a.mp4")
+    result = await client.verify("file:///clips/a.mp4", frame_count=20)
     await client.aclose()
     assert result.available is False
     assert result.collision_visible is None
@@ -137,6 +144,6 @@ async def test_verify_timeout_means_unavailable() -> None:
         raise httpx.ReadTimeout("slow", request=request)
 
     client = BrevVlmClient(settings(), transport=transport(handler))
-    result = await client.verify("file:///clips/a.mp4")
+    result = await client.verify("file:///clips/a.mp4", frame_count=20)
     await client.aclose()
     assert result.available is False
