@@ -195,6 +195,11 @@ sets `camera_moving` while the camera pans, publishes the annotated stream `<cam
   plays every camera from `GET /cameras` (WebRTC, falling back to LL-HLS; each tile switches between
   the `<cam>_ai` annotated stream and the raw one). The system page adds `GET /system/ai`: the served
   model id, or "AI unavailable" when Brev is unreachable.
+- KPIs, evaluation and admin (`/ops/kpis`, `/ops/evaluation` for supervisor and admin, `/ops/admin`
+  for admin): `GET /kpis` computes response-time medians and p90 from the incident events;
+  `GET /evaluation/latest` is rendered with its date and commit; `/admin/*` edits cameras, facilities,
+  units and users and audits every change. Evidence older than `NADJET_RETENTION_DAYS` (default 90,
+  max 365) is purged hourly and audited as `retention.purge`.
 - Glass-to-glass latency (SC-007, ≤ 1.5 s): play a clip with an on-screen clock as a camera (or open a
   clock page next to the wall), film both with a phone at 60 fps, and read the difference between the
   clock on the source and the same clock inside the tile. The latency printed on the tile is only what
