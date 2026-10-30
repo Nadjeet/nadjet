@@ -37,11 +37,13 @@ function backoff(attempt: number): number {
 
 function sleep(ms: number, signal: AbortSignal): Promise<void> {
   return new Promise((resolve) => {
-    const timer = setTimeout(resolve, ms);
-    signal.addEventListener("abort", () => {
+    const done = () => {
       clearTimeout(timer);
+      signal.removeEventListener("abort", done);
       resolve();
-    });
+    };
+    const timer = setTimeout(done, ms);
+    signal.addEventListener("abort", done, { once: true });
   });
 }
 
@@ -67,14 +69,20 @@ async function readStream(
       headers: { Accept: "text/event-stream" },
     });
     if (!response.ok || !body) return;
-    onOpen();
     arm();
     const reader = body.pipeThrough(new TextDecoderStream()).getReader();
     const parser = new SseParser();
+    let opened = false;
     for (;;) {
       const { value, done } = await reader.read();
       if (done) return;
       arm();
+      // Live only once the API has spoken (it sends a comment at once): a proxy that answers
+      // 200 and closes must not reset the back-off into a tight reconnect loop.
+      if (!opened) {
+        opened = true;
+        onOpen();
+      }
       for (const message of parser.push(value)) {
         handleMessage(queryClient, message.event, message.data);
       }
