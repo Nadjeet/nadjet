@@ -49,6 +49,8 @@ services:
       NADJET_INGEST_TOKEN: ${NADJET_INGEST_TOKEN:-}
       NADJET_VLM_BASE_URL: ${NADJET_VLM_BASE_URL:-http://127.0.0.1:8000/v1}
       NADJET_VLM_MODEL: ${NADJET_VLM_MODEL:-Qwen/Qwen3-VL-8B-Instruct-FP8}
+      NADJET_METRICS_PORT_BASE: ${NADJET_METRICS_PORT_BASE:-9100} # camera i serves /metrics on base+i
+    volumes: [weights:/app/weights] # detector weights, downloaded once and checksum-verified
     depends_on:
       vllm: { condition: service_healthy }
     deploy:
@@ -58,3 +60,4 @@ services:
 
 volumes:
   hf-cache: {}
+  weights: {}
