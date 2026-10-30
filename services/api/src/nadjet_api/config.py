@@ -32,7 +32,12 @@ class Settings(BaseSettings):
         description="Camera WebRTC WHEP URL for the browser; {path} = stream path",
     )
 
-    @field_validator("rtsp_url_template", "whep_url_template")
+    hls_url_template: str = Field(
+        default="http://localhost:8888/{path}/index.m3u8",
+        description="Camera LL-HLS URL (WebRTC fallback); {path} = stream path",
+    )
+
+    @field_validator("rtsp_url_template", "whep_url_template", "hls_url_template")
     @classmethod
     def _url_template_has_only_path(cls, value: str) -> str:
         """Fail at startup, not with a 500 on every GET /cameras."""
