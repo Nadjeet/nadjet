@@ -51,3 +51,7 @@ CLAUDE.local.md
 
 # Real seed users (copy of users.example.yaml with local passwords)
 data/seed/users.yaml
+
+# Self-hosted map data and assets (make map-data / routing-data)
+data/map/
+apps/web/public/map/

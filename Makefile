@@ -13,7 +13,8 @@ UNIT := -m "not integration and not brev"
 	camsim-restore camsim-swap gen check-contracts \
 	test test-unit test-integration test-brev coverage lint format typecheck build ci clean reset-db \
 	brev-status brev-up brev-forward brev-unforward brev-check \
-	brev-tunnel brev-untunnel brev-deploy-workers brev-logs
+	brev-tunnel brev-untunnel brev-deploy-workers brev-logs \
+	map-data routing-data routing-up routing-down seed-geo
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; printf "Nadjet — make <target>\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-17s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -96,6 +97,23 @@ camsim-restore: ## Bring a camera back after an outage: CAM=<id>
 camsim-swap: ## Play another clip from data/videos on a camera: CAM=<id> VIDEO=<file>
 	@test -n "$(CAM)" -a -n "$(VIDEO)" || { echo "usage: make $@ CAM=<camera-id> VIDEO=<file>"; exit 1; }
 	uv run nadjet-camsim swap $(CAM) $(VIDEO)
+
+# ---------------------------------------------------------------- map and routing
+map-data: ## Download the offline Algeria basemap to data/map/algeria.pmtiles (1-3 GB, once)
+	@bash scripts/map-data.sh
+	@bash scripts/map-assets.sh
+
+routing-data: ## Download the Algeria OSM extract and prepare OSRM data (~290 MB, 4 GB RAM, once)
+	@bash scripts/routing-data.sh
+
+routing-up: env ## Start OSRM (after make routing-data) and wait until healthy
+	$(COMPOSE) --profile routing up -d --wait osrm
+
+routing-down: ## Stop OSRM
+	$(COMPOSE) --profile routing stop osrm
+
+seed-geo: ## Import facilities and units from data/seed/*.csv (idempotent)
+	cd services/api && uv run nadjet-api seed-geo
 
 # ---------------------------------------------------------------- contracts
 gen: ## Regenerate contracts (event schemas, OpenAPI) and the TS client
