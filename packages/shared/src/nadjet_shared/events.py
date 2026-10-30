@@ -1,10 +1,9 @@
 """Event contracts exchanged between the vision workers and the API (PRD FR-VIS-006/007)."""
 
-from datetime import datetime
 from enum import StrEnum
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, model_validator
+from pydantic import AwareDatetime, BaseModel, ConfigDict, Field, model_validator
 
 Probability = Annotated[float, Field(ge=0.0, le=1.0)]
 
@@ -98,8 +97,8 @@ class IncidentCandidate(BaseModel):
     location: GeoLocation
     witness: Witness | None = None
     trigger: TriggerType
-    event_time: datetime = Field(description="Best estimate of the impact time")
-    detected_at: datetime
+    event_time: AwareDatetime = Field(description="Best estimate of the impact time")
+    detected_at: AwareDatetime
     track_ids: list[int] = Field(default_factory=list)
     signals: dict[str, float] = Field(
         default_factory=dict, description="Named rule signals and their measured values"
