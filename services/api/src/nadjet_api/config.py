@@ -63,6 +63,30 @@ class Settings(BaseSettings):
         default=30_000, ge=0, description="Re-claim stream entries pending longer than this"
     )
 
+    # --- Notifications (FR-NTF, TD-13/14) ---
+    sms_gateway_url: str | None = Field(
+        default=None, description="capcom6 SMS Gateway server base URL; SMS disabled when unset"
+    )
+    sms_gateway_user: str = Field(default="", description="Gateway API username (from the app)")
+    sms_gateway_password: SecretStr | None = None
+    sms_webhook_secret: SecretStr | None = Field(
+        default=None,
+        description="Signing key of the gateway webhooks; /sms/* return 503 when unset",
+    )
+    sms_webhook_tolerance_s: int = Field(default=300, gt=0)
+    vapid_private_key: SecretStr | None = Field(
+        default=None, description="Web Push VAPID private key; `nadjet-api gen-vapid`"
+    )
+    vapid_public_key: str | None = None
+    vapid_subject: str = "mailto:ops@nadjet.example"
+    telegram_bot_token: SecretStr | None = Field(
+        default=None, description="Optional Telegram Bot API token"
+    )
+    notify_retry_base_s: int = Field(
+        default=30, gt=0, description="Resend when not delivered after this long, doubling"
+    )
+    notify_max_retries: int = Field(default=3, ge=0)
+
     @model_validator(mode="after")
     def _require_jwt_secret_in_production(self) -> "Settings":
         if self.env == "production":

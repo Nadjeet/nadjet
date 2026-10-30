@@ -30,8 +30,9 @@ class IncidentOut(BaseModel):
     to_assess: bool
     mass_casualty: bool
     needs_extrication: bool
-    lat: float
-    lon: float
+    lat: float | None
+    lon: float | None
+    location_text: str | None
     road: str | None
     pk_km: float | None
     wilaya: str | None

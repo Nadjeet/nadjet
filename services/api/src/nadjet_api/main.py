@@ -3,6 +3,7 @@
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
+import httpx
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -19,6 +20,8 @@ from nadjet_api.incidents import internal
 from nadjet_api.incidents import routes as incident_routes
 from nadjet_api.incidents.signing import ChainSigner
 from nadjet_api.incidents.store import LocalEvidenceStore
+from nadjet_api.notifications.channels import build_channels
+from nadjet_api.notifications.routes import router as notifications_router
 
 
 class HealthResponse(BaseModel):
@@ -51,9 +54,12 @@ def create_app(settings: Settings | None = None, probes: dict[str, Probe] | None
         app.state.session_factory = create_session_factory(engine)
         app.state.redis = redis
         app.state.probes = {"database": database_probe(engine), "redis": redis_probe(redis)}
+        http = httpx.AsyncClient()
+        app.state.channels = build_channels(settings, http)
         try:
             yield
         finally:
+            await http.aclose()
             await redis.aclose()
             await engine.dispose()
 
@@ -63,6 +69,8 @@ def create_app(settings: Settings | None = None, probes: dict[str, Probe] | None
     app.state.store = LocalEvidenceStore(settings.evidence_dir)
     app.include_router(auth_router)
     app.include_router(cameras_router)
+    # Before the incident routes: `/incidents/{id}.cap.xml` must win over `/incidents/{id}`.
+    app.include_router(notifications_router)
     app.include_router(incident_routes.router)
     app.include_router(internal.router)
     app.add_middleware(
