@@ -48,6 +48,24 @@ it restarts. Evidence files go under `NADJET_EVIDENCE_DIR`. Set `NADJET_SIGNING_
 (`uv run nadjet-api gen-signing-key`) in production; a fixed insecure key is used locally.
 Live updates: `GET /events` (Server-Sent Events, bearer token header).
 
+### Map, routing and facilities (once per machine)
+
+Everything runs locally; nothing contacts a public tile, routing or Overpass server at runtime.
+
+| Step | Command | Download / needs |
+|---|---|---|
+| Offline basemap | `make map-data` | Protomaps extract for Algeria, ~1-3 GB, a few minutes (needs Docker); also fetches fonts and sprites (~13 MB) |
+| Routing data | `make routing-data` | Geofabrik Algeria extract ~290 MB; `osrm-extract` needs ~4 GB RAM (raise Docker Desktop memory) and ~3 GB disk, 5-15 min |
+| Start routing | `make routing-up` | OSRM on `localhost:55000`; stop with `make routing-down` |
+| Facilities and units | `make seed-geo` | Imports `data/seed/*.csv` (simulated capabilities and units on real OSM locations); safe to re-run |
+
+`data/map/` and `apps/web/public/map/` are git-ignored. The API serves the basemap at
+`/tiles/algeria.pmtiles` (HTTP Range) and `GET /routing/recommendations?lat=&lon=&kind=&need=`
+(operator roles) ranks units and hospitals by road ETA; it answers 503 when OSRM is down. OSRM
+has no live traffic, so ETAs use an urban multiplier (`NADJET_ROUTING_URBAN_MULTIPLIER`, docs/11
+TD-37). Regenerating `data/seed/facilities.csv` is a one-off developer task:
+`python3 scripts/osm/export_facilities.py` (see `data/seed/README.md`, ODbL).
+
 ### Demo videos (optional for most work)
 
 Cameras are defined in `data/cameras.yaml` (zones in `data/zones/<camera-id>.json`, demo clips
