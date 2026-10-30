@@ -51,14 +51,21 @@ async def stream(
     await pubsub.subscribe(CHANNEL)
     try:
         yield ": connected\n\n"
+        loop = asyncio.get_running_loop()
+        last_write = loop.time()
         while True:
-            raw = await pubsub.get_message(ignore_subscribe_messages=True, timeout=heartbeat_s)
-            if raw is None:
+            # Heartbeat on elapsed time, so filtered-out traffic cannot starve it.
+            wait = max(0.0, heartbeat_s - (loop.time() - last_write))
+            raw = await pubsub.get_message(ignore_subscribe_messages=True, timeout=wait)
+            if raw is not None:
+                message = json.loads(raw["data"])
+                if visible_to(scope, message):
+                    yield frame(message)
+                    last_write = loop.time()
+                    continue
+            if loop.time() - last_write >= heartbeat_s:
                 yield ": heartbeat\n\n"
-                continue
-            message = json.loads(raw["data"])
-            if visible_to(scope, message):
-                yield frame(message)
+                last_write = loop.time()
     except asyncio.CancelledError:
         raise
     finally:

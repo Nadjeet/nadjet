@@ -38,7 +38,7 @@ def require_ingest_token(
     if settings.ingest_token is None:
         raise HTTPException(status.HTTP_503_SERVICE_UNAVAILABLE, "Ingestion is not configured")
     expected = f"Bearer {settings.ingest_token.get_secret_value()}"
-    if authorization is None or not hmac.compare_digest(authorization, expected):
+    if authorization is None or not hmac.compare_digest(authorization.encode(), expected.encode()):
         raise HTTPException(
             status.HTTP_401_UNAUTHORIZED,
             "Invalid service token",
