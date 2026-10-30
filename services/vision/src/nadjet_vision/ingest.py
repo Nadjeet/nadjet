@@ -7,7 +7,7 @@ tests drive with synthetic timestamps.
 import threading
 import time
 from collections import deque
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from dataclasses import dataclass
 from typing import Any
 
@@ -17,6 +17,8 @@ from numpy.typing import NDArray
 from nadjet_vision.config import VisionSettings
 
 BgrFrame = NDArray[np.uint8]
+# FFmpeg >= 5 calls the socket timeout `timeout` (µs); `stimeout` is silently ignored. Without it
+# a frozen camera (RTSP session open, no frames) blocks decode forever and never reconnects.
 RTSP_OPTIONS = {"rtsp_transport": "tcp", "timeout": "5000000"}
 OPEN_TIMEOUT_S = (5.0, 5.0)  # (open, read) seconds, enforced by PyAV
 
@@ -121,18 +123,20 @@ class LatestFrameQueue[T]:
             return len(self._items)
 
 
-def read_stream(
+def iter_frames(
     url: str,
     stop: Callable[[], bool],
     *,
     sampler: FrameSampler,
     ring: PacketRing,
-    on_frame: Callable[[SampledFrame], None],
-) -> None:
-    """Blocking PyAV reader: demux, keep packets, decode and sample frames until ``stop()``."""
+    on_open: Callable[[], None] | None = None,
+) -> Iterator[SampledFrame]:
+    """Blocking PyAV reader: demux, keep packets, decode and yield sampled frames."""
     import av  # gpu extra, imported lazily so local tools and tests do not need it
 
     with av.open(url, options=RTSP_OPTIONS, timeout=OPEN_TIMEOUT_S) as container:
+        if on_open is not None:
+            on_open()
         stream = container.streams.video[0]
         base: Any = stream.time_base
         for packet in container.demux(stream):
@@ -147,7 +151,7 @@ def read_stream(
                 pts = float(frame.pts * base) if frame.pts is not None else ptime
                 if sampler.accept(pts):
                     decode_ms = (time.perf_counter() - started) * 1000
-                    on_frame(SampledFrame(pts, frame.to_ndarray(format="bgr24"), decode_ms))
+                    yield SampledFrame(pts, frame.to_ndarray(format="bgr24"), decode_ms)
 
 
 def make_ingest(settings: VisionSettings) -> tuple[FrameSampler, PacketRing]:
