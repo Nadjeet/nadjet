@@ -1,5 +1,5 @@
-import rtlTextPlugin from "@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.js?url";
 import * as maplibregl from "maplibre-gl";
+import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
@@ -7,10 +7,19 @@ import { useEffect, useRef, useState } from "react";
 
 import { basemapStyle, type MapLang } from "./style";
 
+// The package only exports its ESM source, so reference the built plugin file by path.
+const rtlTextPluginUrl = new URL(
+  "../../node_modules/@mapbox/mapbox-gl-rtl-text/dist/mapbox-gl-rtl-text.js",
+  import.meta.url,
+).href;
+
+// maplibre-gl 6 ships an ES-module worker; bundle it so Vite can serve it in dev and build.
+maplibregl.setWorkerUrl(workerUrl);
+
 // Register the pmtiles:// protocol and the self-hosted Arabic shaping plugin once per page.
 maplibregl.addProtocol("pmtiles", new Protocol().tile);
 if (maplibregl.getRTLTextPluginStatus() === "unavailable") {
-  void maplibregl.setRTLTextPlugin(rtlTextPlugin, true);
+  void maplibregl.setRTLTextPlugin(rtlTextPluginUrl, true);
 }
 
 /** Boumerdès / Algiers demo area (PRD Q-09). */
@@ -62,13 +71,17 @@ export function BaseMap({ lang, center = DEMO_CENTER, zoom = 9, className, onLoa
   }, []);
 
   // Switching language swaps the label layers without recreating the map.
+  const styledLang = useRef(lang);
   useEffect(() => {
+    if (styledLang.current === lang) return; // the map was created with this language
+    styledLang.current = lang;
     map.current?.setStyle(basemapStyle(lang));
   }, [lang]);
 
   return (
     <div className={`relative ${className ?? ""}`}>
-      <div ref={container} className="absolute inset-0" />
+      {/* maplibre's CSS makes the container `position: relative`, so size it instead of inset-0 */}
+      <div ref={container} className="h-full w-full" />
       {failed && (
         <p
           role="alert"
