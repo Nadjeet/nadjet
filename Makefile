@@ -99,11 +99,11 @@ camsim-swap: ## Play another clip from data/videos on a camera: CAM=<id> VIDEO=<
 	uv run nadjet-camsim swap $(CAM) $(VIDEO)
 
 # ---------------------------------------------------------------- map and routing
-map-data: ## Download the offline Algeria basemap to data/map/algeria.pmtiles (1-3 GB, once)
+map-data: ## Download the offline Algeria basemap to data/map/algeria.pmtiles (~560 MB, once)
 	@bash scripts/map-data.sh
 	@bash scripts/map-assets.sh
 
-routing-data: ## Download the Algeria OSM extract and prepare OSRM data (~290 MB, ~2 GB RAM, once)
+routing-data: ## Download the Algeria OSM extract and prepare OSRM data (~290 MB, ~1.3 GB RAM, once)
 	@bash scripts/routing-data.sh
 
 routing-up: env ## Start OSRM (after make routing-data) and wait until healthy
@@ -113,7 +113,7 @@ routing-down: ## Stop OSRM
 	$(COMPOSE) --profile routing stop osrm
 
 seed-geo: ## Import facilities and units from data/seed/*.csv (idempotent)
-	cd services/api && uv run nadjet-api seed-geo
+	uv run nadjet-api seed-geo
 
 # ---------------------------------------------------------------- contracts
 gen: ## Regenerate contracts (event schemas, OpenAPI) and the TS client

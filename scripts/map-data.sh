@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Build the offline Algeria basemap: extract a bbox from a Protomaps daily build into
-# data/map/algeria.pmtiles (git-ignored). Needs Docker and internet once; ~1-3 GB, a few minutes.
+# data/map/algeria.pmtiles (git-ignored). Needs Docker and internet once; ~560 MB at zoom 14.
 set -euo pipefail
 cd "$(dirname "$0")/.."
 
