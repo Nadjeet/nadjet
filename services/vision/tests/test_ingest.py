@@ -71,3 +71,14 @@ def test_ring_resets_when_timestamps_restart() -> None:
         ring.append(packet)
     ring.append(Packet(0.0, True, b"new"))
     assert len(ring.snapshot()) == 1
+
+
+def test_ring_keeps_packets_whose_pts_goes_back_with_b_frames() -> None:
+    """Decode order has non-monotonic PTS (I P B B); only a DTS going back is a restart."""
+    ring = PacketRing(window_s=100)
+    order = [(0.0, 0.0), (0.3, 0.1), (0.1, 0.2), (0.2, 0.3), (0.6, 0.4), (0.4, 0.5), (0.5, 0.6)]
+    for i, (pts, dts) in enumerate(order):
+        ring.append(Packet(pts, i == 0, b"x", dts))
+    assert len(ring.snapshot()) == len(order)
+    ring.append(Packet(0.0, True, b"new", 0.0))  # a reconnect: DTS goes back
+    assert [p.data for p in ring.snapshot()] == [b"new"]

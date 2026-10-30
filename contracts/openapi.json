@@ -99,45 +99,6 @@
         "title": "AiStatus",
         "type": "string"
       },
-      "AiStatus-Output": {
-        "properties": {
-          "available": {
-            "title": "Available",
-            "type": "boolean"
-          },
-          "detail": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Why the AI is unavailable (no secrets), else null",
-            "title": "Detail"
-          },
-          "model": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "null"
-              }
-            ],
-            "description": "Served model id when available, else null",
-            "title": "Model"
-          }
-        },
-        "required": [
-          "available",
-          "model",
-          "detail"
-        ],
-        "title": "AiStatus",
-        "type": "object"
-      },
       "AlertRecord": {
         "additionalProperties": false,
         "properties": {
@@ -329,6 +290,51 @@
         "title": "Body_upload_evidence_internal_evidence_post",
         "type": "object"
       },
+      "Box": {
+        "additionalProperties": false,
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "track_id": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Track Id"
+          },
+          "x1": {
+            "title": "X1",
+            "type": "number"
+          },
+          "x2": {
+            "title": "X2",
+            "type": "number"
+          },
+          "y1": {
+            "title": "Y1",
+            "type": "number"
+          },
+          "y2": {
+            "title": "Y2",
+            "type": "number"
+          }
+        },
+        "required": [
+          "x1",
+          "y1",
+          "x2",
+          "y2",
+          "label"
+        ],
+        "title": "Box",
+        "type": "object"
+      },
       "CameraHealthAck": {
         "properties": {
           "status": {
@@ -471,6 +477,12 @@
           "lat": {
             "title": "Lat",
             "type": "number"
+          },
+          "live_demo": {
+            "default": false,
+            "description": "A visitor's phone on the try page (sandbox, FR-CIT-003)",
+            "title": "Live Demo",
+            "type": "boolean"
           },
           "lon": {
             "title": "Lon",
@@ -3011,6 +3023,258 @@
         "title": "Role",
         "type": "string"
       },
+      "SandboxIncident-Input": {
+        "additionalProperties": false,
+        "description": "What an operator would have been shown, kept inside the sandbox.",
+        "properties": {
+          "ai_status": {
+            "$ref": "#/components/schemas/AiStatus-Input"
+          },
+          "description_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Ar"
+          },
+          "description_fr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Fr"
+          },
+          "event_time_s": {
+            "minimum": 0.0,
+            "title": "Event Time S",
+            "type": "number"
+          },
+          "trigger": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Rule trigger near the moment, if any",
+            "title": "Trigger"
+          },
+          "type": {
+            "enum": [
+              "collision",
+              "possible_incident"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "vehicles": {
+            "description": "Detector boxes at the moment",
+            "items": {
+              "$ref": "#/components/schemas/Box"
+            },
+            "title": "Vehicles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "type",
+          "ai_status",
+          "event_time_s"
+        ],
+        "title": "SandboxIncident",
+        "type": "object"
+      },
+      "SandboxIncident-Output": {
+        "additionalProperties": false,
+        "description": "What an operator would have been shown, kept inside the sandbox.",
+        "properties": {
+          "ai_status": {
+            "$ref": "#/components/schemas/nadjet_shared__events__AiStatus"
+          },
+          "description_ar": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Ar"
+          },
+          "description_fr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description Fr"
+          },
+          "event_time_s": {
+            "minimum": 0.0,
+            "title": "Event Time S",
+            "type": "number"
+          },
+          "trigger": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Rule trigger near the moment, if any",
+            "title": "Trigger"
+          },
+          "type": {
+            "enum": [
+              "collision",
+              "possible_incident"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "vehicles": {
+            "description": "Detector boxes at the moment",
+            "items": {
+              "$ref": "#/components/schemas/Box"
+            },
+            "title": "Vehicles",
+            "type": "array"
+          }
+        },
+        "required": [
+          "type",
+          "ai_status",
+          "event_time_s"
+        ],
+        "title": "SandboxIncident",
+        "type": "object"
+      },
+      "SessionEvent-Input": {
+        "additionalProperties": false,
+        "description": "One AI check or trigger of a live phone session (sandbox, shown on the try page).",
+        "properties": {
+          "ai_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/AiStatus-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "ai_check",
+              "trigger"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "verifier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "at",
+          "kind",
+          "label",
+          "source"
+        ],
+        "title": "SessionEvent",
+        "type": "object"
+      },
+      "SessionEvent-Output": {
+        "additionalProperties": false,
+        "description": "One AI check or trigger of a live phone session (sandbox, shown on the try page).",
+        "properties": {
+          "ai_status": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/nadjet_shared__events__AiStatus"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "at": {
+            "format": "date-time",
+            "title": "At",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "ai_check",
+              "trigger"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "source": {
+            "title": "Source",
+            "type": "string"
+          },
+          "verifier": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "required": [
+          "at",
+          "kind",
+          "label",
+          "source"
+        ],
+        "title": "SessionEvent",
+        "type": "object"
+      },
       "SkippedClip": {
         "additionalProperties": false,
         "properties": {
@@ -3159,6 +3423,54 @@
         "title": "StreamUrls",
         "type": "object"
       },
+      "TimelineEntry": {
+        "additionalProperties": false,
+        "description": "One event of the analysed clip, in clip seconds, with the source of the value.",
+        "properties": {
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Detail"
+          },
+          "kind": {
+            "enum": [
+              "trigger",
+              "ai_scan",
+              "ai_refine"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "source": {
+            "description": "Rule name or model id (FR-VIS-021)",
+            "title": "Source",
+            "type": "string"
+          },
+          "t": {
+            "minimum": 0.0,
+            "title": "T",
+            "type": "number"
+          }
+        },
+        "required": [
+          "t",
+          "kind",
+          "label",
+          "source"
+        ],
+        "title": "TimelineEntry",
+        "type": "object"
+      },
       "TokenResponse": {
         "properties": {
           "access_token": {
@@ -3211,6 +3523,442 @@
         ],
         "title": "TriggerType",
         "type": "string"
+      },
+      "TryAiReport": {
+        "additionalProperties": false,
+        "description": "What the try-it worker tells the API about the Brev AI (the page says \"AI unavailable\").",
+        "properties": {
+          "ai_available": {
+            "title": "Ai Available",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ai_available"
+        ],
+        "title": "TryAiReport",
+        "type": "object"
+      },
+      "TryJobClaim": {
+        "properties": {
+          "filename": {
+            "title": "Filename",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "filename"
+        ],
+        "title": "TryJobClaim",
+        "type": "object"
+      },
+      "TryJobFailure": {
+        "additionalProperties": false,
+        "properties": {
+          "error": {
+            "maxLength": 300,
+            "title": "Error",
+            "type": "string"
+          },
+          "rejected": {
+            "default": false,
+            "description": "Not a usable video: nothing was analysed",
+            "title": "Rejected",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "TryJobFailure",
+        "type": "object"
+      },
+      "TryJobOut": {
+        "properties": {
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "has_video": {
+            "title": "Has Video",
+            "type": "boolean"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "progress": {
+            "title": "Progress",
+            "type": "number"
+          },
+          "result": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/TryResult-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "stage": {
+            "title": "Stage",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "queued",
+              "processing",
+              "done",
+              "failed",
+              "rejected"
+            ],
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "stage",
+          "progress",
+          "error",
+          "result",
+          "has_video",
+          "expires_at"
+        ],
+        "title": "TryJobOut",
+        "type": "object"
+      },
+      "TryProgress": {
+        "additionalProperties": false,
+        "properties": {
+          "progress": {
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Progress",
+            "type": "number"
+          },
+          "stage": {
+            "maxLength": 32,
+            "title": "Stage",
+            "type": "string"
+          }
+        },
+        "required": [
+          "stage",
+          "progress"
+        ],
+        "title": "TryProgress",
+        "type": "object"
+      },
+      "TryResult-Input": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_available": {
+            "description": "False: only the rule-based analysis is shown",
+            "title": "Ai Available",
+            "type": "boolean"
+          },
+          "duration_s": {
+            "minimum": 0.0,
+            "title": "Duration S",
+            "type": "number"
+          },
+          "event_t_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Refined, damped and capped",
+            "title": "Event T S"
+          },
+          "frames_analysed": {
+            "minimum": 0.0,
+            "title": "Frames Analysed",
+            "type": "integer"
+          },
+          "models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Models",
+            "type": "object"
+          },
+          "refine": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass 2: around the moment"
+          },
+          "sandbox_incident": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SandboxIncident-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass 1: whole clip, 1-2 fps"
+          },
+          "scan_t_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scan T S"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineEntry"
+            },
+            "title": "Timeline",
+            "type": "array"
+          }
+        },
+        "required": [
+          "duration_s",
+          "frames_analysed",
+          "ai_available"
+        ],
+        "title": "TryResult",
+        "type": "object"
+      },
+      "TryResult-Output": {
+        "additionalProperties": false,
+        "properties": {
+          "ai_available": {
+            "description": "False: only the rule-based analysis is shown",
+            "title": "Ai Available",
+            "type": "boolean"
+          },
+          "duration_s": {
+            "minimum": 0.0,
+            "title": "Duration S",
+            "type": "number"
+          },
+          "event_t_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Refined, damped and capped",
+            "title": "Event T S"
+          },
+          "frames_analysed": {
+            "minimum": 0.0,
+            "title": "Frames Analysed",
+            "type": "integer"
+          },
+          "models": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "title": "Models",
+            "type": "object"
+          },
+          "refine": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass 2: around the moment"
+          },
+          "sandbox_incident": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/SandboxIncident-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scan": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/VerifierResult"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Pass 1: whole clip, 1-2 fps"
+          },
+          "scan_t_s": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scan T S"
+          },
+          "timeline": {
+            "items": {
+              "$ref": "#/components/schemas/TimelineEntry"
+            },
+            "title": "Timeline",
+            "type": "array"
+          }
+        },
+        "required": [
+          "duration_s",
+          "frames_analysed",
+          "ai_available"
+        ],
+        "title": "TryResult",
+        "type": "object"
+      },
+      "TrySessionOut": {
+        "properties": {
+          "events": {
+            "items": {
+              "$ref": "#/components/schemas/SessionEvent-Output"
+            },
+            "title": "Events",
+            "type": "array"
+          },
+          "expires_at": {
+            "format": "date-time",
+            "title": "Expires At",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "path": {
+            "description": "Video server path the phone publishes to",
+            "title": "Path",
+            "type": "string"
+          },
+          "status": {
+            "enum": [
+              "active",
+              "ended"
+            ],
+            "title": "Status",
+            "type": "string"
+          },
+          "whep_url": {
+            "title": "Whep Url",
+            "type": "string"
+          },
+          "whip_url": {
+            "title": "Whip Url",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "status",
+          "path",
+          "whip_url",
+          "whep_url",
+          "expires_at",
+          "events"
+        ],
+        "title": "TrySessionOut",
+        "type": "object"
+      },
+      "TrySessionRef": {
+        "properties": {
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "path": {
+            "title": "Path",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "path"
+        ],
+        "title": "TrySessionRef",
+        "type": "object"
+      },
+      "TryStatus": {
+        "properties": {
+          "ai_available": {
+            "description": "Brev verifier reachable (reported by the worker)",
+            "title": "Ai Available",
+            "type": "boolean"
+          },
+          "max_mb": {
+            "title": "Max Mb",
+            "type": "integer"
+          },
+          "max_seconds": {
+            "title": "Max Seconds",
+            "type": "integer"
+          },
+          "ttl_s": {
+            "title": "Ttl S",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "ai_available",
+          "max_seconds",
+          "max_mb",
+          "ttl_s"
+        ],
+        "title": "TryStatus",
+        "type": "object"
       },
       "UserOut": {
         "properties": {
@@ -3567,6 +4315,56 @@
         },
         "title": "Witness",
         "type": "object"
+      },
+      "nadjet_api__system__routes__AiStatus": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the AI is unavailable (no secrets), else null",
+            "title": "Detail"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Served model id when available, else null",
+            "title": "Model"
+          }
+        },
+        "required": [
+          "available",
+          "model",
+          "detail"
+        ],
+        "title": "AiStatus",
+        "type": "object"
+      },
+      "nadjet_shared__events__AiStatus": {
+        "description": "Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.",
+        "enum": [
+          "confirmed",
+          "probable",
+          "possible",
+          "insufficient_evidence"
+        ],
+        "title": "AiStatus",
+        "type": "string"
       }
     },
     "securitySchemes": {
@@ -4988,6 +5786,544 @@
         ]
       }
     },
+    "/internal/try/claim": {
+      "post": {
+        "operationId": "claim_internal_try_claim_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryJobClaim"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "204": {
+            "description": "Nothing queued"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Claim",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/fail": {
+      "post": {
+        "operationId": "post_failure_internal_try_jobs__job_id__fail_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryJobFailure"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Not processing"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Failure",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/file": {
+      "get": {
+        "operationId": "job_file_internal_try_jobs__job_id__file_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Gone"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Job File",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/progress": {
+      "post": {
+        "operationId": "progress_internal_try_jobs__job_id__progress_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryProgress"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Not processing"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Progress",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/result": {
+      "post": {
+        "operationId": "post_result_internal_try_jobs__job_id__result_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryResult-Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "409": {
+            "description": "Not processing"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Post Result",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/jobs/{job_id}/video": {
+      "put": {
+        "description": "Store the annotated video (raw MP4 body).",
+        "operationId": "put_video_internal_try_jobs__job_id__video_put",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Unknown job"
+          },
+          "413": {
+            "description": "Too large"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Put Video",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/sessions": {
+      "get": {
+        "description": "Live phone sessions the worker should be attached to.",
+        "operationId": "active_sessions_internal_try_sessions_get",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/TrySessionRef"
+                  },
+                  "title": "Response Active Sessions Internal Try Sessions Get",
+                  "type": "array"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Active Sessions",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/sessions/{session_id}/events": {
+      "post": {
+        "operationId": "session_event_internal_try_sessions__session_id__events_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          },
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SessionEvent-Input"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Session ended"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Session Event",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
+    "/internal/try/status": {
+      "post": {
+        "description": "The worker reports whether the Brev AI answers; the flag expires if it stops reporting.",
+        "operationId": "report_status_internal_try_status_post",
+        "parameters": [
+          {
+            "in": "header",
+            "name": "authorization",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Authorization"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TryAiReport"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Report Status",
+        "tags": [
+          "internal"
+        ]
+      }
+    },
     "/map/resources": {
       "get": {
         "description": "Every facility and unit with its position; ``simulated`` ones must be labelled.",
@@ -5076,6 +6412,413 @@
         "summary": "Post Report",
         "tags": [
           "public"
+        ]
+      }
+    },
+    "/public/try/jobs": {
+      "post": {
+        "description": "Upload the raw video as the request body (``Content-Type: video/*``). The upload stops\nas soon as it is too large; the file is sniffed and, for MP4/MOV, its duration is read.",
+        "operationId": "create_job_public_try_jobs_post",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "filename",
+            "required": false,
+            "schema": {
+              "default": "clip",
+              "maxLength": 255,
+              "title": "Filename",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "video/mp4": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            },
+            "video/quicktime": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            },
+            "video/webm": {
+              "schema": {
+                "format": "binary",
+                "type": "string"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "202": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryJobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "413": {
+            "description": "Too large"
+          },
+          "415": {
+            "description": "Not a video"
+          },
+          "422": {
+            "description": "Too long"
+          },
+          "429": {
+            "description": "Rate limit"
+          }
+        },
+        "summary": "Create Job",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/jobs/{job_id}": {
+      "delete": {
+        "description": "Delete an upload and its outputs now (the owner of the link may do it before the TTL).",
+        "operationId": "delete_job_public_try_jobs__job_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Delete Job",
+        "tags": [
+          "public-try"
+        ]
+      },
+      "get": {
+        "operationId": "get_job_public_try_jobs__job_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryJobOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Unknown or expired"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Job",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/jobs/{job_id}/events": {
+      "get": {
+        "description": "Progress of a job over SSE (FR-CIT-002).",
+        "operationId": "stream_job_public_try_jobs__job_id__events_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "429": {
+            "description": "Rate limit"
+          }
+        },
+        "summary": "Stream Job",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/jobs/{job_id}/video": {
+      "get": {
+        "operationId": "job_video_public_try_jobs__job_id__video_get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "job_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Job Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "No annotated video"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Job Video",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/sessions": {
+      "post": {
+        "description": "A temporary live camera: the phone publishes to ``whip_url`` and pings while it stays.",
+        "operationId": "create_session_public_try_sessions_post",
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrySessionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "429": {
+            "description": "Rate limit"
+          }
+        },
+        "summary": "Create Session",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/sessions/{session_id}": {
+      "delete": {
+        "description": "The phone leaves: the session and its results are deleted at once.",
+        "operationId": "end_session_public_try_sessions__session_id__delete",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "End Session",
+        "tags": [
+          "public-try"
+        ]
+      },
+      "get": {
+        "operationId": "get_session_state_public_try_sessions__session_id__get",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TrySessionOut"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Ended"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Get Session State",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/sessions/{session_id}/ping": {
+      "post": {
+        "operationId": "ping_session_public_try_sessions__session_id__ping_post",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "session_id",
+            "required": true,
+            "schema": {
+              "format": "uuid",
+              "title": "Session Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "404": {
+            "description": "Ended"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Ping Session",
+        "tags": [
+          "public-try"
+        ]
+      }
+    },
+    "/public/try/status": {
+      "get": {
+        "description": "Limits and whether the Brev AI is reachable (the page shows \"AI unavailable\").",
+        "operationId": "try_status_public_try_status_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TryStatus"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Try Status",
+        "tags": [
+          "public-try"
         ]
       }
     },
@@ -5486,7 +7229,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AiStatus-Output"
+                  "$ref": "#/components/schemas/nadjet_api__system__routes__AiStatus"
                 }
               }
             },

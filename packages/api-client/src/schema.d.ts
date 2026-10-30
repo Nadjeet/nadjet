@@ -490,6 +490,168 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/internal/try/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Claim */
+        post: operations["claim_internal_try_claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/fail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Failure */
+        post: operations["post_failure_internal_try_jobs__job_id__fail_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Job File */
+        get: operations["job_file_internal_try_jobs__job_id__file_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Progress */
+        post: operations["progress_internal_try_jobs__job_id__progress_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Result */
+        post: operations["post_result_internal_try_jobs__job_id__result_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Put Video
+         * @description Store the annotated video (raw MP4 body).
+         */
+        put: operations["put_video_internal_try_jobs__job_id__video_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Active Sessions
+         * @description Live phone sessions the worker should be attached to.
+         */
+        get: operations["active_sessions_internal_try_sessions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/sessions/{session_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Session Event */
+        post: operations["session_event_internal_try_sessions__session_id__events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report Status
+         * @description The worker reports whether the Brev AI answers; the flag expires if it stops reporting.
+         */
+        post: operations["report_status_internal_try_status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/map/resources": {
         parameters: {
             query?: never;
@@ -526,6 +688,163 @@ export interface paths {
          *     Re-sending the same ``Idempotency-Key`` (a double tap, a retry) returns the same report.
          */
         post: operations["post_report_public_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Job
+         * @description Upload the raw video as the request body (``Content-Type: video/*``). The upload stops
+         *     as soon as it is too large; the file is sniffed and, for MP4/MOV, its duration is read.
+         */
+        post: operations["create_job_public_try_jobs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Job */
+        get: operations["get_job_public_try_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Job
+         * @description Delete an upload and its outputs now (the owner of the link may do it before the TTL).
+         */
+        delete: operations["delete_job_public_try_jobs__job_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs/{job_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Job
+         * @description Progress of a job over SSE (FR-CIT-002).
+         */
+        get: operations["stream_job_public_try_jobs__job_id__events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs/{job_id}/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Job Video */
+        get: operations["job_video_public_try_jobs__job_id__video_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Session
+         * @description A temporary live camera: the phone publishes to ``whip_url`` and pings while it stays.
+         */
+        post: operations["create_session_public_try_sessions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/sessions/{session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Session State */
+        get: operations["get_session_state_public_try_sessions__session_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * End Session
+         * @description The phone leaves: the session and its results are deleted at once.
+         */
+        delete: operations["end_session_public_try_sessions__session_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/sessions/{session_id}/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ping Session */
+        post: operations["ping_session_public_try_sessions__session_id__ping_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Try Status
+         * @description Limits and whether the Brev AI is reachable (the page shows "AI unavailable").
+         */
+        get: operations["try_status_public_try_status_get"];
+        put?: never;
+        post?: never;
         delete?: never;
         options?: never;
         head?: never;
@@ -757,21 +1076,6 @@ export interface components {
          * @enum {string}
          */
         "AiStatus-Input": "confirmed" | "probable" | "possible" | "insufficient_evidence";
-        /** AiStatus */
-        "AiStatus-Output": {
-            /** Available */
-            available: boolean;
-            /**
-             * Detail
-             * @description Why the AI is unavailable (no secrets), else null
-             */
-            detail: string | null;
-            /**
-             * Model
-             * @description Served model id when available, else null
-             */
-            model: string | null;
-        };
         /** AlertRecord */
         AlertRecord: {
             /** Ai Status */
@@ -837,6 +1141,21 @@ export interface components {
             /** Start Ts */
             start_ts?: string | null;
         };
+        /** Box */
+        Box: {
+            /** Label */
+            label: string;
+            /** Track Id */
+            track_id?: number | null;
+            /** X1 */
+            x1: number;
+            /** X2 */
+            x2: number;
+            /** Y1 */
+            y1: number;
+            /** Y2 */
+            y2: number;
+        };
         /** CameraHealthAck */
         CameraHealthAck: {
             /**
@@ -898,6 +1217,12 @@ export interface components {
             id: string;
             /** Lat */
             lat: number;
+            /**
+             * Live Demo
+             * @description A visitor's phone on the try page (sandbox, FR-CIT-003)
+             * @default false
+             */
+            live_demo: boolean;
             /** Lon */
             lon: number;
             /** Name */
@@ -1844,6 +2169,106 @@ export interface components {
          * @enum {string}
          */
         Role: "operator" | "supervisor" | "responder" | "hospital" | "auditor" | "admin";
+        /**
+         * SandboxIncident
+         * @description What an operator would have been shown, kept inside the sandbox.
+         */
+        "SandboxIncident-Input": {
+            ai_status: components["schemas"]["AiStatus-Input"];
+            /** Description Ar */
+            description_ar?: string | null;
+            /** Description Fr */
+            description_fr?: string | null;
+            /** Event Time S */
+            event_time_s: number;
+            /**
+             * Trigger
+             * @description Rule trigger near the moment, if any
+             */
+            trigger?: string | null;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "collision" | "possible_incident";
+            /**
+             * Vehicles
+             * @description Detector boxes at the moment
+             */
+            vehicles?: components["schemas"]["Box"][];
+        };
+        /**
+         * SandboxIncident
+         * @description What an operator would have been shown, kept inside the sandbox.
+         */
+        "SandboxIncident-Output": {
+            ai_status: components["schemas"]["nadjet_shared__events__AiStatus"];
+            /** Description Ar */
+            description_ar?: string | null;
+            /** Description Fr */
+            description_fr?: string | null;
+            /** Event Time S */
+            event_time_s: number;
+            /**
+             * Trigger
+             * @description Rule trigger near the moment, if any
+             */
+            trigger?: string | null;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "collision" | "possible_incident";
+            /**
+             * Vehicles
+             * @description Detector boxes at the moment
+             */
+            vehicles?: components["schemas"]["Box"][];
+        };
+        /**
+         * SessionEvent
+         * @description One AI check or trigger of a live phone session (sandbox, shown on the try page).
+         */
+        "SessionEvent-Input": {
+            ai_status?: components["schemas"]["AiStatus-Input"] | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "ai_check" | "trigger";
+            /** Label */
+            label: string;
+            /** Source */
+            source: string;
+            verifier?: components["schemas"]["VerifierResult"] | null;
+        };
+        /**
+         * SessionEvent
+         * @description One AI check or trigger of a live phone session (sandbox, shown on the try page).
+         */
+        "SessionEvent-Output": {
+            ai_status?: components["schemas"]["nadjet_shared__events__AiStatus"] | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "ai_check" | "trigger";
+            /** Label */
+            label: string;
+            /** Source */
+            source: string;
+            verifier?: components["schemas"]["VerifierResult"] | null;
+        };
         /** SkippedClip */
         SkippedClip: {
             /** Id */
@@ -1904,6 +2329,28 @@ export interface components {
              */
             whep_url: string;
         };
+        /**
+         * TimelineEntry
+         * @description One event of the analysed clip, in clip seconds, with the source of the value.
+         */
+        TimelineEntry: {
+            /** Detail */
+            detail?: string | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "trigger" | "ai_scan" | "ai_refine";
+            /** Label */
+            label: string;
+            /**
+             * Source
+             * @description Rule name or model id (FR-VIS-021)
+             */
+            source: string;
+            /** T */
+            t: number;
+        };
         /** TokenResponse */
         TokenResponse: {
             /** Access Token */
@@ -1932,6 +2379,170 @@ export interface components {
          * @enum {string}
          */
         TriggerType: "collision_candidate" | "hard_stop" | "stalled_vehicle" | "pedestrian_on_road" | "ai_sweep" | "citizen_report" | "operator_report";
+        /**
+         * TryAiReport
+         * @description What the try-it worker tells the API about the Brev AI (the page says "AI unavailable").
+         */
+        TryAiReport: {
+            /** Ai Available */
+            ai_available: boolean;
+        };
+        /** TryJobClaim */
+        TryJobClaim: {
+            /** Filename */
+            filename: string;
+            /** Id */
+            id: string;
+        };
+        /** TryJobFailure */
+        TryJobFailure: {
+            /** Error */
+            error: string;
+            /**
+             * Rejected
+             * @description Not a usable video: nothing was analysed
+             * @default false
+             */
+            rejected: boolean;
+        };
+        /** TryJobOut */
+        TryJobOut: {
+            /** Error */
+            error: string | null;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Has Video */
+            has_video: boolean;
+            /** Id */
+            id: string;
+            /** Progress */
+            progress: number;
+            result: components["schemas"]["TryResult-Output"] | null;
+            /** Stage */
+            stage: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "processing" | "done" | "failed" | "rejected";
+        };
+        /** TryProgress */
+        TryProgress: {
+            /** Progress */
+            progress: number;
+            /** Stage */
+            stage: string;
+        };
+        /** TryResult */
+        "TryResult-Input": {
+            /**
+             * Ai Available
+             * @description False: only the rule-based analysis is shown
+             */
+            ai_available: boolean;
+            /** Duration S */
+            duration_s: number;
+            /**
+             * Event T S
+             * @description Refined, damped and capped
+             */
+            event_t_s?: number | null;
+            /** Frames Analysed */
+            frames_analysed: number;
+            /** Models */
+            models?: {
+                [key: string]: string;
+            };
+            /** @description Pass 2: around the moment */
+            refine?: components["schemas"]["VerifierResult"] | null;
+            sandbox_incident?: components["schemas"]["SandboxIncident-Input"] | null;
+            /** @description Pass 1: whole clip, 1-2 fps */
+            scan?: components["schemas"]["VerifierResult"] | null;
+            /** Scan T S */
+            scan_t_s?: number | null;
+            /** Timeline */
+            timeline?: components["schemas"]["TimelineEntry"][];
+        };
+        /** TryResult */
+        "TryResult-Output": {
+            /**
+             * Ai Available
+             * @description False: only the rule-based analysis is shown
+             */
+            ai_available: boolean;
+            /** Duration S */
+            duration_s: number;
+            /**
+             * Event T S
+             * @description Refined, damped and capped
+             */
+            event_t_s?: number | null;
+            /** Frames Analysed */
+            frames_analysed: number;
+            /** Models */
+            models?: {
+                [key: string]: string;
+            };
+            /** @description Pass 2: around the moment */
+            refine?: components["schemas"]["VerifierResult"] | null;
+            sandbox_incident?: components["schemas"]["SandboxIncident-Output"] | null;
+            /** @description Pass 1: whole clip, 1-2 fps */
+            scan?: components["schemas"]["VerifierResult"] | null;
+            /** Scan T S */
+            scan_t_s?: number | null;
+            /** Timeline */
+            timeline?: components["schemas"]["TimelineEntry"][];
+        };
+        /** TrySessionOut */
+        TrySessionOut: {
+            /** Events */
+            events: components["schemas"]["SessionEvent-Output"][];
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Id */
+            id: string;
+            /**
+             * Path
+             * @description Video server path the phone publishes to
+             */
+            path: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "ended";
+            /** Whep Url */
+            whep_url: string;
+            /** Whip Url */
+            whip_url: string;
+        };
+        /** TrySessionRef */
+        TrySessionRef: {
+            /** Id */
+            id: string;
+            /** Path */
+            path: string;
+        };
+        /** TryStatus */
+        TryStatus: {
+            /**
+             * Ai Available
+             * @description Brev verifier reachable (reported by the worker)
+             */
+            ai_available: boolean;
+            /** Max Mb */
+            max_mb: number;
+            /** Max Seconds */
+            max_seconds: number;
+            /** Ttl S */
+            ttl_s: number;
+        };
         /** UserOut */
         UserOut: {
             agency: components["schemas"]["Agency"] | null;
@@ -2067,6 +2678,27 @@ export interface components {
              */
             trapped: boolean;
         };
+        /** AiStatus */
+        nadjet_api__system__routes__AiStatus: {
+            /** Available */
+            available: boolean;
+            /**
+             * Detail
+             * @description Why the AI is unavailable (no secrets), else null
+             */
+            detail: string | null;
+            /**
+             * Model
+             * @description Served model id when available, else null
+             */
+            model: string | null;
+        };
+        /**
+         * AiStatus
+         * @description Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.
+         * @enum {string}
+         */
+        nadjet_shared__events__AiStatus: "confirmed" | "probable" | "possible" | "insufficient_evidence";
     };
     responses: never;
     parameters: never;
@@ -3077,6 +3709,361 @@ export interface operations {
             };
         };
     };
+    claim_internal_try_claim_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryJobClaim"];
+                };
+            };
+            /** @description Nothing queued */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_failure_internal_try_jobs__job_id__fail_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryJobFailure"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not processing */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    job_file_internal_try_jobs__job_id__file_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Gone */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    progress_internal_try_jobs__job_id__progress_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryProgress"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not processing */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_result_internal_try_jobs__job_id__result_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryResult-Input"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not processing */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_video_internal_try_jobs__job_id__video_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown job */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    active_sessions_internal_try_sessions_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrySessionRef"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    session_event_internal_try_sessions__session_id__events_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SessionEvent-Input"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session ended */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_status_internal_try_status_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryAiReport"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     map_resources_map_resources_get: {
         parameters: {
             query?: never;
@@ -3148,6 +4135,355 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    create_job_public_try_jobs_post: {
+        parameters: {
+            query?: {
+                filename?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "video/mp4": string;
+                "video/quicktime": string;
+                "video/webm": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryJobOut"];
+                };
+            };
+            /** @description Too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a video */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too long */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Rate limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_job_public_try_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryJobOut"];
+                };
+            };
+            /** @description Unknown or expired */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_job_public_try_jobs__job_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_job_public_try_jobs__job_id__events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Rate limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    job_video_public_try_jobs__job_id__video_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description No annotated video */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_session_public_try_sessions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrySessionOut"];
+                };
+            };
+            /** @description Rate limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_session_state_public_try_sessions__session_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrySessionOut"];
+                };
+            };
+            /** @description Ended */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    end_session_public_try_sessions__session_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ping_session_public_try_sessions__session_id__ping_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ended */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    try_status_public_try_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryStatus"];
+                };
             };
         };
     };
@@ -3381,7 +4717,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": components["schemas"]["AiStatus-Output"];
+                    "application/json": components["schemas"]["nadjet_api__system__routes__AiStatus"];
                 };
             };
             /** @description Not authenticated */

@@ -84,6 +84,7 @@ class Sweeper:
     tracker: SweepTracker = field(default_factory=SweepTracker)
     thresholds: StatusThresholds = field(default_factory=StatusThresholds)
     rule_cooling_down: Callable[[float], bool] = lambda wall: False
+    on_check: Callable[[VerifierResult, float], None] | None = None
     skipped_busy: int = 0
     _last_start: float | None = None
     _running: bool = False
@@ -114,6 +115,8 @@ class Sweeper:
         try:
             result = await self.verifier.sweep(packets, info, end_s)
             hits = self.tracker.record(result)
+            if self.on_check is not None:
+                self.on_check(result, wall)
             if hits:
                 self._emit(result, end_s, wall, hits, packets, info)
         except Exception:

@@ -1,5 +1,6 @@
 """FastAPI application factory."""
 
+import asyncio
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
@@ -34,6 +35,10 @@ from nadjet_api.notifications.routes import router as notifications_router
 from nadjet_api.routing.router import OsrmRouter, Router
 from nadjet_api.routing.routes import router as routing_router
 from nadjet_api.system.routes import router as system_ai_router
+from nadjet_api.tryit import service as try_service
+from nadjet_api.tryit.internal import router as try_internal_router
+from nadjet_api.tryit.routes import purge_loop
+from nadjet_api.tryit.routes import router as try_router
 
 
 class HealthResponse(BaseModel):
@@ -74,11 +79,17 @@ def create_app(
         app.state.redis = redis
         app.state.probes = {"database": database_probe(engine), "redis": redis_probe(redis)}
         app.state.channels = build_channels(settings, http)
+        stop_purge = asyncio.Event()
+        purger = asyncio.create_task(
+            purge_loop(app.state, settings.try_purge_interval_s, stop_purge)
+        )
         # Notification jobs are enqueued after each dispatch (the worker runs them, TD-08).
         app.state.arq = await create_pool(RedisSettings.from_dsn(str(settings.redis_url)))
         try:
             yield
         finally:
+            stop_purge.set()
+            await purger
             await app.state.arq.aclose()
             await http.aclose()
             await redis.aclose()
@@ -88,6 +99,7 @@ def create_app(
     app.state.settings = settings
     app.state.signer = ChainSigner(settings.signing_seed)
     app.state.store = LocalEvidenceStore(settings.evidence_dir)
+    app.state.try_store = try_service.SandboxStore(settings.try_dir)
     app.include_router(auth_router)
     app.include_router(cameras_router)
     app.include_router(system_cameras_router)
@@ -102,6 +114,8 @@ def create_app(
     app.include_router(routing_router)
     app.include_router(evaluation_router)
     app.include_router(map_resources_router)
+    app.include_router(try_router)
+    app.include_router(try_internal_router)
     app.include_router(tiles_router)
     app.add_middleware(
         CORSMiddleware,

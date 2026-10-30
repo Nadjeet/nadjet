@@ -72,6 +72,32 @@ class Settings(BaseSettings):
         default=Path(__file__).resolve().parents[4] / "eval" / "results",
         description="Evaluation results written by `make eval`",
     )
+    try_dir: Path = Field(
+        default=Path("try-sandbox"), description="Isolated store of public uploads (FR-CIT-004)"
+    )
+    try_max_mb: int = Field(default=100, gt=0, description="Max upload size (FR-CIT-002)")
+    try_max_seconds: int = Field(default=60, gt=0, description="Max clip length (FR-CIT-002)")
+    try_ttl_s: int = Field(default=3600, gt=0, description="Uploads and results live this long")
+    try_jobs_per_minute: int = Field(default=5, gt=0, description="Uploads per IP per minute")
+    try_sessions_per_minute: int = Field(default=5, gt=0, description="Live sessions per IP")
+    try_session_idle_s: int = Field(default=30, gt=0, description="No ping for this long: ended")
+    try_job_timeout_s: int = Field(default=300, gt=0, description="Worker silent: job failed")
+    try_purge_interval_s: float = Field(default=60.0, gt=0)
+    try_max_open_jobs: int = Field(
+        default=20, gt=0, description="Queued or running uploads at once (disk and GPU guard)"
+    )
+    try_max_live_sessions: int = Field(
+        default=3, gt=0, description="Phone sessions at once (operator wall and GPU guard)"
+    )
+    try_events_max_s: float = Field(
+        default=120.0, gt=0, description="Life of one progress stream; the browser reconnects"
+    )
+    try_events_per_minute: int = Field(default=30, gt=0, description="Progress streams per IP")
+    whip_url_template: str = Field(
+        default="http://localhost:8889/{path}/whip", description="WHIP URL; {path} = stream path"
+    )
+    live_demo_lat: float = Field(default=36.7538, description="Where a live demo camera sits")
+    live_demo_lon: float = Field(default=3.0588)
     osrm_url: str = Field(default="http://localhost:55000", description="Self-hosted OSRM base URL")
     routing_timeout_s: float = Field(default=5.0, gt=0)
     routing_urban_multiplier: float = Field(

@@ -267,3 +267,16 @@ the others are listed under `skipped_clips`. The script refuses to run if a tuni
 id or a camera with `triggers:` overrides is bound to a held-out clip. Check reproducibility with
 `make eval-compare A=<file> B=<file>`. The supervisor reads the newest file at
 `GET /evaluation/latest`.
+
+### Try it yourself (issue #18)
+
+`/public/try` lets anyone upload a clip (≤ 60 s, ≤ 100 MB) and `/public/try/live` turns a phone into
+a camera. Both are analysed by `try-worker` (`nadjet-vision try`, part of `make brev-deploy-workers`)
+with the same detector, tracker, rules and Brev AI as the real cameras. Uploads are analysed in two
+AI passes and return the annotated video, the rule timeline, the verdict with cited frames and a
+**sandbox incident** that lives only in the job result: it never appears in the operator queue, the
+KPIs or the evaluation. Uploads, outputs and live sessions are deleted after one hour (a phone
+session when it stops pinging). A live phone shows on the operator camera wall tagged "live demo"
+with the AI boxes; the AI checks it every 4 s. Browsers need HTTPS for the phone camera (use the
+Cloudflare or Brev tunnel on stage). With vLLM stopped the page says "AI unavailable" and shows the
+rule-based result only.

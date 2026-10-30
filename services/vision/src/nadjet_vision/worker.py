@@ -106,13 +106,14 @@ async def run_camera(
     on_frame: Callable[[Any], None] | None = None,
     on_state: Callable[[bool], None] | None = None,
     report_every_s: float = 1.0,
+    path: str | None = None,
 ) -> None:
     """Read one camera until ``stop`` is set, reconnecting with back-off, logging FPS.
 
     ``on_frame`` receives each item ``frames`` yields; ``on_state(False)`` is called when a
     connection ends or fails, so health tracking sees every disconnect.
     """
-    url = rtsp_url(settings.rtsp_base, camera_id)
+    url = rtsp_url(settings.rtsp_base, path or camera_id)
     meter = FpsMeter()
     backoff = BACKOFF_START_S
     loop = asyncio.get_running_loop()
