@@ -95,3 +95,20 @@ def test_frozen_publisher_is_not_dropped_by_the_read_timeout(tmp_path: Path) -> 
     """FR-CAM-004: a SIGSTOP'd publisher sends nothing; the 10 s default turned freeze into outage."""
     config, _ = render_mediamtx(catalogue(CAMERA), tmp_path)
     assert config["readTimeout"] == "1h"
+
+
+def test_production_render_delegates_auth_to_the_api(tmp_path: Path) -> None:
+    """FR-SEC-007: no anonymous access; publishers log in as the service user."""
+    (tmp_path / "crash.mp4").write_bytes(b"\x00")
+    config, _ = render_mediamtx(
+        catalogue(CAMERA),
+        tmp_path,
+        auth_url="http://api:8000/internal/mediamtx-auth",
+        public_host="203.0.113.7",
+    )
+    assert config["authMethod"] == "http"
+    assert config["authHTTPAddress"] == "http://api:8000/internal/mediamtx-auth"
+    assert "authInternalUsers" not in config
+    assert config["webrtcAdditionalHosts"] == ["203.0.113.7"]
+    command = config["paths"]["cam-a1-pk42"]["runOnInit"]
+    assert "${NADJET_STREAM_USER}:${NADJET_INGEST_TOKEN}@localhost" in command
