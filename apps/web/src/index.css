@@ -1,9 +1,204 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "./styles/shadcn.css";
+@import "@fontsource-variable/dm-sans";
+@import "@fontsource-variable/noto-sans-arabic";
 
-:root {
-  color-scheme: dark;
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Nadjet design system. Source: Figma "najat" (Colors, Typography, Effects, Buttons, Inputs,
+ * Cards, Modals, Dropdowns). The Figma components use a purple primary (#4318FF); Nadjet maps
+ * it to the brand blue below. Contrast values are documented in apps/web/README.md.
+ */
+
+@theme {
+  /* Brand blue (Figma "Colors System") */
+  --color-brand-100: #aad4ff;
+  --color-brand-200: #80beff;
+  --color-brand-300: #55a8fe;
+  --color-brand-400: #2a93fe;
+  --color-brand-500: #007dfe;
+  --color-brand-600: #0053a9;
+  --color-brand-700: #003f7f;
+  --color-brand-800: #002a55;
+  --color-brand-900: #00152a;
+
+  /* Surfaces and text (Figma Secondary/Grey) */
+  --color-surface: #f4f7fe;
+  --color-surface-strong: #e7edfb;
+  --color-ink-muted: #51627f;
+  --color-ink-subtle: #aebad8;
+
+  /* Priority scale: always shown with text and icon, never by colour alone */
+  --color-p1: #b91c1c;
+  --color-p2: #c2410c;
+  --color-p3: #92400e;
+  --color-p4: #475569;
+  --color-success: #15803d;
+  --color-danger: #dc2626;
+
+  --font-sans: "DM Sans Variable", "Noto Sans Arabic Variable", system-ui, sans-serif;
+
+  /* Figma "Soft Shadow - Style 1" */
+  --shadow-soft: 0 6px 40px 0 rgb(112 144 176 / 0.12);
+  --shadow-focus: 0 0 0 4px rgb(0 125 254 / 0.22);
+
+  /* Figma type scale (size / line-height) */
+  --text-display-xl: 4rem;
+  --text-display-xl--line-height: 4.5rem;
+  --text-display-lg: 3.125rem;
+  --text-display-lg--line-height: 4rem;
+  --text-display-md: 2.625rem;
+  --text-display-md--line-height: 3.5rem;
+  --text-display-sm: 2.125rem;
+  --text-display-sm--line-height: 2.625rem;
+  --text-display-xs: 1.5rem;
+  --text-display-xs--line-height: 2rem;
+  --text-body-xl: 1.25rem;
+  --text-body-xl--line-height: 2.25rem;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.875rem;
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.75rem;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.5rem;
+  --text-body-xs: 0.75rem;
+  --text-body-xs--line-height: 1.25rem;
 }
 
-body {
-  @apply bg-slate-950 text-slate-100 antialiased;
+/* Light theme: phone surfaces (responder, hospital, public) and login */
+:root {
+  color-scheme: light;
+  --background: #f4f7fe;
+  --foreground: #00152a;
+  --card: #ffffff;
+  --card-foreground: #00152a;
+  --popover: #ffffff;
+  --popover-foreground: #00152a;
+  --primary: #0053a9;
+  --primary-foreground: #ffffff;
+  --secondary: #e7edfb;
+  --secondary-foreground: #00152a;
+  --muted: #eaf0fc;
+  --muted-foreground: #51627f;
+  --accent: #dfeaff;
+  --accent-foreground: #003f7f;
+  --destructive: #dc2626;
+  --border: #dbe3f5;
+  --input: #eaf0fc;
+  --ring: #007dfe;
+  --chart-1: #007dfe;
+  --chart-2: #0053a9;
+  --chart-3: #55a8fe;
+  --chart-4: #003f7f;
+  --chart-5: #aad4ff;
+  --radius: 1rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #00152a;
+  --sidebar-primary: #0053a9;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #dfeaff;
+  --sidebar-accent-foreground: #003f7f;
+  --sidebar-border: #dbe3f5;
+  --sidebar-ring: #007dfe;
+}
+
+/* Dark theme: operator console */
+.dark {
+  color-scheme: dark;
+  --background: #00152a;
+  --foreground: #f4f7fe;
+  --card: #002040;
+  --card-foreground: #f4f7fe;
+  --popover: #002040;
+  --popover-foreground: #f4f7fe;
+  --primary: #2a93fe;
+  --primary-foreground: #00152a;
+  --secondary: #002a55;
+  --secondary-foreground: #f4f7fe;
+  --muted: #002a55;
+  --muted-foreground: #9fb0cc;
+  --accent: #003f7f;
+  --accent-foreground: #f4f7fe;
+  --destructive: #f87171;
+  --border: #12395f;
+  --input: #002a55;
+  --ring: #55a8fe;
+  --chart-1: #2a93fe;
+  --chart-2: #55a8fe;
+  --chart-3: #80beff;
+  --chart-4: #007dfe;
+  --chart-5: #aad4ff;
+  --sidebar: #001d38;
+  --sidebar-foreground: #f4f7fe;
+  --sidebar-primary: #2a93fe;
+  --sidebar-primary-foreground: #00152a;
+  --sidebar-accent: #002a55;
+  --sidebar-accent-foreground: #f4f7fe;
+  --sidebar-border: #12395f;
+  --sidebar-ring: #55a8fe;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.75);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.25);
+  --radius-2xl: calc(var(--radius) * 1.5);
+  --radius-3xl: calc(var(--radius) * 1.75);
+  --radius-4xl: calc(var(--radius) * 2.25);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply min-h-dvh bg-background text-foreground antialiased;
+    letter-spacing: -0.02em;
+  }
+  /* Negative tracking breaks Arabic letter joining */
+  html[dir="rtl"] body,
+  html[lang="ar"] body {
+    letter-spacing: 0;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
 }
