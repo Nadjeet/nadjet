@@ -1,4 +1,4 @@
-"""Notifications, push subscriptions, facility status and call-back incidents (FR-NTF).
+"""Notifications, push subscriptions and call-back incidents (FR-NTF).
 
 Revision ID: 0006
 Revises: 0005
@@ -47,13 +47,6 @@ def upgrade() -> None:
         sa.Column("auth", sa.Text(), nullable=False),
         sa.Column("created_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
     )
-    op.create_table(
-        "facility_status",
-        sa.Column("facility_id", sa.String(64), primary_key=True),
-        sa.Column("state", sa.String(8), nullable=False),
-        sa.Column("updated_at", sa.DateTime(timezone=True), server_default=sa.func.now()),
-        sa.CheckConstraint("state IN ('ready','divert')", name="facility_status_state_valid"),
-    )
     # An SMS report with only a free-text location has no position until an operator calls back.
     op.alter_column("incidents", "lat", nullable=True)
     op.alter_column("incidents", "lon", nullable=True)
@@ -68,7 +61,6 @@ def downgrade() -> None:
     op.drop_column("incidents", "location_text")
     op.alter_column("incidents", "lon", nullable=False)
     op.alter_column("incidents", "lat", nullable=False)
-    op.drop_table("facility_status")
     op.drop_table("push_subscriptions")
     op.drop_index("ix_notifications_provider_ref", table_name="notifications")
     op.drop_table("notifications")

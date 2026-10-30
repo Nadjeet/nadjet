@@ -6,7 +6,7 @@ from dataclasses import dataclass, field
 from datetime import UTC, datetime
 from typing import Any
 
-from sqlalchemy import select
+from sqlalchemy import select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from nadjet_api.auth.models import User
@@ -26,7 +26,6 @@ from nadjet_api.notifications.grammar import (
     normalize_phone,
     parse_inbound,
 )
-from nadjet_api.notifications.models import FacilityStatus
 from nadjet_shared.events import (
     CandidateSource,
     GeoLocation,
@@ -173,14 +172,18 @@ async def _hospital(
     user: User,
     command: HospitalResponse,
 ) -> Result:
-    facility_id = user.facility_id or ""
-    row = await session.get(FacilityStatus, facility_id)
-    now = datetime.now(UTC)
-    if row is None:
-        session.add(FacilityStatus(facility_id=facility_id, state=command.state.value))
-    else:
-        row.state = command.state.value
-        row.updated_at = now
+    facility_id = user.facility_id
+    # The state hospital ranking reads (FR-DSP-002).
+    updated = await session.scalar(
+        text(
+            "UPDATE facilities SET ready_state = :state "
+            "WHERE id = :id AND kind = 'hospital' RETURNING id"
+        ),
+        {"state": command.state.value, "id": facility_id},
+    )
+    if updated is None:
+        log.warning("H reply from a user of unknown facility %s", facility_id)
+        return Result(f"Nadjet: {incident.short_code} refused, unknown facility")
     locked = await session.get(Incident, incident.id, with_for_update=True, populate_existing=True)
     assert locked is not None
     locked.version += 1

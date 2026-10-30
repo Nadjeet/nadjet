@@ -29,7 +29,6 @@ from nadjet_api.notifications.models import (
     DELIVERED,
     FAILED,
     SENT,
-    FacilityStatus,
     Notification,
     PushSubscription,
 )
@@ -294,22 +293,44 @@ async def test_triage_sms_creates_casualties_and_recomputes_priority(
 async def test_hospital_reply_updates_facility_state(
     gw: httpx.AsyncClient, gw_app: FastAPI, make_user: MakeUser, session: AsyncSession
 ) -> None:
+    """The reply changes ``facilities.ready_state``, which hospital ranking reads (FR-DSP-002)."""
     number = phone()
     facility = f"fac-{uuid.uuid4().hex[:8]}"
+    await session.execute(
+        text(
+            "INSERT INTO facilities (id, kind, name, geom) VALUES "
+            "(:id, 'hospital', 'Test', ST_SetSRID(ST_MakePoint(3.4, 36.7), 4326))"
+        ),
+        {"id": facility},
+    )
+    await session.commit()
     await make_user(session, role="hospital", facility_id=facility, phone=number)
     incident = await dispatched_incident(gw_app, agencies=(), facilities=(facility,))
 
-    await post_sms(gw, number, f"H {incident.short_code} READY")
-    async with gw_app.state.session_factory() as s:
-        row = await s.get(FacilityStatus, facility)
-        assert row is not None
-        assert row.state == "ready"
+    async def state() -> str:
+        query = text("SELECT ready_state FROM facilities WHERE id = :id")
+        async with gw_app.state.session_factory() as s:
+            return str(await s.scalar(query, {"id": facility}))
+
     await post_sms(gw, number, f"H {incident.short_code} DIVERT")
-    async with gw_app.state.session_factory() as s:
-        row = await s.get(FacilityStatus, facility, populate_existing=True)
-        assert row is not None
-        assert row.state == "divert"
+    assert await state() == "divert"
+    await post_sms(gw, number, f"H {incident.short_code} READY")
+    assert await state() == "ready"
     assert (await event_kinds(gw_app, incident.id)).count("hospital_response") == 2
+
+
+async def test_hospital_reply_for_an_unknown_facility_changes_nothing(
+    gw: httpx.AsyncClient, gw_app: FastAPI, sms: FakeSms, make_user: MakeUser, session: AsyncSession
+) -> None:
+    number = phone()
+    facility = f"fac-{uuid.uuid4().hex[:8]}"  # no such row in facilities
+    await make_user(session, role="hospital", facility_id=facility, phone=number)
+    incident = await dispatched_incident(gw_app, agencies=(), facilities=(facility,))
+
+    await post_sms(gw, number, f"H {incident.short_code} DIVERT")
+
+    assert "unknown facility" in sms.sent[-1].text
+    assert "hospital_response" not in await event_kinds(gw_app, incident.id)
 
 
 async def test_a_responder_cannot_send_hospital_replies(

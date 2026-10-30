@@ -1,4 +1,4 @@
-"""Notification delivery records, web-push subscriptions and facility availability."""
+"""Notification delivery records and web-push subscriptions."""
 
 import uuid
 from datetime import datetime
@@ -63,16 +63,3 @@ class PushSubscription(Base):
     p256dh: Mapped[str] = mapped_column(Text)
     auth: Mapped[str] = mapped_column(Text)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
-
-
-class FacilityStatus(Base):
-    """Hospital Ready/Divert state, set by ``H <code> READY|DIVERT`` (FR-NTF-005)."""
-
-    __tablename__ = "facility_status"
-    __table_args__ = (
-        CheckConstraint("state IN ('ready','divert')", name="facility_status_state_valid"),
-    )
-
-    facility_id: Mapped[str] = mapped_column(String(64), primary_key=True)
-    state: Mapped[str] = mapped_column(String(8))
-    updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
