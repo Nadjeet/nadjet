@@ -34,6 +34,9 @@ jobs:
           --health-cmd "redis-cli ping" --health-interval 2s --health-retries 30
     env:
       NADJET_ENV: test
+      # Below Linux's ephemeral range (32768-60999): the local default 55000 can already be held
+      # by an outgoing connection on the runner ("address already in use", random failures).
+      NADJET_OSRM_URL: http://localhost:15000
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.3.3
@@ -71,10 +74,10 @@ jobs:
           osrm osrm-extract -p /opt/car.lua /data/boumerdes.osm.pbf
           osrm osrm-partition /data/boumerdes.osrm
           osrm osrm-customize /data/boumerdes.osrm
-          docker run -d --name osrm -p 55000:5000 -v "$data:/data:ro" "$OSRM_IMAGE" \
+          docker run -d --name osrm -p 15000:5000 -v "$data:/data:ro" "$OSRM_IMAGE" \
             osrm-routed --algorithm mld /data/boumerdes.osrm
           for _ in $(seq 30); do
-            curl -fs "http://localhost:55000/nearest/v1/driving/3.47,36.76" >/dev/null && exit 0
+            curl -fs "$NADJET_OSRM_URL/nearest/v1/driving/3.47,36.76" >/dev/null && exit 0
             sleep 1
           done
           docker logs osrm
