@@ -371,7 +371,8 @@
     "errors": {
       "generic": "L'action a échoué. Réessayez.",
       "conflict": "L'incident a changé entre-temps et cette action n'est plus autorisée.",
-      "forbidden": "Votre rôle ne permet pas cette action."
+      "forbidden": "Votre rôle ne permet pas cette action.",
+      "routing": "Le calcul d'itinéraire est indisponible. Réessayez dans un instant."
     },
     "evidence": {
       "none": "Aucune preuve jointe pour le moment.",
@@ -397,7 +398,10 @@
       "incident_merged_in": "Autre incident fusionné",
       "casualty_added": "Victime enregistrée",
       "evidence_added": "Preuve ajoutée",
-      "system": "Système"
+      "system": "Système",
+      "hospital_diverted": "Hôpital en DIVERT",
+      "hospital_changed": "Hôpital changé",
+      "notification_failed": "Notification échouée"
     },
     "casualties": {
       "title": "Victimes",
@@ -437,6 +441,65 @@
       "rejectedFor": "Rejeté : {{reason}}",
       "mergedInto": "Fusionné dans un autre incident.",
       "openTarget": "L'ouvrir"
+    },
+    "agency": {
+      "civil_protection": "Protection civile",
+      "gendarmerie": "Gendarmerie",
+      "police": "Police",
+      "samu": "SAMU"
+    },
+    "capability": {
+      "trauma": "Traumatologie",
+      "emergency": "Urgences",
+      "extrication": "Désincarcération"
+    },
+    "dispatch": {
+      "title": "Engagement",
+      "scene": "Lieu de l'incident",
+      "units": "Unités (classées par temps de trajet routier)",
+      "hospitals": "Hôpitaux (capacité, puis Prêt, puis temps)",
+      "noUnits": "Aucune unité disponible ne peut rejoindre cet incident.",
+      "noHospitals": "Aucun hôpital n'est joignable depuis cet incident.",
+      "need": "Unités affichées : {{agencies}}. Hôpitaux classés pour : {{need}}.",
+      "eta": "{{minutes}} min",
+      "distance": "{{km}} km",
+      "ready": "Prêt",
+      "divert": "Détourner",
+      "confirm": "Engager {{count}} unité(s) et l'hôpital",
+      "unitRoute": "{{name}} → lieu",
+      "hospitalRoute": "Lieu → {{name}}",
+      "noPosition": "Cet incident n'a pas encore de position. Rappelez l'appelant pour le placer avant d'engager.",
+      "noRecipients": "Aucun destinataire notifié",
+      "col": {
+        "resource": "Ressource",
+        "eta": "Temps et distance",
+        "status": "Statut",
+        "delivery": "Notification"
+      },
+      "kind": {
+        "unit": "Unité",
+        "hospital": "Hôpital"
+      },
+      "status": {
+        "dispatched": "Engagé",
+        "replaced": "Remplacé"
+      },
+      "channel": {
+        "sms": "SMS",
+        "push": "Push",
+        "telegram": "Telegram"
+      },
+      "delivery": {
+        "queued": "En file",
+        "sent": "Envoyé",
+        "delivered": "Remis",
+        "failed": "Échec"
+      },
+      "fieldAck": "Statut de l'incident : {{status}}",
+      "divertAlert": "{{name}} a répondu DIVERT. Choisissez un autre hôpital pour les patients.",
+      "proposed": "Proposition : {{name}}.",
+      "proposedTag": "Proposé",
+      "switch": "Envoyer les patients dans cet hôpital"
     }
   },
   "stream": {

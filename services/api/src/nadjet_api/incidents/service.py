@@ -473,6 +473,16 @@ async def transition(
     if reason:
         incident.reject_reason = reason.value
     incident.version += 1
+    if target is IncidentStatus.CLOSED:
+        # The units sent to this incident are free again.
+        await session.execute(
+            text(
+                "UPDATE units SET status = 'available' WHERE status = 'dispatched' AND id IN "
+                "(SELECT unit_id FROM dispatches WHERE incident_id = :i AND unit_id IS NOT NULL "
+                "AND status = 'dispatched')"
+            ),
+            {"i": incident.id},
+        )
     payload: dict[str, Any] = {"from": current.value, "to": target.value}
     if reason:
         payload["reason"] = reason.value

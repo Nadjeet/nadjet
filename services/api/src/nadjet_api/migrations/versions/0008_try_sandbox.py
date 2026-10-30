@@ -1,7 +1,7 @@
 """Try-it-yourself sandbox: uploaded-clip jobs and live phone sessions.
 
 Revision ID: 0008
-Revises: 0006
+Revises: 0007
 Create Date: 2026-10-30
 """
 
@@ -10,7 +10,7 @@ from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision = "0008"
-down_revision = "0006"  # re-point to the latest revision on origin/dev before merging
+down_revision = "0007"
 branch_labels = None
 depends_on = None
 

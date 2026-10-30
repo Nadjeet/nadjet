@@ -17,6 +17,7 @@ from nadjet_api.auth.models import User
 from nadjet_api.auth.roles import Scope
 from nadjet_api.config import Settings
 from nadjet_api.db import get_session
+from nadjet_api.dispatch.service import make_proposer
 from nadjet_api.incidents import service
 from nadjet_api.incidents.deps import RedisDep, SignerDep, announce
 from nadjet_api.notifications import inbound
@@ -145,8 +146,12 @@ async def sms_inbound(
     if count > RATE_LIMIT:
         return SmsAck(status="throttled")
     try:
+        settings: Settings = request.app.state.settings
+        propose = make_proposer(
+            session, getattr(request.app.state, "router", None), settings.routing_urban_multiplier
+        )
         result = await inbound.handle_sms(
-            session, signer, payload.sender, payload.message, message_id
+            session, signer, payload.sender, payload.message, message_id, propose
         )
         await session.commit()
     except Exception:
