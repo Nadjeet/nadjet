@@ -37,6 +37,9 @@ class TriggerConfig:
     hard_stop_window_s: float = 1.0
     hard_stop_still_s: float = 2.0  # then stays near zero this long
     jam_fraction: float = 0.3  # suppress when this share of other vehicles slows down
+    # * hard_stop: the jam share is read this long after the impact (speed smoothing lag), not
+    # at fire time (stop + 2 s), when traffic braking *because of* the crash would hide it.
+    jam_lag_s: float = 1.0
     stalled_s: float = 20.0
     pedestrian_s: float = 2.0
     confirm_frames: int = 3  # E-04: consecutive frames before a state counts
@@ -170,6 +173,8 @@ class TriggerEngine:
         self._quiet_until = float("-inf")
         self._last_emit_wall: float | None = None
         self._last_event: TriggerEvent | None = None
+        # (t, slowed share per track id) of recent frames, for the hard-stop jam check at impact
+        self._slowed_history: deque[tuple[float, dict[int, bool]]] = deque()
 
     # ------------------------------------------------------------------ public
 
@@ -190,6 +195,7 @@ class TriggerEngine:
             return []
 
         self._observe(obs)
+        self._record_slowed(obs.t)
         offset = obs.wall - obs.t
         candidates = [
             *self._pedestrians(obs.t),
@@ -215,6 +221,7 @@ class TriggerEngine:
         self._contacts.clear()
         self._fired.clear()
         self._quiet_until = float("-inf")
+        self._slowed_history.clear()
 
     def _suspend(self) -> None:
         """Global camera motion invalidates speeds and dwell timers: start over after it."""
@@ -290,6 +297,33 @@ class TriggerEngine:
 
     def _is_still(self, track: _Track) -> bool:
         return track.still_frames >= self.config.confirm_frames and track.still_since is not None
+
+    def _slowed_flags(self, t: float) -> dict[int, bool]:
+        """Counted vehicles at ``t`` (live lanes when zones are known): id -> slowed or stopped."""
+        cfg = self.config
+        flags: dict[int, bool] = {}
+        zoned = any(tr.live_lane is not None for _, tr in self._seen(t))
+        for track_id, track in self._seen(t):
+            if not track.is_vehicle or track.speed is None or (zoned and track.live_lane is None):
+                continue
+            reference = max((s for ts, s in track.speeds if t - 3.0 <= ts <= t - 1.0), default=0.0)
+            braked = reference >= cfg.moving_speed and track.speed < 0.5 * reference
+            flags[track_id] = track.speed < cfg.still_speed or braked
+        return flags
+
+    def _record_slowed(self, t: float) -> None:
+        self._slowed_history.append((t, self._slowed_flags(t)))
+        horizon = t - (self.config.hard_stop_still_s + self.config.hard_stop_window_s + 5.0)
+        while self._slowed_history and self._slowed_history[0][0] < horizon:
+            self._slowed_history.popleft()
+
+    def _slowed_fraction_at(self, t: float, exclude: Sequence[int]) -> float:
+        """Share of other vehicles slowed in the first recorded frame at or after ``t``."""
+        flags = next((f for ts, f in self._slowed_history if ts >= t), None)
+        if flags is None:
+            return 0.0
+        others = [slowed for i, slowed in flags.items() if i not in exclude]
+        return sum(others) / len(others) if others else 0.0
 
     def _others(self, t: float, exclude: Sequence[int]) -> _Others:
         """Traffic around the subject: other vehicles (in live lanes when zones are known)."""
@@ -372,8 +406,8 @@ class TriggerEngine:
             if drop is None:
                 continue  # no measured speed before the stop (new id, occlusion): not a stop
             start, peak, before = drop
-            others = self._others(t, (track_id,))
-            if others.slowed_fraction >= cfg.jam_fraction:
+            jam = self._slowed_fraction_at(peak + cfg.jam_lag_s, (track_id,))
+            if jam >= cfg.jam_fraction:
                 self.suppressed["jam"] += 1
                 self._fired.add(("hard_stop", (track_id,)))  # decided: do not re-evaluate
                 continue
@@ -382,7 +416,7 @@ class TriggerEngine:
                 "speed_before": before,
                 "speed_drop": 1.0 - (track.speed or 0.0) / before,
                 "stopped_s": t - since,
-                "others_slowed": others.slowed_fraction,
+                "others_slowed": jam,
                 "vehicle_count": 1.0,
                 "bus_involved": 1.0 if track.label == "bus" else 0.0,
             }
