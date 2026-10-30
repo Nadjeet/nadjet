@@ -3,6 +3,7 @@
 from collections.abc import AsyncIterator
 
 import httpx
+import pytest
 from fastapi.testclient import TestClient
 
 from nadjet_api.auth.deps import current_user
@@ -70,3 +71,19 @@ def test_http_error_from_vllm_is_unavailable() -> None:
 def test_other_roles_are_forbidden() -> None:
     with client_for(served([MODEL]), role="responder") as c:
         assert c.get("/system/ai").status_code == 403
+
+
+def test_disallowed_endpoint_host_is_unavailable_without_naming_it(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A non-Brev host is refused by the client itself: still "AI unavailable", never a 500."""
+    monkeypatch.setenv("NADJET_VLM_BASE_URL", "https://api.example-ai.com/v1")
+    monkeypatch.setenv("NADJET_VLM_ALLOWED_HOSTS", "[]")
+    app = create_app(Settings(env="test"), probes={})
+    app.dependency_overrides[current_user] = lambda: User(username="op", role="operator")
+    with TestClient(app) as c:
+        response = c.get("/system/ai")
+    assert response.status_code == 200
+    body = response.json()
+    assert body["available"] is False
+    assert "example-ai" not in body["detail"]

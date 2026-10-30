@@ -31,9 +31,23 @@ class AiStatus(BaseModel):
     detail: str | None = Field(description="Why the AI is unavailable (no secrets), else null")
 
 
+class _Misconfigured:
+    """Stands in for the client when the endpoint is not an allowed Brev host."""
+
+    async def check(self) -> str:
+        raise InferenceConfigError("AI endpoint is not loopback or an allowed Brev host")
+
+    async def aclose(self) -> None:
+        pass
+
+
 async def get_ai_checker() -> AsyncIterator[AiChecker]:
     """One client per request; tests override this dependency."""
-    client = BrevVlmClient(VisionSettings())
+    try:
+        client: AiChecker = BrevVlmClient(VisionSettings())
+    except InferenceConfigError as exc:  # its message names the host: log it, do not return it
+        log.warning("AI endpoint misconfigured: %s", exc)
+        client = _Misconfigured()
     try:
         yield client
     finally:
