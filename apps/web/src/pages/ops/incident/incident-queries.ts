@@ -15,6 +15,9 @@ export type Camera = components["schemas"]["CameraOut"];
 export type MapResources = components["schemas"]["MapResources"];
 export type Integrity = components["schemas"]["IntegrityOut"];
 export type CandidateSource = components["schemas"]["CandidateSource"];
+export type Recommendations = components["schemas"]["IncidentRecommendations"];
+export type RankedResource = components["schemas"]["RankedResource"];
+export type DispatchRow = components["schemas"]["DispatchOut"];
 
 export type QueueFilters = {
   /** `open` is every incident that is not rejected, merged or closed. */
@@ -182,4 +185,66 @@ export async function fetchEvidence(incidentId: string, evidenceId: string): Pro
   });
   if (!data) throw new ApiError(response.status);
   return data;
+}
+
+/** Ranked units and hospitals with routes; ranking is the server's (FR-DSP-001/002). */
+export function useRecommendations(id: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...incidentKey(id), "recommendations"],
+    enabled,
+    queryFn: async () => {
+      const { data, response } = await api.GET("/incidents/{incident_id}/recommendations", {
+        params: { path: { incident_id: id } },
+      });
+      if (!data) throw new ApiError(response.status);
+      return data;
+    },
+  });
+}
+
+/** Dispatches with the delivery status of each notification (refetched with the incident). */
+export function useDispatches(id: string, enabled: boolean) {
+  const refetchInterval = useFallbackPolling();
+  return useQuery({
+    queryKey: [...incidentKey(id), "dispatches"],
+    enabled,
+    refetchInterval,
+    queryFn: async () => {
+      const { data, response } = await api.GET("/incidents/{incident_id}/dispatches", {
+        params: { path: { incident_id: id } },
+      });
+      if (!data) throw new ApiError(response.status);
+      return data;
+    },
+  });
+}
+
+export function useDispatch(id: string) {
+  const refresh = useRefresh();
+  return useMutation({
+    mutationFn: async (body: { unit_ids: string[]; hospital_id: string }) => {
+      const { data, response } = await api.POST("/incidents/{incident_id}/dispatch", {
+        params: { path: { incident_id: id } },
+        body,
+      });
+      if (!data) throw new ApiError(response.status);
+      return data;
+    },
+    onSuccess: () => refresh(id),
+  });
+}
+
+export function useChangeHospital(id: string) {
+  const refresh = useRefresh();
+  return useMutation({
+    mutationFn: async (hospitalId: string) => {
+      const { data, response } = await api.POST("/incidents/{incident_id}/hospital", {
+        params: { path: { incident_id: id } },
+        body: { hospital_id: hospitalId },
+      });
+      if (!data) throw new ApiError(response.status);
+      return data;
+    },
+    onSuccess: () => refresh(id),
+  });
 }
