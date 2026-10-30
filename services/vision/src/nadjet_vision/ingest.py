@@ -8,8 +8,8 @@ import threading
 import time
 from collections import deque
 from collections.abc import Callable, Iterator
-from dataclasses import dataclass
-from typing import Any
+from dataclasses import dataclass, field
+from typing import Any, cast
 
 import numpy as np
 from numpy.typing import NDArray
@@ -30,6 +30,18 @@ class Packet:
     pts_s: float
     keyframe: bool
     data: bytes
+    dts_s: float | None = None  # decode order; ``None`` means equal to ``pts_s``
+
+
+@dataclass(frozen=True)
+class StreamInfo:
+    """What a muxer needs to copy the ring's packets into an MP4 without re-encoding."""
+
+    codec: str
+    width: int
+    height: int
+    extradata: bytes
+    time_base_den: int  # packet timestamps are multiples of 1 / time_base_den seconds
 
 
 @dataclass(frozen=True)
@@ -37,6 +49,7 @@ class SampledFrame:
     pts_s: float
     image: BgrFrame
     decode_ms: float  # time spent decoding this frame's packet
+    captured_at: float = field(default_factory=time.time)  # wall clock (epoch s) at decode
 
 
 class PacketRing:
@@ -51,6 +64,7 @@ class PacketRing:
         # Hard cap: a stream without keyframes could otherwise never be trimmed.
         self._packets: deque[Packet] = deque(maxlen=max_packets)
         self._lock = threading.Lock()
+        self.stream: StreamInfo | None = None
 
     def clear(self) -> None:
         """Forget the previous RTSP session (its packets cannot be mixed into a clip)."""
@@ -146,19 +160,30 @@ def iter_frames(
             on_open()
         stream = container.streams.video[0]
         base: Any = stream.time_base
+        context: Any = stream.codec_context
+        ring.stream = StreamInfo(
+            codec=str(context.name),
+            width=int(context.width),
+            height=int(context.height),
+            extradata=bytes(context.extradata or b""),
+            time_base_den=round(1 / base),
+        )
         for packet in container.demux(stream):
             if stop():
                 return
             if packet.dts is None or packet.pts is None:
                 continue  # flush packet
             ptime = float(packet.pts * base)
-            ring.append(Packet(ptime, bool(packet.is_keyframe), bytes(packet)))
+            ring.append(
+                Packet(ptime, bool(packet.is_keyframe), bytes(packet), float(packet.dts * base))
+            )
             started = time.perf_counter()
             for frame in packet.decode():
                 pts = float(frame.pts * base) if frame.pts is not None else ptime
                 if sampler.accept(pts):
                     decode_ms = (time.perf_counter() - started) * 1000
-                    yield SampledFrame(pts, frame.to_ndarray(format="bgr24"), decode_ms)
+                    image = cast(BgrFrame, frame.to_ndarray(format="bgr24"))
+                    yield SampledFrame(pts, image, decode_ms, time.time())
 
 
 def make_ingest(settings: VisionSettings) -> tuple[FrameSampler, PacketRing]:
