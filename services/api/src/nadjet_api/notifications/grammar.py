@@ -63,8 +63,12 @@ def format_alert(
     pk_km: float | None,
     vehicles: int | None,
     short_code: str,
+    eta_min: int | None = None,
 ) -> str:
-    """``ACC|P1|36.64800,3.32900|A1 PK42|2V|7F3`` (FR-NTF-002); optional fields are omitted."""
+    """``ACC|P1|36.64800,3.32900|A1 PK42|2V|7F3`` (FR-NTF-002); optional fields are omitted.
+
+    A hospital pre-alert uses kind ``PRE`` and adds the ambulance ETA: ``...|2V|E12|7F3``.
+    """
     parts = [kind, f"P{priority}", f"{lat:.5f},{lon:.5f}"]
     where = _ascii(road or "")
     if where and pk_km is not None:
@@ -73,6 +77,8 @@ def format_alert(
         parts.append(where)
     if vehicles:
         parts.append(f"{vehicles}V")
+    if eta_min is not None:
+        parts.append(f"E{eta_min}")
     parts.append(short_code)
     return ensure_sms("|".join(parts))
 

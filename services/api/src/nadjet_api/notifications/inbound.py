@@ -11,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from nadjet_api.auth.models import User
 from nadjet_api.auth.roles import Role, Scope, scope_for
+from nadjet_api.dispatch.service import HospitalProposer, handle_hospital_divert
 from nadjet_api.incidents import service
 from nadjet_api.incidents.lifecycle import IllegalTransitionError
 from nadjet_api.incidents.models import Incident
@@ -18,6 +19,7 @@ from nadjet_api.incidents.service import OPEN_STATUS_VALUES, UPDATED, Change
 from nadjet_api.incidents.signing import ChainSigner
 from nadjet_api.notifications.grammar import (
     AccidentReport,
+    FacilityState,
     GrammarError,
     HospitalResponse,
     StatusUpdate,
@@ -51,9 +53,17 @@ class Result:
 
 
 async def handle_sms(
-    session: AsyncSession, signer: ChainSigner, sender: str, body: str, message_id: str
+    session: AsyncSession,
+    signer: ChainSigner,
+    sender: str,
+    body: str,
+    message_id: str,
+    propose: HospitalProposer | None = None,
 ) -> Result:
-    """Apply one inbound SMS. The caller commits, announces ``changes`` and sends ``reply``."""
+    """Apply one inbound SMS. The caller commits, announces ``changes`` and sends ``reply``.
+
+    ``propose`` finds the next hospital when a DIVERT reply arrives (E-10).
+    """
     phone = normalize_phone(sender)
     try:
         command = parse_inbound(body)
@@ -85,7 +95,7 @@ async def handle_sms(
             return await _status(session, signer, incident, user, scope, command)
         if isinstance(command, Triage):
             return await _triage(session, signer, incident, user, scope, command)
-        return await _hospital(session, signer, incident, user, command)
+        return await _hospital(session, signer, incident, user, command, propose)
     except IllegalTransitionError as exc:
         return Result(f"Nadjet: {incident.short_code} refused, {exc}")
 
@@ -171,6 +181,7 @@ async def _hospital(
     incident: Incident,
     user: User,
     command: HospitalResponse,
+    propose: HospitalProposer | None,
 ) -> Result:
     facility_id = user.facility_id
     # The state hospital ranking reads (FR-DSP-002).
@@ -195,10 +206,11 @@ async def _hospital(
         user,
         {"facility_id": facility_id, "state": command.state.value},
     )
-    return Result(
-        f"Nadjet: {incident.short_code} {command.state.value} recorded",
-        [service._change(UPDATED, locked)],
-    )
+    changes = [service._change(UPDATED, locked)]
+    if command.state is FacilityState.DIVERT:
+        # E-10: tell the operators of every incident this hospital was selected for.
+        changes += await handle_hospital_divert(session, signer, str(updated), propose)
+    return Result(f"Nadjet: {incident.short_code} {command.state.value} recorded", changes)
 
 
 async def _citizen_report(
