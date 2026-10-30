@@ -13,6 +13,7 @@ class StreamUrls(BaseModel):
     path: str = Field(description="Video server path (MediaMTX)")
     rtsp_url: str = Field(description="RTSP URL for vision workers")
     whep_url: str = Field(description="WebRTC WHEP URL for the browser")
+    hls_url: str = Field(description="LL-HLS URL for the browser (fallback when WebRTC fails)")
 
 
 class CameraOut(BaseModel):

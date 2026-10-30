@@ -23,7 +23,7 @@
     "public": "Pages publiques"
   },
   "nav": {
-    "overview": "Opérations",
+    "overview": "Vue d'ensemble",
     "cameras": "Mur de caméras",
     "system": "État du système",
     "design": "Système de design",
@@ -33,7 +33,8 @@
     "home": "Accueil",
     "report": "Signaler un accident",
     "try": "Essayer",
-    "privacy": "Confidentialité"
+    "privacy": "Confidentialité",
+    "incidents": "Incidents"
   },
   "login": {
     "title": "Connexion",
@@ -92,7 +93,29 @@
     "checking": "Vérification de l'API…",
     "unreachable": "L'API est injoignable. Lancez `make dev`.",
     "ok": "OK",
-    "down": "Hors service"
+    "down": "Hors service",
+    "ai": "Point d'accès IA (NVIDIA Brev)",
+    "aiAvailable": "IA disponible",
+    "aiUnavailable": "IA indisponible",
+    "cameras": "Caméras et chaîne d'analyse",
+    "camera": "Caméra",
+    "state": "État",
+    "fps": "IPS",
+    "queue": "File",
+    "frameAge": "Dernière image",
+    "detector": "Détecteur",
+    "healthy": "Saine",
+    "silent": "Worker silencieux",
+    "stage": {
+      "decode": "Décodage",
+      "detect": "Détection",
+      "track": "Suivi",
+      "annotate": "Annotation"
+    },
+    "fault": {
+      "stall": "Bloquée",
+      "disconnect": "Déconnectée"
+    }
   },
   "pages": {
     "soon": "Cet écran sera réalisé dans une prochaine étape. La structure, la navigation, la langue et le direct sont prêts.",
@@ -104,6 +127,14 @@
       "system": {
         "title": "État du système",
         "body": "La santé des services, la latence et l'évaluation apparaîtront ici."
+      },
+      "overview": {
+        "title": "Console opérateur",
+        "body": "La carte, la file d'incidents et le mur de caméras apparaîtront ici."
+      },
+      "incidents": {
+        "title": "Incidents",
+        "body": "La file d'incidents en direct et le détail apparaîtront ici."
       }
     },
     "respond": {
@@ -362,6 +393,27 @@
       "rejectedFor": "Rejeté : {{reason}}",
       "mergedInto": "Fusionné dans un autre incident.",
       "openTarget": "L'ouvrir"
+    }
+  },
+  "stream": {
+    "connecting": "Connexion…",
+    "playing": "En direct",
+    "reconnecting": "Reconnexion…",
+    "fallback": "WebRTC indisponible, mode de repli",
+    "latency": "≈ {{ms}} ms"
+  },
+  "cameras": {
+    "annotated": "Boîtes IA",
+    "raw": "Brut",
+    "view": "Vue vidéo",
+    "fullscreen": "Plein écran",
+    "loadFailed": "La liste des caméras n'a pas pu être chargée.",
+    "videoOf": "{{name}} ({{view}})",
+    "incident": "Incident ouvert : {{codes}}",
+    "status": {
+      "live": "En direct",
+      "degraded": "Dégradée",
+      "offline": "Hors ligne"
     }
   }
 }

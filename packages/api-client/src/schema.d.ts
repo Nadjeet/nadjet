@@ -550,6 +550,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/system/ai": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * System Ai
+         * @description Brev vLLM status: the served model id, or "AI unavailable" (FR-VIS-009).
+         */
+        get: operations["system_ai_system_ai_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/system/cameras": {
         parameters: {
             query?: never;
@@ -634,7 +654,22 @@ export interface components {
          * @description Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.
          * @enum {string}
          */
-        AiStatus: "confirmed" | "probable" | "possible" | "insufficient_evidence";
+        "AiStatus-Input": "confirmed" | "probable" | "possible" | "insufficient_evidence";
+        /** AiStatus */
+        "AiStatus-Output": {
+            /** Available */
+            available: boolean;
+            /**
+             * Detail
+             * @description Why the AI is unavailable (no secrets), else null
+             */
+            detail: string | null;
+            /**
+             * Model
+             * @description Served model id when available, else null
+             */
+            model: string | null;
+        };
         /** AlertRecord */
         AlertRecord: {
             /** Ai Status */
@@ -1061,7 +1096,7 @@ export interface components {
          */
         IncidentCandidate: {
             /** @default insufficient_evidence */
-            ai_status: components["schemas"]["AiStatus"];
+            ai_status: components["schemas"]["AiStatus-Input"];
             /** Camera Id */
             camera_id?: string | null;
             /**
@@ -1612,6 +1647,11 @@ export interface components {
         };
         /** StreamUrls */
         StreamUrls: {
+            /**
+             * Hls Url
+             * @description LL-HLS URL for the browser (fallback when WebRTC fails)
+             */
+            hls_url: string;
             /**
              * Path
              * @description Video server path (MediaMTX)
@@ -2840,6 +2880,40 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
                 };
+            };
+        };
+    };
+    system_ai_system_ai_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AiStatus-Output"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

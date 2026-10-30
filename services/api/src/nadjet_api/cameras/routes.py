@@ -41,6 +41,7 @@ def camera_out(camera: Camera, settings: Settings) -> CameraOut:
             path=path,
             rtsp_url=settings.rtsp_url_template.format(path=path),
             whep_url=settings.whep_url_template.format(path=path),
+            hls_url=settings.hls_url_template.format(path=path),
         ),
     )
 

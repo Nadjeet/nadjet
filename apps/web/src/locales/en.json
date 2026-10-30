@@ -23,7 +23,7 @@
     "public": "Public pages"
   },
   "nav": {
-    "overview": "Operations",
+    "overview": "Overview",
     "cameras": "Camera wall",
     "system": "System health",
     "design": "Design system",
@@ -33,7 +33,8 @@
     "home": "Home",
     "report": "Report a crash",
     "try": "Try it",
-    "privacy": "Privacy"
+    "privacy": "Privacy",
+    "incidents": "Incidents"
   },
   "login": {
     "title": "Sign in",
@@ -92,7 +93,29 @@
     "checking": "Checking the API…",
     "unreachable": "The API is unreachable. Run `make dev`.",
     "ok": "OK",
-    "down": "Down"
+    "down": "Down",
+    "ai": "AI endpoint (NVIDIA Brev)",
+    "aiAvailable": "AI available",
+    "aiUnavailable": "AI unavailable",
+    "cameras": "Cameras and analysis pipeline",
+    "camera": "Camera",
+    "state": "State",
+    "fps": "FPS",
+    "queue": "Queue",
+    "frameAge": "Last frame",
+    "detector": "Detector",
+    "healthy": "Healthy",
+    "silent": "Worker silent",
+    "stage": {
+      "decode": "Decode",
+      "detect": "Detect",
+      "track": "Track",
+      "annotate": "Annotate"
+    },
+    "fault": {
+      "stall": "Stalled",
+      "disconnect": "Disconnected"
+    }
   },
   "pages": {
     "soon": "This screen is built in a later step. The shell, navigation, language and live updates are ready for it.",
@@ -104,6 +127,14 @@
       "system": {
         "title": "System health",
         "body": "Service health, latency and evaluation will appear here."
+      },
+      "overview": {
+        "title": "Operator console",
+        "body": "Map, incident queue and camera wall will appear here."
+      },
+      "incidents": {
+        "title": "Incidents",
+        "body": "The live incident queue and detail view will appear here."
       }
     },
     "respond": {
@@ -362,6 +393,27 @@
       "rejectedFor": "Rejected: {{reason}}",
       "mergedInto": "Merged into another incident.",
       "openTarget": "Open it"
+    }
+  },
+  "stream": {
+    "connecting": "Connecting…",
+    "playing": "Live",
+    "reconnecting": "Reconnecting…",
+    "fallback": "WebRTC unavailable, using fallback",
+    "latency": "≈ {{ms}} ms"
+  },
+  "cameras": {
+    "annotated": "AI boxes",
+    "raw": "Raw",
+    "view": "Video view",
+    "fullscreen": "Full screen",
+    "loadFailed": "The camera list could not be loaded.",
+    "videoOf": "{{name}} ({{view}})",
+    "incident": "Open incident: {{codes}}",
+    "status": {
+      "live": "Live",
+      "degraded": "Degraded",
+      "offline": "Offline"
     }
   }
 }

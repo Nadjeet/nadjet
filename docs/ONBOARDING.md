@@ -183,6 +183,17 @@ sets `camera_moving` while the camera pans, publishes the annotated stream `<cam
   (`camera_fault` on `GET /events`); `make camsim-unfreeze CAM=cam-a1-pk42` clears it. Other cameras
   keep running. `make camsim-outage` / `camsim-restore` shows the reconnect back-off in
   `make brev-logs`.
+- Camera wall (`/ops/cameras`) and system page (`/ops/system`, operator/supervisor/admin): the wall
+  plays every camera from `GET /cameras` (WebRTC, falling back to LL-HLS; each tile switches between
+  the `<cam>_ai` annotated stream and the raw one). The system page adds `GET /system/ai`: the served
+  model id, or "AI unavailable" when Brev is unreachable.
+- Glass-to-glass latency (SC-007, ≤ 1.5 s): play a clip with an on-screen clock as a camera (or open a
+  clock page next to the wall), film both with a phone at 60 fps, and read the difference between the
+  clock on the source and the same clock inside the tile. The latency printed on the tile is only what
+  the browser adds (jitter buffer + half RTT).
+- Fallback test: point `NADJET_WHEP_URL_TEMPLATE` at an unreachable port (for example
+  `http://localhost:8890/{path}/whep`) and restart the API, or block UDP `8189` on the video host;
+  within about 10 s each tile shows `LL-HLS` and "WebRTC unavailable, using fallback".
 - Detection settings: `NADJET_DETECTOR_THRESHOLD` (0.4), `NADJET_SAMPLE_FPS` (5),
   `NADJET_STALL_S` (10), `NADJET_ANNOTATED_ENCODER` (`h264_nvenc`; use `libx264` without a GPU).
 
