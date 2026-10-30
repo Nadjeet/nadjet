@@ -48,6 +48,7 @@ These are research and design documents for SolveX 3.0, **Thematic 1: "Road acci
 | 09 | [GitHub org: repositories & per-repo stack](09-repositories-and-stack.md) | repos, CI/CD |
 | 10 | [Live stage deployment (Dokploy + Brev) & no-training model stack](10-live-deployment-and-models.md) | deploy, models, "try it" demo |
 | 11 | [Technical decisions register (TD-xx)](11-technical-decisions.md) | the canonical "how": wins over docs 04–10 where they differ |
+| — | [Onboarding, setup and troubleshooting](ONBOARDING.md) | developer setup, Brev, daily workflow |
 
 > **AI design:** no training. The verifier and AI sweep are the pretrained open-weights VLM **Qwen3-VL-8B** (Apache-2.0) on vLLM on one Brev L40S; the detector is **RF-DETR** (Apache-2.0). The AI design is doc 04; exact settings are doc 11. Earlier mentions of a fine-tuned VideoMAE are superseded.
 

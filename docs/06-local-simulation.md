@@ -133,7 +133,7 @@ curl -u $GW_USER:$GW_PASS -H 'Content-Type: application/json' http://$PHONE_IP:8
 | Normal / jam CCTV | UCF-Crime Normal, TAD negatives, AI City (if access) | Hard negatives; false-alarm evaluation |
 | Detector weights | `yolo11s.pt` → CoreML | Vehicle / person detection |
 | Verifier weights | `Qwen/Qwen3-VL-8B-Instruct-FP8` (pretrained, no fine-tuning) | Crash verification and AI sweep |
-| VLM | `ollama pull qwen2.5vl:7b` (or the Qwen3-VL equivalent) | Description |
+| VLM | Served by vLLM on NVIDIA Brev (`deploy/gpu/compose.yml`), reached with `make brev-forward` | Verification and AI sweep |
 | Map tiles | `pmtiles extract https://build.protomaps.com/<date>.pmtiles algeria.pmtiles --bbox=-8.7,18.9,12.0,37.2` | Offline basemap |
 | Routing graph | Geofabrik `algeria-latest.osm.pbf` → OSRM MLD | ETA, routes |
 | Facilities | Overpass query (`amenity=hospital|clinic|fire_station|police`, `emergency=ambulance_station`) in DZ | Unit/hospital recommendation |
@@ -143,12 +143,10 @@ curl -u $GW_USER:$GW_PASS -H 'Content-Type: application/json' http://$PHONE_IP:8
 ## 6. One-command bring-up
 
 ```bash
-just setup       # python venv, node deps, download models/tiles/osrm graph, prepare videos
-just infra       # docker compose up postgis redis osrm api web caddy
-just sim         # mediamtx sim/mediamtx.yml (native)
-just vision      # one worker per camera (honcho / process manager), CoreML on Apple Silicon
-just vlm         # ollama serve + describer worker
-just seed        # facilities, units, users, cameras
+make setup       # tools check, uv + pnpm dependencies, git hooks, .env
+make dev         # PostGIS, Redis, MediaMTX (simulated cameras), API, web
+make brev-forward && make brev-check   # AI inference on NVIDIA Brev (only provider)
+make test        # unit + integration tests (no frontend tests)
 ```
 
 **Health page** `/system` shows the following, so the jury can see the real pipeline running:

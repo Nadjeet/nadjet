@@ -103,7 +103,7 @@ sequenceDiagram
 |---|---|---|
 | **camsim** | Plays real video files as RTSP cameras. Injects faults (freeze, outage). | MediaMTX v1.21.x, ffmpeg, a small Python CLI |
 | **vision worker** (1 process per camera) | Decode, detect, track, measure relative speed, run triggers and the AI sweep, keep the evidence ring buffer, call the verifier, validate its output. Publishes candidates and overlay data. | Python 3.12, PyAV, RF-DETR, supervision; Qwen3-VL-8B on vLLM (GPU host) |
-| **vlm worker** | Describes incidents from keyframes. Returns constrained JSON. | Ollama or mlx-vlm, Qwen2.5-VL-7B / Qwen3-VL-8B |
+| **AI verifier** | Verifies candidates and sweeps cameras. Returns constrained JSON. | vLLM on NVIDIA Brev, Qwen3-VL-8B-Instruct-FP8 (only provider, TD-27) |
 | **core API** | Auth/RBAC, cameras, incidents, merge and dedupe, priority, dispatch, facilities, triage, CAP export, KPIs, audit, SSE/WS. | FastAPI, SQLAlchemy 2 + Alembic (or SQLModel), Pydantic v2 |
 | **notifier** (module inside the API, run in a worker) | Fans out to SMS (Android gateway), Telegram, Web Push and email. Handles retries, delivery receipts and inbound SMS parsing. | httpx, python-telegram-bot, pywebpush |
 | **database** | Incidents, events, cameras, facilities, units, users, audit. | PostgreSQL 17 + PostGIS |
@@ -192,7 +192,7 @@ users(id, name, role, agency, facility_id)      audit_log(id, actor, action, tar
 | Detection | Ultralytics YOLO11s (CoreML export) → RF-DETR (Apache-2.0) for production |
 | Tracking / zones / speed | supervision (ByteTrack, PolygonZone); speed relative to box size |
 | AI verifier + sweep | Qwen3-VL-8B-Instruct-FP8 on vLLM (no training) |
-| VLM | Qwen2.5-VL-7B or Qwen3-VL-8B via Ollama or mlx-vlm |
+| VLM | Qwen3-VL-8B-Instruct-FP8 on vLLM, NVIDIA Brev only |
 | API | FastAPI 0.16x, Pydantic v2, SQLAlchemy 2, Alembic |
 | DB / bus | PostgreSQL 17 + PostGIS 3.5, Redis 8 |
 | Routing | OSRM v26.x + Geofabrik Algeria extract; facilities from Overpass + seeded CSV |

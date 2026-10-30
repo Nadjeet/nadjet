@@ -45,8 +45,8 @@ nadjet/
 │  ├─ cap-profile.md             # CAP 1.2 mapping
 │  └─ sms-grammar.md             # outbound/inbound SMS codes
 ├─ packages/
-│  ├─ py-contracts/              # Pydantic models generated from events/*.schema.json (datamodel-code-generator)
-│  └─ ts-client/                 # TS types + fetch client generated from openapi.yaml (openapi-typescript + openapi-fetch)
+│  ├─ shared/                    # Pydantic event models (source of truth) → contracts/events/*.schema.json
+│  └─ api-client/                # TS types + fetch client generated from contracts/openapi.json
 ├─ services/
 │  ├─ api/                       # FastAPI core: incidents, dispatch, triage, CAP, SMS webhook, jobs, SSE
 │  ├─ vision/                    # GPU workers: ingest, detect, track, triggers, VLM verify, evidence, try-it jobs
@@ -56,7 +56,7 @@ nadjet/
 ├─ deploy/
 │  ├─ vps/compose.yml            # Dokploy "Docker Compose" project (core + media)
 │  ├─ gpu/compose.yml            # Brev GPU host (vLLM + vision workers)
-│  ├─ local/compose.yml          # full offline laptop mode (stage fallback)
+│  ├─ local/compose.yml          # local infra: PostGIS, Redis, MediaMTX
 │  └─ mediamtx/mediamtx.yml
 ├─ data/                         # seeds: facilities.csv, units.csv, cameras.yaml, zones/, fetch scripts (no media)
 ├─ eval/                         # held-out clip list, run_eval.py, results/*.json
@@ -65,9 +65,9 @@ nadjet/
 ```
 
 **Workspace tooling:**
-- **uv workspace** for Python (`services/api`, `services/vision`, `packages/py-contracts`).
-- **pnpm workspace** for TypeScript (`apps/web`, `packages/ts-client`).
-- **`just`** as the single task runner (`just dev`, `just gen`, `just e2e`, `just deploy-gpu`).
+- **uv workspace** for Python (`services/api`, `services/vision`, `services/camsim`, `packages/shared`).
+- **pnpm workspace** for TypeScript (`apps/web`, `packages/api-client`).
+- **GNU `make`** as the single task runner (`make help`; TD-26).
 
 **No Turborepo or Nx.** There is only one TS app, so a build orchestrator adds config without saving time.
 
@@ -125,14 +125,14 @@ The vision image runs **in two modes**:
 | **vite-plugin-pwa** (Workbox) + IndexedDB queue | Installable responder app that works offline, with an SMS fallback path. |
 | **i18next** (ar/fr/en, RTL) | Algerian bilingual users. |
 | WHEP player (MediaMTX `reader.js` or a small `RTCPeerConnection` client); WHIP publisher for `/try/live` | Live camera wall, and the phone camera as a stream source. |
-| Vitest + Playwright | Unit tests and the full end-to-end scenario test. |
+| No frontend tests | Testing policy (TD-28): the web app is validated with lint, type-check and build only. |
 
 **Why one app, not four:** shared auth, design system, map components and API client. Each route bundle is code-split, so the responder PWA stays small. Separate subdomains point to the same container through Traefik host rules.
 
 ## 4. CI/CD (GitHub Actions)
 
 ```
-ci.yml       on PR:   ruff+mypy+pytest (api, vision-cpu tests) · tsc+vitest (web) · contracts drift check
+ci.yml       on PR:   ruff+mypy+pytest unit+integration (PostGIS/Redis services) · eslint+tsc+build (web, no tests) · contracts drift · integrity + commit rules
                       (regenerate openapi/clients → git diff --exit-code) · CAP XSD validation · integrity grep
                       (no `random`/hardcoded incidents in services/)
 images.yml   on push to main, path-filtered:

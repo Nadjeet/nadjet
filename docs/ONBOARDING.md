@@ -1,0 +1,87 @@
+# Onboarding, setup and troubleshooting
+
+## 1. Install the tools (once)
+
+| Tool | Version | Install |
+|---|---|---|
+| git | any recent | https://git-scm.com |
+| Docker + Compose | Docker Desktop / Engine 24+ | https://docs.docker.com/get-docker/ |
+| uv | 0.9+ (installs Python 3.12 itself) | `curl -LsSf https://astral.sh/uv/install.sh \| sh` |
+| Node + pnpm | Node ≥ 22 (`.nvmrc` = 24), pnpm 10 | `corepack enable && corepack prepare pnpm@10 --activate` |
+| GNU make | 3.81+ | preinstalled on macOS/Linux |
+| GitHub CLI | 2.x, authenticated | `gh auth login` |
+| NVIDIA Brev CLI | latest | https://docs.nvidia.com/brev/latest/ then `brev login` |
+| Claude Code | latest | for `/implement-issue` and `/review-pr` |
+
+`make doctor` checks all of this and tells you what is missing.
+
+## 2. First run
+
+```bash
+git clone git@github.com:Nadjeet/nadjet.git && cd nadjet
+make setup        # deps, git hooks (core.hooksPath=.githooks), .env from .env.example
+make dev          # infra + API + web; Ctrl-C stops the apps, `make stop` stops containers
+```
+
+- API docs: http://localhost:8080/docs · readiness: http://localhost:8080/ready
+- Web: http://localhost:5173 (shows the API/database/Redis status)
+- MediaMTX (simulated cameras): RTSP `rtsp://localhost:8554/<camera-id>`, WebRTC
+  `http://localhost:8889/<camera-id>`
+
+### Demo videos (optional for most work)
+
+Cameras are defined in `data/cameras.yaml`. Videos are **not** in git (research licences).
+Put H.264 files named `<camera-id>.mp4` in `data/videos/`, normalised for streaming:
+
+```bash
+ffmpeg -i in.mp4 -vf "scale=1280:-2,fps=25" -c:v libx264 -profile:v baseline -g 25 -bf 0 -an data/videos/cam-a1-pk42.mp4
+make camsim && make dev
+```
+
+Cameras without a video file are skipped with a warning.
+
+## 3. AI inference: NVIDIA Brev only
+
+All AI inference runs on the team's Brev GPU instance. There is no other provider, also not
+for local development.
+
+1. `brev login` (once). Ask the team lead to add you to the Brev organisation.
+2. The instance (default name `nadjet-gpu`, set `NADJET_BREV_INSTANCE` in `.env`) runs
+   `deploy/gpu/compose.yml`. Starting or creating instances spends credits: only the team
+   lead does it.
+3. Connect: `make brev-forward` (localhost:18000 → instance:8000), then `make brev-check`.
+4. Live test: `make test-brev` (not part of `make test` or CI).
+
+If Brev is unreachable, the app reports "AI unavailable" and keeps the rule-based signals.
+
+## 4. Daily workflow
+
+```bash
+gh issue list                       # pick an issue
+claude                              # in the repo root
+/implement-issue 42                 # Sonnet 5.5: issue → PR to dev
+/review-pr 57                       # Opus 5.5: review + fixes, then waits for your CI check
+# check CI on GitHub, then tell Claude: "CI is green"
+```
+
+## 5. Troubleshooting
+
+| Symptom | Fix |
+|---|---|
+| `make setup` FAIL lines | Install the missing tool shown by `make doctor` |
+| Port already in use (55432, 56379, 8080, 5173, 8554, 8889) | Stop the other service, or change `NADJET_PG_PORT` / `NADJET_REDIS_PORT` in `.env` (and the URLs) |
+| `/ready` returns 503 | `make ps` — start infra with `make infra`; run `make migrate` |
+| Integration tests fail with connection errors | They need `make infra`; they fail on purpose when infra is down |
+| `check-contracts` fails | Run `make gen` and commit `contracts/` and `packages/api-client/src/schema.d.ts` |
+| `commit-msg` hook rejects a commit | Use one line: `type(scope): summary` (≤ 72 chars, no body, no co-authors) |
+| `pre-push` refuses to push | You are pushing to `dev`/`main` or force-pushing; push your feature branch instead |
+| `brev not logged in` | `brev login` |
+| `make brev-check` fails | Instance stopped or forward missing: `make brev-status`, then `make brev-forward` |
+| MediaMTX shows no cameras | Add videos to `data/videos/` and run `make camsim`, then restart `make dev` |
+| PostGIS image fails on Apple Silicon | Use the repo's `imresamu/postgis` image (multi-arch); do not switch to `postgis/postgis` |
+
+## 6. Clean up
+
+- `make stop` — stop containers (keeps data) · `make down` — remove containers.
+- `make clean` — remove caches and builds (keeps `.env`, dependencies, data).
+- `make reset-db` — delete local PostGIS/Redis data (asks for confirmation).

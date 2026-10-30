@@ -42,12 +42,18 @@ If those documents disagree with this register, **this register wins**.
 | TD-17 | 2026-10-30 | **Stage deployment:** **VPS + Dokploy** in Docker Compose mode (not Stack) runs web, api, worker, PostGIS, Redis, OSRM and MediaMTX. Traefik + Let's Encrypt for HTTP. WebRTC/RTSP ports (8189 udp+tcp, 8554 tcp) published directly. `stream.` DNS must not go through the Cloudflare proxy | Brev as a Dokploy remote server; Swarm mode | Dokploy's Traefik only proxies HTTP; Swarm handles UDP and GPUs badly | NFR-FLEX-001 |
 | TD-18 | 2026-10-30 | **GPU host:** **NVIDIA Brev**, 1× L40S (L4 as fallback). Budget: $90 of credits, plan about 28 h (≈ $30–52), see doc 10 §4. Plain `docker compose` running vLLM and the vision workers. **Outbound connections only** (RTSP pull/push to the VPS, HTTPS to the API) | Brev tunnels (they require browser authentication); hosted inference APIs as the main path | Simple, documented, no inbound ports | NFR-PERF-001, NFR-PERF-003 |
 | TD-19 | 2026-10-30 | **CI/CD:** GitHub Actions builds images and pushes them to **GHCR** (`ghcr.io/nadjeet/nadjet-{web,api,vision}`). Dokploy only pulls. Stage pins to the tag `demo-v1` | Building on the VPS | CUDA images are 5–15 GB; Dokploy re-clones on every deploy | NFR-MAINT-001 |
-| TD-20 | 2026-10-30 | **Hosted AI fallback (optional):** Gemini API (Google AI Studio free tier), only for public sample clips and consented uploads | build.nvidia.com as the critical path (terms limit it to trial use; unofficial rate limit) | Free, no card, Algeria supported; restricted by PRD NFR-PRIV-002 | FR-CIT-005 |
-| TD-21 | 2026-10-30 | **Offline fallback:** `deploy/local` runs the full stack on the laptop; Mac VLM = Qwen2.5-VL-7B 4-bit via mlx-vlm | — | Stage resilience | NFR-REL-003 |
+| TD-20 | 2026-10-30 | ~~Hosted AI fallback (Gemini)~~ **Superseded by TD-27** | — | — | — |
+| TD-21 | 2026-10-30 | **Offline fallback:** `deploy/local` runs the full stack on the laptop **except AI inference** (Brev only, TD-27) | Local Mac VLM (superseded by TD-27) | Stage resilience | NFR-REL-003 |
 | TD-22 | 2026-10-30 | **AI sweep:** every 5 s per camera, the last 8 s at 2 fps, 640 px, sent as one video to the same Qwen3-VL server. Threshold on the yes-token probability. Sweep-only detections are at most `probable` | Sentinel every 10–15 s (too slow for SC-001); no sweep (rules miss crashes) | Rule-based detection alone reached 71% detection in published work and had about twice the timing error of the VLM (arXiv 1911.10037, 2605.01512). NVIDIA RT-VLM handles dozens of streams per GPU | FR-VIS-015 |
 | TD-23 | 2026-10-30 | **Upload two-pass:** pass 1 scans the whole clip at 1–2 fps with a "no collision" option; pass 2 looks at ±2–3 s around the found time at 4 fps; correction damped and capped; RF-DETR only snaps the result onto vehicles | Rules on uploads (break on unseen camera angles) | Same method as all three ACCIDENT 2026 top papers | FR-CIT-002 |
 | TD-24 | 2026-10-30 | **Validation layer:** Pydantic schema check; every finding must cite an existing frame ID, else dropped and logged; trilingual (AR/FR/EN) safety-word filter; one retry with the validation error, then a template description from rule signals | Trusting raw VLM text | Prevents hallucinated or harmful wording reaching operators | FR-VIS-016, FR-VIS-017 |
 | TD-25 | 2026-10-30 | **`models.lock.yaml`:** every weight pinned with source, version, checksum and licence; CI fails if an AGPL or non-commercial model is enabled by default in a production profile. `VLM_MODE=mock` (recorded answers) allowed only in `tests/`; production start-up refuses it | — | Licence hygiene and no fake AI outside tests | NFR-LIC-001, FR-VIS-020 |
+| TD-26 | 2026-10-30 | **Task runner: GNU `make`** (`Makefile`, works with make 3.81 on macOS). `make help` lists everything | `just` (extra install) | Zero-install, universal | NFR-MAINT-001 |
+| TD-27 | 2026-10-30 | **NVIDIA Brev is the only AI inference provider**, including local development: `make brev-forward` (localhost:18000 → instance:8000), `make brev-check`. `BrevVlmClient` refuses non-loopback hosts unless listed in `NADJET_VLM_ALLOWED_HOSTS`; `scripts/check-integrity.sh` fails CI on other provider endpoints/SDKs | Gemini fallback (TD-20), Mac mlx-vlm (TD-21) | One sovereign path, no silent fallbacks (PRD D-17) | FR-VIS-009, FR-CIT-005, NFR-PRIV-002 |
+| TD-28 | 2026-10-30 | **Testing policy:** pytest unit + integration tests for every non-frontend component (integration = real PostGIS/Redis, fail when infra is down); `@pytest.mark.brev` live checks never in CI; **no frontend tests of any kind** (enforced by `scripts/check-integrity.sh`) | Vitest/Playwright for the web app | Effort on business logic and contracts | NFR-MAINT-001 |
+| TD-29 | 2026-10-30 | **Contracts source of truth = code:** Pydantic models in `packages/shared` and FastAPI routes; `make gen` exports `contracts/events/*.schema.json`, `contracts/openapi.json` and the TS client (`openapi-typescript` + `openapi-fetch`); CI fails on drift | Hand-written JSON Schemas + `datamodel-code-generator` | One definition, type-checked | NFR-MAINT-001 |
+| TD-30 | 2026-10-30 | **Local infra:** `imresamu/postgis:17-3.5` (multi-arch: arm64 Macs + amd64 CI), `redis:8-alpine`, `bluenviron/mediamtx:1.21.2-ffmpeg`; host ports 55432 / 56379 to avoid clashes; API 8080, web 5173 | `postgis/postgis` (amd64 only) | Works on every dev machine and in CI | — |
+| TD-31 | 2026-10-30 | **Agent workflow:** `AGENTS.md` single source; `/implement-issue` (Sonnet 5.5) and `/review-pr` (Opus 5.5) skills in `.agents/skills/` linked into `.claude/skills/`; guard hooks + git hooks enforce one-line Conventional Commits, no co-authors, no direct pushes to `dev`/`main`; PRs target `dev` | — | Standardised issue-to-PR lifecycle | — |
 
 ---
 
@@ -67,7 +73,7 @@ The team already owns: an NVIDIA Brev account, a VPS with Dokploy, and a domain 
 | Routing data | Geofabrik Algeria extract (287 MB) | No | ODbL attribution | https://download.geofabrik.de/africa/algeria.html |
 | Facility seed | Overpass API, one-off export | No | Not used at runtime (usage policy) | https://wiki.openstreetmap.org/wiki/Overpass_API |
 | Monitoring (optional) | UptimeRobot Free; Grafana Cloud Free | No | 50 monitors / 14-day retention | https://uptimerobot.com/pricing/ · https://grafana.com/pricing/ |
-| AI fallback (optional) | Gemini API, AI Studio free tier | No | Algeria supported. Free-tier data may be used to improve Google products | https://ai.google.dev/gemini-api/docs/available-regions · https://ai.google.dev/gemini-api/terms |
+| ~~AI fallback (optional)~~ | ~~Gemini API~~ | — | Removed: Brev only (TD-27) | — |
 | Email (optional) | Mailpit (self-hosted); Brevo Free | No | 300 emails/day after account approval | https://www.brevo.com/pricing/ |
 
 **Excluded:**
@@ -117,7 +123,7 @@ The team already owns: an NVIDIA Brev account, a VPS with Dokploy, and a domain 
 | VIS | `services/vision` (+ vLLM on the GPU host) |
 | INC, DSP, NTF, KPI, SEC, ADM | `services/api` (+ arq worker, PostGIS, Redis, OSRM) |
 | RSP, HSP, CIT, MAP | `apps/web` (surfaces `/ops`, `/respond`, `/hospital`, `/try`) |
-| Contracts | `contracts/` → `packages/py-contracts`, `packages/ts-client` |
+| Contracts | `packages/shared` + FastAPI routes → `contracts/` (generated) → `packages/api-client` |
 | Evaluation | `eval/` |
 
 ---
@@ -176,11 +182,11 @@ Serves PRD NFR-MAINT-001, NFR-MAINT-002 and §21.
 
 - **Contracts first.**
   - `contracts/openapi.yaml`, `contracts/events/*.schema.json`, `contracts/cap-profile.md` and `contracts/sms-grammar.md` are the source of truth.
-  - The TypeScript and Python clients and models are generated from them (`just gen`).
+  - They are generated from the Pydantic models and FastAPI routes (`make gen`), and the TS client from `contracts/openapi.json` (TD-29).
   - CI regenerates them and fails on any diff.
 - **Replaceable parts.** The detector, the AI verifier, the SMS provider and evidence storage each sit behind an interface (`Detector`, `Verifier`, `SmsProvider`, `EvidenceStore`). Business logic never imports a vendor SDK directly.
 - **Traceability:**
-  - Tests carry the requirement ID in their name, e.g. `test_FR_NTF_005_parses_triage` or `it("FR-CIT-006: …")`.
+  - Python tests reference requirement IDs in their name or docstring, e.g. `test_FR_NTF_005_parses_triage`. There are no frontend tests (TD-28).
   - CI generates `docs/traceability.md` (ID → test files → status) from test names.
   - PR titles reference requirement IDs.
 - **Integrity check in CI.** Grep `services/` for `random`, hardcoded incident payloads or demo flags (PRD FR-VIS-020).

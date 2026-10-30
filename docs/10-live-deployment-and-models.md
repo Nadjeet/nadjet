@@ -13,7 +13,7 @@ This supersedes the "fine-tune a VideoMAE verifier" plan. The team has no time t
 | Second-opinion verifier | Cosmos-Reason2-8B | NVIDIA Open Model License | ≥ 32 GB VRAM | Lost to Qwen3-VL in the ACCIDENT 1st-place tests; missed T-bone crashes; long reasoning is slow | **Dropped** |
 | Smoke / fire | `weslleyskah/fire_smoke_box` (YOLO26n) or D-Fire YOLOv5s | AGPL-derived | GPU/CPU | Public fire/smoke datasets; mAP not verified on road scenes | Optional, separate process; may be enabled for the demo |
 | Extra "road accident" score | `OPear/videomae-large-finetuned-UCF-Crime` | CC-BY-NC | GPU | 92.96% on UCF-Crime (split unclear) | **Dropped** |
-| Hosted fallback | Gemini Flash (video input, JSON) | commercial API | none | Used in a strong ACCIDENT pipeline (https://arxiv.org/abs/2605.01512) | **Stage fallback only.** Labelled non-sovereign |
+| Hosted fallback | — | — | — | — | **None: NVIDIA Brev is the only AI provider (TD-27)** |
 
 **Rejected:**
 - Roboflow "accident" YOLO models: leaky splits.
@@ -296,14 +296,14 @@ Brev facts that drive the plan:
 - No storage of phone streams beyond the session.
 - Consent notice in ar/fr/en.
 - Sandbox tenant isolated from the "real" demo incidents.
-- Hosted fallback (Gemini) only when the GPU is down, and labelled.
+- If the GPU is down, the page shows "AI unavailable" and keeps the rule-based analysis (no other provider).
 
 ## 6. Stage runbook and fallbacks
 
 **T-1 day**
 - Freeze the `demo-v1` tag and deploy it on the VPS.
 - Create the Brev instance, pull the images, warm vLLM.
-- Run `just e2e` against production URLs.
+- Run a full demo rehearsal against the production URLs.
 - Record a full backup video.
 
 **T-2 h**
@@ -320,8 +320,8 @@ Brev facts that drive the plan:
 
 | Problem | Fallback |
 |---|---|
-| GPU host down | `VLM_URL` switches to the Gemini fallback (label shown). Detection drops to the CPU RF-DETR on the laptop, which runs `deploy/local/compose.yml`. |
-| VPS or internet down | Laptop **offline mode**: `deploy/local/compose.yml` runs everything plus a Mac VLM (Qwen2.5-VL-7B 4-bit via mlx-vlm). Phones join the laptop's own hotspot. |
+| GPU host down | Incidents continue from rules with `verifier: unavailable`; UI shows "AI unavailable". No other AI provider (TD-27). |
+| VPS or internet down | Laptop mode: `make dev` runs everything locally; AI still needs the Brev forward (phone hotspot). Last resort: the recorded real run. |
 | Everything down | Play the recorded real run and say so. |
 
 ## 7. Cost and ownership summary

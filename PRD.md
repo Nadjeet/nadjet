@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Product | **Nadjet** (Arabic: **نجاة**, "survival, being saved"). Final name (D-12). Repo: https://github.com/Nadjeet/nadjet. Domain mapping still open (Q-01) |
-| Document status | **DRAFT v0.5, for team review** |
+| Document status | **DRAFT v0.6, for team review** |
 | Owner | Product lead: TBD · Tech lead: TBD |
 | Approvers | Whole team (sign-off table in §20) |
 | Created / updated | 2026-10-30 |
@@ -37,6 +37,7 @@
 | 0.3 | 2026-10-30 | Team + Claude | PRD made technology-neutral (D-13). Technical choices moved to `docs/11-technical-decisions.md` (TD-01…TD-21). Technical open questions moved there (TQ-01…) |
 | 0.4 | 2026-10-30 | Team + Claude | Engineering details moved to doc 11 (§6–§9): AI thresholds and clip sizes, data fields, engineering and traceability rules, reliability timings. The PRD keeps only product-level requirements |
 | 0.5 | 2026-10-30 | Team + Claude | AI design merged and aligned with 2026 evidence: graded AI statuses (FR-VIS-007), AI sweep as a second detection path (FR-VIS-015), evidence-cited AI findings (FR-VIS-016), safety wording (FR-VIS-017), priority floors (FR-INC-003), witness questions and trapped flag (FR-CIT-001/006, FR-NTF-005), AI-first two-pass analysis of uploads (FR-CIT-002), relative speed (FR-VIS-003), rollover trigger removed. Decisions D-14 to D-16 |
+| 0.6 | 2026-10-30 | Team + Claude | All AI inference on NVIDIA Brev only, no hosted fallback provider (D-17): FR-CIT-005, NFR-REL-003, NFR-PRIV-002, E-13, R-04, Q-07 and the launch checklist updated |
 
 ---
 
@@ -386,7 +387,7 @@ Areas:
   - be rate-limited per IP;
   - show a consent notice in Arabic, French and English;
   - store public uploads in an isolated sandbox, deleted after 1 h.
-- **FR-CIT-005 [S]** IF the team's AI server is unavailable, THEN the try page shall use a **hosted fallback AI** and display "fallback mode (non-sovereign, demo only)". The fallback may only process public sample clips and user uploads made after consent (NFR-PRIV-002).
+- **FR-CIT-005 [S]** IF the AI server (the team's NVIDIA Brev instance) is unavailable, THEN the try page shall say "AI unavailable" and still show the rule-based analysis. It shall never switch to another AI provider (D-17).
 
 ### 8.9 Map and operator UI (MAP)
 
@@ -487,7 +488,7 @@ Areas:
 | E-10 | Hospital answers DIVERT after dispatch | Alert the operator and propose the next-ranked hospital. |
 | E-11 | GPS unavailable or denied on the citizen report | The user picks a point on the map. If offline, the filled-in SMS contains only `ACCIDENT` plus any text typed. The free-text location is shown to the operator, flagged for call-back. |
 | E-12 | Public upload is not a video, too long or too large | Reject with a clear error before the upload completes (checked on the phone and on the server). |
-| E-13 | AI server down during the demo | Switch to the fallback (FR-CIT-005) and show its label. The camera pipeline runs in degraded mode on the laptop. |
+| E-13 | AI server down during the demo | Incidents are still created from rule signals with `verifier: unavailable`; the UI says "AI unavailable". No other AI provider is used (D-17). |
 | E-14 | Same crash reported by several citizens, or by a citizen and a camera | Merge into one incident (FR-INC-002). Show the report count as a confidence signal. |
 | E-15 | AI sweep raises alerts on normal traffic | Count them in the false-alarm rate (SC-005). Raise the sweep threshold or interval; sweep alerts are never higher than `probable`. |
 | E-16 | A witness reports someone trapped | Priority at least P1; the dispatch panel highlights the need for an extrication-capable unit. |
@@ -503,12 +504,12 @@ Areas:
 | NFR-PERF-003 | Performance | AI verification p95 ≤ 6 s per candidate. *(To be measured, doc 11 TQ-02.)* |
 | NFR-REL-001 | Reliability | Cameras reconnect automatically after an interruption. Losing one camera never stops the others. |
 | NFR-REL-002 | Reliability | No incident candidate is ever lost, even if the backend restarts. |
-| NFR-REL-003 | Reliability | A fully offline laptop mode is available as a stage fallback. |
+| NFR-REL-003 | Reliability | A laptop mode runs everything except AI inference, which always runs on NVIDIA Brev. A recorded backup of a real run is the last resort on stage. |
 | NFR-SEC-001 | Security | HTTPS on all public endpoints. No secrets in the repository. |
 | NFR-SEC-002 | Security | Audit and incident-event records are append-only. The application cannot modify or delete them. |
 | NFR-SEC-003 | Security | Public endpoints are rate-limited. Upload type and size are validated server-side. |
 | NFR-PRIV-001 | Security / Privacy | Data minimisation: event clips only, no continuous recording stored. Retention ≤ 365 days. Records of processing can be exported for the DPO in production (Law 25-11). |
-| NFR-PRIV-002 | Security / Privacy | **No government or real-person footage is ever sent to a hosted third-party AI.** The hosted fallback only processes public sample clips and consented uploads. |
+| NFR-PRIV-002 | Security / Privacy | **No footage is ever sent to a third-party AI provider.** All AI inference runs on the team's NVIDIA Brev instance (in production: government GPU servers). |
 | NFR-COMP-001 | Compatibility | Ingest standard camera streams (RTSP, H.264/H.265; ONVIF in production). Output CAP 1.2 alerts. Integrate through HTTP webhooks and SMS. |
 | NFR-INT-001 | Interaction | UIs in Arabic (RTL), French and English. Responder actions reachable in ≤ 2 taps. Usable on a 5-inch phone. |
 | NFR-INT-002 | Interaction | WCAG 2.2 AA colour contrast. Priority is never shown by colour alone. |
@@ -616,7 +617,7 @@ Rules that follow from C-01:
 | R-01 | AI misses crashes or raises false alarms on unfamiliar footage | M / H | Rules and AI verifier must agree; human gate; honest metrics; curated held-out clips, including congestion clips |
 | R-02 | AI verification too slow | M / M | Benchmark on day 1 (doc 11 TQ-02); fewer frames, smaller inputs; stronger GPU tier |
 | R-03 | Venue network blocks real-time video or is unstable | H / H | Own hotspot; network fallback modes; offline laptop mode |
-| R-04 | GPU server unavailable or fails to restart | L / H | Start early and never stop it; labelled hosted fallback; laptop mode |
+| R-04 | GPU server unavailable or fails to restart | L / H | Start early and never stop it; "AI unavailable" mode keeps rules running; recorded backup run |
 | R-05 | SMS delivery delays at the venue | M / M | Test the SIM in advance; push and messaging channel in parallel |
 | R-06 | Overclaiming government integration or facts | L / H | Use only facts marked VERIFIED in doc 02. Say "integration-ready", never "integrated" |
 | R-07 | Licence problems (copyleft / non-commercial) in a government pitch | M / M | Core path is permissive only (NFR-LIC-001); optional modules flagged |
@@ -637,7 +638,7 @@ Technical questions (GPU tier, measured latency, gateway details, image versions
 | Q-04 | *Moved to doc 11 (TQ-01).* | — | — |
 | Q-05 | *Moved to doc 11 (TQ-02).* | — | — |
 | Q-06 | Which held-out clips? Their licences must allow showing them in the demo. | AI owner | Day 1 |
-| Q-07 | Keep the hosted AI fallback at all, or rely only on the laptop offline mode? (Sovereignty story vs demo safety.) | Team | P2 |
+| Q-07 | ~~Hosted AI fallback?~~ → **resolved: no** — NVIDIA Brev only (D-17) | Team | — |
 | Q-08 | Clickable prototype before building the UI, or build directly? | Designer + frontend owner | Day 1 |
 | Q-09 | Demo setting: A1 Boumerdès plus Algiers, or another wilaya? | Team | Day 1 |
 | Q-10 | Responder demo phones: whose phones, and which numbers are seeded? Numbers are deleted after the demo. | Team | Before P2 |
@@ -661,6 +662,7 @@ Technical decisions (models, frameworks, services, repository, deployment, SMS g
 | D-14 | 2026-10-30 | Graded AI statuses and an AI sweep as a second detection path | Rules alone miss many real crashes; published evidence shows rule-based timing errors about twice the AI's. Statuses keep the AI honest and the human in charge |
 | D-15 | 2026-10-30 | Not enough evidence → P2 "to assess" | Better to over-prioritise an unclear case than to bury it |
 | D-16 | 2026-10-30 | MVP scope cut: no occupant counting from video, no thermal module, no second AI verifier; fire/smoke optional and may be enabled for the demo | Fit 48 h; keep the effort on what the jury sees and on measured quality |
+| D-17 | 2026-10-30 | All AI inference runs on NVIDIA Brev — development, tests against live models, demo and pilot. No hosted or local fallback provider | One sovereign, consistent inference path; no silent quality changes. Replaces the earlier hosted-fallback idea |
 
 ---
 
@@ -678,11 +680,11 @@ Technical decisions (models, frameworks, services, repository, deployment, SMS g
 **Launch-readiness checklist (demo day)**
 
 - [ ] `demo-v1` deployed and the GPU server warm.
-- [ ] End-to-end test passes against the live URLs.
+- [ ] Full demo rehearsal passes against the live URLs.
 - [ ] SMS test sent and received.
 - [ ] Phone-as-camera tested from 2 phones on 4G.
 - [ ] Hotspot charged.
-- [ ] Laptop offline mode tested.
+- [ ] Laptop mode tested (everything except AI; AI via Brev port-forward).
 - [ ] Evaluation page shows current results.
 - [ ] Every slide fact is marked VERIFIED in doc 02.
 - [ ] Attributions shown: OpenStreetMap, model licences.

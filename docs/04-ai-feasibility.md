@@ -162,7 +162,7 @@ Counting from CCTV and thermal search are out of scope (D-16).
 |---|---|---|
 | **Brev L40S 48 GB** (recommended) | 4 cameras × RF-DETR at 5 fps + tracking + sweep (0.8 calls/s) + verifications + uploads + optional fire detector, with Qwen3-VL-8B-FP8 on vLLM | ≈ 2–3 s per AI call; comfortable |
 | Brev L4 24 GB (fallback) | Same | Slower; sweep at 8–10 s |
-| Laptop (offline fallback) | RF-DETR Nano on CPU or CoreML; Qwen2.5-VL-7B 4-bit via mlx-vlm | 2–3 cameras at reduced fps |
+| Laptop | Everything except AI; AI through `make brev-forward` | Brev only (TD-27) |
 
 - **Budget:** $90 of Brev credits. Plan ≈ 28 h (≈ $30–52); see doc 10 §4.
 - **SC-001 (≤ 10 s):**

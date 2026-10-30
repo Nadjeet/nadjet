@@ -30,7 +30,7 @@ nadjet/
 | **WS5 Notifications & SMS** | 1 agent | `api/notifier/` | SMS gateway client, inbound SMS parser, Telegram, Web Push, retries, delivery status | contracts (SMS grammar) |
 | **WS6 Operator dashboard** | 1–2 agents | `web/app/(ops)` | Camera wall (WHEP + canvas overlay), incident queue, incident detail with evidence, map, dispatch panel, KPI page, system page | OpenAPI + mock server |
 | **WS7 Responder / hospital / citizen UIs** | 1 agent | `web/app/(field)` | Responder PWA (ack, status, triage form, offline queue), hospital pre-alert view, citizen report page; ar/fr/en + RTL | OpenAPI + mock server |
-| **WS8 QA & demo** | 1 agent + a human | `tests/e2e`, `docs/` | Playwright end-to-end of the full scenario, demo script, rehearsal checklist, slides data | everything |
+| **WS8 QA & demo** | 1 agent + a human | `docs/` | Backend integration tests, demo script, rehearsal checklist, slides data (no frontend tests, TD-28) | everything |
 
 ### Avoiding conflicts
 
@@ -43,14 +43,14 @@ nadjet/
    - WS6 and WS7 develop against a Prism mock (`prism mock contracts/openapi.yaml`).
    - WS4 develops against `vision/tools/replay_candidates.py`, which replays **recorded real candidates** for development only. These are never used in the demo.
 3. **One folder per workstream.** Agents may not edit outside their folder except through a contract PR. Use **git worktrees**, one per agent (`git worktree add ../nadjet-ws4 -b ws4/api`).
-4. **Small PRs, a merge cadence of every ~3 hours**, and an end-to-end smoke test (`just e2e`) on main after every merge.
+4. **Small PRs** into `dev` via `/implement-issue` and `/review-pr`, with `make ci` green before every merge (TD-31).
 5. **Shared definitions of done** live in AGENTS.md: tests pass, lint passes, contract validated, no hardcoded demo events.
 
 ## 3. Timeline (48 h hackathon; adjust to the real schedule)
 
 | Phase | Hours | Goal | Exit criterion |
 |---|---|---|---|
-| **P0 Foundation** | 0–4 | Contracts v0, repo skeleton, compose up, MediaMTX streaming 4 clips, dataset download started, detector benchmark on the laptop | `just infra && just sim` → 4 live streams in the browser |
+| **P0 Foundation** | 0–4 | Contracts v0, repo skeleton, compose up, MediaMTX streaming 4 clips, dataset download started, detector benchmark on the laptop | `make dev` → 4 live streams in the browser |
 | **P1 Vertical slice** | 4–14 | Camera → detector + tracker → `stalled_vehicle` / `collision_candidate` triggers → candidate → API → DB → SSE → dashboard card with clip | One real detected incident visible end-to-end |
 | **P2 Response chain** | 14–26 | Verification, OSRM recommendation, dispatch, CAP, SMS out + inbound ACK, responder PWA, triage, hospital view | Full chain on real phones |
 | **P3 Intelligence** | 14–30 (parallel) | Verifier trained and integrated, priority with reasons, VLM description, evaluation report | Ablation table produced on the held-out set |
@@ -85,12 +85,12 @@ nadjet/
 - Every confidence shown to users must come from a model output or a documented rule; store its source.
 ## Stack
 - Python 3.12 (uv), FastAPI, Pydantic v2, SQLAlchemy 2, Alembic, pytest, ruff.
-- TypeScript, React, shadcn/ui, TanStack Query, MapLibre, vitest, Playwright, prettier/eslint.
+- TypeScript, React, shadcn/ui, MapLibre, prettier/eslint. No frontend tests.
 ## Contracts
 - contracts/openapi.yaml, contracts/events/*.schema.json, contracts/cap-profile.md, contracts/sms-grammar.md.
-- Regenerate clients after contract changes: `just gen`.
+- Regenerate contracts and the client after API changes: `make gen`.
 ## Done = 
-- tests + lint pass, `just e2e` green on your branch, no TODOs in user-facing paths, docs updated if behaviour changed.
+- `make ci` green on your branch, no TODOs in user-facing paths, docs updated if behaviour changed.
 ## Commits
 - Conventional commits scoped by folder: feat(vision): …, fix(api): …
 ```
