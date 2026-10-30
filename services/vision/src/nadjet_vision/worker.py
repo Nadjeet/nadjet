@@ -21,6 +21,10 @@ log = logging.getLogger("nadjet_vision.worker")
 
 BACKOFF_START_S = 1.0
 BACKOFF_MAX_S = 30.0  # doc 11: reconnect back-off 1 s to 30 s
+# FFmpeg >= 5 calls the socket timeout `timeout` (µs); `stimeout` is silently ignored. Without it
+# a frozen camera (RTSP session open, no frames) blocks decode forever and never reconnects.
+RTSP_OPTIONS = {"rtsp_transport": "tcp", "timeout": "5000000"}
+OPEN_TIMEOUT_S = (5.0, 5.0)  # (open, read) seconds, enforced by PyAV
 
 
 def rtsp_url(base: str, camera_id: str) -> str:
@@ -83,7 +87,7 @@ def read_frames(url: str, stop: Callable[[], bool]) -> Iterator[None]:
     """Yield once per decoded video frame until ``stop()``; blocking, run in a thread."""
     import av  # gpu extra, imported lazily so local tools and tests do not need it
 
-    with av.open(url, options={"rtsp_transport": "tcp", "stimeout": "5000000"}) as container:
+    with av.open(url, options=RTSP_OPTIONS, timeout=OPEN_TIMEOUT_S) as container:
         for _ in container.decode(video=0):
             if stop():
                 return
@@ -104,9 +108,13 @@ async def run_camera(
     backoff = BACKOFF_START_S
     loop = asyncio.get_running_loop()
 
+    received = False  # set by the reader thread; read after it finishes
+
     def consume() -> None:
+        nonlocal received
         last_report = time.monotonic()
         for _ in frames(url, stop.is_set):
+            received = True
             meter.tick()
             if time.monotonic() - last_report >= report_every_s:
                 last_report = time.monotonic()
@@ -114,13 +122,18 @@ async def run_camera(
 
     while not stop.is_set():
         log.info("camera=%s connecting %s", camera_id, url)
+        received = False
         try:
             await loop.run_in_executor(None, consume)
-            backoff = BACKOFF_START_S
         except Exception as exc:  # stream errors are many; always reconnect
-            log.warning("camera=%s stream error: %s (retry in %.0fs)", camera_id, exc, backoff)
+            log.warning("camera=%s stream error: %s", camera_id, exc)
+        # A stream that delivered frames was healthy (even if it then dropped): start over at
+        # the shortest back-off.
+        if received:
+            backoff = BACKOFF_START_S
         if stop.is_set():
             break
+        log.info("camera=%s retry in %.0fs", camera_id, backoff)
         with contextlib.suppress(TimeoutError):
             await asyncio.wait_for(stop.wait(), timeout=backoff)
         backoff = next_backoff(backoff)
