@@ -89,7 +89,10 @@ class CameraPipeline:
         tracked = self.tracker.update(detections)
         self.history.update(frame.pts_s, tracked)
         speeds = {t.track_id: self.history.speed(t.track_id) for t in tracked}
-        membership = {t.track_id: zone_membership(t.detection.anchor, self.zones) for t in tracked}
+        size = (frame.image.shape[1], frame.image.shape[0])
+        membership = {
+            t.track_id: zone_membership(t.detection.anchor, self.zones, size) for t in tracked
+        }
         moving = self.motion.update(frame.image)
         timers.record("track", (time.perf_counter() - started) * 1000)
 

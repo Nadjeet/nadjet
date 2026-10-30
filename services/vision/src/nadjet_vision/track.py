@@ -136,10 +136,22 @@ class ZoneMembership:
     in_carriageway: bool
 
 
-def zone_membership(anchor: Point, zones: Zones | None) -> ZoneMembership:
-    """Which live lane and whether the carriageway contains the object's ground point."""
+def zone_membership(
+    anchor: Point, zones: Zones | None, image_size: tuple[int, int] | None = None
+) -> ZoneMembership:
+    """Which live lane and whether the carriageway contains the object's ground point.
+
+    Zones are drawn on a ``zones.frame`` sized image; ``image_size`` (width, height) of the
+    analysed frame scales the anchor into that space when the stream resolution differs.
+    """
     if zones is None:
         return ZoneMembership(None, False)
+    if image_size is not None:
+        width, height = image_size
+        anchor = (
+            anchor[0] * zones.frame.width / width,
+            anchor[1] * zones.frame.height / height,
+        )
     lane = next((i for i, r in enumerate(zones.live_lanes) if point_in_polygon(anchor, r)), None)
     return ZoneMembership(lane, point_in_polygon(anchor, zones.carriageway))
 
