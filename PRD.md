@@ -3,7 +3,7 @@
 | Field | Value |
 |---|---|
 | Product | **Nadjet** (Arabic: **نجاة**, "survival, being saved"). Final name (D-12). Repo: https://github.com/Nadjeet/nadjet. Domain mapping still open (Q-01) |
-| Document status | **DRAFT v0.3, for team review** |
+| Document status | **DRAFT v0.4, for team review** |
 | Owner | Product lead: TBD · Tech lead: TBD |
 | Approvers | Whole team (sign-off table in §20) |
 | Created / updated | 2026-10-30 |
@@ -35,6 +35,7 @@
 | 0.1 | 2026-10-30 | Team + Claude | First full draft, built from research docs 01–10 |
 | 0.2 | 2026-10-30 | Team + Claude | Citizen report raised to Must. Added a one-tap report with an automatic GPS SMS fallback (FR-CIT-006) for roads without cameras (D-11) |
 | 0.3 | 2026-10-30 | Team + Claude | PRD made technology-neutral (D-13). Technical choices moved to `docs/11-technical-decisions.md` (TD-01…TD-21). Technical open questions moved there (TQ-01…) |
+| 0.4 | 2026-10-30 | Team + Claude | Engineering details moved to doc 11 (§6–§9): AI thresholds and clip sizes, data fields, engineering and traceability rules, reliability timings. The PRD keeps only product-level requirements |
 
 ---
 
@@ -224,18 +225,16 @@ Areas:
 - **FR-VIS-001 [M]** The vision worker shall decode each camera stream and analyse sampled frames at a configurable rate (default 5 frames/s).
 - **FR-VIS-002 [M]** The vision worker shall detect vehicles (car, bus, truck, motorcycle) and persons using a **pretrained open-weights detector with a permissive licence**.
 - **FR-VIS-003 [M]** The vision worker shall track detections across frames and estimate each vehicle's speed in m/s using a per-camera ground calibration.
-- **FR-VIS-004 [M]** The vision worker shall evaluate **trigger rules** on tracks. Thresholds are configurable per camera.
+- **FR-VIS-004 [M]** The vision worker shall evaluate **trigger rules** on vehicle and person movements. Thresholds are configurable per camera; default values are in doc 11 §6.
 
-  | Trigger | Condition |
+  | Trigger | Situation detected |
   |---|---|
-  | `collision_candidate` | Vehicles overlap, then both are stopped ≥ 3 s |
-  | `hard_stop` | Sudden deceleration not shared by the other traffic |
-  | `stalled_vehicle` | Stopped ≥ 20 s in a live lane |
-  | `pedestrian_on_road` | A person on the carriageway ≥ 2 s |
-  | `rollover_candidate` | Abrupt change in the vehicle's shape, then stop |
-- **FR-VIS-005 [M]** WHEN a trigger fires, the vision worker shall extract a clip (≥ 10 s before, ≥ 5 s after) and 8–16 keyframes. It shall submit them to a **pretrained vision-language AI verifier** with:
-  - a neutral prompt;
-  - a fixed structured-output schema that allows the answer `none`.
+  | `collision_candidate` | Vehicles touch or overlap, then both stay stopped |
+  | `hard_stop` | A sudden deceleration not shared by the other traffic |
+  | `stalled_vehicle` | A vehicle stopped for a long time in a live lane |
+  | `pedestrian_on_road` | A person on the carriageway |
+  | `rollover_candidate` | A sudden change in the vehicle's shape, then a stop |
+- **FR-VIS-005 [M]** WHEN a trigger fires, the vision worker shall extract a short video clip around the event and a set of keyframes. It shall submit them to a **pretrained vision-language AI verifier**, asked neutrally, which answers in a fixed format and may answer `none`. Clip lengths, frame counts and the answer format are in doc 11 §6.
 - **FR-VIS-006 [M]** The vision worker shall publish an incident candidate containing:
   - trigger signals;
   - track ids and boxes;
@@ -244,8 +243,8 @@ Areas:
   - evidence file hashes.
 - **FR-VIS-007 [M]** The incident type shall be `collision` **only if** the rule trigger and the AI verifier agree. Otherwise the type shall be `possible_incident`, for human decision.
 - **FR-VIS-008 [M]** The vision worker shall produce an **annotated stream** for each camera (boxes, track ids, speeds, zones), kept in sync with the video.
-- **FR-VIS-009 [M]** IF the AI verifier is unavailable or times out (> 15 s), THEN the vision worker shall publish the candidate with `verifier: unavailable` and the rule signals only. It shall never block or drop the candidate.
-- **FR-VIS-010 [S]** The vision worker shall suppress repeat triggers at the same location within a configurable cooldown (default 120 s). This handles video loops and lingering scenes.
+- **FR-VIS-009 [M]** IF the AI verifier is unavailable or too slow (timeout in doc 11 §6), THEN the vision worker shall publish the candidate with `verifier: unavailable` and the rule signals only. It shall never block or drop the candidate.
+- **FR-VIS-010 [S]** The vision worker shall suppress repeat triggers at the same location within a configurable cooldown (default in doc 11 §6). This handles video loops and lingering scenes.
 - **FR-VIS-011 [S]** The vision worker shall suppress triggers during global camera motion (pan, zoom, shake).
 - **FR-VIS-012 [C]** WHERE the smoke/fire module is enabled, the vision worker shall add a `smoke_fire` signal. *(Optional module, licence-isolated: D-06.)*
 - **FR-VIS-013 [C]** WHERE the second-opinion module is enabled, the vision worker shall also query a second AI verifier and store both verdicts.
@@ -301,12 +300,12 @@ Areas:
 
 - **FR-NTF-001 [M]** WHEN units are dispatched, the system shall notify each assigned responder by **SMS and push notification**, and optionally by a messaging-app channel.
 - **FR-NTF-002 [M]** SMS messages shall:
-  - follow the compact grammar in `contracts/sms-grammar.md`;
+  - follow one compact, documented message grammar (the codes in FR-NTF-005);
   - fit in **≤ 160 GSM-7 characters**, using Latin text.
 
   Example: `ACC|P1|36.64800,3.32900|A1 PK42|2V|7F3`.
 - **FR-NTF-003 [M]** The system shall send and receive SMS through a **self-operated SMS gateway using the team's own SIM**, with no third-party SMS provider. It shall record delivery status.
-- **FR-NTF-004 [M]** IF a notification is not delivered within 30 s, THEN the system shall retry up to 3 times with backoff and alert the operator on failure.
+- **FR-NTF-004 [M]** IF a notification is not delivered quickly, THEN the system shall retry it automatically and alert the operator if it still fails. Timings are in doc 11 §9.
 - **FR-NTF-005 [M]** The system shall parse inbound SMS:
 
   | Message | Meaning |
@@ -476,8 +475,8 @@ Areas:
 | NFR-PERF-001 | Performance | 4 simulated cameras analysed at ≥ 5 frames/s each on **one GPU server**. |
 | NFR-PERF-002 | Performance | Incident list and detail responses p95 ≤ 300 ms. Live UI updates ≤ 2 s. |
 | NFR-PERF-003 | Performance | AI verification p95 ≤ 6 s per candidate. *(To be measured, doc 11 TQ-02.)* |
-| NFR-REL-001 | Reliability | Vision workers reconnect to streams with increasing back-off (1 s to 30 s) and survive the loss of a single camera. |
-| NFR-REL-002 | Reliability | Candidates are delivered through a durable queue. No candidate is lost if the backend restarts. |
+| NFR-REL-001 | Reliability | Cameras reconnect automatically after an interruption. Losing one camera never stops the others. |
+| NFR-REL-002 | Reliability | No incident candidate is ever lost, even if the backend restarts. |
 | NFR-REL-003 | Reliability | A fully offline laptop mode is available as a stage fallback. |
 | NFR-SEC-001 | Security | HTTPS on all public endpoints. No secrets in the repository. |
 | NFR-SEC-002 | Security | Audit and incident-event records are append-only. The application cannot modify or delete them. |
@@ -487,8 +486,8 @@ Areas:
 | NFR-COMP-001 | Compatibility | Ingest standard camera streams (RTSP, H.264/H.265; ONVIF in production). Output CAP 1.2 alerts. Integrate through HTTP webhooks and SMS. |
 | NFR-INT-001 | Interaction | UIs in Arabic (RTL), French and English. Responder actions reachable in ≤ 2 taps. Usable on a 5-inch phone. |
 | NFR-INT-002 | Interaction | WCAG 2.2 AA colour contrast. Priority is never shown by colour alone. |
-| NFR-MAINT-001 | Maintainability | Contracts first: the API description and event schemas are the source of truth. Clients are generated from them, and CI fails on drift. |
-| NFR-MAINT-002 | Maintainability | The detector, the AI verifier, the SMS provider and storage sit behind interfaces, so each can be replaced without changing business logic. |
+| NFR-MAINT-001 | Maintainability | Every Must requirement is covered by an automated test or a demo-checklist step (§21). |
+| NFR-MAINT-002 | Maintainability | The detector, the AI verifier, the SMS provider and storage can each be replaced without changing product behaviour. The engineering approach is in doc 11 §8. |
 | NFR-FLEX-001 | Flexibility | The same deployment bundles run on a laptop, on the hackathon servers, or on government servers (on-premises or national data centre). |
 | NFR-SAFE-001 | Safety | Human verification is required before dispatch. The AI is labelled as decision support. Uncertain AI output is shown as uncertain. |
 | NFR-LIC-001 | Licensing | The core path uses only permissively licensed software and models (list in doc 11 §3). Copyleft (AGPL) and non-commercial components are optional, isolated and off by default. |
@@ -497,18 +496,22 @@ Areas:
 
 ## 12. Key entities (data)
 
-- **Camera:** id, name, stream_url, location, road, pk, heading, wilaya, zones, calibration, status.
-- **Incident:** id, short_code, type, status, priority, priority_reasons, location, road, pk, wilaya, source, camera_id, event_time, detected_at, ai_signals, verifier_result, merged_into.
-- **IncidentEvent** (append-only): incident_id, kind, actor, payload, ts, prev_hash, hash.
-- **Evidence:** incident_id, kind (clip, keyframe, photo), path, hash, time range.
-- **Facility:** kind (hospital, civil_protection, gendarmerie, police), name, location, wilaya, capabilities, ready_state, contact_sms.
-- **Unit:** facility_id, agency, callsign, status, location, phone.
-- **Dispatch:** incident_id, unit_id, hospital_id, eta_s, route, status.
-- **Casualty:** incident_id, triage_tag, avpu, resp_rate, pulse, spo2, bleeding, notes, reported_by, ts.
-- **Notification:** incident_id, channel, recipient, payload, status, attempts, provider_ref.
-- **User:** role, agency, facility_id.
-- **AuditLog** (append-only).
-- **TryJob:** sandbox, status, input, outputs, expires_at.
+What the system keeps track of. Exact fields are in doc 11 §7.
+
+| Entity | What it represents |
+|---|---|
+| **Camera** | A road camera: where it is (road, kilometre point, wilaya, direction), its watched zones, its calibration and its health |
+| **Incident** | One crash or event: type, priority and its reasons, location, source (camera, citizen, operator), times, AI signals and verdict, status |
+| **Incident event** | Every change in an incident's life (who, what, when). It can never be edited or deleted, and it is tamper-evident |
+| **Evidence** | Video clips, keyframes and photos attached to an incident, each with an integrity fingerprint |
+| **Facility** | A hospital, Civil Protection station, Gendarmerie or police post: location, capabilities, Ready/Divert state, SMS contact |
+| **Unit** | A rescue or patrol team: agency, call sign, status, position, phone |
+| **Dispatch** | Which units and which hospital were sent to an incident, with ETA and route |
+| **Casualty** | One victim's triage: colour tag, consciousness, breathing, pulse, oxygen, bleeding, notes |
+| **Notification** | Every alert sent (SMS, push, messaging) and whether it was delivered |
+| **User** | A person with a role, an agency and, for hospital users, a facility |
+| **Audit log** | Who viewed or downloaded what, and when. Append-only |
+| **Try job** | A public "try it" upload or live session, isolated and deleted after 1 h |
 
 ---
 
@@ -636,7 +639,7 @@ Technical decisions (models, frameworks, services, repository, deployment, SMS g
 
 | Phase | Exit criterion | Requirements covered |
 |---|---|---|
-| **P0 Foundation** | Contracts v0 frozen. Repo, CI and server deploy working. 4 simulated cameras live in the browser. GPU benchmark done (TQ-02) | FR-CAM-001..003 |
+| **P0 Foundation** | Shared message formats agreed. Repo and server deployment working. 4 simulated cameras live in the browser. GPU benchmark done (TQ-02) | FR-CAM-001..003 |
 | **P1 Vertical slice** | Real clip → trigger → AI verifier → incident on the console with evidence | US-1, FR-VIS-001..009, FR-INC-001..003, FR-MAP-002..003 |
 | **P2 Response chain** | Verify → ETA ranking → SMS + push → SMS acknowledgement → triage → hospital pre-alert, on real phones. One-tap citizen report works online and by GPS SMS | US-2..7, US-9, FR-DSP, FR-NTF, FR-RSP, FR-HSP, FR-CIT-001, FR-CIT-006 |
 | **P3 Proof and wow** | Try-it upload and live phone camera, KPIs, evaluation page, integrity check, CAP export | US-10..12, FR-CIT, FR-KPI, FR-SEC-003 |
@@ -671,12 +674,7 @@ Technical decisions (models, frameworks, services, repository, deployment, SMS g
 
 ## 21. Traceability
 
-Each `[M]` requirement maps to at least one of:
-
-- an automated test named with its ID (e.g. `test_FR_NTF_005_parses_triage`);
-- a step in the demo checklist.
-
-CI generates `docs/traceability.md` (ID → test files → status) from test names. PR titles reference requirement IDs.
+Each `[M]` requirement is covered by at least one automated test or one step in the demo checklist, and its status is visible to the whole team. How tests are linked to requirement IDs is in doc 11 §8.
 
 ---
 

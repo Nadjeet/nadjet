@@ -115,3 +115,76 @@ The team already owns: an NVIDIA Brev account, a VPS with Dokploy, and a domain 
 | RSP, HSP, CIT, MAP | `apps/web` (surfaces `/ops`, `/respond`, `/hospital`, `/try`) |
 | Contracts | `contracts/` → `packages/py-contracts`, `packages/ts-client` |
 | Evaluation | `eval/` |
+
+---
+
+## 6. Detection parameters (defaults; tune on non-held-out footage only)
+
+Serves PRD FR-VIS-004, FR-VIS-005, FR-VIS-009 and FR-VIS-010. Every value is configurable per camera.
+
+| Parameter | Default | Requirement |
+|---|---|---|
+| Frame analysis rate | 5 frames/s | FR-VIS-001 |
+| `collision_candidate` | Box overlap IoU > 0.05 (or centre distance < 0.6 × mean box width), **then** both tracks < 1.5 m/s for ≥ 3 s | FR-VIS-004 |
+| `hard_stop` | Speed drop > 6 m/s within ≤ 1.5 s, while < 30% of the other tracks slow down | FR-VIS-004 |
+| `stalled_vehicle` | Stationary ≥ 20 s inside a live-lane polygon while other tracks still move | FR-VIS-004 |
+| `pedestrian_on_road` | Person inside the carriageway polygon ≥ 2 s (highway cameras) | FR-VIS-004 |
+| `rollover_candidate` | Box aspect ratio flips abruptly, then the track stops | FR-VIS-004 |
+| Confirmation frames before a stop counts | N = 3 consecutive frames | PRD E-04 |
+| Evidence clip | ≥ 10 s before + ≥ 5 s after the trigger | FR-VIS-005 |
+| Keyframes sent to the verifier | 8–16 frames, about 448 px | FR-VIS-005 |
+| Verifier answer format | JSON: `incident` (bool), `type` (collision / rollover / fire / stalled / pedestrian / none), `vehicles_involved`, `lanes_blocked`, `severity_hint`, `description_fr`, `description_ar`, `confidence`. Enforced by guided decoding, temperature 0 | FR-VIS-005 |
+| Verifier timeout | 15 s | FR-VIS-009 |
+| Repeat-trigger cooldown, same location | 120 s | FR-VIS-010 |
+| "Try it" live session forced verifier check | every 4 s | FR-CIT-003 |
+
+## 7. Data model (fields)
+
+Serves PRD §12.
+
+```
+cameras(id, name, stream_url, geom Point, road, pk_km, heading_deg, wilaya, zones jsonb, calibration jsonb, status)
+incidents(id, short_code, type, status, priority, priority_reasons jsonb, geom Point, road, pk_km, wilaya,
+          source[camera|citizen|operator], camera_id, event_time, detected_at, ai_signals jsonb,
+          verifier_result jsonb, merged_into, created_at)
+incident_events(id, incident_id, kind, actor_id, payload jsonb, ts, prev_hash, hash)        -- append-only
+evidence(id, incident_id, kind[clip|keyframe|photo], path, sha256, start_ts, end_ts)
+facilities(id, kind[hospital|civil_protection|gendarmerie|police], name, geom, wilaya, capabilities jsonb,
+           ready_state, contact_sms)
+units(id, facility_id, agency, callsign, status, geom, phone)
+dispatches(id, incident_id, unit_id, hospital_id, eta_s, route geojson, status, ts)
+casualties(id, incident_id, triage_tag, avpu, resp_rate, pulse, spo2, bleeding, notes, reported_by, ts)
+notifications(id, incident_id, channel, recipient, payload, status, attempts, provider_ref, ts)
+users(id, name, role, agency, facility_id)
+audit_log(id, actor, action, target, ts, ip, prev_hash, hash)                                 -- append-only
+try_jobs(id, sandbox, status, input_path, outputs jsonb, expires_at)
+```
+
+The application database role has no UPDATE or DELETE on `incident_events` and `audit_log` (PRD NFR-SEC-002).
+
+## 8. Engineering rules and traceability
+
+Serves PRD NFR-MAINT-001, NFR-MAINT-002 and §21.
+
+- **Contracts first.**
+  - `contracts/openapi.yaml`, `contracts/events/*.schema.json`, `contracts/cap-profile.md` and `contracts/sms-grammar.md` are the source of truth.
+  - The TypeScript and Python clients and models are generated from them (`just gen`).
+  - CI regenerates them and fails on any diff.
+- **Replaceable parts.** The detector, the AI verifier, the SMS provider and evidence storage each sit behind an interface (`Detector`, `Verifier`, `SmsProvider`, `EvidenceStore`). Business logic never imports a vendor SDK directly.
+- **Traceability:**
+  - Tests carry the requirement ID in their name, e.g. `test_FR_NTF_005_parses_triage` or `it("FR-CIT-006: …")`.
+  - CI generates `docs/traceability.md` (ID → test files → status) from test names.
+  - PR titles reference requirement IDs.
+- **Integrity check in CI.** Grep `services/` for `random`, hardcoded incident payloads or demo flags (PRD FR-VIS-020).
+- **SMS grammar** lives in `contracts/sms-grammar.md`. It implements the codes listed in PRD FR-NTF-005.
+
+## 9. Reliability timings
+
+Serves PRD NFR-REL-001, NFR-REL-002 and FR-NTF-004.
+
+| Behaviour | Implementation |
+|---|---|
+| Stream reconnect | Exponential back-off from 1 s to 30 s, one process per camera |
+| No lost candidates | Redis Streams with consumer groups. Acknowledgement after the DB commit; pending entries are re-claimed on restart |
+| Notification retry | Undelivered after 30 s → retry up to 3 times with exponential back-off → operator alert on final failure |
+| Camera fault | Stall > 10 s or disconnect → `camera_fault` (PRD FR-CAM-005) |
