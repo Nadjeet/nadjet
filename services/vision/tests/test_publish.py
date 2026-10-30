@@ -251,3 +251,15 @@ async def test_a_hash_that_differs_from_the_local_one_is_reported(
     sink.submit_evidence("k", event(t_peak=11.0, t_fire=12.0, evidence_t=11.0), packets, info)
     await sink.aclose()
     assert sink.stats.hash_mismatches == 7
+
+
+def test_a_crashing_background_post_is_logged(caplog: pytest.LogCaptureFixture) -> None:
+    from concurrent.futures import Future
+
+    from nadjet_vision.publish import _log_failure
+
+    future: Future[None] = Future()
+    future.set_exception(ValueError("non-json 2xx"))
+    caplog.set_level("ERROR")
+    _log_failure(future)
+    assert "background publish failed" in caplog.text

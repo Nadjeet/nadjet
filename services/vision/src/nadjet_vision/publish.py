@@ -74,6 +74,12 @@ def build_candidate(camera: Camera, event: TriggerEvent) -> IncidentCandidate:
     )
 
 
+def _log_failure(future: "Future[None]") -> None:
+    """Background posts never raise into analysis, but a bug in them must not vanish."""
+    if not future.cancelled() and future.exception() is not None:
+        log.error("background publish failed", exc_info=future.exception())
+
+
 class IncidentSink(Protocol):
     """What the pipeline needs from a publisher (a fake in unit tests)."""
 
@@ -143,6 +149,7 @@ class IncidentPublisher:
         future: Future[None] = asyncio.run_coroutine_threadsafe(coroutine, self._loop)
         self._pending.add(future)
         future.add_done_callback(self._pending.discard)
+        future.add_done_callback(_log_failure)
 
     async def aclose(self, timeout_s: float = 30.0) -> None:
         """Wait for queued posts (bounded), then close the HTTP client."""
