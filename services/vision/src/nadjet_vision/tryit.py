@@ -244,6 +244,10 @@ def detect_pass(
         for frame in frames:
             first = frame.pts_s if first is None else first
             last = frame.pts_s
+            # The header may give no duration (fragmented MP4, WebM): enforce E-12 on the
+            # decoded stream itself, or a 2 h file would hold the single job loop for hours.
+            if last - first > MAX_CLIP_S + 0.5:
+                raise ClipRejected(f"Longer than {MAX_CLIP_S:.0f} s")
             outcome = pipeline.process(frame)
             writer.write(draw_frame(frame.image, outcome.tracked, outcome.speeds, None))
             count += 1

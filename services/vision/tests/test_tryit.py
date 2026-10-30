@@ -474,3 +474,26 @@ async def test_live_results_go_to_the_session_and_never_to_the_incident_queue() 
     assert not any("candidates" in p or "evidence" in p for p in sessions.paths)
     assert np.array_equal(np.zeros(1), np.zeros(1))  # (keeps numpy import used by the module tests)
     assert Box(x1=0, y1=0, x2=1, y2=1, label="car").track_id is None
+
+
+def test_E_12_a_clip_without_a_header_duration_is_cut_while_decoding(
+    tmp_path: Path, synthetic_stream: StreamFactory, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Fragmented MP4 or WebM may report no duration: the length limit holds on the decoded
+    stream, so a 2 h file cannot hold the job loop."""
+    from nadjet_vision import tryit
+
+    monkeypatch.setattr(tryit, "MAX_CLIP_S", 5.0)
+    clip = video_file(tmp_path, synthetic_stream, seconds=12)
+    with pytest.raises(ClipRejected, match="Longer than 5 s"):
+        tryit.detect_pass(
+            clip,
+            settings=VisionSettings(),
+            detector=Detector(),
+            tracker=PassThroughTracker(),
+            ring=tryit.PacketRing(window_s=60, max_packets=2000),
+            video_path=tmp_path / "out.mp4",
+            on_progress=lambda _p: None,
+            duration_s=0.0,
+            draw_frame=lambda image, tracked, speeds, zones: image,
+        )
