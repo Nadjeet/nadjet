@@ -28,7 +28,7 @@ e.g. `7F3`), case-insensitive on input.
 | `CL <code>` | idem | `closed` |
 | `T <code> R# Y# G# B#` | assigned responder, operator roles | `#` casualties per triage tag (red, yellow, green, black); 1 to 4 letters, each at most once, at most 99 in total; priority recomputed |
 | `H <code> READY` / `H <code> DIVERT` | assigned hospital | facility Ready / Divert |
-| `ACCIDENT <lat>,<lon> [P<n>] [C<0\|1>] [text]` | anyone | unverified citizen incident at the coordinates; `P` = people, `C1` = trapped; merged with a nearby open incident (FR-INC-002) |
+| `ACCIDENT <lat>,<lon> [P<n>] [C<0\|1>] [text]` | anyone | unverified citizen incident at the coordinates (decimal degrees with a `.`, e.g. `36.648,3.329`; `12,5 km` is text); `P` = people, `C1` = trapped; merged with a nearby open incident (FR-INC-002) |
 | `ACCIDENT <text>` | anyone | unverified incident without position, flagged `callback_needed` |
 
 Illegal status moves, unknown codes and bad syntax never change state and get a short reply.

@@ -98,7 +98,8 @@ _STATUS_RE = re.compile(rf"^(OK|ER|OS|TR|AH|CL)\s+({_CODE})$", re.IGNORECASE)
 _TRIAGE_RE = re.compile(rf"^T\s+({_CODE})((?:\s+[RYGB]\d{{1,2}}){{1,4}})$", re.IGNORECASE)
 _HOSPITAL_RE = re.compile(rf"^H\s+({_CODE})\s+(READY|DIVERT)$", re.IGNORECASE)
 _ACCIDENT_RE = re.compile(r"^ACCIDENT(?:\s+(.*))?$", re.IGNORECASE | re.DOTALL)
-_COORDS_RE = re.compile(r"^(-?\d{1,2}(?:\.\d+)?),\s*(-?\d{1,3}(?:\.\d+)?)(?:\s+(.*))?$", re.DOTALL)
+# Decimal points required: "12,5 km avant Dellys" (comma decimal) is a place, not coordinates.
+_COORDS_RE = re.compile(r"^(-?\d{1,2}\.\d+),\s*(-?\d{1,3}\.\d+)(?:\s+(.*))?$", re.DOTALL)
 _PEOPLE_RE = re.compile(r"^P(\d{1,3})$", re.IGNORECASE)
 _TRAPPED_RE = re.compile(r"^C([01])$", re.IGNORECASE)
 

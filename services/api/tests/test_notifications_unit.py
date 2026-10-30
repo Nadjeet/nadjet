@@ -174,6 +174,13 @@ def test_accident_without_coordinates_keeps_the_text_for_call_back() -> None:
     )
 
 
+def test_a_comma_decimal_distance_is_a_location_not_coordinates() -> None:
+    """``12,5 km`` must not place the incident at 12 N 5 E; it goes to call-back."""
+    assert parse_inbound("ACCIDENT 12,5 km avant Dellys") == AccidentReport(
+        None, None, None, False, "12,5 km avant Dellys"
+    )
+
+
 @pytest.mark.parametrize(
     "body",
     [
