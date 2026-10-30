@@ -185,3 +185,12 @@ claude                              # in the repo root
 - `make stop` — stop containers (keeps data) · `make down` — remove containers.
 - `make clean` — remove caches and builds (keeps `.env`, dependencies, data).
 - `make reset-db` — delete local PostGIS/Redis data (asks for confirmation).
+
+From issue #9 the worker also evaluates the four crash rules (`collision_candidate`, `hard_stop`,
+`stalled_vehicle`, `pedestrian_on_road`) on the tracks. A fired rule is posted at once to
+`POST /internal/candidates` (needs `NADJET_INGEST_TOKEN`); the 10 s + 5 s clip (stream copy) and 6
+keyframes follow to `POST /internal/evidence` and show up under the incident, where
+`/incidents/{id}/integrity` verifies them. Thresholds are the doc 11 §6 defaults; to tune one camera
+add `triggers: { stalled_s: 30 }` to its entry in `data/cameras.yaml` (names: `TriggerConfig` in
+`services/vision/src/nadjet_vision/triggers.py`). Each rule logs `trigger=… tracks=… signals=…` in
+`make brev-logs`. `NADJET_PUBLISH_CANDIDATES=false` detects and logs without posting.
