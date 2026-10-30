@@ -108,6 +108,10 @@ class Camera(BaseModel):
     heading_deg: float = Field(default=0, ge=0, lt=360)
     wilaya: str
     zones: Zones | None = Field(default=None, description="Loaded from data/zones/<id>.json")
+    triggers: dict[str, float] = Field(
+        default_factory=dict,
+        description="Per-camera trigger thresholds overriding the doc 11 §6 defaults (FR-VIS-004)",
+    )
 
     @field_validator("id")
     @classmethod
