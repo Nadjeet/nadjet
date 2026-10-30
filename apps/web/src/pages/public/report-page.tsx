@@ -58,9 +58,20 @@ export function ReportPage() {
   const peopleCount = people.trim() === "" ? null : Math.min(99, Math.max(0, Number(people)));
   const busy = stage.name === "locating" || stage.name === "sending";
 
+  /** FR-CIT-006: a failed or impossible submission opens the SMS app; the button stays as a retry. */
+  function fail(reason: Failure, where: Point) {
+    setStage({ name: "failed", reason });
+    if (SMS_NUMBER && (reason === "network" || reason === "limit")) {
+      window.location.href = smsHref(
+        SMS_NUMBER,
+        buildAccidentSms({ point: where, people: peopleCount, trapped, place }),
+      );
+    }
+  }
+
   async function send(where: Point) {
     setPoint(where);
-    if (!navigator.onLine) return setStage({ name: "failed", reason: "network" });
+    if (!navigator.onLine) return fail("network", where);
     setStage({ name: "sending" });
     try {
       const resized = photo ? await resizePhoto(photo) : null;
@@ -80,9 +91,9 @@ export function ReportPage() {
       if (data) return setStage({ name: "done", code: data.short_code, merged: data.merged });
       const reason: Failure =
         response.status === 429 ? "limit" : response.status === 422 ? "invalid" : "network";
-      setStage({ name: "failed", reason });
+      fail(reason, where);
     } catch {
-      setStage({ name: "failed", reason: "network" });
+      fail("network", where);
     }
   }
 
@@ -226,7 +237,7 @@ export function ReportPage() {
               {t("common.retry")}
             </Button>
           ) : null}
-          {failed !== "limit" && failed !== "invalid" && SMS_NUMBER ? (
+          {failed !== "invalid" && SMS_NUMBER ? (
             <a
               href={canSms ? smsHref(SMS_NUMBER, smsBody) : undefined}
               aria-disabled={!canSms}
