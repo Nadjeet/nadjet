@@ -1,0 +1,33 @@
+# Simulated camera catalogue (PRD FR-CAM-001/002, doc 06).
+# Videos are NOT committed (research licences): put the files in data/videos/ (see docs/ONBOARDING.md).
+# Coordinates are approximate simulated positions on real Algerian roads.
+cameras:
+  - id: cam-a1-pk42
+    name: "A1 East-West Hwy - Khemis El Khechna PK42 (westbound)"
+    video: cam-a1-pk42.mp4
+    geo: { lat: 36.6480, lon: 3.3290 }
+    road: A1
+    pk_km: 42
+    heading_deg: 270
+    wilaya: Boumerdès
+  - id: cam-a1-lakhdaria
+    name: "A1 East-West Hwy - Lakhdaria"
+    video: cam-a1-lakhdaria.mp4
+    geo: { lat: 36.5640, lon: 3.5930 }
+    road: A1
+    heading_deg: 90
+    wilaya: Bouira
+  - id: cam-alg-rn5-bab-ezzouar
+    name: "RN5 - Bab Ezzouar"
+    video: cam-alg-rn5-bab-ezzouar.mp4
+    geo: { lat: 36.7200, lon: 3.1830 }
+    road: RN5
+    heading_deg: 180
+    wilaya: Alger
+  - id: cam-alg-rocade-sud
+    name: "Rocade Sud - Algiers"
+    video: cam-alg-rocade-sud.mp4
+    geo: { lat: 36.7130, lon: 3.0600 }
+    road: Rocade Sud
+    heading_deg: 0
+    wilaya: Alger

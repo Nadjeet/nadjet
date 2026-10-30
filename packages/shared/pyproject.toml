@@ -1,0 +1,16 @@
+[project]
+name = "nadjet-shared"
+version = "0.1.0"
+description = "Shared event contracts (Pydantic models) used by Nadjet services"
+requires-python = ">=3.12,<3.13"
+dependencies = ["pydantic>=2.10"]
+
+[project.scripts]
+nadjet-export-schemas = "nadjet_shared.export_schemas:main"
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nadjet_shared"]

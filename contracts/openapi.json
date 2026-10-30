@@ -1,0 +1,124 @@
+{
+  "components": {
+    "schemas": {
+      "DependencyStatus": {
+        "properties": {
+          "detail": {
+            "title": "Detail",
+            "type": "string"
+          },
+          "ok": {
+            "title": "Ok",
+            "type": "boolean"
+          }
+        },
+        "required": [
+          "ok",
+          "detail"
+        ],
+        "title": "DependencyStatus",
+        "type": "object"
+      },
+      "HealthResponse": {
+        "properties": {
+          "status": {
+            "title": "Status",
+            "type": "string"
+          },
+          "version": {
+            "title": "Version",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "version"
+        ],
+        "title": "HealthResponse",
+        "type": "object"
+      },
+      "ReadinessResponse": {
+        "properties": {
+          "dependencies": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/DependencyStatus"
+            },
+            "title": "Dependencies",
+            "type": "object"
+          },
+          "status": {
+            "title": "Status",
+            "type": "string"
+          }
+        },
+        "required": [
+          "status",
+          "dependencies"
+        ],
+        "title": "ReadinessResponse",
+        "type": "object"
+      }
+    }
+  },
+  "info": {
+    "title": "Nadjet API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "description": "Liveness: the process is running.",
+        "operationId": "health_health_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HealthResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Health",
+        "tags": [
+          "system"
+        ]
+      }
+    },
+    "/ready": {
+      "get": {
+        "description": "Readiness: every dependency answers.",
+        "operationId": "ready_ready_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ReadinessResponse"
+                }
+              }
+            },
+            "description": "A dependency is down"
+          }
+        },
+        "summary": "Ready",
+        "tags": [
+          "system"
+        ]
+      }
+    }
+  }
+}

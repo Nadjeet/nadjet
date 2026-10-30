@@ -1,0 +1,16 @@
+[project]
+name = "nadjet-camsim"
+version = "0.1.0"
+description = "Camera simulator: turns real video files into looping RTSP cameras via MediaMTX"
+requires-python = ">=3.12,<3.13"
+dependencies = ["pydantic>=2.10", "pyyaml>=6.0"]
+
+[project.scripts]
+nadjet-camsim = "nadjet_camsim.cli:main"
+
+[build-system]
+requires = ["hatchling>=1.26"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/nadjet_camsim"]

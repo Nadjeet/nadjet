@@ -1,0 +1,203 @@
+{
+  "$defs": {
+    "AiStatus": {
+      "description": "Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.",
+      "enum": [
+        "confirmed",
+        "probable",
+        "possible",
+        "insufficient_evidence"
+      ],
+      "title": "AiStatus",
+      "type": "string"
+    },
+    "Evidence": {
+      "additionalProperties": false,
+      "properties": {
+        "clip_path": {
+          "title": "Clip Path",
+          "type": "string"
+        },
+        "keyframe_paths": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Keyframe Paths",
+          "type": "array"
+        },
+        "sha256": {
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "file path -> SHA-256",
+          "title": "Sha256",
+          "type": "object"
+        }
+      },
+      "required": [
+        "clip_path"
+      ],
+      "title": "Evidence",
+      "type": "object"
+    },
+    "TriggerType": {
+      "description": "Rule triggers (PRD FR-VIS-004) plus the AI sweep (FR-VIS-015).",
+      "enum": [
+        "collision_candidate",
+        "hard_stop",
+        "stalled_vehicle",
+        "pedestrian_on_road",
+        "ai_sweep"
+      ],
+      "title": "TriggerType",
+      "type": "string"
+    },
+    "VerifierResult": {
+      "additionalProperties": false,
+      "description": "Outcome of one call to the AI verifier (or of a failed call).",
+      "properties": {
+        "available": {
+          "description": "False when the verifier timed out or was unreachable",
+          "title": "Available",
+          "type": "boolean"
+        },
+        "collision_visible": {
+          "anyOf": [
+            {
+              "pattern": "^(yes|no|cannot_judge)$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Verifier verdict",
+          "title": "Collision Visible"
+        },
+        "description_ar": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description Ar"
+        },
+        "description_fr": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Description Fr"
+        },
+        "model": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Model id that produced the answer",
+          "title": "Model"
+        },
+        "yes_probability": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Probability of the 'yes' answer token (logprobs)",
+          "title": "Yes Probability"
+        }
+      },
+      "required": [
+        "available"
+      ],
+      "title": "VerifierResult",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Published by a vision worker for every trigger or sweep detection (FR-VIS-006).",
+  "properties": {
+    "ai_status": {
+      "$ref": "#/$defs/AiStatus"
+    },
+    "camera_id": {
+      "minLength": 1,
+      "title": "Camera Id",
+      "type": "string"
+    },
+    "detected_at": {
+      "format": "date-time",
+      "title": "Detected At",
+      "type": "string"
+    },
+    "event_time": {
+      "description": "Best estimate of the impact time",
+      "format": "date-time",
+      "title": "Event Time",
+      "type": "string"
+    },
+    "evidence": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Evidence"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "signals": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "description": "Named rule signals and their measured values",
+      "title": "Signals",
+      "type": "object"
+    },
+    "track_ids": {
+      "items": {
+        "type": "integer"
+      },
+      "title": "Track Ids",
+      "type": "array"
+    },
+    "trigger": {
+      "$ref": "#/$defs/TriggerType"
+    },
+    "verifier": {
+      "$ref": "#/$defs/VerifierResult"
+    }
+  },
+  "required": [
+    "camera_id",
+    "trigger",
+    "event_time",
+    "detected_at",
+    "verifier",
+    "ai_status"
+  ],
+  "title": "IncidentCandidate",
+  "type": "object"
+}

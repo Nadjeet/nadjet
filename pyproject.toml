@@ -1,0 +1,82 @@
+# Nadjet Python workspace root (uv). Members are the Python services and shared packages.
+[project]
+name = "nadjet-workspace"
+version = "0.1.0"
+description = "Nadjet monorepo workspace root (not a distributable package)"
+requires-python = ">=3.12,<3.13"
+
+[tool.uv]
+package = false
+
+[tool.uv.workspace]
+members = ["packages/shared", "services/api", "services/vision", "services/camsim"]
+
+[tool.uv.sources]
+nadjet-shared = { workspace = true }
+nadjet-api = { workspace = true }
+nadjet-vision = { workspace = true }
+nadjet-camsim = { workspace = true }
+
+[dependency-groups]
+dev = [
+  "nadjet-shared",
+  "nadjet-api",
+  "nadjet-vision",
+  "nadjet-camsim",
+  "pytest>=8.3",
+  "pytest-asyncio>=0.25",
+  "pytest-cov>=6.0",
+  "ruff>=0.9",
+  "mypy>=1.14",
+  "honcho>=2.0",
+  "types-pyyaml>=6.0",
+]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["**/migrations/versions"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "ASYNC", "S", "RUF"]
+ignore = ["S101"]  # assert is fine in tests
+
+[tool.ruff.lint.isort]
+known-first-party = ["nadjet_shared", "nadjet_api", "nadjet_vision", "nadjet_camsim"]
+
+[tool.ruff.lint.per-file-ignores]
+"**/tests/**" = ["S", "B011"]
+
+[tool.ruff.format]
+quote-style = "double"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy"]
+mypy_path = ["packages/shared/src", "services/api/src", "services/vision/src", "services/camsim/src"]
+packages = ["nadjet_shared", "nadjet_api", "nadjet_vision", "nadjet_camsim"]
+explicit_package_bases = true
+exclude = ["migrations/"]
+
+[[tool.mypy.overrides]]
+module = ["honcho.*"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+testpaths = ["packages/shared/tests", "services/api/tests", "services/vision/tests", "services/camsim/tests"]
+addopts = "-ra --strict-markers --import-mode=importlib"
+markers = [
+  "integration: needs the local infrastructure (PostGIS, Redis) from `make infra`",
+  "brev: needs the live Brev vLLM endpoint (`make brev-forward`); never run in CI",
+]
+
+[tool.coverage.run]
+branch = true
+source = ["nadjet_shared", "nadjet_api", "nadjet_vision", "nadjet_camsim"]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true

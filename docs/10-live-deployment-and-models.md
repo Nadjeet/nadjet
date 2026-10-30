@@ -36,11 +36,28 @@ Expected latency is about 2–3 s per check on an L40S (estimate; **measure on d
 
 ```python
 # detector
-from rfdetr import RFDETRMedium; det = RFDETRMedium(); dets = det.predict(frame_rgb, threshold=0.4)  # returns sv.Detections
+from rfdetr import RFDETRMedium
+
+det = RFDETRMedium()
+dets = det.predict(frame_rgb, threshold=0.4)  # returns sv.Detections
 # verifier / sweep (vLLM OpenAI-compatible, one video, structured output, yes-token logprobs)
-client.chat.completions.create(model="Qwen/Qwen3-VL-8B-Instruct-FP8",
-    messages=[{"role":"user","content":[{"type":"video_url","video_url":{"url":clip_url}}, {"type":"text","text":PROMPT}]}],
-    response_format={"type":"json_schema","json_schema":SCHEMA}, temperature=0, logprobs=True, top_logprobs=5, max_tokens=256)
+client.chat.completions.create(
+    model="Qwen/Qwen3-VL-8B-Instruct-FP8",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "video_url", "video_url": {"url": clip_url}},
+                {"type": "text", "text": PROMPT},
+            ],
+        }
+    ],
+    response_format={"type": "json_schema", "json_schema": SCHEMA},
+    temperature=0,
+    logprobs=True,
+    top_logprobs=5,
+    max_tokens=256,
+)
 ```
 
 ### Honest failure modes (put them on the "limits" slide)

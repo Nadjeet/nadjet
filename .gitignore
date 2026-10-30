@@ -1,0 +1,50 @@
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+*.egg-info/
+dist/
+build/
+
+# Node / web
+node_modules/
+apps/web/dist/
+*.tsbuildinfo
+.vite/
+
+# Local runtime data (never commit media, weights or generated configs)
+.run/
+data/videos/
+data/models/
+evidence/
+*.mp4
+*.mkv
+*.pt
+*.pth
+*.onnx
+*.safetensors
+*.pmtiles
+*.osm.pbf
+deploy/local/mediamtx.generated.yml
+
+# Claude Code personal settings
+.claude/settings.local.json
+CLAUDE.local.md
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
