@@ -112,6 +112,7 @@ def test_analysis_loop_survives_a_failing_frame() -> None:
 
 
 def test_annotated_stream_url_and_labels() -> None:
+    """FR-VIS-008: the annotated stream has its own path and labels boxes with track id and speed."""
     assert annotated_url("rtsp://h:8554/", "cam-a1-pk42") == "rtsp://h:8554/cam-a1-pk42_ai"
     item = Tracked(7, Detection((0, 0, 1, 1), 3, "car", 0.9))
     assert format_label(item, 1.234) == "#7 car 1.2h/s"

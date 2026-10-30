@@ -141,6 +141,7 @@ async def test_ingestion_is_idempotent_on_the_key(app: FastAPI, session: AsyncSe
 
 
 async def test_candidate_gets_short_code_and_explained_priority(app: FastAPI) -> None:
+    """FR-INC-001: a received candidate becomes an incident with a short code and a priority."""
     lat, lon = fresh_spot()
     incident = await ingest(app, candidate(lat, lon, signals={"bus_involved": 1}))
     assert len(incident.short_code) == 3
@@ -323,6 +324,7 @@ async def test_lifecycle_endpoints_enforce_transitions_and_chain_events(
 async def test_reject_stores_reason_and_frees_the_short_code(
     app: FastAPI, client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
 ) -> None:
+    """FR-INC-006: a rejection stores its reason label."""
     headers = await login(client, await make_user(session, role="supervisor"))
     lat, lon = fresh_spot()
     incident = await ingest(app, candidate(lat, lon))

@@ -31,6 +31,7 @@ def test_repository_catalogue_is_valid() -> None:
 
 
 def test_render_publishes_existing_videos_unmodified(tmp_path: Path) -> None:
+    """FR-CAM-002: each real video file is published as a looping camera, without re-encoding."""
     (tmp_path / "crash.mp4").write_bytes(b"\x00")
     config, skipped = render_mediamtx(catalogue(CAMERA), tmp_path)
     assert skipped == []
