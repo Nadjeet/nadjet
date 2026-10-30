@@ -94,3 +94,9 @@ def test_check_mode_fails_on_drift_without_writing(tmp_path: Path) -> None:
 
 def test_committed_schemas_are_up_to_date() -> None:
     assert main(["--check"]) == 0
+
+
+def test_candidate_rejects_naive_timestamps() -> None:
+    """Naive times would break merge arithmetic and be stored in the DB session's zone."""
+    with pytest.raises(ValidationError):
+        make_candidate(event_time=datetime(2026, 10, 30, 12, 0))
