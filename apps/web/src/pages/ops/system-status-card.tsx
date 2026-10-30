@@ -3,7 +3,7 @@ import { CircleCheckIcon, CircleXIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { api } from "@/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 type Readiness = {
   status: string;
@@ -26,9 +26,9 @@ export function SystemStatusCard() {
     refetchInterval: 15_000,
   });
   return (
-    <Card aria-labelledby="system-status-title">
+    <Card>
       <CardHeader>
-        <CardTitle id="system-status-title">{t("system.title")}</CardTitle>
+        <h2 className="text-display-xs font-bold">{t("system.title")}</h2>
       </CardHeader>
       <CardContent>
         {isPending ? <p className="text-muted-foreground">{t("system.checking")}</p> : null}

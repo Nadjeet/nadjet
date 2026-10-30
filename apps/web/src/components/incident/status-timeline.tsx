@@ -5,10 +5,14 @@ import { cn } from "@/lib/utils";
 
 import { LIFECYCLE, type TimelineStatus, type TimelineStep } from "./lifecycle";
 
+/** Algeria writes Arabic with Latin digits: `ar-DZ`, not `ar`. */
+const DATE_LOCALES: Record<string, string> = { ar: "ar-DZ", fr: "fr-DZ", en: "en-GB" };
+
 function formatTime(iso: string, language: string): string {
-  return new Intl.DateTimeFormat(language, { dateStyle: "short", timeStyle: "short" }).format(
-    new Date(iso),
-  );
+  return new Intl.DateTimeFormat(DATE_LOCALES[language] ?? language, {
+    dateStyle: "short",
+    timeStyle: "short",
+  }).format(new Date(iso));
 }
 
 /**
@@ -65,13 +69,18 @@ export function StatusTimeline({
                 {t(`status.${status}`)}
               </span>
               <span className="text-body-xs text-muted-foreground">
-                {at
-                  ? formatTime(at, i18n.language)
-                  : done
-                    ? t("timeline.done")
-                    : active
-                      ? t("timeline.current")
-                      : t("timeline.pending")}
+                {at ? (
+                  <>
+                    {done ? <span className="sr-only">{t("timeline.done")} · </span> : null}
+                    {formatTime(at, i18n.language)}
+                  </>
+                ) : done ? (
+                  t("timeline.done")
+                ) : active ? (
+                  t("timeline.current")
+                ) : (
+                  t("timeline.pending")
+                )}
               </span>
             </div>
           </li>
