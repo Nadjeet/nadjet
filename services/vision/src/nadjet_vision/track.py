@@ -6,10 +6,10 @@ needs the ``supervision`` GPU extra.
 """
 
 import statistics
-from itertools import pairwise
 from collections import deque
 from collections.abc import Sequence
 from dataclasses import dataclass
+from itertools import pairwise
 from typing import Protocol
 
 import numpy as np
