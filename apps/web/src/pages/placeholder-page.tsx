@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 
-import { Card, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 
 export type PageKey =
   | "ops.overview"
@@ -22,7 +22,7 @@ export function PlaceholderPage({ pageKey }: { pageKey: PageKey }) {
       <h1 className="text-display-sm font-bold text-balance">{t(`pages.${pageKey}.title`)}</h1>
       <Card>
         <CardHeader>
-          <CardTitle>{t(`pages.${pageKey}.body`)}</CardTitle>
+          <p className="text-body-lg font-medium">{t(`pages.${pageKey}.body`)}</p>
           <CardDescription>{t("pages.soon")}</CardDescription>
         </CardHeader>
       </Card>

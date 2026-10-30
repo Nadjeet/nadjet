@@ -42,7 +42,8 @@
 
   /* Figma "Soft Shadow - Style 1" */
   --shadow-soft: 0 6px 40px 0 rgb(112 144 176 / 0.12);
-  --shadow-focus: 0 0 0 4px rgb(0 125 254 / 0.22);
+  /* Opaque ring with a gap: >= 3:1 against both themes (WCAG 2.2 SC 1.4.11) */
+  --shadow-focus: 0 0 0 2px var(--background), 0 0 0 4px var(--ring);
 
   /* Figma type scale (size / line-height) */
   --text-display-xl: 4rem;
