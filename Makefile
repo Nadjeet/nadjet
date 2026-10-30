@@ -14,7 +14,7 @@ UNIT := -m "not integration and not brev"
 	test test-unit test-integration test-brev eval eval-compare coverage lint format typecheck build ci clean reset-db \
 	brev-status brev-up brev-forward brev-unforward brev-check \
 	brev-tunnel brev-untunnel brev-deploy-workers brev-logs \
-	map-data routing-data routing-up routing-down seed-geo
+	map-data routing-data routing-up routing-down seed-geo seed-demo traceability
 
 help: ## Show this help
 	@awk 'BEGIN {FS = ":.*## "; printf "Nadjet — make <target>\n\n"} /^[a-zA-Z_-]+:.*## / {printf "  \033[36m%-17s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
@@ -142,6 +142,12 @@ test-integration: infra infra-video migrate ## Run integration tests against loc
 
 test-brev: ## Live check of the Brev AI endpoint (needs make brev-forward; uses GPU credits)
 	$(PYTEST) -m brev
+
+seed-demo: ## Seed users (data/seed/users.yaml), cameras, units and facilities for the demo; never incidents
+	uv run nadjet-api seed-demo
+
+traceability: ## Regenerate docs/traceability.md ([M] requirements to tests and demo steps)
+	python3 scripts/traceability.py
 
 eval: ## Replay the held-out clips through the pipeline on Brev and write eval/results (needs make brev-forward, GPU extra)
 	uv run --package nadjet-vision --extra gpu python eval/run_eval.py $(EVAL_ARGS)

@@ -47,13 +47,13 @@ docker run --rm -v nadjet-core_mapdata:/d -v "$PWD/data/map":/src alpine cp /src
 docker run --rm -v nadjet-core_videos:/d -v "$PWD/data/videos":/src alpine cp -r /src/. /d/
 ```
 
-Then create the first admin and seed the registry from the API container:
+Then seed users, cameras, units and facilities from the API container. `seed-demo` is idempotent and
+never creates incidents (PRD FR-VIS-020): they must come from the live pipeline.
 
 ```bash
-docker compose -p nadjet-core exec api nadjet-api seed-cameras
-docker compose -p nadjet-core exec api nadjet-api seed-geo
-# users: copy a users.yaml (not in git, see data/seed/users.example.yaml) into the container, then
-docker compose -p nadjet-core exec api nadjet-api seed-users data/seed/users.yaml
+# users.yaml is not in git: copy data/seed/users.example.yaml, set real passwords and the demo
+# phones of the responders (without a phone there is no SMS step), copy it into the container, then
+docker compose -p nadjet-core exec api nadjet-api seed-demo --users data/seed/users.yaml
 ```
 
 Restart `mediamtx-config` and `mediamtx` after adding videos: `docker compose -p nadjet-core up -d --force-recreate mediamtx-config mediamtx`.
