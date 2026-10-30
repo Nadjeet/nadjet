@@ -129,3 +129,24 @@ async def test_system_cameras_is_closed_to_other_roles(
     login = await client.post("/auth/login", json={"username": user.username, "password": PASSWORD})
     headers = {"Authorization": f"Bearer {login.json()['access_token']}"}
     assert (await client.get("/system/cameras", headers=headers)).status_code == 403
+
+
+async def test_overlapping_reports_announce_a_fault_only_once(app: FastAPI) -> None:
+    """Two workers (old and restarted) reading the same 'online' status must not both fire."""
+    from nadjet_api.cameras.health import apply_report
+    from nadjet_shared.health import CameraHealthReport
+
+    report = CameraHealthReport.model_validate(payload(fault=True))
+    async with app.state.session_factory() as s:
+        await s.execute(update(Camera).where(Camera.id == CAM).values(status="online"))
+        await s.commit()
+    async with app.state.session_factory() as a, app.state.session_factory() as b:
+        cam_a, cam_b = await a.get(Camera, CAM), await b.get(Camera, CAM)
+        assert cam_a is not None and cam_b is not None  # both read "online"
+        first = await apply_report(a, cam_a, report)
+        await a.commit()
+        second = await apply_report(b, cam_b, report)
+        await b.commit()
+    assert first.transition == "camera_fault"
+    assert second.transition is None
+    assert second.status == "degraded"

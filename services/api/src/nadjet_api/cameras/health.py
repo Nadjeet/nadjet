@@ -80,11 +80,16 @@ async def apply_report(
     """Update ``cameras.status`` from a report (the caller commits)."""
     status, transition = next_status(camera.status, report)
     if status != camera.status:
-        await session.execute(
+        # Compare-and-set: two overlapping reports (e.g. a restarted worker and the old one)
+        # must not both announce the same transition.
+        changed = await session.scalar(
             update(Camera)
-            .where(Camera.id == camera.id)
+            .where(Camera.id == camera.id, Camera.status == camera.status)
             .values(status=status, updated_at=datetime.now(UTC))
+            .returning(Camera.id)
         )
+        if changed is None:
+            return Applied(status=status, transition=None)
         camera.status = status
     return Applied(status=status, transition=transition)
 
