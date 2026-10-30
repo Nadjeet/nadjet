@@ -86,6 +86,7 @@ async def test_list_returns_seeded_cameras_with_coordinates_zones_and_streams(
         "path": CAM,
         "rtsp_url": f"rtsp://localhost:8554/{CAM}",
         "whep_url": f"http://localhost:8889/{CAM}/whep",
+        "hls_url": f"http://localhost:8888/{CAM}/index.m3u8",
     }
 
 

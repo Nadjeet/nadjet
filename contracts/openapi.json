@@ -88,7 +88,7 @@
         "title": "AiQuality",
         "type": "object"
       },
-      "AiStatus": {
+      "AiStatus-Input": {
         "description": "Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.",
         "enum": [
           "confirmed",
@@ -98,6 +98,45 @@
         ],
         "title": "AiStatus",
         "type": "string"
+      },
+      "AiStatus-Output": {
+        "properties": {
+          "available": {
+            "title": "Available",
+            "type": "boolean"
+          },
+          "detail": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Why the AI is unavailable (no secrets), else null",
+            "title": "Detail"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "Served model id when available, else null",
+            "title": "Model"
+          }
+        },
+        "required": [
+          "available",
+          "model",
+          "detail"
+        ],
+        "title": "AiStatus",
+        "type": "object"
       },
       "AlertRecord": {
         "additionalProperties": false,
@@ -1422,7 +1461,7 @@
         "description": "A candidate incident from a camera, a citizen or an operator (FR-VIS-006, FR-INC-001).",
         "properties": {
           "ai_status": {
-            "$ref": "#/components/schemas/AiStatus",
+            "$ref": "#/components/schemas/AiStatus-Input",
             "default": "insufficient_evidence"
           },
           "camera_id": {
@@ -3003,6 +3042,11 @@
       },
       "StreamUrls": {
         "properties": {
+          "hls_url": {
+            "description": "LL-HLS URL for the browser (fallback when WebRTC fails)",
+            "title": "Hls Url",
+            "type": "string"
+          },
           "path": {
             "description": "Video server path (MediaMTX)",
             "title": "Path",
@@ -3022,7 +3066,8 @@
         "required": [
           "path",
           "rtsp_url",
-          "whep_url"
+          "whep_url",
+          "hls_url"
         ],
         "title": "StreamUrls",
         "type": "object"
@@ -5278,6 +5323,39 @@
         "summary": "Sms Status",
         "tags": [
           "notifications"
+        ]
+      }
+    },
+    "/system/ai": {
+      "get": {
+        "description": "Brev vLLM status: the served model id, or \"AI unavailable\" (FR-VIS-009).",
+        "operationId": "system_ai_system_ai_get",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AiStatus-Output"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Role"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "System Ai",
+        "tags": [
+          "system"
         ]
       }
     },

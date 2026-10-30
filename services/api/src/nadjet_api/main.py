@@ -32,6 +32,7 @@ from nadjet_api.notifications.channels import build_channels
 from nadjet_api.notifications.routes import router as notifications_router
 from nadjet_api.routing.router import OsrmRouter, Router
 from nadjet_api.routing.routes import router as routing_router
+from nadjet_api.system.routes import router as system_ai_router
 
 
 class HealthResponse(BaseModel):
@@ -89,6 +90,7 @@ def create_app(
     app.include_router(auth_router)
     app.include_router(cameras_router)
     app.include_router(system_cameras_router)
+    app.include_router(system_ai_router)
     app.include_router(camera_internal_router)
     # Before the incident routes: `/incidents/{id}.cap.xml` must win over `/incidents/{id}`.
     app.include_router(notifications_router)
