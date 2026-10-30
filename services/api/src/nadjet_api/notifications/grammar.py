@@ -48,8 +48,9 @@ def ensure_sms(text: str) -> str:
 
 
 def _ascii(value: str) -> str:
-    """Latin-only text without the grammar separator."""
-    return value.replace("|", "/").encode("ascii", "ignore").decode().strip()
+    """Latin-only GSM-7 text without the grammar separator."""
+    latin = value.replace("|", "/").encode("ascii", "ignore").decode()
+    return "".join(c for c in latin if c in _GSM7_BASIC).strip()
 
 
 def format_alert(

@@ -80,6 +80,20 @@ def test_alert_omits_unknown_optional_parts() -> None:
     assert text == "ACC|P3|36.10000,3.20000|ABC"
 
 
+def test_ascii_outside_gsm7_in_a_road_name_is_dropped() -> None:
+    alert = format_alert(
+        kind="ACC",
+        priority=1,
+        lat=36.6,
+        lon=3.3,
+        road="A1`\t",
+        pk_km=None,
+        vehicles=None,
+        short_code="7F3",
+    )
+    assert alert == "ACC|P1|36.60000,3.30000|A1|7F3"
+
+
 def test_every_generated_alert_is_one_gsm7_sms() -> None:
     """FR-NTF-002 / issue: <= 160 GSM-7 characters over generated incidents (incl. hostile roads)."""
     rng = random.Random(11)
