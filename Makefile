@@ -11,7 +11,7 @@ UNIT := -m "not integration and not brev"
 .PHONY: help setup doctor env dev stop down infra infra-video infra-sms infra-logs ps camsim migrate \
 	seed-cameras camsim-list camsim-restart camsim-freeze camsim-unfreeze camsim-outage \
 	camsim-restore camsim-swap gen check-contracts \
-	test test-unit test-integration test-brev coverage lint format typecheck build ci clean reset-db \
+	test test-unit test-integration test-brev eval eval-compare coverage lint format typecheck build ci clean reset-db \
 	brev-status brev-up brev-forward brev-unforward brev-check \
 	brev-tunnel brev-untunnel brev-deploy-workers brev-logs \
 	map-data routing-data routing-up routing-down seed-geo
@@ -142,6 +142,12 @@ test-integration: infra infra-video migrate ## Run integration tests against loc
 
 test-brev: ## Live check of the Brev AI endpoint (needs make brev-forward; uses GPU credits)
 	$(PYTEST) -m brev
+
+eval: ## Replay the held-out clips through the pipeline on Brev and write eval/results (needs make brev-forward, GPU extra)
+	uv run --package nadjet-vision --extra gpu python eval/run_eval.py $(EVAL_ARGS)
+
+eval-compare: ## Check two result files agree within their intervals: make eval-compare A=a.json B=b.json
+	uv run python eval/run_eval.py --compare $(A) $(B)
 
 lint: ## Lint Python and TypeScript, check formatting and repository rules
 	uv run ruff check .
