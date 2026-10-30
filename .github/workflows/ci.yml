@@ -60,7 +60,14 @@ jobs:
         run: |
           mkdir -p data/videos
           uv run nadjet-camsim render
-          docker compose -f deploy/local/compose.yml --profile video up -d --wait mediamtx
+          compose="docker compose -f deploy/local/compose.yml --profile video"
+          # Registries drop connections now and then (token reset, 5xx): retry the pull only.
+          for attempt in 1 2 3 4; do
+            $compose pull --quiet mediamtx && break
+            [ "$attempt" = 4 ] && exit 1
+            echo "image pull failed (attempt $attempt), retrying"; sleep $((attempt * 10))
+          done
+          $compose up -d --wait mediamtx
 
       - name: OSRM from the committed test extract (routing integration tests)
         env:
@@ -70,6 +77,11 @@ jobs:
           data="$RUNNER_TEMP/osrm"
           mkdir -p "$data"
           cp services/api/tests/data/boumerdes.osm.pbf "$data/"
+          for attempt in 1 2 3 4; do
+            docker pull --quiet "$OSRM_IMAGE" && break
+            [ "$attempt" = 4 ] && exit 1
+            echo "image pull failed (attempt $attempt), retrying"; sleep $((attempt * 10))
+          done
           osrm() { docker run --rm -v "$data:/data" "$OSRM_IMAGE" "$@"; }
           osrm osrm-extract -p /opt/car.lua /data/boumerdes.osm.pbf
           osrm osrm-partition /data/boumerdes.osrm
