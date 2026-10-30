@@ -1484,6 +1484,121 @@
         "title": "PriorityReason",
         "type": "object"
       },
+      "RankedResource": {
+        "properties": {
+          "agency": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Agency"
+          },
+          "capabilities": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Capabilities"
+          },
+          "contact": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Contact"
+          },
+          "distance_m": {
+            "title": "Distance M",
+            "type": "number"
+          },
+          "eta_s": {
+            "title": "Eta S",
+            "type": "number"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "kind": {
+            "enum": [
+              "unit",
+              "hospital"
+            ],
+            "title": "Kind",
+            "type": "string"
+          },
+          "lat": {
+            "title": "Lat",
+            "type": "number"
+          },
+          "lon": {
+            "title": "Lon",
+            "type": "number"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "ready_state": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Ready State"
+          },
+          "route_geojson": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Route Geojson"
+          },
+          "simulated": {
+            "title": "Simulated",
+            "type": "boolean"
+          },
+          "source": {
+            "default": "osrm",
+            "title": "Source",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "kind",
+          "simulated",
+          "lat",
+          "lon",
+          "eta_s",
+          "distance_m",
+          "route_geojson"
+        ],
+        "title": "RankedResource",
+        "type": "object"
+      },
       "ReadinessResponse": {
         "properties": {
           "dependencies": {
@@ -1503,6 +1618,35 @@
           "dependencies"
         ],
         "title": "ReadinessResponse",
+        "type": "object"
+      },
+      "Recommendations": {
+        "properties": {
+          "hospitals": {
+            "items": {
+              "$ref": "#/components/schemas/RankedResource"
+            },
+            "title": "Hospitals",
+            "type": "array"
+          },
+          "units": {
+            "items": {
+              "$ref": "#/components/schemas/RankedResource"
+            },
+            "title": "Units",
+            "type": "array"
+          },
+          "urban_multiplier": {
+            "title": "Urban Multiplier",
+            "type": "number"
+          }
+        },
+        "required": [
+          "urban_multiplier",
+          "units",
+          "hospitals"
+        ],
+        "title": "Recommendations",
         "type": "object"
       },
       "RejectIn": {
@@ -2850,6 +2994,130 @@
         "summary": "Ready",
         "tags": [
           "system"
+        ]
+      }
+    },
+    "/routing/recommendations": {
+      "get": {
+        "description": "Rank units and hospitals near a point by road ETA; hospitals by capability, state, ETA.",
+        "operationId": "recommendations_routing_recommendations_get",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "lat",
+            "required": true,
+            "schema": {
+              "maximum": 90,
+              "minimum": -90,
+              "title": "Lat",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "lon",
+            "required": true,
+            "schema": {
+              "maximum": 180,
+              "minimum": -180,
+              "title": "Lon",
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "kind",
+            "required": false,
+            "schema": {
+              "default": "all",
+              "enum": [
+                "unit",
+                "hospital",
+                "all"
+              ],
+              "title": "Kind",
+              "type": "string"
+            }
+          },
+          {
+            "description": "Required hospital capability, e.g. trauma",
+            "in": "query",
+            "name": "need",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "Required hospital capability, e.g. trauma",
+              "title": "Need"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 5,
+              "maximum": 10,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Recommendations"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          },
+          "503": {
+            "description": "Routing service unavailable"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Recommendations",
+        "tags": [
+          "routing"
+        ]
+      }
+    },
+    "/tiles/algeria.pmtiles": {
+      "get": {
+        "description": "The PMTiles archive; clients read it with Range requests.",
+        "operationId": "algeria_tiles_tiles_algeria_pmtiles_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response"
+          }
+        },
+        "summary": "Algeria Tiles",
+        "tags": [
+          "map"
         ]
       }
     }

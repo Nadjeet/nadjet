@@ -349,6 +349,46 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/routing/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recommendations
+         * @description Rank units and hospitals near a point by road ETA; hospitals by capability, state, ETA.
+         */
+        get: operations["recommendations_routing_recommendations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tiles/algeria.pmtiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Algeria Tiles
+         * @description The PMTiles archive; clients read it with Range requests.
+         */
+        get: operations["algeria_tiles_tiles_algeria_pmtiles_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -880,6 +920,47 @@ export interface components {
              */
             source: string;
         };
+        /** RankedResource */
+        RankedResource: {
+            /** Agency */
+            agency?: string | null;
+            /** Capabilities */
+            capabilities?: {
+                [key: string]: unknown;
+            } | null;
+            /** Contact */
+            contact?: string | null;
+            /** Distance M */
+            distance_m: number;
+            /** Eta S */
+            eta_s: number;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "unit" | "hospital";
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /** Ready State */
+            ready_state?: string | null;
+            /** Route Geojson */
+            route_geojson: {
+                [key: string]: unknown;
+            } | null;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Source
+             * @default osrm
+             */
+            source: string;
+        };
         /** ReadinessResponse */
         ReadinessResponse: {
             /** Dependencies */
@@ -888,6 +969,15 @@ export interface components {
             };
             /** Status */
             status: string;
+        };
+        /** Recommendations */
+        Recommendations: {
+            /** Hospitals */
+            hospitals: components["schemas"]["RankedResource"][];
+            /** Units */
+            units: components["schemas"]["RankedResource"][];
+            /** Urban Multiplier */
+            urban_multiplier: number;
         };
         /** RejectIn */
         RejectIn: {
@@ -1708,6 +1798,67 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReadinessResponse"];
                 };
+            };
+        };
+    };
+    recommendations_routing_recommendations_get: {
+        parameters: {
+            query: {
+                lat: number;
+                lon: number;
+                kind?: "unit" | "hospital" | "all";
+                /** @description Required hospital capability, e.g. trauma */
+                need?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recommendations"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Routing service unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    algeria_tiles_tiles_algeria_pmtiles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };
