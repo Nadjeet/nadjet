@@ -6,6 +6,7 @@ computed here for the transfer check; the API recomputes them and chains them (T
 """
 
 import hashlib
+import io
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from fractions import Fraction
@@ -76,23 +77,39 @@ def write_clip(plan: ClipPlan, info: StreamInfo, path: Path) -> None:
 
     base = Fraction(1, info.time_base_den)
     origin = _decode_order(plan.packets[0])
-    with av.open(str(path), "w", format="mp4") as output:
-        stream: Any = output.add_stream(info.codec)
-        context = stream.codec_context
-        context.width, context.height = info.width, info.height
-        context.pix_fmt = "yuv420p"
-        if info.extradata:
-            context.extradata = info.extradata
-        stream.time_base = base
-        for item in plan.packets:
-            packet = av.Packet(item.data)
-            packet.stream = stream
-            packet.time_base = base
-            packet.pts = round((item.pts_s - origin) / base)
-            packet.dts = round((_decode_order(item) - origin) / base)
-            if item.keyframe:
-                packet.is_keyframe = True
-            output.mux(packet)
+    template = av.open(io.BytesIO(info.template)) if info.template else None
+    try:
+        with av.open(str(path), "w", format="mp4") as output:
+            if template is not None:
+                # Exact source parameters (SPS/PPS, profile, B-frames): a true stream copy.
+                stream: Any = output.add_stream_from_template(template.streams.video[0])
+            else:
+                # No keyframe seen yet: best effort, works when SPS/PPS are in-band.
+                stream = output.add_stream(info.codec)
+                context = stream.codec_context
+                context.width, context.height = info.width, info.height
+                context.pix_fmt = "yuv420p"
+                if info.extradata:
+                    context.extradata = info.extradata
+            stream.time_base = base
+            _mux(output, stream, plan, base, origin)
+    finally:
+        if template is not None:
+            template.close()
+
+
+def _mux(output: Any, stream: Any, plan: ClipPlan, base: Fraction, origin: float) -> None:
+    import av
+
+    for item in plan.packets:
+        packet = av.Packet(item.data)
+        packet.stream = stream
+        packet.time_base = base
+        packet.pts = round((item.pts_s - origin) / base)
+        packet.dts = round((_decode_order(item) - origin) / base)
+        if item.keyframe:
+            packet.is_keyframe = True
+        output.mux(packet)
 
 
 def encode_jpeg(frame: Any) -> bytes:
