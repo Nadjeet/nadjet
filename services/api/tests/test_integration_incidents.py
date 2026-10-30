@@ -513,17 +513,24 @@ async def test_FR_SEC_002_responder_only_sees_incidents_of_its_agency(
     other = await ingest(app, candidate(*fresh_spot()))
     await assign(session, mine.id, "samu")
 
-    listed = {
-        i["id"] for i in (await client.get("/incidents?limit=200", headers=samu)).json()["items"]
-    }
+    # Page through everything: other tests leave incidents behind, so one page of 200 sorted
+    # by priority does not always hold the two fresh ones.
+    listed = await all_listed_ids(client, samu)
     assert str(mine.id) in listed and str(other.id) not in listed
     assert (await client.get(f"/incidents/{mine.id}", headers=samu)).status_code == 200
     assert (await client.get(f"/incidents/{mine.id}", headers=police)).status_code == 404
-    all_ids = {
-        i["id"]
-        for i in (await client.get("/incidents?limit=200", headers=operator)).json()["items"]
-    }
-    assert {str(mine.id), str(other.id)} <= all_ids
+    assert {str(mine.id), str(other.id)} <= await all_listed_ids(client, operator)
+
+
+async def all_listed_ids(client: httpx.AsyncClient, headers: dict[str, str]) -> set[str]:
+    ids: set[str] = set()
+    offset = 0
+    while True:
+        page = (await client.get(f"/incidents?limit=200&offset={offset}", headers=headers)).json()
+        ids |= {i["id"] for i in page["items"]}
+        offset += len(page["items"])
+        if not page["items"] or offset >= page["total"]:
+            return ids
 
 
 async def test_FR_INC_004_triage_recomputes_priority_and_flags_mass_casualty(
