@@ -70,7 +70,6 @@ class RfDetrDetector:
         self.model_id = model_id
         self._threshold = threshold
         self._model = RFDETRMedium(pretrain_weights=str(weights))
-        self._model.optimize_for_inference()
 
     def detect(self, frame: BgrFrame) -> list[Detection]:
         rgb = frame[:, :, ::-1]  # RF-DETR expects RGB
