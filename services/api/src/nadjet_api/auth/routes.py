@@ -50,7 +50,7 @@ async def login(
     if user is None or not valid or not user.active:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, BAD_CREDENTIALS)
     ttl = timedelta(minutes=settings.access_token_ttl_minutes)
-    token = encode_token(user.id, user.role, key=settings.signing_key, ttl=ttl)
+    token = encode_token(user.id, user.role, key=settings.jwt_key, ttl=ttl)
     await audit(
         session,
         user,
