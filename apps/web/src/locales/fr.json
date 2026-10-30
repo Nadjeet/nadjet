@@ -140,12 +140,6 @@
         "body": "La file d'incidents en direct et le détail apparaîtront ici."
       }
     },
-    "hospital": {
-      "incoming": {
-        "title": "Alertes entrantes",
-        "body": "Les pré-alertes et le bouton prêt ou dérouter apparaîtront ici."
-      }
-    },
     "public": {
       "home": {
         "title": "Signalez un accident. Les secours sont coordonnés en quelques minutes.",
@@ -416,7 +410,9 @@
       "system": "Système",
       "hospital_diverted": "Hôpital en DIVERT",
       "hospital_changed": "Hôpital changé",
-      "notification_failed": "Notification échouée"
+      "notification_failed": "Notification échouée",
+      "hospital_response": "L'hôpital a choisi Prêt ou Détourner",
+      "prealert_acknowledged": "L'hôpital a accusé réception de la pré-alerte"
     },
     "casualties": {
       "title": "Victimes",
@@ -787,6 +783,41 @@
       "gateway": "Numéro de repli SMS",
       "queue": "File hors ligne",
       "queueHint": "Les actions faites sans connexion attendent ici et sont envoyées une seule fois, dans l'ordre, au retour de la connexion."
+    }
+  },
+  "hospital": {
+    "incomingTitle": "Patients attendus",
+    "incoming": "{{count}} attendus",
+    "none": "Aucune pré-alerte pour le moment.",
+    "historyTitle": "Arrivées du jour",
+    "noHistory": "Aucune arrivée aujourd'hui.",
+    "historyVictims": "{{count}} victimes",
+    "massCasualty": "Possible afflux de victimes",
+    "massCasualtyBanner": "Possible afflux de victimes attendu : {{codes}}. Préparez-vous à plusieurs patients.",
+    "noFacility": "Votre compte n'est lié à aucun hôpital.",
+    "loadError": "Les pré-alertes n'ont pas pu être chargées.",
+    "error": "L'action a échoué. Réessayez.",
+    "readiness": {
+      "title": "Pouvez-vous recevoir des patients ?",
+      "ready": "Prêt",
+      "divert": "Détourner",
+      "nowReady": "Votre hôpital est Prêt : les opérateurs peuvent envoyer des patients.",
+      "nowDivert": "Votre hôpital est en Détournement : les opérateurs ne le choisiront pas.",
+      "sms": "Par SMS, répondez avec le code de l'incident :",
+      "confirmTitle": "Détourner les patients de votre hôpital ?",
+      "confirmBody": "Les opérateurs sont alertés aussitôt et choisissent un autre hôpital pour chaque groupe de patients attendu."
+    },
+    "card": {
+      "arrivesIn": "Arrivée dans",
+      "overdue": "En retard de",
+      "dueAt": "Prévu à {{time}}",
+      "victims": "Victimes",
+      "vitals": "Victimes et constantes",
+      "noVictims": "Aucune victime signalée pour le moment. Cela se met à jour quand l'équipe les enregistre.",
+      "noUnit": "Unité inconnue",
+      "extrication": "Désincarcération nécessaire",
+      "acknowledge": "Accuser réception de la pré-alerte",
+      "acknowledged": "Reçue par {{name}} à {{time}}"
     }
   }
 }

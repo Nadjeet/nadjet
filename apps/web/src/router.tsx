@@ -12,6 +12,7 @@ import { OpsLayout } from "@/layouts/ops-layout";
 import { PublicLayout } from "@/layouts/public-layout";
 import { RespondLayout } from "@/layouts/respond-layout";
 import { authStore, homeFor, surfaceFor, type Role, type Surface } from "@/lib/auth-store";
+import { HospitalBoard } from "@/pages/hospital/hospital-board";
 import { LoginPage } from "@/pages/login-page";
 import { NotFound } from "@/pages/not-found";
 import { AdminPage } from "@/pages/ops/admin-page";
@@ -146,11 +147,7 @@ const hospitalRoute = createRoute({
   component: HospitalLayout,
 });
 const hospitalRoutes = [
-  createRoute({
-    getParentRoute: () => hospitalRoute,
-    path: "/",
-    component: () => <PlaceholderPage pageKey="hospital.incoming" />,
-  }),
+  createRoute({ getParentRoute: () => hospitalRoute, path: "/", component: HospitalBoard }),
 ];
 
 // ---- public pages (no login)

@@ -4,7 +4,7 @@ import { useQueryClient, type QueryClient } from "@tanstack/react-query";
 import { api } from "@/api";
 import { useSession } from "@/lib/auth-store";
 
-import { camerasKey, incidentKey, incidentsKey } from "./keys";
+import { camerasKey, incidentKey, incidentsKey, mapResourcesKey } from "./keys";
 import { LiveEventsContext, type LiveStatus } from "./live-events-context";
 import { SseParser } from "./sse";
 
@@ -24,6 +24,12 @@ const CAMERA_EVENTS = new Set(["camera_fault", "camera_recovered"]);
 function handleMessage(queryClient: QueryClient, event: string, data: string) {
   if (CAMERA_EVENTS.has(event)) {
     void queryClient.invalidateQueries({ queryKey: camerasKey });
+    return;
+  }
+  if (event === "facility.updated") {
+    // A hospital went Ready or Divert: the map, the dispatch ranking and the hospital board.
+    void queryClient.invalidateQueries({ queryKey: mapResourcesKey });
+    void queryClient.invalidateQueries({ queryKey: incidentsKey });
     return;
   }
   if (!INCIDENT_EVENTS.has(event)) return;

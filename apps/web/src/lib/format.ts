@@ -8,6 +8,12 @@ export function dateLocale(language: string): string {
   return DATE_LOCALES[language] ?? language;
 }
 
+export function formatTime(iso: string, language: string): string {
+  return new Intl.DateTimeFormat(dateLocale(language), { timeStyle: "short" }).format(
+    new Date(iso),
+  );
+}
+
 export function formatDateTime(iso: string, language: string): string {
   return new Intl.DateTimeFormat(dateLocale(language), {
     dateStyle: "short",
