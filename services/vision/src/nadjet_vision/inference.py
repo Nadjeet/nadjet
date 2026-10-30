@@ -17,7 +17,13 @@ from pydantic import ValidationError
 
 from nadjet_shared import TriggerType, VerifierResult
 from nadjet_vision.config import VisionSettings
-from nadjet_vision.verdict import VerifierAnswer, answer_schema, finalize, template_result
+from nadjet_vision.verdict import (
+    VerifierAnswer,
+    VerifyStats,
+    answer_schema,
+    finalize,
+    template_result,
+)
 
 log = logging.getLogger("nadjet_vision.inference")
 
@@ -80,6 +86,7 @@ def yes_probability(logprobs: dict[str, Any] | None) -> float | None:
 class BrevVlmClient:
     def __init__(self, settings: VisionSettings, transport: httpx.AsyncBaseTransport | None = None):
         assert_brev_endpoint(settings)
+        self.stats = VerifyStats()
         self._settings = settings
         self._client = httpx.AsyncClient(
             base_url=str(settings.vlm_base_url).rstrip("/"),
@@ -146,6 +153,7 @@ class BrevVlmClient:
                 choice = await self._ask(video_url, prompt)
                 raw = choice["message"]["content"]
             except (httpx.HTTPError, KeyError, IndexError, TypeError, ValueError):
+                self.stats.unavailable += 1
                 return VerifierResult(available=False, model=model)
             try:
                 answer = VerifierAnswer.model_validate_json(raw)
@@ -159,5 +167,10 @@ class BrevVlmClient:
                     "Answer again in the exact format."
                 )
                 continue
-            return finalize(answer, frame_count, model, yes_probability(choice.get("logprobs")))
+            self.stats.answered += 1
+            self.stats.valid_first_try += attempt == 1
+            return finalize(
+                answer, frame_count, model, yes_probability(choice.get("logprobs")), self.stats
+            )
+        self.stats.invalid += 1
         return template_result(trigger, model)

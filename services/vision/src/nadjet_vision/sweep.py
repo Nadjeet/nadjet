@@ -45,6 +45,12 @@ class SweepTracker:
         return self.consecutive
 
 
+def should_emit(hits: int, cooling_down: bool) -> bool:
+    """A sweep hit is published unless it falls in a cooldown; only the second hit in a row
+    (the upgrade to `probable`) may break through it."""
+    return not cooling_down or hits == 2
+
+
 def sweep_event(result: VerifierResult, end_s: float, wall: float, hits: int) -> TriggerEvent:
     """Event of a sweep hit. ``t_contact`` is relative to the window end (stream seconds)."""
     contact = result.t_contact
@@ -127,7 +133,7 @@ class Sweeper:
         cooling = self.rule_cooling_down(wall) or (
             self._last_emit_wall is not None and wall - self._last_emit_wall < self.cooldown_s
         )
-        if cooling and hits != 2:
+        if not should_emit(hits, cooling):
             log.info("camera=%s sweep hit suppressed by cooldown", self.camera.id)
             return
         event = sweep_event(result, end_s, wall, hits)

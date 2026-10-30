@@ -188,3 +188,19 @@ async def test_an_unreachable_server_is_not_retried_and_is_unavailable() -> None
     await client.aclose()
     assert (result.available, result.invalid) == (False, False)
     assert calls["n"] == 1
+
+
+async def test_the_client_counts_answers_for_the_ai_quality_metrics() -> None:
+    ghost = json.dumps({**ANSWER, "findings": [finding("Ghost", [99]), finding("Two", [1])]})
+    unsure = json.dumps({**ANSWER, "collision_visible": "cannot_judge"})
+    client = BrevVlmClient(
+        VisionSettings(vlm_model=MODEL),
+        transport=httpx.MockTransport(Server("{}", ghost, unsure, "bad", "bad")),
+    )
+    await client.verify("data:video/mp4;base64,AAA", frame_count=20)  # invalid, then ghost: retry
+    await client.verify("data:video/mp4;base64,AAA", frame_count=20)  # cannot_judge, first try
+    await client.verify("data:video/mp4;base64,AAA", frame_count=20)  # invalid twice
+    await client.aclose()
+    s = client.stats
+    assert (s.answered, s.valid_first_try, s.invalid, s.unavailable) == (2, 1, 1, 0)
+    assert (s.findings_total, s.findings_dropped, s.cannot_judge) == (3, 1, 1)
