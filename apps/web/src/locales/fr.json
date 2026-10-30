@@ -140,16 +140,6 @@
         "body": "La file d'incidents en direct et le détail apparaîtront ici."
       }
     },
-    "respond": {
-      "incidents": {
-        "title": "Mes incidents",
-        "body": "Les incidents confiés à votre unité apparaîtront ici."
-      },
-      "profile": {
-        "title": "Profil",
-        "body": "Votre unité et vos notifications apparaîtront ici."
-      }
-    },
     "hospital": {
       "incoming": {
         "title": "Alertes entrantes",
@@ -700,5 +690,103 @@
       "samu": "SAMU"
     },
     "inactive": "Inactif"
+  },
+  "respond": {
+    "offline": "Vous êtes hors ligne. Les actions sont enregistrées sur ce téléphone et envoyées au retour de la connexion.",
+    "list": {
+      "title": "Mes incidents",
+      "empty": "Aucun incident n'est affecté à votre service.",
+      "loadError": "Les incidents n'ont pas pu être chargés."
+    },
+    "alerts": {
+      "enable": "Activer les alertes",
+      "body": "Recevez une notification dès qu'une unité de votre service est engagée.",
+      "denied": "Les notifications sont bloquées dans les réglages du navigateur.",
+      "unsupported": "Ce navigateur ne peut pas recevoir d'alertes push.",
+      "error": "Les alertes n'ont pas pu être activées. Réessayez.",
+      "on": "Les alertes sont activées."
+    },
+    "install": {
+      "button": "Ajouter à l'écran d'accueil",
+      "body": "Ouvrez Nadjet depuis l'écran d'accueil, même avec une connexion faible.",
+      "done": "Installée sur ce téléphone.",
+      "manual": "Dans le menu du navigateur, choisissez Ajouter à l'écran d'accueil (iPhone : Partager, puis Sur l'écran d'accueil)."
+    },
+    "detail": {
+      "back": "Mes incidents",
+      "where": "Lieu",
+      "openMap": "Ouvrir dans l'application de cartes",
+      "openOsm": "OpenStreetMap",
+      "hospital": "Hôpital",
+      "noHospital": "Aucun hôpital affecté pour le moment.",
+      "ai": "Description de l'IA",
+      "aiNote": "Rédigée par l'IA à partir de la vidéo. Ce n'est pas une évaluation médicale.",
+      "noAi": "Pas de description de l'IA pour cet incident.",
+      "evidence": "Preuves",
+      "notFound": "Cet incident n'existe pas ou n'est pas affecté à votre service.",
+      "trapped": "Une personne est coincée",
+      "people": "{{count}} personnes signalées"
+    },
+    "action": {
+      "title": "Statut",
+      "acknowledged": "Accuser réception",
+      "en_route": "En route",
+      "on_scene": "Sur place",
+      "transporting": "Transport en cours",
+      "at_hospital": "À l'hôpital",
+      "closed": "Clore l'incident",
+      "closeNoTransport": "Clore sans transport",
+      "done": "Cet incident est clos.",
+      "waiting": "En attente d'engagement.",
+      "confirmTitle": "Clore {{code}} ?",
+      "confirmBody": "L'incident est clos pour tous et votre unité redevient disponible.",
+      "confirm": "Clore",
+      "cancel": "Annuler",
+      "queued": "Enregistré sur ce téléphone. Envoi au retour de la connexion.",
+      "failed": "L'action a été refusée ({{error}}).",
+      "sending": "Envoi…"
+    },
+    "triage": {
+      "title": "Enregistrer une victime",
+      "recorded": "{{count}} victimes enregistrées",
+      "tag": "Catégorie START",
+      "red": "Immédiat (rouge)",
+      "yellow": "Différé (jaune)",
+      "green": "Léger (vert)",
+      "black": "Décédé (noir)",
+      "avpu": "Conscience (AVPU)",
+      "A": "Alerte",
+      "V": "Voix",
+      "P": "Douleur",
+      "U": "Inconscient",
+      "resp": "Resp. / min",
+      "pulse": "Pouls / min",
+      "spo2": "SpO₂ % (facultatif)",
+      "bleeding": "Saignement",
+      "notes": "Notes",
+      "submit": "Enregistrer la victime",
+      "saved": "Victime enregistrée.",
+      "queued": "Enregistré sur ce téléphone. Envoi au retour de la connexion."
+    },
+    "sms": {
+      "send": "Envoyer par SMS",
+      "body": "Ouvre votre application SMS avec ce message prêt :",
+      "noNumber": "Le numéro SMS n'est pas configuré."
+    },
+    "pending": {
+      "title": "En attente d'envoi",
+      "status": "Statut : {{status}}",
+      "triage": "Victime : {{tag}}",
+      "failed": "Refusé : {{error}}",
+      "discard": "Retirer (déjà envoyé par SMS)"
+    },
+    "profile": {
+      "title": "Profil",
+      "alerts": "Alertes",
+      "app": "Application",
+      "gateway": "Numéro de repli SMS",
+      "queue": "File hors ligne",
+      "queueHint": "Les actions faites sans connexion attendent ici et sont envoyées une seule fois, dans l'ordre, au retour de la connexion."
+    }
   }
 }

@@ -18,6 +18,8 @@ export type CandidateSource = components["schemas"]["CandidateSource"];
 export type Recommendations = components["schemas"]["IncidentRecommendations"];
 export type RankedResource = components["schemas"]["RankedResource"];
 export type DispatchRow = components["schemas"]["DispatchOut"];
+export type CasualtyIn = components["schemas"]["CasualtyIn"];
+export type TriageTag = components["schemas"]["TriageTag"];
 
 export type QueueFilters = {
   /** `open` is every incident that is not rejected, merged or closed. */
@@ -246,5 +248,18 @@ export function useChangeHospital(id: string) {
       return data;
     },
     onSuccess: () => refresh(id),
+  });
+}
+
+/** Number of the gateway SIM, for the SMS fallback (`null` when the API has none set). */
+export function useSmsGateway() {
+  return useQuery({
+    queryKey: ["sms-gateway"],
+    staleTime: 60 * 60 * 1000,
+    queryFn: async () => {
+      const { data, response } = await api.GET("/sms/gateway");
+      if (!data) throw new ApiError(response.status);
+      return data.number;
+    },
   });
 }

@@ -23,6 +23,9 @@ import { IncidentDetailPage } from "@/pages/ops/incident/incident-detail-page";
 import { KpisPage } from "@/pages/ops/kpis-page";
 import { SystemPage } from "@/pages/ops/system-page";
 import { PlaceholderPage } from "@/pages/placeholder-page";
+import { RespondDetail } from "@/pages/respond/respond-detail";
+import { RespondList } from "@/pages/respond/respond-list";
+import { RespondProfile } from "@/pages/respond/respond-profile";
 import { PublicHome } from "@/pages/public/public-home";
 import { ReportPage } from "@/pages/public/report-page";
 import { TryLivePage } from "@/pages/public/try-live-page";
@@ -126,16 +129,13 @@ const respondRoute = createRoute({
   component: RespondLayout,
 });
 const respondRoutes = [
+  createRoute({ getParentRoute: () => respondRoute, path: "/", component: RespondList }),
   createRoute({
     getParentRoute: () => respondRoute,
-    path: "/",
-    component: () => <PlaceholderPage pageKey="respond.incidents" />,
+    path: "incidents/$incidentId",
+    component: RespondDetail,
   }),
-  createRoute({
-    getParentRoute: () => respondRoute,
-    path: "profile",
-    component: () => <PlaceholderPage pageKey="respond.profile" />,
-  }),
+  createRoute({ getParentRoute: () => respondRoute, path: "profile", component: RespondProfile }),
 ];
 
 // ---- hospital view

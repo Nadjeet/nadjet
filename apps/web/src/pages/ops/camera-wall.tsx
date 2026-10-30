@@ -14,7 +14,7 @@ import { incidentsKey, systemCamerasKey } from "@/live/keys";
 import { cn } from "@/lib/utils";
 
 import { streamUrls, tileStatus, type Camera, type TileStatus, type View } from "./camera-status";
-import { useCameras } from "./incident/incident-queries";
+import { useCameras } from "@/lib/incident-queries";
 import { fetchSystemCameras } from "./system-data";
 
 const STATUS_ICON = { live: CircleCheckIcon, degraded: CircleAlertIcon, offline: CircleOffIcon };

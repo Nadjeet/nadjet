@@ -140,16 +140,6 @@
         "body": "The live incident queue and detail view will appear here."
       }
     },
-    "respond": {
-      "incidents": {
-        "title": "My incidents",
-        "body": "Incidents assigned to your unit will appear here."
-      },
-      "profile": {
-        "title": "Profile",
-        "body": "Your unit and notification settings will appear here."
-      }
-    },
     "hospital": {
       "incoming": {
         "title": "Incoming alerts",
@@ -700,5 +690,103 @@
       "samu": "SAMU"
     },
     "inactive": "Inactive"
+  },
+  "respond": {
+    "offline": "You are offline. Actions are saved on this phone and sent when the connection returns.",
+    "list": {
+      "title": "My incidents",
+      "empty": "No incident is assigned to your agency.",
+      "loadError": "The incidents could not be loaded."
+    },
+    "alerts": {
+      "enable": "Enable alerts",
+      "body": "Get a notification as soon as a unit of your agency is dispatched.",
+      "denied": "Notifications are blocked in the browser settings.",
+      "unsupported": "This browser cannot receive push alerts.",
+      "error": "Alerts could not be enabled. Try again.",
+      "on": "Alerts are on."
+    },
+    "install": {
+      "button": "Add to home screen",
+      "body": "Open Nadjet from the home screen, even with a weak connection.",
+      "done": "Installed on this phone.",
+      "manual": "In the browser menu, choose Add to home screen (iPhone: Share, then Add to Home Screen)."
+    },
+    "detail": {
+      "back": "My incidents",
+      "where": "Location",
+      "openMap": "Open in maps app",
+      "openOsm": "OpenStreetMap",
+      "hospital": "Hospital",
+      "noHospital": "No hospital assigned yet.",
+      "ai": "AI description",
+      "aiNote": "Written by the AI from the video. It is not a medical assessment.",
+      "noAi": "No AI description for this incident.",
+      "evidence": "Evidence",
+      "notFound": "This incident does not exist or is not assigned to your agency.",
+      "trapped": "Someone is trapped",
+      "people": "{{count}} people reported"
+    },
+    "action": {
+      "title": "Status",
+      "acknowledged": "Acknowledge",
+      "en_route": "En route",
+      "on_scene": "On scene",
+      "transporting": "Transporting",
+      "at_hospital": "At hospital",
+      "closed": "Close incident",
+      "closeNoTransport": "Close without transport",
+      "done": "This incident is closed.",
+      "waiting": "Waiting for dispatch.",
+      "confirmTitle": "Close {{code}}?",
+      "confirmBody": "The incident is closed for everyone and your unit becomes available again.",
+      "confirm": "Close",
+      "cancel": "Cancel",
+      "queued": "Saved on this phone. It is sent when the connection returns.",
+      "failed": "The action was refused ({{error}}).",
+      "sending": "Sending…"
+    },
+    "triage": {
+      "title": "Record a victim",
+      "recorded": "{{count}} victims recorded",
+      "tag": "START category",
+      "red": "Immediate (red)",
+      "yellow": "Delayed (yellow)",
+      "green": "Minor (green)",
+      "black": "Deceased (black)",
+      "avpu": "Consciousness (AVPU)",
+      "A": "Alert",
+      "V": "Voice",
+      "P": "Pain",
+      "U": "Unresponsive",
+      "resp": "Breaths / min",
+      "pulse": "Pulse / min",
+      "spo2": "SpO₂ % (optional)",
+      "bleeding": "Bleeding",
+      "notes": "Notes",
+      "submit": "Record victim",
+      "saved": "Victim recorded.",
+      "queued": "Saved on this phone. It is sent when the connection returns."
+    },
+    "sms": {
+      "send": "Send by SMS",
+      "body": "Opens your SMS app with this message ready:",
+      "noNumber": "The SMS number is not set up."
+    },
+    "pending": {
+      "title": "Waiting to be sent",
+      "status": "Status: {{status}}",
+      "triage": "Victim: {{tag}}",
+      "failed": "Refused: {{error}}",
+      "discard": "Remove (already sent by SMS)"
+    },
+    "profile": {
+      "title": "Profile",
+      "alerts": "Alerts",
+      "app": "Application",
+      "gateway": "SMS fallback number",
+      "queue": "Offline queue",
+      "queueHint": "Actions taken without a connection wait here and are sent once, in order, when it returns."
+    }
   }
 }

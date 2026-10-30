@@ -31,8 +31,8 @@ import {
   useVerify,
   type Incident,
   type RejectReason,
-} from "./incident-queries";
-import { locationText } from "./incident-format";
+} from "@/lib/incident-queries";
+import { locationText } from "@/lib/incident-format";
 
 const REASONS: RejectReason[] = ["false_positive", "duplicate", "not_emergency", "other"];
 

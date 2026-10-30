@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
 
-import { fetchEvidence, type IncidentDetail } from "./incident-queries";
+import { fetchEvidence, type IncidentDetail } from "@/lib/incident-queries";
 
 type Evidence = IncidentDetail["evidence"][number];
 type Loaded = { url: string } | { error: true } | null;
