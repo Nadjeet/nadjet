@@ -30,6 +30,7 @@ dev = [
   "mypy>=1.14",
   "honcho>=2.0",
   "types-pyyaml>=6.0",
+  "av>=14",  # evidence clip tests remux real H.264 packets
 ]
 
 [tool.ruff]
