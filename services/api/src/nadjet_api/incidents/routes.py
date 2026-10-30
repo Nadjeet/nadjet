@@ -55,7 +55,8 @@ IdempotencyKey = Annotated[
     Header(
         alias="Idempotency-Key",
         min_length=1,
-        max_length=128,
+        # The stored key gets the 4-character "api:" prefix; the column holds 128.
+        max_length=124,
         description="Repeating a request with the same key changes nothing (offline queues)",
     ),
 ]

@@ -163,12 +163,16 @@ async def test_idempotency_key_length_is_validated(
         client, await make_user(session, role="responder", agency="civil_protection")
     )
     incident = await dispatched(app)
+    url = f"/incidents/{incident.id}/status"
     too_long = await client.post(
-        f"/incidents/{incident.id}/status",
-        json={"status": "acknowledged"},
-        headers={**headers, "Idempotency-Key": "k" * 129},
+        url, json={"status": "acknowledged"}, headers={**headers, "Idempotency-Key": "k" * 125}
     )
-    assert too_long.status_code == 422
+    longest = await client.post(
+        url,
+        json={"status": "acknowledged"},
+        headers={**headers, "Idempotency-Key": uuid.uuid4().hex.ljust(124, "k")},
+    )
+    assert (too_long.status_code, longest.status_code) == (422, 200)
 
 
 async def test_E_09_a_retried_status_from_another_agency_is_still_refused(

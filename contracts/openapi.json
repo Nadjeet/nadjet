@@ -6396,7 +6396,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "maxLength": 128,
+                  "maxLength": 124,
                   "minLength": 1,
                   "type": "string"
                 },
@@ -6957,7 +6957,7 @@
             "schema": {
               "anyOf": [
                 {
-                  "maxLength": 128,
+                  "maxLength": 124,
                   "minLength": 1,
                   "type": "string"
                 },
