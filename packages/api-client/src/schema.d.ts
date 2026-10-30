@@ -415,6 +415,8 @@ export interface paths {
         /**
          * List Dispatches
          * @description Dispatches of the incident with the delivery status of each notification.
+         *
+         *     A responder only gets the hospital the patients go to.
          */
         get: operations["list_dispatches_incidents__incident_id__dispatches_get"];
         put?: never;
@@ -1109,6 +1111,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/sms/gateway": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sms Gateway
+         * @description The gateway SIM number the responder app pre-fills in the SMS fallback (FR-RSP-004).
+         */
+        get: operations["sms_gateway_sms_gateway_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/sms/inbound": {
         parameters: {
             query?: never;
@@ -1728,6 +1750,13 @@ export interface components {
              * @enum {string}
              */
             kind: "unit" | "hospital";
+            /**
+             * Lat
+             * @description Position of the unit or hospital
+             */
+            lat: number;
+            /** Lon */
+            lon: number;
             /** Name */
             name: string;
             /** Resource Id */
@@ -2689,6 +2718,14 @@ export interface components {
              * @enum {string}
              */
             status: "processed" | "duplicate" | "throttled" | "ignored";
+        };
+        /** SmsGateway */
+        SmsGateway: {
+            /**
+             * Number
+             * @description Where responders text their codes; null when unset
+             */
+            number: string | null;
         };
         /**
          * StageLatencyMs
@@ -4013,7 +4050,10 @@ export interface operations {
     add_casualty_incidents__incident_id__casualties_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Repeating a request with the same key changes nothing (offline queues) */
+                "Idempotency-Key"?: string | null;
+            };
             path: {
                 incident_id: string;
             };
@@ -4414,7 +4454,10 @@ export interface operations {
     set_status_incidents__incident_id__status_post: {
         parameters: {
             query?: never;
-            header?: never;
+            header?: {
+                /** @description Repeating a request with the same key changes nothing (offline queues) */
+                "Idempotency-Key"?: string | null;
+            };
             path: {
                 incident_id: string;
             };
@@ -5602,6 +5645,26 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    sms_gateway_sms_gateway_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmsGateway"];
+                };
             };
         };
     };

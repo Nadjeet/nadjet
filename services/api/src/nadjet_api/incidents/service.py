@@ -465,6 +465,34 @@ async def get_visible(
     return incident
 
 
+class IdempotencyConflictError(Exception):
+    """The idempotency key was already used for a different incident or action."""
+
+
+def _api_key(key: str) -> str:
+    """Client keys live in their own namespace, apart from the candidate keys of the workers."""
+    return f"api:{key}"
+
+
+async def _replayed(
+    session: AsyncSession, incident: Incident, key: str | None, kind: str
+) -> IncidentEvent | None:
+    """The event an earlier request with this key produced, or ``None`` for a new key.
+
+    Call with the incident row locked: two retries of one action then run one after the other.
+    """
+    if key is None:
+        return None
+    event = await session.scalar(
+        select(IncidentEvent).where(IncidentEvent.idempotency_key == _api_key(key))
+    )
+    if event is None:
+        return None
+    if event.incident_id != incident.id or event.kind != kind:
+        raise IdempotencyConflictError("idempotency key already used for another action")
+    return event
+
+
 async def transition(
     session: AsyncSession,
     signer: ChainSigner,
@@ -474,9 +502,19 @@ async def transition(
     scope: Scope,
     *,
     reason: RejectReason | None = None,
+    idempotency_key: str | None = None,
 ) -> Change:
-    """Move an incident along the lifecycle; ``IllegalTransitionError`` for illegal moves."""
+    """Move an incident along the lifecycle; ``IllegalTransitionError`` for illegal moves.
+
+    A repeated ``idempotency_key`` changes nothing and reports the earlier outcome, even when
+    the incident has moved on since (offline queues retry after a lost answer).
+    """
     incident = await get_visible(session, incident_id, scope, lock=True)
+    replay = await _replayed(session, incident, idempotency_key, "status_changed")
+    if replay is not None:
+        if replay.payload.get("to") != target.value:
+            raise IdempotencyConflictError("idempotency key already used for another action")
+        return _change(STATUS_CHANGED, incident)
     current = IncidentStatus(incident.status)
     check_transition(current, target)
     incident.status = target.value
@@ -496,7 +534,15 @@ async def transition(
     payload: dict[str, Any] = {"from": current.value, "to": target.value}
     if reason:
         payload["reason"] = reason.value
-    await append_event(session, signer, incident, "status_changed", actor, payload)
+    await append_event(
+        session,
+        signer,
+        incident,
+        "status_changed",
+        actor,
+        payload,
+        idempotency_key=_api_key(idempotency_key) if idempotency_key else None,
+    )
     return _change(STATUS_CHANGED, incident)
 
 
@@ -576,9 +622,20 @@ async def add_casualty(
     actor: User,
     scope: Scope,
     fields: dict[str, Any],
+    *,
+    idempotency_key: str | None = None,
 ) -> tuple[Casualty, Change]:
-    """Record a triage entry and recompute priority; triage overrides the AI (FR-INC-004)."""
+    """Record a triage entry and recompute priority; triage overrides the AI (FR-INC-004).
+
+    A repeated ``idempotency_key`` returns the casualty already recorded (FR-RSP-004).
+    """
     incident = await get_visible(session, incident_id, scope, lock=True)
+    replay = await _replayed(session, incident, idempotency_key, "casualty_added")
+    if replay is not None:
+        existing = await session.get(Casualty, uuid.UUID(replay.payload["casualty_id"]))
+        if existing is None:
+            raise IdempotencyConflictError("idempotency key already used for another action")
+        return existing, _change(UPDATED, incident)
     if IncidentStatus(incident.status) in CLOSED_STATUSES:
         raise IllegalTransitionError(IncidentStatus(incident.status), IncidentStatus.ON_SCENE)
     casualty = Casualty(incident_id=incident.id, reported_by=actor.id, at=_now(), **fields)
@@ -598,6 +655,7 @@ async def add_casualty(
             "source": casualty.source,
             "priority": {"from": old, "to": new},
         },
+        idempotency_key=_api_key(idempotency_key) if idempotency_key else None,
     )
     return casualty, _change(UPDATED, incident)
 

@@ -205,6 +205,19 @@ async def push_public_key(request: Request) -> PushPublicKey:
     return PushPublicKey(public_key=settings.vapid_public_key)
 
 
+class SmsGateway(BaseModel):
+    number: str | None = Field(description="Where responders text their codes; null when unset")
+
+
+@router.get("/sms/gateway")
+async def sms_gateway(
+    request: Request, _user: Annotated[User, Depends(current_user)]
+) -> SmsGateway:
+    """The gateway SIM number the responder app pre-fills in the SMS fallback (FR-RSP-004)."""
+    settings: Settings = request.app.state.settings
+    return SmsGateway(number=settings.sms_gateway_number)
+
+
 @router.post("/push/subscriptions", status_code=status.HTTP_201_CREATED)
 async def subscribe_push(
     body: PushSubscriptionIn,
