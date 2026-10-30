@@ -46,10 +46,16 @@ class PacketRing:
     that is at least ``window_s`` old: the buffer may hold slightly more than the window.
     """
 
-    def __init__(self, window_s: float = 15.0) -> None:
+    def __init__(self, window_s: float = 15.0, max_packets: int = 15 * 120) -> None:
         self._window_s = window_s
-        self._packets: deque[Packet] = deque()
+        # Hard cap: a stream without keyframes could otherwise never be trimmed.
+        self._packets: deque[Packet] = deque(maxlen=max_packets)
         self._lock = threading.Lock()
+
+    def clear(self) -> None:
+        """Forget the previous RTSP session (its packets cannot be mixed into a clip)."""
+        with self._lock:
+            self._packets.clear()
 
     def append(self, packet: Packet) -> None:
         with self._lock:
@@ -135,6 +141,7 @@ def iter_frames(
     import av  # gpu extra, imported lazily so local tools and tests do not need it
 
     with av.open(url, options=RTSP_OPTIONS, timeout=OPEN_TIMEOUT_S) as container:
+        ring.clear()
         if on_open is not None:
             on_open()
         stream = container.streams.video[0]
