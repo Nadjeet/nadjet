@@ -35,6 +35,28 @@ def _area(ring: list[Point]) -> float:
     return abs(twice) / 2
 
 
+def _cross(o: Point, a: Point, b: Point) -> float:
+    return (a[0] - o[0]) * (b[1] - o[1]) - (a[1] - o[1]) * (b[0] - o[0])
+
+
+def _segments_cross(p1: Point, p2: Point, q1: Point, q2: Point) -> bool:
+    """Proper crossing of two segments (shared end points do not count)."""
+    d1, d2 = _cross(q1, q2, p1), _cross(q1, q2, p2)
+    d3, d4 = _cross(p1, p2, q1), _cross(p1, p2, q2)
+    return d1 * d2 < 0 and d3 * d4 < 0
+
+
+def _self_intersects(ring: list[Point]) -> bool:
+    edges = list(pairwise(ring))
+    for i, (a1, a2) in enumerate(edges):
+        for j in range(i + 2, len(edges)):
+            if i == 0 and j == len(edges) - 1:
+                continue  # first and last edges meet at the closing point
+            if _segments_cross(a1, a2, *edges[j]):
+                return True
+    return False
+
+
 class Zones(BaseModel):
     """Live lanes and carriageway of one camera. Each polygon ring must be explicitly closed."""
 
@@ -61,6 +83,8 @@ class Zones(BaseModel):
                     )
             if _area(ring) == 0:
                 raise ValueError(f"{name}: polygon has zero area")
+            if _self_intersects(ring):
+                raise ValueError(f"{name}: polygon edges cross each other (self-intersecting)")
         return self
 
 

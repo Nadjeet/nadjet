@@ -53,6 +53,7 @@ def test_valid_zones_are_accepted() -> None:
         ({"live_lanes": [[[0, 0], [2000, 0], [2000, 50], [0, 0]]]}, "outside"),
         ({"carriageway": [[0, 0], [5, 5], [9, 9], [0, 0]]}, "zero area"),
         ({"live_lanes": []}, "at least 1 item"),
+        ({"carriageway": [[0, 0], [100, 100], [100, 0], [0, 50], [0, 0]]}, "self-intersecting"),
         ({"frame": {"width": 0, "height": 720}}, "greater than 0"),
     ],
 )
