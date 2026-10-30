@@ -28,6 +28,17 @@ make dev          # infra + API + web; Ctrl-C stops the apps, `make stop` stops 
 - MediaMTX (simulated cameras): RTSP `rtsp://localhost:8554/<camera-id>`, WebRTC
   `http://localhost:8889/<camera-id>`
 
+### Dev users (one per role)
+
+```bash
+cp data/seed/users.example.yaml data/seed/users.yaml   # git-ignored; set your own passwords
+make migrate
+(cd services/api && uv run nadjet-api seed-users --file ../../data/seed/users.yaml)
+```
+
+Re-running is safe: existing usernames are skipped. Log in with `POST /auth/login`.
+`NADJET_JWT_SECRET` is optional locally but required (≥ 32 chars) in production.
+
 ### Demo videos (optional for most work)
 
 Cameras are defined in `data/cameras.yaml`. Videos are **not** in git (research licences).
