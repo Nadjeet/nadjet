@@ -594,4 +594,7 @@ async def verify_integrity(
             continue
         if actual != expected:
             failures.append(IntegrityFailure("file", item.path, "sha256 mismatch"))
+    present = {str(item.id) for item in files}
+    for evidence_id in chained.keys() - present:
+        failures.append(IntegrityFailure("file", str(evidence_id), "evidence record missing"))
     return IntegrityReport(not failures, len(events), len(files), failures)
