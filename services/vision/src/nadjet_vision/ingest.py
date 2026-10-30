@@ -4,11 +4,12 @@ The PyAV reader runs in a thread (``read_stream``); everything else here is plai
 tests drive with synthetic timestamps.
 """
 
+import io
 import threading
 import time
 from collections import deque
 from collections.abc import Callable, Iterator
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from typing import Any, cast
 
 import numpy as np
@@ -42,6 +43,26 @@ class StreamInfo:
     height: int
     extradata: bytes
     time_base_den: int  # packet timestamps are multiples of 1 / time_base_den seconds
+    # A tiny Matroska file (source codec parameters + one keyframe) used as the muxer's stream
+    # template. RTSP cameras send SPS/PPS out of band (SDP): copying only `extradata` into a
+    # freshly opened encoder lets the encoder write its own avcC and the clip stops decoding.
+    template: bytes = b""
+
+
+def codec_template(stream: Any, keyframe: Any) -> bytes:
+    """Matroska bytes carrying ``stream``'s exact codec parameters (and ``keyframe``)."""
+    import av
+
+    buffer = io.BytesIO()
+    with av.open(buffer, "w", format="matroska") as output:
+        out_stream = output.add_stream_from_template(stream)
+        packet = av.Packet(bytes(keyframe))
+        packet.stream = out_stream
+        packet.time_base = stream.time_base
+        packet.pts = packet.dts = 0
+        packet.is_keyframe = True
+        output.mux(packet)  # Matroska writes nothing until a packet is muxed
+    return buffer.getvalue()
 
 
 @dataclass(frozen=True)
@@ -174,6 +195,8 @@ def iter_frames(
             if packet.dts is None or packet.pts is None:
                 continue  # flush packet
             ptime = float(packet.pts * base)
+            if packet.is_keyframe and ring.stream is not None and not ring.stream.template:
+                ring.stream = replace(ring.stream, template=codec_template(stream, packet))
             ring.append(
                 Packet(ptime, bool(packet.is_keyframe), bytes(packet), float(packet.dts * base))
             )
