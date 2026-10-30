@@ -8,6 +8,7 @@ import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 import { SkipLink } from "./skip-link";
+import { usePublicManifest } from "./use-public-manifest";
 import { useSurfaceTheme } from "./use-surface-theme";
 
 const link =
@@ -17,6 +18,7 @@ const link =
 export function PublicLayout() {
   const { t } = useTranslation();
   useSurfaceTheme("light");
+  usePublicManifest();
   return (
     <>
       <SkipLink />

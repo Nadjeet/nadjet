@@ -8,6 +8,15 @@
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title>Nadjet — نجاة</title>
+    <script>
+      try {
+        var l = localStorage.getItem("nadjet.language");
+        if (l === "fr" || l === "en") {
+          document.documentElement.lang = l;
+          document.documentElement.dir = "ltr";
+        }
+      } catch (e) {}
+    </script>
   </head>
   <body>
     <div id="root"></div>
