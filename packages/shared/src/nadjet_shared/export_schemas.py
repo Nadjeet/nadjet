@@ -14,11 +14,13 @@ from pydantic import BaseModel
 from nadjet_shared.evaluation import EvaluationResults
 from nadjet_shared.events import IncidentCandidate
 from nadjet_shared.health import CameraHealthReport
+from nadjet_shared.tryit import TryResult
 
 MODELS: dict[str, type[BaseModel]] = {
     "incident.candidate": IncidentCandidate,
     "camera.health": CameraHealthReport,
     "evaluation.results": EvaluationResults,
+    "try.result": TryResult,
 }
 
 DEFAULT_OUT = Path(__file__).resolve().parents[4] / "contracts" / "events"

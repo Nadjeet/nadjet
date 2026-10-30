@@ -86,6 +86,7 @@ def test_export_writes_then_reports_no_drift(tmp_path: Path) -> None:
         "camera.health.schema.json",
         "evaluation.results.schema.json",
         "incident.candidate.schema.json",
+        "try.result.schema.json",
     ]
     assert export(tmp_path, check=True) == []
 
