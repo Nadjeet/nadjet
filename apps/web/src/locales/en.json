@@ -349,7 +349,8 @@
     "errors": {
       "generic": "The action failed. Try again.",
       "conflict": "The incident changed in the meantime and this action is no longer allowed.",
-      "forbidden": "Your role cannot do this."
+      "forbidden": "Your role cannot do this.",
+      "routing": "Road routing is unavailable. Try again in a moment."
     },
     "evidence": {
       "none": "No evidence attached yet.",
@@ -375,7 +376,10 @@
       "incident_merged_in": "Another incident merged in",
       "casualty_added": "Casualty recorded",
       "evidence_added": "Evidence added",
-      "system": "System"
+      "system": "System",
+      "hospital_diverted": "Hospital answered DIVERT",
+      "hospital_changed": "Hospital changed",
+      "notification_failed": "Notification failed"
     },
     "casualties": {
       "title": "Casualties",
@@ -415,6 +419,65 @@
       "rejectedFor": "Rejected: {{reason}}",
       "mergedInto": "Merged into another incident.",
       "openTarget": "Open it"
+    },
+    "agency": {
+      "civil_protection": "Civil Protection",
+      "gendarmerie": "Gendarmerie",
+      "police": "Police",
+      "samu": "SAMU"
+    },
+    "capability": {
+      "trauma": "Trauma",
+      "emergency": "Emergency",
+      "extrication": "Extrication"
+    },
+    "dispatch": {
+      "title": "Dispatch",
+      "scene": "Scene",
+      "units": "Units (ranked by road ETA)",
+      "hospitals": "Hospitals (capability, then Ready, then ETA)",
+      "noUnits": "No available unit can reach this incident.",
+      "noHospitals": "No hospital can be reached from this incident.",
+      "need": "Units shown: {{agencies}}. Hospitals are ranked for: {{need}}.",
+      "eta": "{{minutes}} min",
+      "distance": "{{km}} km",
+      "ready": "Ready",
+      "divert": "Divert",
+      "confirm": "Dispatch {{count}} unit(s) and the hospital",
+      "unitRoute": "{{name}} → scene",
+      "hospitalRoute": "Scene → {{name}}",
+      "noPosition": "This incident has no position yet. Call back to place it before dispatching.",
+      "noRecipients": "No recipient notified",
+      "col": {
+        "resource": "Resource",
+        "eta": "ETA and distance",
+        "status": "Status",
+        "delivery": "Notification"
+      },
+      "kind": {
+        "unit": "Unit",
+        "hospital": "Hospital"
+      },
+      "status": {
+        "dispatched": "Dispatched",
+        "replaced": "Replaced"
+      },
+      "channel": {
+        "sms": "SMS",
+        "push": "Push",
+        "telegram": "Telegram"
+      },
+      "delivery": {
+        "queued": "Queued",
+        "sent": "Sent",
+        "delivered": "Delivered",
+        "failed": "Failed"
+      },
+      "fieldAck": "Incident status: {{status}}",
+      "divertAlert": "{{name}} answered DIVERT. Choose another hospital for the patients.",
+      "proposed": "Proposed: {{name}}.",
+      "proposedTag": "Proposed",
+      "switch": "Send patients to this hospital"
     }
   },
   "stream": {

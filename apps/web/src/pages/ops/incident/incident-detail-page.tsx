@@ -21,6 +21,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { formatDateTime, useLabel } from "@/lib/format";
 import { useSession } from "@/lib/auth-store";
 
+import { DispatchPanel } from "./dispatch-panel";
 import { EvidencePanel } from "./evidence-panel";
 import { IncidentActions } from "./incident-actions";
 import {
@@ -397,6 +398,11 @@ export function IncidentDetailPage() {
 
       <div className="grid gap-4 xl:grid-cols-2">
         <div className="flex flex-col gap-4">
+          {role && DISPATCHERS.has(role) && incident.status !== "candidate" ? (
+            <Section title={t("ops.dispatch.title")}>
+              <DispatchPanel incident={incident} />
+            </Section>
+          ) : null}
           <Section title={t("ops.detail.evidence")}>
             <EvidencePanel incident={incident} />
           </Section>

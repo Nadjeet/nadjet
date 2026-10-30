@@ -4,6 +4,8 @@ from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 
 import httpx
+from arq import create_pool
+from arq.connections import RedisSettings
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -18,6 +20,7 @@ from nadjet_api.cameras.routes import system_router as system_cameras_router
 from nadjet_api.citizen.routes import router as citizen_router
 from nadjet_api.config import Settings, get_settings
 from nadjet_api.db import create_engine, create_session_factory
+from nadjet_api.dispatch.routes import router as dispatch_router
 from nadjet_api.evaluation.routes import router as evaluation_router
 from nadjet_api.geo.resources import router as map_resources_router
 from nadjet_api.geo.tiles import router as tiles_router
@@ -71,9 +74,12 @@ def create_app(
         app.state.redis = redis
         app.state.probes = {"database": database_probe(engine), "redis": redis_probe(redis)}
         app.state.channels = build_channels(settings, http)
+        # Notification jobs are enqueued after each dispatch (the worker runs them, TD-08).
+        app.state.arq = await create_pool(RedisSettings.from_dsn(str(settings.redis_url)))
         try:
             yield
         finally:
+            await app.state.arq.aclose()
             await http.aclose()
             await redis.aclose()
             await engine.dispose()
@@ -90,6 +96,7 @@ def create_app(
     # Before the incident routes: `/incidents/{id}.cap.xml` must win over `/incidents/{id}`.
     app.include_router(notifications_router)
     app.include_router(incident_routes.router)
+    app.include_router(dispatch_router)
     app.include_router(internal.router)
     app.include_router(citizen_router)
     app.include_router(routing_router)

@@ -349,7 +349,8 @@
     "errors": {
       "generic": "فشل الإجراء. حاول مرة أخرى.",
       "conflict": "تغيّرت الحادثة في هذه الأثناء ولم يعد هذا الإجراء مسموحًا.",
-      "forbidden": "دورك لا يسمح بهذا الإجراء."
+      "forbidden": "دورك لا يسمح بهذا الإجراء.",
+      "routing": "حساب الطرق غير متاح. حاول مجددًا بعد قليل."
     },
     "evidence": {
       "none": "لا توجد أدلة مرفقة بعد.",
@@ -375,7 +376,10 @@
       "incident_merged_in": "دُمجت حادثة أخرى",
       "casualty_added": "سُجّلت إصابة",
       "evidence_added": "أُضيف دليل",
-      "system": "النظام"
+      "system": "النظام",
+      "hospital_diverted": "ردّ المستشفى بـ DIVERT",
+      "hospital_changed": "تغيّر المستشفى",
+      "notification_failed": "فشل الإشعار"
     },
     "casualties": {
       "title": "المصابون",
@@ -415,6 +419,65 @@
       "rejectedFor": "مرفوضة: {{reason}}",
       "mergedInto": "دُمجت في حادثة أخرى.",
       "openTarget": "فتحها"
+    },
+    "agency": {
+      "civil_protection": "الحماية المدنية",
+      "gendarmerie": "الدرك الوطني",
+      "police": "الشرطة",
+      "samu": "سامو"
+    },
+    "capability": {
+      "trauma": "الصدمات",
+      "emergency": "الاستعجالات",
+      "extrication": "تحرير المحاصرين"
+    },
+    "dispatch": {
+      "title": "الإرسال",
+      "scene": "موقع الحادثة",
+      "units": "الوحدات (مرتبة حسب زمن الوصول بالطريق)",
+      "hospitals": "المستشفيات (القدرة ثم الجاهزية ثم الزمن)",
+      "noUnits": "لا توجد وحدة متاحة يمكنها الوصول إلى هذه الحادثة.",
+      "noHospitals": "لا يمكن الوصول إلى أي مستشفى من هذه الحادثة.",
+      "need": "الوحدات المعروضة: {{agencies}}. تُرتَّب المستشفيات حسب: {{need}}.",
+      "eta": "{{minutes}} د",
+      "distance": "{{km}} كم",
+      "ready": "جاهز",
+      "divert": "تحويل",
+      "confirm": "إرسال {{count}} وحدة والمستشفى",
+      "unitRoute": "{{name}} ← الموقع",
+      "hospitalRoute": "الموقع ← {{name}}",
+      "noPosition": "ليس لهذه الحادثة موقع بعد. اتصل بالمبلّغ لتحديده قبل الإرسال.",
+      "noRecipients": "لم يُبلَّغ أي مستلم",
+      "col": {
+        "resource": "المورد",
+        "eta": "الزمن والمسافة",
+        "status": "الحالة",
+        "delivery": "الإشعار"
+      },
+      "kind": {
+        "unit": "وحدة",
+        "hospital": "مستشفى"
+      },
+      "status": {
+        "dispatched": "مُرسَل",
+        "replaced": "مُستبدَل"
+      },
+      "channel": {
+        "sms": "رسالة قصيرة",
+        "push": "إشعار",
+        "telegram": "تيليغرام"
+      },
+      "delivery": {
+        "queued": "في الانتظار",
+        "sent": "أُرسل",
+        "delivered": "سُلّم",
+        "failed": "فشل"
+      },
+      "fieldAck": "حالة الحادثة: {{status}}",
+      "divertAlert": "ردّ {{name}} بـ DIVERT. اختر مستشفى آخر للمصابين.",
+      "proposed": "المقترح: {{name}}.",
+      "proposedTag": "مقترح",
+      "switch": "إرسال المصابين إلى هذا المستشفى"
     }
   },
   "stream": {
