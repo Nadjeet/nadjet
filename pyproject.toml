@@ -16,6 +16,15 @@ nadjet-shared = { workspace = true }
 nadjet-api = { workspace = true }
 nadjet-vision = { workspace = true }
 nadjet-camsim = { workspace = true }
+# Brev's driver (565, CUDA 12.7) cannot run PyPI's default CUDA 13 torch wheels: the detector
+# silently fell back to the CPU. Linux GPU images take the CUDA 12.6 build (TD-50).
+torch = [{ index = "pytorch-cu126", marker = "sys_platform == 'linux'" }]
+torchvision = [{ index = "pytorch-cu126", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
 
 [dependency-groups]
 dev = [
