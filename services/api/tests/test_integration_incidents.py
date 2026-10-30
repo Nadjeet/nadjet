@@ -505,6 +505,33 @@ async def test_AC_SEC_003_1_modified_evidence_file_makes_integrity_invalid(
     assert gone["failures"][0]["detail"] == "file missing"
 
 
+async def test_FR_SEC_003_file_and_db_hash_tampered_together_is_detected(
+    app: FastAPI,
+    client: httpx.AsyncClient,
+    session: AsyncSession,
+    make_user: MakeUser,
+    tmp_path: Path,
+) -> None:
+    """Rewriting the file and the evidence row's sha256 still fails: the chain holds the hash."""
+    auditor = await login(client, await make_user(session, role="auditor"))
+    lat, lon = fresh_spot()
+    incident = await ingest(app, candidate(lat, lon))
+    data = b"\x00original" * 50
+    evidence = (await upload(client, incident.id, data)).json()
+
+    forged = data + b"forged"
+    next((tmp_path / "evidence").rglob("*.mp4")).write_bytes(forged)
+    await session.execute(
+        text("UPDATE evidence SET sha256=:h WHERE id=:i"),
+        {"h": hashlib.sha256(forged).hexdigest(), "i": evidence["id"]},
+    )
+    await session.commit()
+
+    report = (await client.get(f"/incidents/{incident.id}/integrity", headers=auditor)).json()
+    assert report["status"] == "invalid"
+    assert report["failures"][0]["detail"] == "hash not in signed chain"
+
+
 async def test_evidence_upload_validation(
     app: FastAPI, client: httpx.AsyncClient, tmp_path: Path
 ) -> None:

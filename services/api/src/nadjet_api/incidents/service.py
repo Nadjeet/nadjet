@@ -576,12 +576,22 @@ async def verify_integrity(
             .execution_options(populate_existing=True)
         )
     )
+    # The evidence table is not append-only: trust the hash recorded in the signed chain.
+    chained = {
+        e.payload.get("evidence_id"): e.payload.get("sha256")
+        for e in events
+        if e.kind == "evidence_added"
+    }
     for item in files:
+        expected = chained.get(str(item.id))
+        if expected is None or expected != item.sha256:
+            failures.append(IntegrityFailure("file", item.path, "hash not in signed chain"))
+            continue
         try:
             actual = await sha256_of(store, item.path)
         except EvidenceNotFoundError:
             failures.append(IntegrityFailure("file", item.path, "file missing"))
             continue
-        if actual != item.sha256:
+        if actual != expected:
             failures.append(IntegrityFailure("file", item.path, "sha256 mismatch"))
     return IntegrityReport(not failures, len(events), len(files), failures)
