@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# Block commits on protected branches. Override (humans, repo bootstrap only):
+#   NADJET_ALLOW_PROTECTED=1 git commit ...
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [ "${NADJET_ALLOW_PROTECTED:-0}" != "1" ] && { [ "$branch" = "main" ] || [ "$branch" = "dev" ]; }; then
+  echo "pre-commit: never commit directly to '$branch'. Branch from origin/dev (AGENTS.md › Git rules)." >&2
+  exit 1
+fi
+exit 0

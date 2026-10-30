@@ -1,0 +1,1 @@
+../../.agents/rules/contracts-and-infra.md

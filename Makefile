@@ -20,6 +20,7 @@ setup: env ## Install dependencies and tooling (idempotent)
 	@bash scripts/doctor.sh || (echo "Fix the FAIL items above, then re-run make setup." && exit 1)
 	uv sync --frozen
 	pnpm install --frozen-lockfile
+	git config core.hooksPath .githooks
 	@echo "Setup complete. Next: make dev"
 
 env: ## Create .env from .env.example if missing

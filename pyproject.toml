@@ -66,7 +66,7 @@ ignore_missing_imports = true
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
-testpaths = ["packages/shared/tests", "services/api/tests", "services/vision/tests", "services/camsim/tests"]
+testpaths = ["packages/shared/tests", "services/api/tests", "services/vision/tests", "services/camsim/tests", "scripts/tests"]
 addopts = "-ra --strict-markers --import-mode=importlib"
 markers = [
   "integration: needs the local infrastructure (PostGIS, Redis) from `make infra`",
