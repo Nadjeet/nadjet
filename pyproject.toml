@@ -45,7 +45,7 @@ ignore = ["S101"]  # assert is fine in tests
 known-first-party = ["nadjet_shared", "nadjet_api", "nadjet_vision", "nadjet_camsim"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/**" = ["S", "B011"]
+"**/tests/**" = ["S", "B011", "E501"]
 
 [tool.ruff.format]
 quote-style = "double"

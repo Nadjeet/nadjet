@@ -2,7 +2,6 @@
 
 import asyncio
 import uuid
-from collections.abc import AsyncIterator
 from pathlib import Path
 
 import httpx
@@ -14,57 +13,20 @@ from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from nadjet_api.audit import AuditTarget, audit, verify_chain
-from nadjet_api.auth.models import User
 from nadjet_api.auth.roles import Role
-from nadjet_api.auth.security import hash_password
 from nadjet_api.auth.seed import SeedUser, load_seed_file, seed_users
-from nadjet_api.config import Settings
-from nadjet_api.main import create_app
 from nadjet_api.ratelimit import rate_limit
+
+from .conftest import PASSWORD, MakeUser
 
 pytestmark = pytest.mark.integration
 
 EXAMPLE_SEED = Path(__file__).resolve().parents[3] / "data" / "seed" / "users.example.yaml"
-PASSWORD = "integration-pass-1"
 
 
-@pytest.fixture
-async def app() -> AsyncIterator[FastAPI]:
-    application = create_app(Settings())
-    async with application.router.lifespan_context(application):
-        yield application
-
-
-@pytest.fixture
-async def client(app: FastAPI) -> AsyncIterator[httpx.AsyncClient]:
-    transport = httpx.ASGITransport(app=app)
-    async with httpx.AsyncClient(transport=transport, base_url="http://test") as c:
-        yield c
-
-
-@pytest.fixture
-async def session(app: FastAPI) -> AsyncIterator[AsyncSession]:
-    async with app.state.session_factory() as s:
-        yield s
-
-
-async def make_user(
-    session: AsyncSession, *, role: str = "operator", active: bool = True, **extra: str
-) -> User:
-    user = User(
-        username=f"it-{uuid.uuid4().hex[:12]}",
-        display_name="IT",
-        password_hash=hash_password(PASSWORD),
-        role=role,
-        active=active,
-        **extra,
-    )
-    session.add(user)
-    await session.commit()
-    return user
-
-
-async def test_login_me_flow_and_audit(client: httpx.AsyncClient, session: AsyncSession) -> None:
+async def test_login_me_flow_and_audit(
+    client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
+) -> None:
     user = await make_user(session, role="responder", agency="samu")
     response = await client.post(
         "/auth/login", json={"username": user.username, "password": PASSWORD}
@@ -87,7 +49,7 @@ async def test_login_me_flow_and_audit(client: httpx.AsyncClient, session: Async
 
 
 async def test_bad_credentials_are_indistinguishable(
-    client: httpx.AsyncClient, session: AsyncSession
+    client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
 ) -> None:
     user = await make_user(session)
     inactive = await make_user(session, active=False)
@@ -102,7 +64,7 @@ async def test_bad_credentials_are_indistinguishable(
 
 
 async def test_me_rejects_missing_bad_and_deactivated(
-    client: httpx.AsyncClient, session: AsyncSession
+    client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
 ) -> None:
     assert (await client.get("/auth/me")).status_code == 401
     assert (
@@ -118,7 +80,9 @@ async def test_me_rejects_missing_bad_and_deactivated(
     assert resp.status_code == 401
 
 
-async def test_audit_log_is_append_only_and_chain_verifies(session: AsyncSession) -> None:
+async def test_audit_log_is_append_only_and_chain_verifies(
+    session: AsyncSession, make_user: MakeUser
+) -> None:
     user = await make_user(session)
     first = await audit(session, user, "evidence.view", AuditTarget("incident", "1"), {"k": "v"})
     second = await audit(session, None, "system.event", details={"n": 1}, ip="10.0.0.1")
