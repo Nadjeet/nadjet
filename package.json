@@ -1,0 +1,20 @@
+{
+  "name": "nadjet",
+  "private": true,
+  "description": "Nadjet (نجاة) monorepo — TypeScript workspace root",
+  "packageManager": "pnpm@10.28.2",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "gen:client": "pnpm --filter @nadjet/api-client gen",
+    "lint": "pnpm -r --if-present lint",
+    "typecheck": "pnpm -r --if-present typecheck",
+    "build": "pnpm -r --if-present build",
+    "format": "prettier --write \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/api-client/**/*.{ts,json}\" \"**/*.{yml,yaml}\"",
+    "format:check": "prettier --check \"apps/**/*.{ts,tsx,css,json,html}\" \"packages/api-client/**/*.{ts,json}\" \"**/*.{yml,yaml}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.9.10"
+  }
+}

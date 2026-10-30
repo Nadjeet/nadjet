@@ -1,0 +1,11 @@
+node_modules
+.venv
+dist
+pnpm-lock.yaml
+uv.lock
+contracts/openapi.json
+contracts/events
+packages/api-client/src/schema.d.ts
+deploy/local/mediamtx.generated.yml
+.claude/skills
+.agents/skills
