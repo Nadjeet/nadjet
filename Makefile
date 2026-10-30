@@ -8,7 +8,7 @@ COMPOSE := docker compose -f deploy/local/compose.yml $(if $(wildcard .env),--en
 PYTEST := uv run pytest
 UNIT := -m "not integration and not brev"
 
-.PHONY: help setup doctor env dev stop down infra infra-video infra-logs ps camsim migrate \
+.PHONY: help setup doctor env dev stop down infra infra-video infra-sms infra-logs ps camsim migrate \
 	seed-cameras camsim-list camsim-restart camsim-freeze camsim-unfreeze camsim-outage \
 	camsim-restore camsim-swap gen check-contracts \
 	test test-unit test-integration test-brev coverage lint format typecheck build ci clean reset-db \
@@ -51,6 +51,9 @@ infra: env ## Start PostGIS and Redis only, wait until healthy
 
 infra-video: env camsim ## Start MediaMTX (simulated cameras) on top of the infrastructure
 	$(COMPOSE) --profile video up -d --wait mediamtx
+
+infra-sms: env ## Start the self-hosted SMS gateway server (private mode, TD-13)
+	$(COMPOSE) --profile sms up -d --wait sms-db sms-server sms-worker
 
 infra-logs: ## Follow infrastructure logs
 	$(COMPOSE) --profile video logs -f
