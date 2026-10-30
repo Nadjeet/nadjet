@@ -45,14 +45,46 @@ gh pr list --state all --search "<keywords>"             # related past PRs
 - Delegate to the `researcher` subagent for the exact library versions in `uv.lock` /
   `pnpm-lock.yaml`: official docs, changelogs, known issues and recent (2026) discussions for
   the APIs you will use. Prefer primary sources. Keep the URLs for the PR description.
-- Use installed skills when relevant (fastapi, supabase-postgres-best-practices,
-  docker-compose-patterns, vercel-react-best-practices, shadcn, brev-cli).
+- **Load the installed skills that match what you touch** (invoke them; they hold the
+  vetted conventions for this stack). Pick every row that applies:
 
-## 3. Investigate the repository
+  | You are changing | Use skill |
+  |---|---|
+  | FastAPI routes, dependencies, Pydantic models, SSE (`services/api`) | `fastapi` |
+  | SQL, PostGIS queries, indexes, Alembic migrations | `supabase-postgres-best-practices` |
+  | `deploy/**/compose.yml`, Dockerfiles, healthchecks | `docker-compose-patterns` |
+  | React components, data fetching, performance (`apps/web`) | `vercel-react-best-practices` |
+  | UI components (shadcn/ui, Tailwind) in `apps/web` | `shadcn` |
+  | Brev instances, tunnels, GPU workers | `brev-cli` (never create/start/stop/delete instances without the user's approval) |
+  | A failing test, bug or unexpected behaviour | `systematic-debugging` |
+  | Before claiming the work is done | `verification-before-completion` |
+
+## 3. Investigate the repository and follow its architecture
 
 - Use the `Explore` subagent to map every file, contract, migration, test and doc the change
-  touches. Read the matching `.agents/rules/*.md`.
-- Identify existing patterns to reuse; do not introduce new libraries without need.
+  touches. Read the matching `.agents/rules/*.md` and the related `docs/11` TD rows.
+- **Respect the existing architecture and patterns — extend, don't reinvent:**
+  - Code goes in the component that owns it (see the repository map in `AGENTS.md`); no new
+    top-level packages or services unless the issue says so.
+  - Python: one feature module per area inside the service package (e.g.
+    `nadjet_api/<feature>/` with routes, models, service logic), pure logic in plain
+    functions, settings via the existing `NADJET_*` `BaseSettings` classes, swappable
+    dependencies behind small `Protocol` interfaces (like `Detector`, `Router`,
+    `NotificationChannel`), async I/O, shared event contracts in `nadjet_shared`.
+  - API: routes in FastAPI with response models; auth via the shared dependencies; every
+    contract change followed by `make gen`.
+  - Database: Alembic migration per change, based on the latest `origin/dev` revision
+    (exactly one head, see `.agents/rules/python-services.md`).
+  - AI: only through `nadjet_vision.inference.BrevVlmClient`; statuses via
+    `nadjet_vision.status`; text through `nadjet_vision.safety`.
+  - Web: TanStack Router/Query, `@nadjet/api-client` for every request, shared components
+    (`PriorityBadge`, `AiSourceTag`, …), i18n strings in `locales/`, logical CSS for RTL.
+  - Tests mirror the source layout in each package's `tests/`; integration tests use the
+    `integration` marker.
+- Match naming, error handling, logging and file layout of neighbouring code. Do not add
+  libraries without need; if one is required, justify it in the PR and record a `TD-xx` row.
+- If the issue conflicts with the existing architecture, stop and ask the user instead of
+  working around it.
 
 ## 4. Plan
 
@@ -76,7 +108,8 @@ git switch -c <type>/$ARGUMENTS-<short-slug> origin/dev
   for anything touching PostGIS/Redis or the HTTP API end to end. AI calls are mocked in tests
   with `httpx.MockTransport`; never call another AI provider.
 - API or shared-model changes: run `make gen` and commit the generated files.
-- Schema changes: Alembic migration with a working downgrade.
+- Schema changes: Alembic migration with a working downgrade; before pushing, re-point its
+  `down_revision` to the latest revision on `origin/dev` so there is exactly one head.
 - Docs: update `AGENTS.md`, `docs/`, `.env.example` or the PRD (product changes only) when
   behaviour, commands or configuration change.
 

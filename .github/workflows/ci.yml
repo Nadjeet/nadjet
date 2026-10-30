@@ -47,6 +47,8 @@ jobs:
         run: |
           uv run nadjet-export-schemas --check
           uv run nadjet-api export-openapi --check
+      - name: Single Alembic head
+        run: bash scripts/check-migrations.sh
       - name: Migrations
         working-directory: services/api
         run: uv run alembic upgrade head

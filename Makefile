@@ -90,6 +90,7 @@ lint: ## Lint Python and TypeScript, check formatting and repository rules
 	pnpm lint
 	pnpm format:check
 	@bash scripts/check-integrity.sh
+	@bash scripts/check-migrations.sh
 
 typecheck: ## Type-check Python (mypy strict) and TypeScript
 	uv run mypy

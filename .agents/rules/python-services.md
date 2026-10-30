@@ -16,5 +16,10 @@ paths:
   `contracts/` and `packages/api-client/src/schema.d.ts`.
 - Database schema changes need an Alembic migration (`cd services/api && uv run alembic
   revision -m "..."`), with a working `downgrade`.
+- **Exactly one migration head.** Several issues add migrations in parallel. Before pushing,
+  `git fetch origin` and set your migration's `down_revision` to the latest revision on
+  `origin/dev` (`cd services/api && uv run alembic heads`). `scripts/check-migrations.sh`
+  (run by `make lint` and CI) fails on two heads. Never merge heads with an empty merge
+  migration; re-point instead, then run `make migrate && make test`.
 - AI calls go only through `nadjet_vision.inference.BrevVlmClient` (Brev-only rule).
 - Run `make lint typecheck test` before committing.

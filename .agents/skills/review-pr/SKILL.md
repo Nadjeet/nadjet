@@ -53,8 +53,11 @@ gh pr checkout $ARGUMENTS
 
 - **Correctness:** every acceptance criterion implemented; edge cases; error handling;
   concurrency/async; time zones; idempotency; data validation at boundaries.
+- **Patterns & skills:** the change follows the existing module layout and conventions of its
+  area (see `/implement-issue` step 3) and the relevant installed skills' guidance.
 - **Architecture:** fits the repo structure and `docs/11` decisions; no needless abstraction or
-  dependency; contracts regenerated (`make check-contracts`); migrations reversible.
+  dependency; contracts regenerated (`make check-contracts`); migrations reversible and based
+  on the latest `origin/dev` revision (exactly one Alembic head: `scripts/check-migrations.sh`).
 - **Security & privacy:** no secrets; input validation; authz where relevant; no PII in logs;
   Brev-only AI rule; licence rules (PRD D-06).
 - **Integrity:** no fabricated detections, random values or hardcoded AI results outside tests.
