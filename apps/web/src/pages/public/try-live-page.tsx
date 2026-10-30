@@ -50,7 +50,7 @@ export function TryLivePage() {
       if (preview.current) preview.current.srcObject = media;
       const created = await createSession();
       idRef.current = created.id;
-      const stopPeer = await publishWhip(created.whip_url, media);
+      const stopPeer = await publishWhip(created.whip_url, media, created.publish_token);
       stopRef.current = () => {
         stopPeer();
         for (const track of media.getTracks()) track.stop();

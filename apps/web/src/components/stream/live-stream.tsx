@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { api } from "@/api";
 import { cn } from "@/lib/utils";
 
 import { startHls, startWhep, type PlaybackMode } from "./players";
@@ -30,6 +31,12 @@ function sleep(ms: number, signal: AbortSignal): Promise<void> {
   });
 }
 
+/** A fresh read token per attempt (they live minutes); `null` if the user may not get one. */
+async function fetchStreamToken(): Promise<string | null> {
+  const { data } = await api.POST("/auth/stream-token").catch(() => ({ data: undefined }));
+  return data?.token ?? null;
+}
+
 /** WebRTC first, LL-HLS when WebRTC fails; on a drop, start over with a growing delay. */
 async function supervise(
   video: HTMLVideoElement,
@@ -41,10 +48,11 @@ async function supervise(
   while (!signal.aborted) {
     report({ ...INITIAL, phase: attempt === 0 ? "connecting" : "reconnecting" });
     let mode: PlaybackMode = "webrtc";
-    let playback = await startWhep(urls.whepUrl, video).catch(() => null);
+    const token = await fetchStreamToken();
+    let playback = await startWhep(urls.whepUrl, video, token).catch(() => null);
     if (!playback) {
       mode = "hls";
-      playback = await startHls(urls.hlsUrl, video).catch(() => null);
+      playback = await startHls(urls.hlsUrl, video, token).catch(() => null);
     }
     if (playback && !signal.aborted) {
       attempt = 0;

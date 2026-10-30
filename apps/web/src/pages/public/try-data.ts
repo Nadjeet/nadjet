@@ -107,7 +107,11 @@ export async function endSession(id: string): Promise<void> {
 }
 
 /** Publish a camera stream to MediaMTX over WHIP (RFC 9725). Returns a function to stop. */
-export async function publishWhip(whipUrl: string, stream: MediaStream): Promise<() => void> {
+export async function publishWhip(
+  whipUrl: string,
+  stream: MediaStream,
+  token?: string | null,
+): Promise<() => void> {
   const peer = new RTCPeerConnection();
   for (const track of stream.getTracks()) peer.addTrack(track, stream);
   const offer = await peer.createOffer();
@@ -125,7 +129,10 @@ export async function publishWhip(whipUrl: string, stream: MediaStream): Promise
   });
   const answer = await fetch(whipUrl, {
     method: "POST",
-    headers: { "Content-Type": "application/sdp" },
+    headers: {
+      "Content-Type": "application/sdp",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
     body: peer.localDescription?.sdp ?? offer.sdp ?? "",
   });
   if (answer.status !== 201) throw new TryError("failed", `WHIP answered HTTP ${answer.status}`);

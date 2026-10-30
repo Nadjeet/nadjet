@@ -75,7 +75,14 @@ async function webrtcLatency(pc: RTCPeerConnection): Promise<number | null> {
   return buffer === null ? null : buffer + halfRtt;
 }
 
-export async function startWhep(url: string, video: HTMLVideoElement): Promise<Playback> {
+/** Short-lived stream token (FR-SEC-007); `null` when the server does not require one. */
+export type StreamToken = string | null;
+
+export async function startWhep(
+  url: string,
+  video: HTMLVideoElement,
+  token: StreamToken = null,
+): Promise<Playback> {
   const pc = new RTCPeerConnection();
   const abort = new AbortController();
   let lose: () => void = () => {};
@@ -95,7 +102,10 @@ export async function startWhep(url: string, video: HTMLVideoElement): Promise<P
     const answer = await withTimeout(
       fetch(url, {
         method: "POST",
-        headers: { "Content-Type": "application/sdp" },
+        headers: {
+          "Content-Type": "application/sdp",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: pc.localDescription?.sdp,
         signal: abort.signal,
       }),
@@ -115,11 +125,16 @@ export async function startWhep(url: string, video: HTMLVideoElement): Promise<P
   return { lost, latency: () => webrtcLatency(pc), stop };
 }
 
-export async function startHls(url: string, video: HTMLVideoElement): Promise<Playback> {
+export async function startHls(
+  url: string,
+  video: HTMLVideoElement,
+  token: StreamToken = null,
+): Promise<Playback> {
   let lose: () => void = () => {};
   const lost = new Promise<void>((resolve) => (lose = resolve));
 
-  if (video.canPlayType("application/vnd.apple.mpegurl")) {
+  // Native HLS cannot add an Authorization header, so a token forces hls.js.
+  if (!token && video.canPlayType("application/vnd.apple.mpegurl")) {
     // Safari plays HLS natively.
     video.src = url;
     const stop = () => {
@@ -138,7 +153,12 @@ export async function startHls(url: string, video: HTMLVideoElement): Promise<Pl
 
   const { default: Hls } = await import("hls.js");
   if (!Hls.isSupported()) throw new Error("HLS is not supported by this browser");
-  const hls = new Hls({ lowLatencyMode: true });
+  const hls = new Hls({
+    lowLatencyMode: true,
+    xhrSetup: (xhr) => {
+      if (token) xhr.setRequestHeader("Authorization", `Bearer ${token}`);
+    },
+  });
   const stop = () => {
     hls.destroy();
     video.removeAttribute("src");

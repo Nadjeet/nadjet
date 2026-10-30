@@ -5,6 +5,7 @@ existing road cameras, collects citizen reports where there are no cameras, and 
 the rescue: right unit, right hospital, alerts by app and SMS, even without mobile data.
 
 - Product requirements: [`PRD.md`](PRD.md)
+- Deployment runbook: [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md)
 - Technical decisions: [`docs/11-technical-decisions.md`](docs/11-technical-decisions.md)
 - Research and design: [`docs/`](docs/README.md)
 - Rules for every contributor and coding agent: [`AGENTS.md`](AGENTS.md)

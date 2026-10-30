@@ -9,9 +9,7 @@
 **/tests
 .env
 .env.*
-apps
 docs
 data/videos
-data/seed
 evidence
 weights
