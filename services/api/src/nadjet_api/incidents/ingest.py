@@ -43,12 +43,14 @@ class CandidateConsumer:
         *,
         name: str | None = None,
         claim_idle_ms: int = 30_000,
+        max_deliveries: int = 10,
     ) -> None:
         self.redis = redis
         self.session_factory = session_factory
         self.signer = signer
         self.name = name or f"{socket.gethostname()}-{id(self):x}"
         self.claim_idle_ms = claim_idle_ms
+        self.max_deliveries = max_deliveries
 
     async def setup(self) -> None:
         with contextlib.suppress(ResponseError):  # BUSYGROUP: group already exists
@@ -61,21 +63,32 @@ class CandidateConsumer:
             key = fields["key"]
         except (KeyError, ValidationError):
             log.exception("dead-lettering malformed candidate %s", entry_id)
-            await self.redis.xadd(
-                DEAD_LETTER, {"entry_id": entry_id, **{k: str(v) for k, v in fields.items()}}
-            )
-            await self.redis.xack(STREAM, GROUP, entry_id)
+            await self._dead_letter(entry_id, fields)
             return
         try:
             async with self.session_factory() as session:
                 result = await ingest_candidate(session, self.signer, candidate, key)
                 await session.commit()
         except Exception:
-            log.exception("failed to persist candidate %s; will retry", entry_id)
+            if await self._deliveries(entry_id) >= self.max_deliveries:
+                log.exception("dead-lettering candidate %s after repeated failures", entry_id)
+                await self._dead_letter(entry_id, fields)
+            else:
+                log.exception("failed to persist candidate %s; will retry", entry_id)
             return
         await self.redis.xack(STREAM, GROUP, entry_id)  # only after the DB commit
         for change in result.changes:
             await publish(self.redis, change)
+
+    async def _dead_letter(self, entry_id: str, fields: dict[str, Any]) -> None:
+        await self.redis.xadd(
+            DEAD_LETTER, {"entry_id": entry_id, **{k: str(v) for k, v in fields.items()}}
+        )
+        await self.redis.xack(STREAM, GROUP, entry_id)
+
+    async def _deliveries(self, entry_id: str) -> int:
+        pending: Any = await self.redis.xpending_range(STREAM, GROUP, entry_id, entry_id, 1)
+        return int(pending[0]["times_delivered"]) if pending else 0
 
     async def _claim_stale(self) -> list[tuple[str, dict[str, Any]]]:
         claimed: list[tuple[str, dict[str, Any]]] = []
@@ -107,6 +120,8 @@ class CandidateConsumer:
         while not stop.is_set():
             try:
                 await self.poll_once()
-            except (ConnectionError, OSError):
-                log.exception("redis unavailable; retrying")
+            except Exception:  # keep the worker alive (Redis down, NOGROUP after a reset, ...)
+                log.exception("consumer poll failed; retrying")
+                with contextlib.suppress(Exception):
+                    await self.setup()
                 await asyncio.sleep(1)
