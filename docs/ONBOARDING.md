@@ -90,6 +90,30 @@ for local development.
 
 If Brev is unreachable, the app reports "AI unavailable" and keeps the rule-based signals.
 
+### Run the vision workers on Brev
+
+Workers run on the GPU instance and use two reverse tunnels (instance → your laptop) plus the
+vLLM port on the instance itself. The instance is never started by these commands: if it is not
+`RUNNING` they print `brev start nadjet-gpu` and stop (credits are manual).
+
+1. Locally: `make camsim && make dev` (MediaMTX on :8554, API on :8080) and `make brev-up`.
+2. `make brev-tunnel` opens, over the Brev ssh alias:
+   `-L 18000:127.0.0.1:8000` (vLLM for local tools), `-R 18554:127.0.0.1:8554` (RTSP) and
+   `-R 18080:127.0.0.1:8080` (API). Workers on the instance therefore use
+   `rtsp://127.0.0.1:18554` and `http://127.0.0.1:18080`.
+3. `make brev-deploy-workers` copies `deploy/gpu`, writes a 0600 `.env` with
+   `NADJET_INGEST_TOKEN` (from your local `.env`), pulls `ghcr.io/nadjeet/nadjet-vision:dev`
+   and starts the `workers` service. Until the first image is published (CI pushes on `dev` and
+   `main`), it builds the image on the instance instead. Set `NADJET_VISION_IMAGE` to pin a tag
+   such as `ghcr.io/nadjeet/nadjet-vision:<sha>`.
+4. `make brev-logs F=-f` should show `API http://127.0.0.1:18080/health reachable` and
+   `camera=cam-a1-pk42 fps=…` lines per camera. Cameras without a running stream log
+   `stream error` and retry with back-off (1 s to 30 s).
+5. `make brev-untunnel` cancels all three forwards. `brev stop nadjet-gpu` when done.
+
+Quick image check on the instance: `docker run --rm --gpus all ghcr.io/nadjeet/nadjet-vision:dev --help`.
+Skeleton only: detection and tracking arrive with the detection issue.
+
 ## 4. Daily workflow
 
 ```bash
