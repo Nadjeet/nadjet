@@ -104,11 +104,16 @@ vLLM port on the instance itself. The instance is never started by these command
 3. `make brev-deploy-workers` copies `deploy/gpu`, writes a 0600 `.env` with
    `NADJET_INGEST_TOKEN` (from your local `.env`), pulls `ghcr.io/nadjeet/nadjet-vision:dev`
    and starts the `workers` service. Until the first image is published (CI pushes on `dev` and
-   `main`), it builds the image on the instance instead. Set `NADJET_VISION_IMAGE` to pin a tag
-   such as `ghcr.io/nadjeet/nadjet-vision:<sha>`.
+   `main`), it builds the image on the instance instead, from the committed `HEAD` (uncommitted
+   changes are not sent). GHCR packages are private by default: either make
+   `nadjet-vision` public in the organisation's package settings, or run once on the instance
+   `docker login ghcr.io -u <github-user>` with a read-only token (`read:packages`); otherwise
+   every deploy falls back to the slow build. Set `NADJET_VISION_IMAGE` to pin a tag such as
+   `ghcr.io/nadjeet/nadjet-vision:<sha>`. A failed build or start stops with an error.
 4. `make brev-logs F=-f` should show `API http://127.0.0.1:18080/health reachable` and
    `camera=cam-a1-pk42 fps=…` lines per camera. Cameras without a running stream log
-   `stream error` and retry with back-off (1 s to 30 s).
+   `stream error` and retry with back-off (1 s to 30 s). A frozen camera (no frames, session
+   open) is detected after about 5 s and reconnected.
 5. `make brev-untunnel` cancels all three forwards. `brev stop nadjet-gpu` when done.
 
 Quick image check on the instance: `docker run --rm --gpus all ghcr.io/nadjeet/nadjet-vision:dev --help`.
