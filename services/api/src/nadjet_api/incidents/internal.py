@@ -1,7 +1,6 @@
 """Service-to-service endpoints (vision workers): candidates and evidence upload."""
 
 import uuid
-from collections.abc import AsyncIterator
 from datetime import datetime
 from typing import Annotated, Literal
 
@@ -21,12 +20,12 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from nadjet_api.config import Settings
 from nadjet_api.db import get_session
-from nadjet_api.incidents import service
 from nadjet_api.incidents.deps import RedisDep, SignerDep, StoreDep, announce, require_ingest_token
+from nadjet_api.incidents.evidence import save_evidence, upload_chunks
 from nadjet_api.incidents.ingest import enqueue
-from nadjet_api.incidents.models import Evidence, Incident, IncidentEvent
+from nadjet_api.incidents.models import Incident, IncidentEvent
 from nadjet_api.incidents.schemas import CandidateAccepted, EvidenceOut
-from nadjet_api.incidents.store import CHUNK, EvidenceTooLargeError
+from nadjet_api.incidents.store import EvidenceTooLargeError
 from nadjet_shared.events import IncidentCandidate
 
 router = APIRouter(
@@ -52,11 +51,6 @@ async def post_candidate(
 ) -> CandidateAccepted:
     """Queue a candidate (Redis Stream). Re-sending the same ``Idempotency-Key`` is safe."""
     return CandidateAccepted(stream_id=await enqueue(redis, candidate, idempotency_key))
-
-
-async def _chunks(file: UploadFile) -> AsyncIterator[bytes]:
-    while chunk := await file.read(CHUNK):
-        yield chunk
 
 
 @router.post(
@@ -106,26 +100,22 @@ async def upload_evidence(
     if incident is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Incident not found")
 
-    evidence_id = uuid.uuid4()
-    path = f"{incident_id}/{evidence_id}{extension}"
     try:
-        stored = await store.save(
-            path, _chunks(file), max_bytes=settings.evidence_max_mb * 1024 * 1024
+        evidence, change = await save_evidence(
+            session,
+            signer,
+            store,
+            incident_id,
+            kind,
+            upload_chunks(file),
+            extension,
+            file.content_type or "",
+            max_bytes=settings.evidence_max_mb * 1024 * 1024,
+            start_ts=start_ts,
+            end_ts=end_ts,
         )
     except EvidenceTooLargeError:
         raise HTTPException(status.HTTP_413_CONTENT_TOO_LARGE, "File too large") from None
-    evidence = Evidence(
-        id=evidence_id,
-        incident_id=incident_id,
-        kind=kind,
-        path=path,
-        content_type=file.content_type,
-        size_bytes=stored.size_bytes,
-        sha256=stored.sha256,
-        start_ts=start_ts,
-        end_ts=end_ts,
-    )
-    change = await service.add_evidence(session, signer, incident_id, evidence)
     await session.commit()
     await announce(redis, [change])
     return EvidenceOut.model_validate(evidence)
