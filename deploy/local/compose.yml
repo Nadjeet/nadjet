@@ -45,11 +45,20 @@ services:
   # Road routing (FR-DSP-001, TD-10). Needs `make routing-data` once; start with `make routing-up`.
   osrm:
     image: ghcr.io/project-osrm/osrm-backend:v6.0.0 # multi-arch (amd64 + arm64)
-    command: ["osrm-routed", "--algorithm", "mld", "--max-table-size", "100", "/data/algeria-latest.osrm"]
+    command:
+      ["osrm-routed", "--algorithm", "mld", "--max-table-size", "100", "/data/algeria-latest.osrm"]
     ports: ["127.0.0.1:${NADJET_OSRM_PORT:-55000}:5000"]
     volumes: [osrmdata:/data:ro]
     healthcheck:
-      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:5000/nearest/v1/driving/3.47,36.76"]
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:5000/nearest/v1/driving/3.47,36.76",
+        ]
       interval: 5s
       timeout: 3s
       retries: 30
