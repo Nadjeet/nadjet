@@ -51,7 +51,7 @@ class FakeSms:
 
     def __init__(self) -> None:
         self.sent: list[DeliveryRequest] = []
-        self.fail: DeliveryError | None = None
+        self.fail: Exception | None = None
 
     async def send(self, request: DeliveryRequest) -> None:
         if self.fail:
@@ -643,6 +643,21 @@ async def test_undelivered_sms_is_retried_three_times_then_alerts_the_operator(
     assert [c.type for c in final.changes] == ["incident.updated"]
     assert (await event_kinds(gw_app, incident.id))[-1] == "notification_failed"
     assert (await fresh(gw_app, incident.id)).version >= 2
+
+
+async def test_an_unexpected_send_error_is_retried_not_lost(
+    gw_app: FastAPI, sms: FakeSms, make_user: MakeUser, session: AsyncSession
+) -> None:
+    """E-07: pywebpush raises requests errors, not ``DeliveryError``."""
+    _, notification, _ = await alert_for(gw_app, make_user, session)
+    sms.fail = ConnectionError("network down")
+
+    outcome = await run(gw_app, notification.id, sms)
+
+    assert outcome.retry_in_s is not None
+    failed = await row(gw_app, notification.id)
+    assert failed.status == QUEUED
+    assert failed.last_error == "network down"
 
 
 async def test_gateway_offline_is_retried_and_finally_alerts(

@@ -187,10 +187,10 @@ async def process(
     request = DeliveryRequest(n.incident_id, n.recipient, n.payload, n.provider_ref, n.meta)
     try:
         await channel.send(request)
-    except DeliveryError as exc:
+    except Exception as exc:  # e.g. requests errors from pywebpush: must still reach E-07
         n.last_error = str(exc)[:500]
         n.status = QUEUED
-        if exc.permanent:
+        if isinstance(exc, DeliveryError) and exc.permanent:
             return await _fail(session, signer, n, n.last_error, alert=False)
         return Outcome(retry_in_s=retry_delay_s(n.attempts, base_s))
     n.last_error = None
