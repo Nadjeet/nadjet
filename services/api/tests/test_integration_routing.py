@@ -23,6 +23,7 @@ from nadjet_api.config import Settings
 from nadjet_api.geo.seed import load_capabilities, load_facilities, load_units, seed_geo
 from nadjet_api.main import create_app
 from nadjet_api.routing.router import Leg, Point, Route
+from nadjet_api.routing.service import Ranked, rank_hospital_candidates, rank_units
 
 pytestmark = pytest.mark.integration
 
@@ -40,7 +41,7 @@ def haversine_m(a: Point, b: Point) -> float:
 
 
 class FakeRouter:
-    """Straight-line distance at a constant speed; ``unreachable`` ids are cut off."""
+    """Straight-line distance at a constant speed."""
 
     async def table(
         self, sources: Sequence[Point], destinations: Sequence[Point]
@@ -57,6 +58,21 @@ class FakeRouter:
             "coordinates": [[origin.lon, origin.lat], [destination.lon, destination.lat]],
         }
         return Route(meters / MS_FREE_FLOW, meters, line)
+
+
+class CutOffRouter(FakeRouter):
+    """No road reaches ``cut``, as when OSRM answers null for a table cell."""
+
+    def __init__(self, cut: Point) -> None:
+        self.cut = cut
+
+    async def table(
+        self, sources: Sequence[Point], destinations: Sequence[Point]
+    ) -> list[list[Leg | None]]:
+        return [
+            [None if self.cut in (s, d) else Leg(60.0, 1000.0) for d in destinations]
+            for s in sources
+        ]
 
 
 @pytest.fixture
@@ -189,6 +205,26 @@ async def test_dispatched_units_are_not_recommended(app: FastAPI, session: Async
             text("UPDATE units SET status = 'available' WHERE id = 'unit-pc-boumerdes-1'")
         )
         await session.commit()
+
+
+async def test_unreachable_units_and_hospitals_are_left_out(session: AsyncSession) -> None:
+    """A resource with no road to the scene has no ETA, so it is never listed (FR-DSP-001)."""
+    scene = Point(BOUMERDES["lat"], BOUMERDES["lon"])
+
+    async def units(router: FakeRouter) -> list[Ranked]:
+        return await rank_units(session, router, scene, limit=10, multiplier=1.0)
+
+    async def hospitals(router: FakeRouter) -> list[Ranked]:
+        return await rank_hospital_candidates(
+            session, router, scene, need=None, limit=10, multiplier=1.0
+        )
+
+    for rank in (units, hospitals):
+        ranked = await rank(FakeRouter())
+        first = ranked[0].record
+        remaining = await rank(CutOffRouter(Point(first["lat"], first["lon"])))
+        assert remaining
+        assert first["id"] not in {i.record["id"] for i in remaining}
 
 
 async def test_osrm_down_returns_503_with_message_and_no_eta() -> None:

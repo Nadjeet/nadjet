@@ -12,7 +12,7 @@ from nadjet_api.routing.ranking import (
     apply_urban_multiplier,
     rank_hospitals,
 )
-from nadjet_api.routing.router import Leg, Point, Route, Router
+from nadjet_api.routing.router import Point, Route, Router
 
 KNN_CANDIDATES = 10
 
@@ -42,12 +42,6 @@ class Ranked:
     eta_s: float
     distance_m: float
     route: Route | None = None
-
-
-@dataclass(frozen=True)
-class Recommendations:
-    units: list[Ranked]
-    hospitals: list[Ranked]
 
 
 async def _rows(session: AsyncSession, sql: str, **params: Any) -> list[dict[str, Any]]:
@@ -118,6 +112,3 @@ async def rank_hospital_candidates(
         )
     ordered = [by_id[c.id] for c in rank_hospitals(candidates)][:limit]
     return await _with_routes(ordered, lambda r: (scene, _point(r)), router)
-
-
-__all__ = ["Leg", "Ranked", "Recommendations", "rank_hospital_candidates", "rank_units"]

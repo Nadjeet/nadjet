@@ -13,10 +13,6 @@ import osmium
 
 
 def main(src: str, dst: str, west: float, south: float, east: float, north: float) -> None:
-    def inside(node: osmium.osm.Node) -> bool:
-        loc = node.location
-        return loc.valid() and west <= loc.lon <= east and south <= loc.lat <= north
-
     kept_ways: set[int] = set()
     needed_nodes: set[int] = set()
     # Pass 1: find ways touching the box and the nodes they need.
