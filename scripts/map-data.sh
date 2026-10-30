@@ -5,7 +5,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 PMTILES_IMAGE="protomaps/go-pmtiles:v1.31.2"
-BBOX="-8.7,18.9,12.0,37.2" # Algeria
+BBOX="${NADJET_MAP_BBOX:-"-8.7,18.9,12.0,37.2"}" # Algeria; override for a smaller local area
 MAXZOOM="${NADJET_MAP_MAXZOOM:-14}"
 OUT_DIR="data/map"
 
