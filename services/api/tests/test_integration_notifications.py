@@ -22,7 +22,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from nadjet_api.auth.models import User
 from nadjet_api.incidents.models import Casualty, Incident, IncidentEvent
 from nadjet_api.main import create_app
-from nadjet_api.notifications import jobs
+from nadjet_api.notifications import inbound, jobs
 from nadjet_api.notifications import service as notifications
 from nadjet_api.notifications.channels import SMS, DeliveryError, DeliveryRequest
 from nadjet_api.notifications.models import (
@@ -381,6 +381,44 @@ async def test_redelivered_webhook_is_applied_once(
     assert second.json() == {"status": "duplicate"}
     assert len(sms.sent) == 1
     assert (await event_kinds(gw_app, incident.id)).count("status_changed") == 1
+
+
+async def test_a_webhook_that_failed_is_applied_when_the_gateway_redelivers_it(
+    gw: httpx.AsyncClient,
+    gw_app: FastAPI,
+    make_user: MakeUser,
+    session: AsyncSession,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    """A crash while applying the SMS must not mark it as seen (FR-NTF-005)."""
+    number = phone()
+    await make_user(session, role="responder", agency="civil_protection", phone=number)
+    incident = await dispatched_incident(gw_app)
+    message_id = uuid.uuid4().hex
+    handle_sms = inbound.handle_sms
+
+    async def crash(*args: object) -> None:
+        raise RuntimeError("database went away")
+
+    monkeypatch.setattr(inbound, "handle_sms", crash)
+    with pytest.raises(RuntimeError):
+        await post_sms(gw, number, f"OK {incident.short_code}", message_id)
+    monkeypatch.setattr(inbound, "handle_sms", handle_sms)
+    retried = await post_sms(gw, number, f"OK {incident.short_code}", message_id)
+
+    assert retried.json() == {"status": "processed"}
+    assert (await fresh(gw_app, incident.id)).status == "acknowledged"
+
+
+async def test_messages_without_a_message_id_are_not_deduplicated_together(
+    gw: httpx.AsyncClient, sms: FakeSms
+) -> None:
+    for _ in range(2):
+        body = envelope(phone(), "HELLO")
+        body["payload"] = {"message": "HELLO", "sender": phone()}
+        response = await gw.post("/sms/inbound", params={"token": SECRET}, json=body)
+        assert response.json() == {"status": "processed"}
+    assert len(sms.sent) == 2
 
 
 async def test_a_phone_flooding_the_gateway_is_throttled(

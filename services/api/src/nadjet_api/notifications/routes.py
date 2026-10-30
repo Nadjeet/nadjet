@@ -133,7 +133,9 @@ async def sms_inbound(
     payload = envelope.payload
     if envelope.event != "sms:received" or not payload.sender or payload.message is None:
         return SmsAck(status="ignored")
-    if not await redis.set(f"sms:in:{payload.message_id}", 1, nx=True, ex=DEDUPE_TTL_S):
+    message_id = payload.message_id or envelope.id or ""
+    dedupe_key = f"sms:in:{message_id}"
+    if message_id and not await redis.set(dedupe_key, 1, nx=True, ex=DEDUPE_TTL_S):
         return SmsAck(status="duplicate")
     rate_key = f"sms:rate:{payload.sender}"
     count = await redis.incr(rate_key)
@@ -141,10 +143,15 @@ async def sms_inbound(
         await redis.expire(rate_key, RATE_WINDOW_S)
     if count > RATE_LIMIT:
         return SmsAck(status="throttled")
-    result = await inbound.handle_sms(
-        session, signer, payload.sender, payload.message, payload.message_id
-    )
-    await session.commit()
+    try:
+        result = await inbound.handle_sms(
+            session, signer, payload.sender, payload.message, message_id
+        )
+        await session.commit()
+    except Exception:
+        # Not applied: let the gateway's redelivery through instead of dropping the SMS.
+        await redis.delete(dedupe_key)
+        raise
     await announce(redis, result.changes)
     await _reply(request, normalize_phone(payload.sender), result.reply)
     return SmsAck(status="processed")
