@@ -33,6 +33,7 @@ from nadjet_api.notifications.channels import build_channels
 from nadjet_api.notifications.routes import router as notifications_router
 from nadjet_api.routing.router import OsrmRouter, Router
 from nadjet_api.routing.routes import router as routing_router
+from nadjet_api.streams.auth import router as streams_router
 from nadjet_api.system.routes import router as system_ai_router
 
 
@@ -89,6 +90,7 @@ def create_app(
     app.state.signer = ChainSigner(settings.signing_seed)
     app.state.store = LocalEvidenceStore(settings.evidence_dir)
     app.include_router(auth_router)
+    app.include_router(streams_router)
     app.include_router(cameras_router)
     app.include_router(system_cameras_router)
     app.include_router(system_ai_router)

@@ -44,6 +44,26 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/auth/stream-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stream Token
+         * @description Short-lived token to watch camera streams (WHEP/HLS), for the console roles.
+         */
+        post: operations["stream_token_auth_stream_token_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/cameras": {
         parameters: {
             query?: never;
@@ -484,6 +504,26 @@ export interface paths {
          *     Identify the incident by ``incident_id`` or by the ``idempotency_key`` of its candidate.
          */
         post: operations["upload_evidence_internal_evidence_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/mediamtx-auth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mediamtx Auth
+         * @description Allow or reject one MediaMTX publish/read/api request.
+         */
+        post: operations["mediamtx_auth_internal_mediamtx_auth_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -1700,6 +1740,51 @@ export interface components {
              */
             status: "available" | "dispatched" | "busy" | "offline";
         };
+        /**
+         * MediaMtxAuthRequest
+         * @description Body MediaMTX sends (https://mediamtx.org/docs/usage/authentication).
+         */
+        MediaMtxAuthRequest: {
+            /** Action */
+            action: string;
+            /** Id */
+            id?: string | null;
+            /**
+             * Ip
+             * @default
+             */
+            ip: string;
+            /**
+             * Password
+             * @default
+             */
+            password: string;
+            /**
+             * Path
+             * @default
+             */
+            path: string;
+            /**
+             * Protocol
+             * @default
+             */
+            protocol: string;
+            /**
+             * Query
+             * @default
+             */
+            query: string;
+            /**
+             * Token
+             * @default
+             */
+            token: string;
+            /**
+             * User
+             * @default
+             */
+            user: string;
+        };
         /** MergeIn */
         MergeIn: {
             /**
@@ -1880,6 +1965,19 @@ export interface components {
              * @enum {string}
              */
             status: "dispatched" | "acknowledged" | "en_route" | "on_scene" | "transporting" | "at_hospital" | "closed";
+        };
+        /** StreamTokenResponse */
+        StreamTokenResponse: {
+            /** Expires In */
+            expires_in: number;
+            /** Token */
+            token: string;
+            /**
+             * Token Type
+             * @default Bearer
+             * @constant
+             */
+            token_type: "Bearer";
         };
         /** StreamUrls */
         StreamUrls: {
@@ -2136,6 +2234,40 @@ export interface operations {
             };
             /** @description Missing, invalid or expired token */
             401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    stream_token_auth_stream_token_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StreamTokenResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
                 headers: {
                     [name: string]: unknown;
                 };
@@ -3061,6 +3193,46 @@ export interface operations {
             };
             /** @description Unsupported media type */
             415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mediamtx_auth_internal_mediamtx_auth_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MediaMtxAuthRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Request not allowed */
+            401: {
                 headers: {
                     [name: string]: unknown;
                 };

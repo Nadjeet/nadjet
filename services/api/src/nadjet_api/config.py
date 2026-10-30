@@ -1,5 +1,6 @@
 """API configuration, read from ``NADJET_*`` environment variables (see ``.env.example``)."""
 
+from datetime import timedelta
 from functools import lru_cache
 from pathlib import Path
 from typing import Literal
@@ -57,6 +58,11 @@ class Settings(BaseSettings):
     ingest_token: SecretStr | None = Field(
         default=None, description="Service token for /internal/*; endpoints return 503 when unset"
     )
+    stream_service_user: str = Field(
+        default="nadjet-worker",
+        description="MediaMTX user of camsim/Brev workers; password is NADJET_INGEST_TOKEN",
+    )
+    stream_token_ttl_s: int = Field(default=300, gt=0, description="Console stream token lifetime")
     evidence_dir: Path = Field(default=Path("evidence"), description="Local evidence store root")
     evidence_max_mb: int = Field(default=100, gt=0)
     signing_key: SecretStr | None = Field(
@@ -127,6 +133,10 @@ class Settings(BaseSettings):
             if len(seed) != SIGNING_SEED_HEX_LENGTH or seed == DEV_SIGNING_SEED:
                 raise ValueError("NADJET_SIGNING_KEY must be a unique 64-hex-char Ed25519 seed")
         return self
+
+    @property
+    def stream_token_ttl(self) -> timedelta:
+        return timedelta(seconds=self.stream_token_ttl_s)
 
     @property
     def signing_seed(self) -> str:

@@ -2625,6 +2625,66 @@
         "title": "MapUnit",
         "type": "object"
       },
+      "MediaMtxAuthRequest": {
+        "description": "Body MediaMTX sends (https://mediamtx.org/docs/usage/authentication).",
+        "properties": {
+          "action": {
+            "title": "Action",
+            "type": "string"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "ip": {
+            "default": "",
+            "title": "Ip",
+            "type": "string"
+          },
+          "password": {
+            "default": "",
+            "title": "Password",
+            "type": "string"
+          },
+          "path": {
+            "default": "",
+            "title": "Path",
+            "type": "string"
+          },
+          "protocol": {
+            "default": "",
+            "title": "Protocol",
+            "type": "string"
+          },
+          "query": {
+            "default": "",
+            "title": "Query",
+            "type": "string"
+          },
+          "token": {
+            "default": "",
+            "title": "Token",
+            "type": "string"
+          },
+          "user": {
+            "default": "",
+            "title": "User",
+            "type": "string"
+          }
+        },
+        "required": [
+          "action"
+        ],
+        "title": "MediaMtxAuthRequest",
+        "type": "object"
+      },
       "MergeIn": {
         "properties": {
           "into": {
@@ -3125,6 +3185,30 @@
           "status"
         ],
         "title": "StatusIn",
+        "type": "object"
+      },
+      "StreamTokenResponse": {
+        "properties": {
+          "expires_in": {
+            "title": "Expires In",
+            "type": "integer"
+          },
+          "token": {
+            "title": "Token",
+            "type": "string"
+          },
+          "token_type": {
+            "const": "Bearer",
+            "default": "Bearer",
+            "title": "Token Type",
+            "type": "string"
+          }
+        },
+        "required": [
+          "token",
+          "expires_in"
+        ],
+        "title": "StreamTokenResponse",
         "type": "object"
       },
       "StreamUrls": {
@@ -3653,6 +3737,40 @@
         ],
         "summary": "Me",
         "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/stream-token": {
+      "post": {
+        "description": "Short-lived token to watch camera streams (WHEP/HLS), for the console roles.",
+        "operationId": "stream_token_auth_stream_token_post",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/StreamTokenResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Not authenticated"
+          },
+          "403": {
+            "description": "Role"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Stream Token",
+        "tags": [
+          "streams",
           "auth"
         ]
       }
@@ -4985,6 +5103,49 @@
         "summary": "Upload Evidence",
         "tags": [
           "internal"
+        ]
+      }
+    },
+    "/internal/mediamtx-auth": {
+      "post": {
+        "description": "Allow or reject one MediaMTX publish/read/api request.",
+        "operationId": "mediamtx_auth_internal_mediamtx_auth_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MediaMtxAuthRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "description": "Request not allowed"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            },
+            "description": "Validation Error"
+          }
+        },
+        "summary": "Mediamtx Auth",
+        "tags": [
+          "streams"
         ]
       }
     },
