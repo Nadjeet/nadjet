@@ -116,6 +116,18 @@ def test_zone_membership_uses_the_camera_zones() -> None:
     assert zone_membership((0, 0), None).live_lane is None
 
 
+def test_zone_membership_scales_a_smaller_stream_to_the_zone_frame() -> None:
+    """Zones are drawn on zones.frame; a 640x360 stream must hit the same lane at half scale."""
+    zones = load_catalogue(ROOT / "data" / "cameras.yaml").cameras[0].zones
+    assert zones is not None
+    lane = zones.live_lanes[0]
+    cx = sum(p[0] for p in lane[:-1]) / (len(lane) - 1)
+    cy = sum(p[1] for p in lane[:-1]) / (len(lane) - 1)
+    half = (zones.frame.width // 2, zones.frame.height // 2)
+    assert zone_membership((cx / 2, cy / 2), zones, half).live_lane == 0
+    assert zone_membership((cx, cy), zones, (zones.frame.width, zones.frame.height)).live_lane == 0
+
+
 def textured(seed: int = 1, size: tuple[int, int] = (240, 320)) -> np.ndarray:  # type: ignore[type-arg]
     rng = np.random.default_rng(seed)
     grey = rng.integers(0, 255, size, dtype=np.uint8)
