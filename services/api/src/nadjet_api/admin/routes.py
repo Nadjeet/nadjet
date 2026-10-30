@@ -376,6 +376,8 @@ async def update_user(
     if user is None:
         raise _not_found("User")
     changes = body.changes()
+    if any(changes.get(f) is None for f in ("display_name", "role", "active") if f in changes):
+        raise HTTPException(status.HTTP_422_UNPROCESSABLE_CONTENT, "Fields cannot be null")
     if user.id == admin.id and (changes.get("active") is False or "role" in changes):
         raise HTTPException(
             status.HTTP_409_CONFLICT, "Admins cannot deactivate or change the role of themselves"
