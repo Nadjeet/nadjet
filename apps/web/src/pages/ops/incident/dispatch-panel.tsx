@@ -20,7 +20,7 @@ import {
   type DispatchRow,
   type IncidentDetail,
   type RankedResource,
-} from "./incident-queries";
+} from "@/lib/incident-queries";
 import { RouteMap, type RouteLine } from "./route-map";
 
 const FIELD_STATUSES = new Set(["acknowledged", "en_route", "on_scene", "transporting"]);

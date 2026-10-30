@@ -14,7 +14,7 @@ import {
   useIncidents,
   useMapResources,
   type QueueFilters,
-} from "./incident/incident-queries";
+} from "@/lib/incident-queries";
 import { IncidentQueue, QueueFiltersBar } from "./incident/incident-queue";
 import { NewIncidentDialog } from "./incident/new-incident-dialog";
 import { OpsMap, type PickedPoint } from "./incident/ops-map";

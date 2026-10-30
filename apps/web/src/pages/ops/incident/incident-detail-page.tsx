@@ -22,7 +22,7 @@ import { formatDateTime, useLabel } from "@/lib/format";
 import { useSession } from "@/lib/auth-store";
 
 import { DispatchPanel } from "./dispatch-panel";
-import { EvidencePanel } from "./evidence-panel";
+import { EvidencePanel } from "@/components/incident/evidence-panel";
 import { IncidentActions } from "./incident-actions";
 import {
   ApiError,
@@ -30,8 +30,8 @@ import {
   useIncident,
   useIntegrity,
   type IncidentDetail,
-} from "./incident-queries";
-import { locationText } from "./incident-format";
+} from "@/lib/incident-queries";
+import { locationText } from "@/lib/incident-format";
 
 const DISPATCHERS = new Set(["operator", "supervisor", "admin"]);
 

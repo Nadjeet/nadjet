@@ -5,8 +5,6 @@ import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 export type PageKey =
   | "ops.cameras"
   | "ops.system"
-  | "respond.incidents"
-  | "respond.profile"
   | "hospital.incoming"
   | "public.try"
   | "public.privacy";

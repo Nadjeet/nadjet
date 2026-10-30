@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import { BaseMap } from "@/map/BaseMap";
 import type { MapLang } from "@/map/style";
 
-import type { Camera, Incident, MapResources } from "./incident-queries";
+import type { Camera, Incident, MapResources } from "@/lib/incident-queries";
 
 export type PickedPoint = { lat: number; lon: number };
 
