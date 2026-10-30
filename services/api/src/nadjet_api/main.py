@@ -27,6 +27,7 @@ from nadjet_api.evaluation.routes import router as evaluation_router
 from nadjet_api.geo.resources import router as map_resources_router
 from nadjet_api.geo.tiles import router as tiles_router
 from nadjet_api.health import Probe, database_probe, redis_probe, run_probes
+from nadjet_api.hospital.routes import router as hospital_router
 from nadjet_api.incidents import internal
 from nadjet_api.incidents import routes as incident_routes
 from nadjet_api.incidents.signing import ChainSigner
@@ -118,6 +119,7 @@ def create_app(
     app.include_router(notifications_router)
     app.include_router(incident_routes.router)
     app.include_router(dispatch_router)
+    app.include_router(hospital_router)
     app.include_router(internal.router)
     app.include_router(citizen_router)
     app.include_router(routing_router)
