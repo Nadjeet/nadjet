@@ -8,7 +8,7 @@
 | Approvers | Whole team (sign-off table in §20) |
 | Created / updated | 2026-10-30 |
 | Context | SolveX 3.0 hackathon, **Thematic 1: "Road accidents: improving emergency response"** |
-| Related docs | This PRD is the **what and why**, and it is technology-neutral (D-13). The **how** (models, frameworks, services, deployment) is in [`docs/11-technical-decisions.md`](docs/11-technical-decisions.md) and supported by `docs/01`–`docs/10`. The non-technical creative brief for design and film is [`BRIEF.md`](BRIEF.md). |
+| Related docs | This PRD is the **what and why**, and it is technology-neutral (D-13). The **how** (models, frameworks, services, deployment) is in [`docs/11-technical-decisions.md`](docs/11-technical-decisions.md) and supported by `docs/01`–`docs/10`. |
 
 **How to read this document**
 
@@ -34,7 +34,7 @@
 |---|---|---|---|
 | 0.1 | 2026-10-30 | Team + Claude | First full draft, built from research docs 01–10 |
 | 0.2 | 2026-10-30 | Team + Claude | Citizen report raised to Must. Added a one-tap report with an automatic GPS SMS fallback (FR-CIT-006) for roads without cameras (D-11) |
-| 0.3 | 2026-10-30 | Team + Claude | PRD made technology-neutral (D-13). Technical choices moved to `docs/11-technical-decisions.md` (TD-01…TD-21). Technical open questions moved there (TQ-01…). Creative brief added (`BRIEF.md`) |
+| 0.3 | 2026-10-30 | Team + Claude | PRD made technology-neutral (D-13). Technical choices moved to `docs/11-technical-decisions.md` (TD-01…TD-21). Technical open questions moved there (TQ-01…) |
 
 ---
 
@@ -521,7 +521,7 @@ Areas:
 | Hospital view | P3 | Incoming pre-alerts · Ready / Divert |
 | Public pages | P4, P7 | Report a crash (one tap) · Try it (upload) · Live (phone as camera) · About / privacy |
 
-Each surface gets its own subdomain (mapping open: Q-01). The design direction is in [`BRIEF.md`](BRIEF.md). Clickable prototype: TBD (Q-08).
+Each surface gets its own subdomain (mapping open: Q-01). Clickable prototype: TBD (Q-08).
 
 ---
 

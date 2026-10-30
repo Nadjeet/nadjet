@@ -1,6 +1,6 @@
 # Nadjet (نجاة) — AI Road-Incident Detection & Emergency Coordination for Algeria
 
-These are research and design documents for SolveX 3.0, **Thematic 1: "Road accidents: improving emergency response."** They are current as of 2026-10-29. The product is named **Nadjet** (Arabic **نجاة**, "survival, being saved"). The product requirements (technology-neutral) live in [`../PRD.md`](../PRD.md). The technical choices live in [11-technical-decisions.md](11-technical-decisions.md). The non-technical creative brief for design and film is [`../BRIEF.md`](../BRIEF.md).
+These are research and design documents for SolveX 3.0, **Thematic 1: "Road accidents: improving emergency response."** They are current as of 2026-10-29. The product is named **Nadjet** (Arabic **نجاة**, "survival, being saved"). The product requirements (technology-neutral) live in [`../PRD.md`](../PRD.md). The technical choices live in [11-technical-decisions.md](11-technical-decisions.md).
 
 ## Executive summary
 
