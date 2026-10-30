@@ -12,10 +12,10 @@ class Settings(BaseSettings):
 
     env: Literal["development", "test", "production"] = "development"
     database_url: PostgresDsn = Field(
-        default=PostgresDsn("postgresql+asyncpg://nadjet:nadjet@localhost:5432/nadjet"),
+        default=PostgresDsn("postgresql+asyncpg://nadjet:nadjet@localhost:55432/nadjet"),
         description="SQLAlchemy async URL (asyncpg driver)",
     )
-    redis_url: RedisDsn = Field(default=RedisDsn("redis://localhost:6379/0"))
+    redis_url: RedisDsn = Field(default=RedisDsn("redis://localhost:56379/0"))
     cors_origins: list[str] = Field(default=["http://localhost:5173"])
     readiness_timeout_s: float = Field(default=2.0, gt=0)
 

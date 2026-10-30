@@ -16,7 +16,7 @@ class VisionSettings(BaseSettings):
 
     brev_instance: str = Field(default="nadjet-gpu", description="Brev instance running vLLM")
     vlm_base_url: HttpUrl = Field(
-        default=HttpUrl("http://127.0.0.1:8000/v1"),
+        default=HttpUrl("http://127.0.0.1:18000/v1"),
         description="vLLM OpenAI-compatible endpoint (port-forwarded from Brev)",
     )
     vlm_model: str = Field(default="Qwen/Qwen3-VL-8B-Instruct-FP8")

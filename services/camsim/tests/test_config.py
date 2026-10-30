@@ -37,6 +37,8 @@ def test_render_publishes_existing_videos_unmodified(tmp_path: Path) -> None:
     assert "-stream_loop -1" in command
     assert "-c copy" in command  # no re-encoding: frames are not modified
     assert "/videos/crash.mp4" in command
+    actions = {p["action"] for p in config["authInternalUsers"][0]["permissions"]}
+    assert {"read", "api"} <= actions
 
 
 def test_render_skips_cameras_without_video(tmp_path: Path) -> None:

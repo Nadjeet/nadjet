@@ -1,0 +1,2 @@
+api: uv run nadjet-api serve --reload --port 8080
+web: pnpm --filter @nadjet/web dev

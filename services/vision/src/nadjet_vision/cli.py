@@ -6,14 +6,16 @@ import sys
 
 import httpx
 
-from nadjet_vision.config import get_settings
+from nadjet_vision.config import VisionSettings, get_settings
 from nadjet_vision.inference import BrevVlmClient, InferenceConfigError
 
 
-async def check_inference() -> int:
-    settings = get_settings()
+async def check_inference(
+    settings: VisionSettings | None = None, transport: httpx.AsyncBaseTransport | None = None
+) -> int:
+    settings = settings or get_settings()
     try:
-        client = BrevVlmClient(settings)
+        client = BrevVlmClient(settings, transport=transport)
     except InferenceConfigError as exc:
         print(f"FAIL {exc}", file=sys.stderr)
         return 1

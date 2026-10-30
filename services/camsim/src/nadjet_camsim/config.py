@@ -89,6 +89,17 @@ def render_mediamtx(
         "hlsAddress": ":8888",
         "rtmp": False,
         "srt": False,
+        # Local development only: anonymous access. Production uses API-delegated auth (TD-17).
+        "authInternalUsers": [
+            {
+                "user": "any",
+                "pass": "",
+                "ips": [],
+                "permissions": [
+                    {"action": a} for a in ("publish", "read", "playback", "api", "metrics")
+                ],
+            }
+        ],
         "paths": {**paths, "all_others": {}},
     }
     return config, skipped

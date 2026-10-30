@@ -1,0 +1,47 @@
+# Local development infrastructure. Used by `make infra`, `make dev` and `make test`.
+# Host ports avoid common defaults (5432, 6379) so they do not clash with other local projects.
+name: nadjet
+
+services:
+  db:
+    image: imresamu/postgis:17-3.5 # multi-arch (amd64 + arm64) build of the PostGIS image
+    environment:
+      POSTGRES_USER: nadjet
+      POSTGRES_PASSWORD: nadjet
+      POSTGRES_DB: nadjet
+    ports: ["${NADJET_PG_PORT:-55432}:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nadjet -d nadjet"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    ports: ["${NADJET_REDIS_PORT:-56379}:6379"]
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+
+  mediamtx:
+    image: bluenviron/mediamtx:1.21.2-ffmpeg
+    volumes:
+      - ./mediamtx.generated.yml:/mediamtx.yml:ro
+      - ../../data/videos:/videos:ro
+    ports:
+      - "8554:8554" # RTSP (vision workers)
+      - "8889:8889" # WebRTC WHEP/WHIP signalling (browser)
+      - "8189:8189/udp" # WebRTC media
+      - "8189:8189/tcp" # WebRTC TCP fallback
+      - "8888:8888" # LL-HLS fallback
+      - "9997:9997" # control API
+    profiles: [video]
+
+volumes:
+  pgdata: {}
+  redisdata: {}

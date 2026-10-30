@@ -1,0 +1,34 @@
+# Runs ON the NVIDIA Brev GPU instance (not locally). All Nadjet AI inference uses this server.
+#   brev shell <instance>  →  git clone … && cd nadjet/deploy/gpu && docker compose up -d
+# Locally, reach it with `make brev-forward` (localhost:18000 → instance:8000).
+name: nadjet-gpu
+
+services:
+  vllm:
+    image: vllm/vllm-openai:v0.11.2 # Qwen3-VL needs >= 0.11.0; bump deliberately (doc 11 TQ-04)
+    command: >
+      --model ${NADJET_VLM_MODEL:-Qwen/Qwen3-VL-8B-Instruct-FP8}
+      --max-model-len 8192
+      --gpu-memory-utilization 0.75
+      --limit-mm-per-prompt '{"video":1,"image":0}'
+      --enable-prefix-caching
+      --mm-processor-cache-gb 0
+      --max-num-seqs 8
+    environment:
+      HF_TOKEN: ${HF_TOKEN:-}
+    ports: ["127.0.0.1:8000:8000"] # loopback only: reached through brev port-forward / SSH
+    ipc: host
+    volumes: [hf-cache:/root/.cache/huggingface]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/v1/models"]
+      interval: 15s
+      timeout: 5s
+      retries: 60
+      start_period: 120s
+    deploy:
+      resources:
+        reservations:
+          devices: [{ driver: nvidia, count: all, capabilities: [gpu] }]
+
+volumes:
+  hf-cache: {}
