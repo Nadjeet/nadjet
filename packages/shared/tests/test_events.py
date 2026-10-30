@@ -84,6 +84,7 @@ def test_verdict_values_are_restricted() -> None:
 def test_export_writes_then_reports_no_drift(tmp_path: Path) -> None:
     assert sorted(export(tmp_path, check=False)) == [
         "camera.health.schema.json",
+        "evaluation.results.schema.json",
         "incident.candidate.schema.json",
     ]
     assert export(tmp_path, check=True) == []
