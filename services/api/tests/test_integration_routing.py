@@ -258,3 +258,19 @@ async def test_real_osrm_ranks_units_and_hospitals_by_road_eta(session: AsyncSes
         assert all(len(r["route_geojson"]["coordinates"]) > 2 for r in group)
     unit_etas = [u["eta_s"] for u in body["units"]]
     assert unit_etas == sorted(unit_etas)
+
+
+async def test_FR_MAP_001_map_resources_list_facilities_and_units_for_the_console(
+    app: FastAPI, session: AsyncSession
+) -> None:
+    async with http(app) as client:
+        operator = await login(client, session, "operator")
+        response = await client.get("/map/resources", headers=operator)
+        assert response.status_code == 200, response.text
+        body = response.json()
+        assert body["facilities"] and body["units"]
+        assert {f["kind"] for f in body["facilities"]} >= {"hospital"}
+        assert all(isinstance(f["simulated"], bool) for f in body["facilities"] + body["units"])
+        assert any(u["simulated"] for u in body["units"])
+
+        assert (await client.get("/map/resources")).status_code == 401

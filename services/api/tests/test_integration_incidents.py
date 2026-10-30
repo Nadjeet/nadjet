@@ -375,6 +375,121 @@ async def test_operator_manual_creation_starts_verified(
     assert events[0].actor_id == operator.id
 
 
+async def test_FR_INC_007_manual_notes_are_kept_in_the_signed_created_event(
+    client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
+) -> None:
+    headers = await login(client, await make_user(session, role="operator"))
+    lat, lon = fresh_spot()
+    created = await client.post(
+        "/incidents",
+        json={"location": {"lat": lat, "lon": lon}, "notes": "caller sees smoke"},
+        headers=headers,
+    )
+    assert created.status_code == 201, created.text
+    events = await events_of(session, uuid.UUID(created.json()["id"]))
+    assert events[0].payload["notes"] == "caller sees smoke"
+    too_long = await client.post(
+        "/incidents",
+        json={"location": {"lat": lat, "lon": lon}, "notes": "x" * 1001},
+        headers=headers,
+    )
+    assert too_long.status_code == 422
+
+
+async def test_FR_MAP_003_timeline_events_carry_the_actor_display_name(
+    app: FastAPI, client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
+) -> None:
+    operator = await make_user(session, role="operator")
+    headers = await login(client, operator)
+    lat, lon = fresh_spot()
+    incident = await ingest(app, candidate(lat, lon))
+    await client.post(f"/incidents/{incident.id}/verify", headers=headers)
+    events = (await client.get(f"/incidents/{incident.id}", headers=headers)).json()["events"]
+    assert [(e["kind"], e["actor_name"]) for e in events] == [
+        ("created", None),
+        ("status_changed", operator.display_name),
+    ]
+
+
+# ------------------------------------------------------------------ manual merge
+
+
+async def test_FR_INC_002_operator_merges_a_candidate_into_an_open_incident(
+    app: FastAPI, client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
+) -> None:
+    operator = await make_user(session, role="operator")
+    headers = await login(client, operator)
+    lat, lon = fresh_spot()
+    target = await ingest(app, candidate(lat, lon, signals={"vehicle_count": 2}))
+    far_lat, far_lon = fresh_spot()
+    source = await ingest(
+        app,
+        candidate(far_lat, far_lon, signals={"vehicle_count": 4}, witness=Witness(trapped=True)),
+    )
+
+    response = await client.post(
+        f"/incidents/{source.id}/merge", json={"into": str(target.id)}, headers=headers
+    )
+    assert response.status_code == 200, response.text
+    merged = response.json()
+    assert merged["id"] == str(target.id)
+    assert merged["report_count"] == 2
+    assert merged["ai_signals"]["vehicle_count"] == 4
+    assert merged["trapped_reported"] is True
+
+    gone = (await client.get(f"/incidents/{source.id}", headers=headers)).json()
+    assert (gone["status"], gone["merged_into"]) == ("merged", str(target.id))
+    assert [e["actor_name"] for e in gone["events"]][-1] == operator.display_name
+    assert (await client.post(f"/incidents/{source.id}/verify", headers=headers)).status_code == 409
+
+
+async def test_merge_rejects_self_closed_target_and_non_candidate_source(
+    app: FastAPI, client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
+) -> None:
+    headers = await login(client, await make_user(session, role="operator"))
+    a_lat, a_lon = fresh_spot()
+    b_lat, b_lon = fresh_spot()
+    a = await ingest(app, candidate(a_lat, a_lon))
+    b = await ingest(app, candidate(b_lat, b_lon))
+
+    own = await client.post(f"/incidents/{a.id}/merge", json={"into": str(a.id)}, headers=headers)
+    assert own.status_code == 409
+    missing = await client.post(
+        f"/incidents/{a.id}/merge", json={"into": str(uuid.uuid4())}, headers=headers
+    )
+    assert missing.status_code == 404
+    unknown_source = await client.post(
+        f"/incidents/{uuid.uuid4()}/merge", json={"into": str(a.id)}, headers=headers
+    )
+    assert unknown_source.status_code == 404
+
+    await client.post(f"/incidents/{b.id}/reject", json={"reason": "other"}, headers=headers)
+    closed_target = await client.post(
+        f"/incidents/{a.id}/merge", json={"into": str(b.id)}, headers=headers
+    )
+    assert closed_target.status_code == 409
+
+    await client.post(f"/incidents/{a.id}/verify", headers=headers)
+    verified_source = await client.post(
+        f"/incidents/{a.id}/merge", json={"into": str(b.id)}, headers=headers
+    )
+    assert verified_source.status_code == 409
+
+
+async def test_merge_is_limited_to_dispatch_roles(
+    app: FastAPI, client: httpx.AsyncClient, session: AsyncSession, make_user: MakeUser
+) -> None:
+    auditor = await login(client, await make_user(session, role="auditor"))
+    a_lat, a_lon = fresh_spot()
+    b_lat, b_lon = fresh_spot()
+    a = await ingest(app, candidate(a_lat, a_lon))
+    b = await ingest(app, candidate(b_lat, b_lon))
+    response = await client.post(
+        f"/incidents/{a.id}/merge", json={"into": str(b.id)}, headers=auditor
+    )
+    assert response.status_code == 403
+
+
 # ------------------------------------------------------------------ scope, triage
 
 
