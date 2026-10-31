@@ -55,64 +55,61 @@ live, connecting or reconnecting with text and an icon.
 
 Source: the Nadjet Figma file "najat": the design-system page (Colors, Typography, Effects,
 buttons, Inputs, check box, Cards, Modals, Dropdowns, icons) and the designer's screens
-("control" dashboard, "app" mission, progress and home). The Figma components use a purple
-primary; Nadjet uses the brand blue everywhere, as the designer's screens do. **Light mode
-only**: there is no dark theme. Tokens live in `src/index.css`. Decisions: `docs/11-technical-decisions.md` TD-54.
+("control" dashboard, "app" home, mission and progress). The file is the source of truth and
+its values are used exactly (TD-55, superseding the contrast tweaks of TD-54). The Figma
+components use a purple tertiary; Nadjet maps it to the brand blue, as the designer's screens
+do. **Light mode only**: there is no dark theme. Tokens live in `src/index.css`.
 
-- **Brand blue** `brand-100…900`: `#aad4ff #80beff #55a8fe #2a93fe #007dfe #006be0 #003f7f #002a55 #00152a`.
-  `brand-500` `#007dfe` is the Figma primary; white on it is only 3.9:1, so it is kept for the
-  logo, icons and large figures (KPI values). Text, links, the active navigation item and
-  filled controls use `brand-600` `#006be0` (5.0:1), which reads as the same blue.
-- **Primary button**: the Figma gradient from `#3568f5`, ending on `#0f7ae8` instead of
-  `#80beff` so the white label stays readable (4.5:1 where the label sits). Secondary is the
-  Figma green (outline, filled on hover), tertiary the light blue fill, disabled grey.
-- **Surfaces and text** (Figma dashboard, slate scale): page `#f2f4f5`, cards white with a
-  `#e2e8f0` border, ink `#0f172a`, body `#334155`, muted `#596a80` (slightly darker than the
-  Figma `#64748b` so it passes on the page background).
+- **Brand blue** `brand-50…900`, Figma primary `brand-500` `#007dfe`, indigo `#3568f5`.
+- **Buttons** (node 10:2097): primary `#55a8fe` at rest, the 112° `#3568f5 → #80beff` gradient
+  on hover and pressed (`variant="gradient"` keeps it at rest, for the main call to action of a
+  screen); secondary green outline `#22c55e`, filled on hover, `#16a34a` pressed; tertiary
+  `brand-50` with indigo text; disabled `#e8ecf3` with `#899cc9` text. Sizes 48/44/40/36 px.
+- **Status colours**: success `#22c55e` (chip `#4ade80`, text `#059669`, soft `#dcfce7`),
+  warning `#f59e0b` (soft `#fef3c7`), error `#ef4444` (strong `#e11d48`, soft `#fee2e2`).
+- **Surfaces and text** (slate scale): page `#f2f4f5`, app page `#fafafa`, cards white,
+  border `#e2e8f0`, ink `#0f172a`, body `#334155`, muted `#64748b`, subtle `#94a3b8`.
+- **Layouts**: the operator console and the hospital view follow the "control" dashboard
+  (node 75:7915: sidebar, KPI ribbon, bento cards); the responder PWA follows the "app"
+  screens (node 75:7914: avatar header, hero mission cards, glass pill tab bar Home ·
+  Progress · Triage · Profile, mission card, progress stepper, Incidents Map card).
 - **Type**: DM Sans (Latin) with Noto Sans Arabic as the Arabic fallback, both self-hosted
-  through Fontsource (OFL). Sizes follow the Figma scale (`text-display-xl…xs`,
-  `text-body-xl…xs`). Arabic uses no negative letter spacing.
-- **Shape and shadow**: radii 6 (chips), 8, 12 (buttons, inputs), 14 (navigation items),
-  16 px (cards); `shadow-card` = `0 6px 20px rgb(112 144 176 / 12%)` (Figma dashboard),
-  `shadow-soft` = the Figma "drop shadow" effect.
-- **Map**: the offline protomaps basemap with a Nadjet flavor (`src/map/style.ts`: grey land,
-  white roads, light blue sea) and white rounded controls in the style of mapcn. No online
-  tile service is used (FR-MAP-001).
+  through Fontsource (OFL). Arabic uses no negative letter spacing.
+- **Shape and shadow**: radii 6 (chips), 8, 12 (buttons, inputs), 14, 16 px (cards);
+  `shadow-card` = `0 6px 20px rgb(112 144 176 / 12%)`, `shadow-soft` = Figma "drop shadow".
+- **Map**: the offline protomaps basemap restyled to the Figma map (`src/map/style.ts`: land
+  `#f0f0f0`, white roads, parks `#b4e7c7`, water `#85d5eb`), the Figma pin and unit markers
+  (`src/map/assets/`), `#13a9ff` routes, the camera chip and hospital card overlays, and white
+  zoom / recenter controls. No online tile service is used (FR-MAP-001).
 - **Icons**: lucide (the Figma icon set is a line icon family of the same style).
-- **Logo**: `src/assets/brand/nadjet-logo.svg`, exported from Figma (node 75:6347), used by
-  `Logo` on every surface. `public/favicon.svg`, `logo-mark.svg` and
-  `logo-mark-maskable.svg` crop that SVG to the mark; the PNG icons (`pwa-192x192.png`,
-  `pwa-512x512.png`, `maskable-512x512.png`, `apple-touch-icon.png`) were rasterised from them
-  with resvg. Regenerate them the same way when the logo changes.
+- **Logo**: `src/assets/brand/nadjet-logo.svg` (node 75:6347) for `Logo`, and the icon
+  `nadjet-mark.svg` (node 75:6348) for `LogoMark`, the favicon and the PWA icons
+  (`pwa-192x192.png`, `pwa-512x512.png`, `maskable-512x512.png`, `apple-touch-icon.png`,
+  rasterised with resvg). Regenerate them the same way when the logo changes.
 
 ### Priority is never colour only (NFR-INT-002)
 
 `PriorityBadge` always shows an icon (different shape per level), `P1…P4` and the level name.
-Status and live indicators follow the same rule.
+Status and live indicators pair the colour with a word or an icon.
 
-### Contrast (WCAG 2.2 AA: text 4.5:1, large text and UI 3:1)
+### Contrast of the exact Figma colours (WCAG 2.2 AA: text 4.5:1, large text and UI 3:1)
 
-Computed with the WCAG relative-luminance formula.
+Computed with the WCAG relative-luminance formula. Pairs below AA are kept because the design
+is the source of truth (TD-55); they are listed so they can be raised with the designer.
 
-| Pair | Colours | Ratio |
-|---|---|---|
-| text on page | `#0f172a` on `#f2f4f5` | 16.18:1 |
-| text on card | `#0f172a` on `#ffffff` | 17.85:1 |
-| body text on card | `#334155` on `#ffffff` | 10.35:1 |
-| muted text on card | `#596a80` on `#ffffff` | 5.53:1 |
-| muted text on page | `#596a80` on `#f2f4f5` | 5.01:1 |
-| muted text, placeholder on input | `#596a80` on `#f8fafc` | 5.28:1 |
-| primary text, links, tertiary button | `#006be0` on `#ffffff` / `#eff6ff` | 5.02:1 / 4.62:1 |
-| active navigation item | `#ffffff` on `#006be0` | 5.02:1 |
-| primary button text (gradient centre) | `#ffffff` on `#2271ee` | 4.50:1 |
-| queue Review chip | `#003f7f` on `#a6d1ff` | 6.54:1 |
-| KPI figures (large text) | `#007dfe` on `#ffffff` | 3.91:1 |
-| P1 badge, destructive | `#ffffff` on `#dc2626` | 4.83:1 |
-| P2 badge | `#ffffff` on `#c2410c` | 5.18:1 |
-| P3 badge | `#ffffff` on `#92400e` | 7.09:1 |
-| P4 badge | `#ffffff` on `#475569` | 7.58:1 |
-| success button / soft chip | `#ffffff` on `#15803d` / `#15803d` on `#dcfce7` | 5.02:1 / 4.57:1 |
-| warning banner | `#0f172a` on `#fef3c7` | 16.03:1 |
+| Pair | Colours | Ratio | AA |
+|---|---|---|---|
+| text on page | `#0f172a` on `#f2f4f5` | 16.18:1 | pass |
+| body text on card | `#334155` on `#ffffff` | 10.35:1 | pass |
+| muted text on card / page | `#64748b` on `#ffffff` / `#f2f4f5` | 4.76:1 / 4.31:1 | pass / large only |
+| subtle labels | `#94a3b8` on `#ffffff` | 2.56:1 | fail |
+| brand text, KPI figures | `#007dfe` on `#ffffff` | 3.91:1 | large only |
+| primary button at rest | `#ffffff` on `#55a8fe` | 2.49:1 | fail |
+| gradient button (start / end) | `#ffffff` on `#3568f5` / `#80beff` | 4.72:1 / 1.96:1 | mixed |
+| P1 chip, destructive | `#ffffff` on `#ef4444` | 3.76:1 | large only |
+| success solid | `#ffffff` on `#16a34a` | 3.30:1 | large only |
+| success chip | `#ffffff` on `#4ade80` | 1.74:1 | fail |
+| disabled button | `#899cc9` on `#e8ecf3` | 2.31:1 | exempt (disabled) |
 | focus ring (UI) | `#007dfe` on `#ffffff` | 3.91:1 |
 
 Focus is shown as an opaque `--ring` ring with a 2 px gap in the background colour (`--shadow-focus`), so the ratios above hold on every control. Disabled controls are exempt from the contrast rule.
