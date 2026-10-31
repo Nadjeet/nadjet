@@ -1,3 +1,4 @@
+import type * as React from "react";
 import { ArrowUpRightIcon, type LucideIcon } from "lucide-react";
 import {
   AmbulanceIcon,
@@ -30,7 +31,7 @@ function KpiCard({
   badge,
 }: {
   title: string;
-  value: string;
+  value: React.ReactNode;
   hint: string;
   icon: LucideIcon;
   hintIcon: LucideIcon;
@@ -104,7 +105,7 @@ export function KpiRibbon({
       />
       <KpiCard
         title={t("ops.console.kpi.detection")}
-        value={detection === null ? none : `${detection.toFixed(1)} s`}
+        value={detection === null ? none : <bdi dir="ltr">{`${detection.toFixed(1)} s`}</bdi>}
         hint={t("ops.console.kpi.detectionHint")}
         icon={GaugeIcon}
         hintIcon={CpuIcon}

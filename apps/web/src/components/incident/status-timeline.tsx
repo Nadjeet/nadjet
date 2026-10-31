@@ -69,7 +69,9 @@ export function StatusTimeline({
               <Icon className="size-3.5" />
             </span>
             <div className="flex min-w-0 flex-col">
-              <span className={cn("text-body-md text-ink", active ? "font-semibold" : "font-medium")}>
+              <span
+                className={cn("text-body-md text-ink", active ? "font-semibold" : "font-medium")}
+              >
                 {t(`status.${status}`)}
               </span>
               <span className="text-body-xs text-ink-muted">

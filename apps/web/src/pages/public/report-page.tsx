@@ -209,7 +209,10 @@ export function ReportPage() {
       </form>
 
       {failed ? (
-        <div role="alert" className="flex flex-col gap-4 rounded-2xl border border-danger bg-danger-soft p-5">
+        <div
+          role="alert"
+          className="flex flex-col gap-4 rounded-2xl border border-danger bg-danger-soft p-5"
+        >
           <p className="font-medium">{t(`pages.public.report.fail.${failed}`)}</p>
           {failed === "location" ? (
             <>
