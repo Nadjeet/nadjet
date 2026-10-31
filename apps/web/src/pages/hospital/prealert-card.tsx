@@ -60,7 +60,9 @@ function Victims({ alert }: { alert: PreAlert }) {
       <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {TAGS.map((tag) => (
           <li key={tag} className={cn("flex flex-col rounded-xl border-4 px-3 py-2", TILE[tag])}>
-            <span className="font-mono text-display-xs font-semibold text-ink">{alert.victims[tag]}</span>
+            <span className="font-mono text-display-xs font-semibold text-ink">
+              {alert.victims[tag]}
+            </span>
             <span className="text-body-sm font-medium">{t(`respond.triage.${tag}`)}</span>
           </li>
         ))}
@@ -122,7 +124,7 @@ export function PreAlertCard({
   return (
     <article
       aria-labelledby={`prealert-${alert.short_code}`}
-      className="flex flex-col gap-4 rounded-3xl border border-border bg-card p-5 shadow-soft"
+      className="flex flex-col gap-4 rounded-2xl border-2 border-brand-200 bg-card p-5 shadow-card"
     >
       <header className="flex flex-wrap items-center gap-3">
         <h2 id={`prealert-${alert.short_code}`} className="text-display-xs font-semibold text-ink">
