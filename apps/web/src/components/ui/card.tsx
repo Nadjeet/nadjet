@@ -2,13 +2,13 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-/** Figma "Cards": white surface, 20 px radius, soft shadow. */
+/** Figma dashboard cards: white, 16 px radius, slate-200 border, soft blue-grey shadow. */
 function Card({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-slot="card"
       className={cn(
-        "flex flex-col gap-4 rounded-[20px] bg-card p-6 text-card-foreground shadow-soft",
+        "flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 text-card-foreground shadow-card",
         className,
       )}
       {...props}
@@ -26,7 +26,7 @@ function CardTitle({ className, ...props }: React.ComponentProps<"h3">) {
   return (
     <h3
       data-slot="card-title"
-      className={cn("text-display-xs font-bold text-balance", className)}
+      className={cn("text-body-lg font-semibold text-balance text-ink", className)}
       {...props}
     />
   );

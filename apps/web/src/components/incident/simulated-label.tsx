@@ -10,7 +10,7 @@ export function SimulatedLabel({ className }: { className?: string }) {
     <span
       data-slot="simulated-label"
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-dashed border-muted-foreground px-3 py-1 text-body-xs font-medium text-muted-foreground",
+        "inline-flex items-center gap-1 rounded-sm border border-dashed border-ink-subtle bg-surface-soft px-2 py-0.5 text-body-xs font-medium text-ink-muted",
         className,
       )}
     >

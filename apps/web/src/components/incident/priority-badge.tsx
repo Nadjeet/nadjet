@@ -34,7 +34,7 @@ export function PriorityBadge({
       data-slot="priority-badge"
       data-level={level}
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-body-xs font-bold text-white",
+        "inline-flex items-center gap-1 rounded-sm px-2 py-0.5 text-body-xs font-semibold text-white",
         tone,
         className,
       )}
