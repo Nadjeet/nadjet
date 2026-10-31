@@ -94,6 +94,15 @@ def test_FR_INC_002_merge_window_and_radius(seconds: int, metres: float, expecte
     assert should_merge(T0, T0 + timedelta(seconds=seconds), metres) is expected
 
 
+@pytest.mark.parametrize(
+    ("seconds", "metres", "expected"),
+    [(150, 0, True), (600, 50, True), (601, 0, False), (150, 51, False)],
+)
+def test_E_02_same_camera_reobservation_window(seconds: int, metres: float, expected: bool) -> None:
+    later = T0 + timedelta(seconds=seconds)
+    assert should_merge(T0, later, metres, same_camera=True) is expected
+
+
 def test_merge_keeps_strongest_signals_and_best_ai_status() -> None:
     assert merge_signals({"a": 1, "b": 5}, {"a": 3, "c": 2}) == {"a": 3, "b": 5, "c": 2}
     assert best_ai_status(AiStatus.POSSIBLE, AiStatus.CONFIRMED) is AiStatus.CONFIRMED

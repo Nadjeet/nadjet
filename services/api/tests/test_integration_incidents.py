@@ -55,11 +55,12 @@ def candidate(
     witness: Witness | None = None,
     verifier: VerifierResult | None = None,
     ai_status: AiStatus = AiStatus.PROBABLE,
+    camera_id: str = "cam-test",
 ) -> IncidentCandidate:
     now = at or datetime.now(UTC)
     return IncidentCandidate(
         source=CandidateSource.CAMERA,
-        camera_id="cam-test",
+        camera_id=camera_id,
         location=GeoLocation(lat=lat, lon=lon, road="A1", pk_km=12.5, wilaya="Alger"),
         witness=witness,
         trigger=TriggerType.COLLISION_CANDIDATE,
@@ -114,8 +115,25 @@ async def test_far_or_late_candidates_do_not_merge(app: FastAPI) -> None:
     t0 = datetime.now(UTC)
     first = await ingest(app, candidate(lat, lon, at=t0))
     far = await ingest(app, candidate(metres_north(lat, 120), lon, at=t0))
-    late = await ingest(app, candidate(lat, lon, at=t0 + timedelta(seconds=120)))
+    other_camera = candidate(lat, lon, at=t0 + timedelta(seconds=120), camera_id="cam-other")
+    late = await ingest(app, other_camera)
     assert len({first.id, far.id, late.id}) == 3
+
+
+async def test_E_02_same_camera_reobservation_is_counted_not_realerted(
+    app: FastAPI, session: AsyncSession
+) -> None:
+    """A looping clip (or a crash still in view after the trigger cooldown) fires again on the
+    same camera minutes later: it merges into the open incident; after 10 min it is new."""
+    lat, lon = fresh_spot()
+    t0 = datetime.now(UTC)
+    first = await ingest(app, candidate(lat, lon, at=t0))
+    again = await ingest(app, candidate(lat, lon, at=t0 + timedelta(seconds=150)))
+    assert again.id == first.id
+    refreshed = await session.get(Incident, first.id, populate_existing=True)
+    assert refreshed is not None and refreshed.report_count == 2
+    much_later = await ingest(app, candidate(lat, lon, at=t0 + timedelta(seconds=150 + 601)))
+    assert much_later.id != first.id
 
 
 async def test_merge_raises_priority_from_witness_and_keeps_one_incident(
