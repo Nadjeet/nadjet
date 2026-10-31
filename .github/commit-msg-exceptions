@@ -1,0 +1,4 @@
+# Commits already published on dev whose message breaks the one-line rule (AGENTS.md › Git rules).
+# Published history is never rewritten, so CI skips the message check for these SHAs only.
+# One full SHA per line, then the reason. Add a line only for a commit that is already on dev.
+81a326ab42f738955f7284f261ce8527046b827b squash merge of PR #35 kept the GitHub-generated body
