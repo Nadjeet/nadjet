@@ -65,7 +65,7 @@ function Result({ job, onDelete }: { job: TryJob; onDelete: () => void }) {
           aria-label={t("pages.public.try.annotated")}
         />
       ) : null}
-      <section className="rounded-xl border border-border bg-card p-4">
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-card">
         <div className="flex flex-wrap items-center gap-2">
           <h2 className="text-body-lg font-bold">{t("pages.public.try.incident")}</h2>
           <Badge variant="secondary">{t("pages.public.try.sandbox")}</Badge>
@@ -106,12 +106,10 @@ function Result({ job, onDelete }: { job: TryJob; onDelete: () => void }) {
           </ul>
         ) : null}
       </section>
-      <section className="rounded-xl border border-border bg-card p-4">
+      <section className="rounded-2xl border border-border bg-card p-5 shadow-card">
         <h2 className="text-body-lg font-bold">{t("pages.public.try.timeline")}</h2>
         {timeline.length === 0 ? (
-          <p className="mt-2 text-body-sm text-ink-muted">
-            {t("pages.public.try.timelineEmpty")}
-          </p>
+          <p className="mt-2 text-body-sm text-ink-muted">{t("pages.public.try.timelineEmpty")}</p>
         ) : (
           <ol className="mt-2 flex flex-col gap-1 text-body-sm">
             {timeline.map((entry) => (
@@ -176,7 +174,9 @@ export function TryPage() {
   const working = job !== null && !isFinal(job);
   return (
     <section className="flex flex-col gap-4 py-6">
-      <h1 className="text-display-xs font-semibold text-ink text-balance">{t("pages.public.try.title")}</h1>
+      <h1 className="text-display-xs font-semibold text-ink text-balance">
+        {t("pages.public.try.title")}
+      </h1>
       <p className="max-w-2xl text-body-lg text-ink-muted">
         {t("pages.public.try.body", {
           seconds: status.data?.max_seconds ?? 60,
@@ -185,10 +185,7 @@ export function TryPage() {
       </p>
       <Consent />
       {status.data && !status.data.ai_available ? (
-        <p
-          role="status"
-          className="flex items-center gap-2 font-medium text-danger"
-        >
+        <p role="status" className="flex items-center gap-2 font-medium text-danger">
           <CircleAlertIcon aria-hidden className="size-4" />
           {t("pages.public.try.aiUnavailable")}
         </p>

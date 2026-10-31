@@ -63,9 +63,7 @@ export function PhoneShell({
                   {initials(session.user.display_name)}
                 </span>
                 <span className="flex min-w-0 flex-col leading-tight">
-                  <span className="text-body-xs text-ink-muted">
-                    {t("common.welcomeBack")} 👋
-                  </span>
+                  <span className="text-body-xs text-ink-muted">{t("common.welcomeBack")} 👋</span>
                   <span className="truncate text-body-md font-semibold text-ink">
                     {session.user.display_name}
                   </span>

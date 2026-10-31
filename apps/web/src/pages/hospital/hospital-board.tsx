@@ -50,9 +50,14 @@ export function HospitalBoard() {
   const mass = incoming.filter((a) => a.mass_casualty);
   return (
     <div className="flex flex-col gap-6 text-body-lg">
-      <header className="flex flex-wrap items-baseline justify-between gap-3">
-        <h1 className="text-display-xs font-semibold text-ink">{facility.name}</h1>
-        <p className="text-body-lg text-ink-muted">
+      <header className="flex flex-wrap items-end justify-between gap-3">
+        <div className="flex min-w-0 flex-col leading-tight">
+          <span className="text-body-xs font-medium tracking-[0.5px] text-ink-muted uppercase">
+            {t("surface.hospital")}
+          </span>
+          <h1 className="text-display-xs font-semibold text-ink">{facility.name}</h1>
+        </div>
+        <p className="rounded-full bg-accent px-3 py-1 text-body-sm font-medium text-primary">
           {t("hospital.incoming", { count: incoming.length })}
         </p>
       </header>
@@ -60,7 +65,7 @@ export function HospitalBoard() {
       {mass.length > 0 ? (
         <p
           role="alert"
-          className="flex items-center gap-3 rounded-2xl border-4 border-danger bg-card p-4 text-body-xl font-bold"
+          className="flex items-center gap-3 rounded-2xl border-2 border-danger bg-danger-soft p-4 text-body-xl font-semibold text-ink"
         >
           <TriangleAlertIcon aria-hidden className="size-8 shrink-0" />
           {t("hospital.massCasualtyBanner", {
@@ -106,7 +111,7 @@ export function HospitalBoard() {
             {history.map((alert) => (
               <li
                 key={alert.incident_id}
-                className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4"
+                className="flex flex-wrap items-center gap-3 rounded-2xl border border-border bg-card p-4 shadow-card"
               >
                 <bdi dir="ltr" className="font-mono text-body-xl font-bold">
                   {alert.short_code}

@@ -112,7 +112,9 @@ export function ReportPage() {
     return (
       <section className="mx-auto flex max-w-xl flex-col gap-4 py-8" aria-live="polite">
         <CheckCircle2Icon aria-hidden className="size-14 text-success" />
-        <h1 className="text-display-xs font-semibold text-ink">{t("pages.public.report.doneTitle")}</h1>
+        <h1 className="text-display-xs font-semibold text-ink">
+          {t("pages.public.report.doneTitle")}
+        </h1>
         <p className="text-body-lg">{t("pages.public.report.doneBody")}</p>
         <p className="text-body-md">
           {t("pages.public.report.code")}{" "}
@@ -135,7 +137,9 @@ export function ReportPage() {
 
   return (
     <section className="mx-auto flex w-full max-w-xl flex-col gap-6 py-4">
-      <h1 className="text-display-xs font-semibold text-ink text-balance">{t("pages.public.report.title")}</h1>
+      <h1 className="text-display-xs font-semibold text-ink text-balance">
+        {t("pages.public.report.title")}
+      </h1>
       <form onSubmit={report} className="flex flex-col gap-5">
         <Button
           type="submit"
@@ -153,8 +157,8 @@ export function ReportPage() {
         </Button>
         <p className="text-body-sm text-ink-muted">{t("pages.public.report.hint")}</p>
 
-        <fieldset className="flex flex-col gap-4 rounded-lg border p-4">
-          <legend className="px-1 text-body-sm font-medium">
+        <fieldset className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-card">
+          <legend className="float-start mb-1 w-full text-body-md font-semibold text-ink">
             {t("pages.public.report.questions")}
           </legend>
           <div className="flex flex-col gap-1">
@@ -205,7 +209,7 @@ export function ReportPage() {
       </form>
 
       {failed ? (
-        <div role="alert" className="flex flex-col gap-4 rounded-lg border border-danger p-4">
+        <div role="alert" className="flex flex-col gap-4 rounded-2xl border border-danger bg-danger-soft p-5">
           <p className="font-medium">{t(`pages.public.report.fail.${failed}`)}</p>
           {failed === "location" ? (
             <>

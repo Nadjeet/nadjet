@@ -88,10 +88,10 @@ export function TryLivePage() {
 
   return (
     <section className="flex flex-col gap-4 py-6">
-      <h1 className="text-display-xs font-semibold text-ink text-balance">{t("pages.public.try.live.title")}</h1>
-      <p className="max-w-2xl text-body-lg text-ink-muted">
-        {t("pages.public.try.live.body")}
-      </p>
+      <h1 className="text-display-xs font-semibold text-ink text-balance">
+        {t("pages.public.try.live.title")}
+      </h1>
+      <p className="max-w-2xl text-body-lg text-ink-muted">{t("pages.public.try.live.body")}</p>
       <p className="rounded-xl border border-border bg-card p-4 text-body-sm text-ink-muted">
         {t("pages.public.try.consent.body")}
       </p>
@@ -120,10 +120,7 @@ export function TryLivePage() {
         )}
       </div>
       {error ? (
-        <p
-          role="alert"
-          className="flex items-center gap-2 font-medium text-danger"
-        >
+        <p role="alert" className="flex items-center gap-2 font-medium text-danger">
           <CircleAlertIcon aria-hidden className="size-4" />
           {error}
         </p>
