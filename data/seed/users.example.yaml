@@ -1,0 +1,42 @@
+# Local dev/demo users. Copy to data/seed/users.yaml (git-ignored), set your own passwords,
+# then run: uv run nadjet-api seed-users --file data/seed/users.yaml
+# Passwords here are placeholders; never reuse them outside a local machine.
+users:
+  - { username: operator, display_name: Operator, password: change-me-operator, role: operator }
+  - {
+      username: supervisor,
+      display_name: Supervisor,
+      password: change-me-supervisor,
+      role: supervisor,
+    }
+  - { username: auditor, display_name: Auditor, password: change-me-auditor, role: auditor }
+  - { username: admin, display_name: Admin, password: change-me-admin, role: admin }
+  - {
+      username: civil_protection,
+      display_name: Civil Protection,
+      password: change-me-cp,
+      role: responder,
+      agency: civil_protection,
+    }
+  - {
+      username: gendarmerie,
+      display_name: Gendarmerie,
+      password: change-me-gn,
+      role: responder,
+      agency: gendarmerie,
+    }
+  - {
+      username: police,
+      display_name: Police,
+      password: change-me-police,
+      role: responder,
+      agency: police,
+    }
+  - { username: samu, display_name: SAMU, password: change-me-samu, role: responder, agency: samu }
+  - {
+      username: hospital,
+      display_name: Hospital,
+      password: change-me-hospital,
+      role: hospital,
+      facility_id: osm-way-28919252, # Hôpital Mustapha Pacha (facilities.csv)
+    }

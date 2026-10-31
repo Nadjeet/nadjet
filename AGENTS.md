@@ -29,7 +29,7 @@ build: `PRD.md` (requirement IDs like `FR-VIS-007`). **How**: `docs/11-technical
 
 `make setup` · `make dev` · `make stop` · `make test` · `make test-unit` · `make lint` ·
 `make typecheck` · `make format` · `make gen` · `make check-contracts` · `make build` ·
-`make ci` · `make doctor` · `make brev-forward` · `make brev-check` · `make help` for all.
+`make ci` · `make doctor` · `make brev-forward` · `make brev-check` · `make eval` · `make help` for all.
 
 Definition of done for any change: `make format && make lint && make typecheck &&
 make check-contracts && make test` all pass locally (plus `make build` when build files change).
@@ -45,7 +45,8 @@ Report exact commands and results. Never claim a check passed if you did not run
   API contracts, error handling, edge cases and integrations.
   - Unit tests: no network, no infra; use fakes / `httpx.MockTransport`.
   - Integration tests: `@pytest.mark.integration`, real PostGIS/Redis from `make infra`.
-    They must **fail, not skip**, when infra is down.
+    They must **fail, not skip**, when infra is down. They run against the `nadjet_test`
+    database and Redis db 15, never the dev data, and never read `.env` (root `conftest.py`).
   - `@pytest.mark.brev`: live Brev endpoint; never in CI; run with `make test-brev`.
 - Name tests after behaviour and reference requirement IDs in docstrings where relevant.
 
@@ -65,7 +66,9 @@ Report exact commands and results. Never claim a check passed if you did not run
 - Never create incidents, detections or confidence values from hardcoded data, timestamps,
   file names or random values. Mocked AI answers are allowed **only in tests**.
 - Every AI value shown to users carries its source (rule name or model id).
-- Demo clips come from the held-out list; never tune on them.
+- Demo clips come from the held-out list (`eval/heldout.json`); never tune on them. Only the
+  catalogue validators and `eval/run_eval.py` may reference that file;
+  `scripts/check-integrity.sh` fails otherwise.
 
 ## Code conventions
 

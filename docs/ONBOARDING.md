@@ -28,17 +28,109 @@ make dev          # infra + API + web; Ctrl-C stops the apps, `make stop` stops 
 - MediaMTX (simulated cameras): RTSP `rtsp://localhost:8554/<camera-id>`, WebRTC
   `http://localhost:8889/<camera-id>`
 
-### Demo videos (optional for most work)
-
-Cameras are defined in `data/cameras.yaml`. Videos are **not** in git (research licences).
-Put H.264 files named `<camera-id>.mp4` in `data/videos/`, normalised for streaming:
+### Dev users (one per role)
 
 ```bash
-ffmpeg -i in.mp4 -vf "scale=1280:-2,fps=25" -c:v libx264 -profile:v baseline -g 25 -bf 0 -an data/videos/cam-a1-pk42.mp4
-make camsim && make dev
+cp data/seed/users.example.yaml data/seed/users.yaml   # git-ignored; set your own passwords
+make migrate
+(cd services/api && uv run nadjet-api seed-users --file ../../data/seed/users.yaml)
 ```
 
-Cameras without a video file are skipped with a warning.
+Re-running is safe: existing usernames are skipped. Sign in at http://localhost:5173/login: each role lands on its surface (`operator`, `supervisor`, `auditor`, `admin` → `/ops`; the agency users → `/respond`; `hospital` → `/hospital`). Public pages are at `/public`. The hospital view (`/hospital`) is a tablet layout: dispatch an incident to a hospital (operator console), then sign in as that hospital's user to see the pre-alert, the arrival countdown, Ready/Divert and the SMS equivalent. The responder app (`/respond`) needs a phone-sized viewport to judge; set `NADJET_SMS_GATEWAY_NUMBER` (the gateway SIM) to enable its "Send by SMS" button and generate the VAPID keys (`nadjet-api gen-vapid`) for web push; push and installation only work over HTTPS or `localhost` with the built app (`pnpm --filter @nadjet/web build && pnpm --filter @nadjet/web preview`), not the dev server. The palette, contrast values and the live-events design are in `apps/web/README.md`.
+`NADJET_JWT_SECRET` is optional locally but required (≥ 32 chars) in production.
+
+### Incident engine
+
+`make dev` also runs `nadjet-api consume` (Procfile.dev): it persists candidates queued by
+`POST /internal/candidates` (header `Authorization: Bearer $NADJET_INGEST_TOKEN`, plus an
+`Idempotency-Key`). Without the consumer, candidates wait in the Redis Stream and are saved when
+it restarts. Evidence files go under `NADJET_EVIDENCE_DIR`. Set `NADJET_SIGNING_KEY`
+(`uv run nadjet-api gen-signing-key`) in production; a fixed insecure key is used locally.
+Live updates: `GET /events` (Server-Sent Events, bearer token header).
+
+### Map, routing and facilities (once per machine)
+
+Everything runs locally; nothing contacts a public tile, routing or Overpass server at runtime.
+
+| Step | Command | Download / needs |
+|---|---|---|
+| Offline basemap | `make map-data` | Protomaps extract for Algeria, ~560 MB at zoom 14, a few minutes on a good link, much longer on a slow one (needs Docker); also fetches fonts and sprites (~13 MB) |
+| Routing data | `make routing-data` | Geofabrik Algeria extract ~290 MB; `osrm-extract` peaks at ~1.3 GB RAM (measured), ~3 GB disk, a few minutes |
+| Start routing | `make routing-up` | OSRM on `localhost:55000`; stop with `make routing-down` |
+| Facilities and units | `make seed-geo` | Imports `data/seed/*.csv` (simulated capabilities and units on real OSM locations); safe to re-run |
+
+`data/map/` and `apps/web/public/map/` are git-ignored. The API serves the basemap at
+`/tiles/algeria.pmtiles` (HTTP Range) and `GET /routing/recommendations?lat=&lon=&kind=&need=`
+(operator roles) ranks units and hospitals by road ETA; it answers 503 when OSRM is down. OSRM
+has no live traffic, so ETAs use an urban multiplier (`NADJET_ROUTING_URBAN_MULTIPLIER`, docs/11
+TD-38). Regenerating `data/seed/facilities.csv` is a one-off developer task:
+`python3 scripts/osm/export_facilities.py` (see `data/seed/README.md`, ODbL).
+
+### Notifications: SMS gateway and web push (FR-NTF, TD-13)
+
+`make dev` also runs `nadjet-api worker` (arq): it sends notifications, re-checks delivery after
+30 s, retries 3 times with back-off, then raises an operator alert on the incident timeline.
+
+**SMS gateway (own SIM, no third-party provider).** Needs an Android phone with a SIM and the
+[SMS Gateway for Android](https://docs.sms-gate.app/) app.
+
+1. Set `NADJET_SMS_PRIVATE_TOKEN` and `NADJET_SMS_DB_PASSWORD` in `.env`, then `make infra-sms`
+   (capcom6 server + MariaDB, port `NADJET_SMS_PORT`, default 53000).
+2. The phone must reach the server over HTTPS (reverse proxy, or a tunnel for a laptop demo).
+   In the app: Settings > Cloud Server: API URL `https://<host>/api/mobile/v1`, private token =
+   `NADJET_SMS_PRIVATE_TOKEN`; enable "Cloud server", Start, choose **Sign Up**. The app then shows a
+   generated username and password.
+3. Put them in `.env`: `NADJET_SMS_GATEWAY_URL=https://<host>`, `NADJET_SMS_GATEWAY_USER`,
+   `NADJET_SMS_GATEWAY_PASSWORD`. Set `NADJET_SMS_WEBHOOK_SECRET` and use the same value as the app's
+   webhook signing key (Settings > Webhooks).
+4. Register the webhooks (Basic auth with the app credentials), pointing at the API:
+   `POST <gateway>/api/3rdparty/v1/webhooks` with `{"id":"in","url":"https://<api>/sms/inbound","event":"sms:received"}`
+   and one each for `sms:sent`, `sms:delivered`, `sms:failed` with url `https://<api>/sms/status`.
+   If your build does not sign webhooks, append `?token=<NADJET_SMS_WEBHOOK_SECRET>` to the URLs.
+5. Check: `uv run nadjet-api send-test-sms --to +213XXXXXXXXX`.
+
+Local mode (phone on the same LAN as the laptop) is only for the offline fallback. The message
+grammar is in `contracts/sms-grammar.md`. A user is recognised by `users.phone`.
+
+**Citizen web report (FR-CIT-001/006).** `/public/report` needs no login. Set
+`VITE_SMS_GATEWAY_NUMBER` (the gateway SIM, international format) in `.env` **before building** the web app: the
+SMS fallback uses it when the phone has no data. Tune `NADJET_PUBLIC_REPORT_RATE_LIMIT`,
+`NADJET_PUBLIC_REPORT_WINDOW_S` and `NADJET_PUBLIC_PHOTO_MAX_MB` if needed. Poster QR code:
+`uv run --script scripts/gen_report_qr.py https://<public host>/public/report` (writes `docs/demo/qr-report.png`).
+Manual check of the offline path: open the page once online, switch the phone to airplane mode, tap
+**Report a crash**: the SMS app opens with `ACCIDENT <lat>,<lon> P<n> C<0|1>`.
+
+**Web push.** `uv run nadjet-api gen-vapid`, copy both lines to `.env`. Browsers subscribe with
+`GET /push/public-key` + `POST /push/subscriptions`. Manual check: subscribe a browser, then
+queue an alert for that user (`queue_alerts` + `enqueue_all` from `nadjet_api.notifications`).
+
+**CAP 1.2.** `GET /incidents/<id>.cap.xml` (bearer token) returns the incident as a CAP alert
+with Arabic and French `info` blocks.
+
+### Demo videos (optional for most work)
+
+Cameras are defined in `data/cameras.yaml` (zones in `data/zones/<camera-id>.json`, demo clips
+listed in `eval/heldout.json`). Videos are **not** in git (research licences). Download the clips
+by hand following `scripts/videos/fetch.md`, then normalise them:
+
+```bash
+bash scripts/videos/prepare.sh      # data/videos/raw/<camera-id>.* -> data/videos/<camera-id>.mp4
+make camsim && make dev             # RTSP rtsp://localhost:8554/<id>, WebRTC http://localhost:8889/<id>
+```
+
+Cameras without a video file are skipped with a warning. `make dev` also syncs the camera
+registry (`make seed-cameras`); operators read it with `GET /cameras`.
+
+Simulator controls (FR-CAM-004), while `make dev` runs:
+
+```bash
+make camsim-list
+make camsim-freeze CAM=cam-a1-pk42      # no new frames, RTSP session stays open
+make camsim-unfreeze CAM=cam-a1-pk42
+make camsim-outage CAM=cam-a1-pk42      # drops the stream path; make camsim-restore brings it back
+make camsim-swap CAM=cam-a1-pk42 VIDEO=other.mp4
+make camsim-restart CAM=cam-a1-pk42     # clip restarts from 0
+```
 
 ## 3. AI inference: NVIDIA Brev only
 
@@ -56,6 +148,67 @@ for local development.
 6. Live test: `make test-brev` (not part of `make test` or CI).
 
 If Brev is unreachable, the app reports "AI unavailable" and keeps the rule-based signals.
+
+### Run the vision workers on Brev
+
+Workers run on the GPU instance and use two reverse tunnels (instance → your laptop) plus the
+vLLM port on the instance itself. The instance is never started by these commands: if it is not
+`RUNNING` they print `brev start nadjet-gpu` and stop (credits are manual).
+
+1. Locally: `make camsim && make dev` (MediaMTX on :8554, API on :8080) and `make brev-up`.
+2. `make brev-tunnel` opens, over the Brev ssh alias:
+   `-L 18000:127.0.0.1:8000` (vLLM for local tools), `-R 18554:127.0.0.1:8554` (RTSP) and
+   `-R 18080:127.0.0.1:8080` (API). Workers on the instance therefore use
+   `rtsp://127.0.0.1:18554` and `http://127.0.0.1:18080`.
+3. `make brev-deploy-workers` copies `deploy/gpu`, writes a 0600 `.env` with
+   `NADJET_INGEST_TOKEN` (from your local `.env`), pulls `ghcr.io/nadjeet/nadjet-vision:dev`
+   and starts the `workers` service. Until the first image is published (CI pushes on `dev` and
+   `main`), it builds the image on the instance instead, from the committed `HEAD` (uncommitted
+   changes are not sent). GHCR packages are private by default: either make
+   `nadjet-vision` public in the organisation's package settings, or run once on the instance
+   `docker login ghcr.io -u <github-user>` with a read-only token (`read:packages`); otherwise
+   every deploy falls back to the slow build. Set `NADJET_VISION_IMAGE` to pin a tag such as
+   `ghcr.io/nadjeet/nadjet-vision:<sha>`. A failed build or start stops with an error.
+4. `make brev-logs F=-f` should show `API http://127.0.0.1:18080/health reachable` and
+   `camera=cam-a1-pk42 fps=…` lines per camera. Cameras without a running stream log
+   `stream error` and retry with back-off (1 s to 30 s). A frozen camera (no frames, session
+   open) is detected after about 5 s and reconnected.
+5. `make brev-untunnel` cancels all three forwards. `brev stop nadjet-gpu` when done.
+
+Quick image check on the instance: `docker run --rm --gpus all ghcr.io/nadjeet/nadjet-vision:dev --help`.
+What a worker does (issue #8): one process per camera reads the stream at 5 fps, runs RF-DETR
+(weights downloaded once into the `weights` volume and checked against `models.lock.yaml`),
+tracks vehicles and people with ByteTrack, measures relative speed (box-heights per second),
+sets `camera_moving` while the camera pans, publishes the annotated stream `<camera>_ai`
+(`rtsp://…/<camera>_ai`, played over WebRTC like any camera) and pushes a health report every 5 s.
+
+- Metrics: camera *i* (in catalogue order) serves Prometheus text on the instance at
+  `http://127.0.0.1:<9100+i>/metrics` (`NADJET_METRICS_PORT_BASE`).
+- System page data: `GET /system/cameras` (operator/supervisor/admin) returns status, fps,
+  per-stage latency (decode/detect/track/annotate), queue depth and `camera_moving`; `stale: true`
+  means the worker stopped reporting.
+- Fault test: `make camsim-freeze CAM=cam-a1-pk42` makes the camera `degraded` within about 15 s
+  (`camera_fault` on `GET /events`); `make camsim-unfreeze CAM=cam-a1-pk42` clears it. Other cameras
+  keep running. `make camsim-outage` / `camsim-restore` shows the reconnect back-off in
+  `make brev-logs`.
+- Camera wall (`/ops/cameras`) and system page (`/ops/system`, operator/supervisor/admin): the wall
+  plays every camera from `GET /cameras` (WebRTC, falling back to LL-HLS; each tile switches between
+  the `<cam>_ai` annotated stream and the raw one). The system page adds `GET /system/ai`: the served
+  model id, or "AI unavailable" when Brev is unreachable.
+- KPIs, evaluation and admin (`/ops/kpis`, `/ops/evaluation` for supervisor and admin, `/ops/admin`
+  for admin): `GET /kpis` computes response-time medians and p90 from the incident events;
+  `GET /evaluation/latest` is rendered with its date and commit; `/admin/*` edits cameras, facilities,
+  units and users and audits every change. Evidence older than `NADJET_RETENTION_DAYS` (default 90,
+  max 365) is purged hourly and audited as `retention.purge`.
+- Glass-to-glass latency (SC-007, ≤ 1.5 s): play a clip with an on-screen clock as a camera (or open a
+  clock page next to the wall), film both with a phone at 60 fps, and read the difference between the
+  clock on the source and the same clock inside the tile. The latency printed on the tile is only what
+  the browser adds (jitter buffer + half RTT).
+- Fallback test: point `NADJET_WHEP_URL_TEMPLATE` at an unreachable port (for example
+  `http://localhost:8890/{path}/whep`) and restart the API, or block UDP `8189` on the video host;
+  within about 10 s each tile shows `LL-HLS` and "WebRTC unavailable, using fallback".
+- Detection settings: `NADJET_DETECTOR_THRESHOLD` (0.4), `NADJET_SAMPLE_FPS` (5),
+  `NADJET_STALL_S` (10), `NADJET_ANNOTATED_ENCODER` (`h264_nvenc`; use `libx264` without a GPU).
 
 ## 4. Daily workflow
 
@@ -89,3 +242,53 @@ claude                              # in the repo root
 - `make stop` — stop containers (keeps data) · `make down` — remove containers.
 - `make clean` — remove caches and builds (keeps `.env`, dependencies, data).
 - `make reset-db` — delete local PostGIS/Redis data (asks for confirmation).
+
+From issue #9 the worker also evaluates the four crash rules (`collision_candidate`, `hard_stop`,
+`stalled_vehicle`, `pedestrian_on_road`) on the tracks. A fired rule is posted at once to
+`POST /internal/candidates` (needs `NADJET_INGEST_TOKEN`); the 10 s + 5 s clip (stream copy) and 6
+keyframes follow to `POST /internal/evidence` and show up under the incident, where
+`/incidents/{id}/integrity` verifies them. Thresholds are the doc 11 §6 defaults; to tune one camera
+add `triggers: { stalled_s: 30 }` to its entry in `data/cameras.yaml` (names: `TriggerConfig` in
+`services/vision/src/nadjet_vision/triggers.py`). Each rule logs `trigger=… tracks=… signals=…` in
+`make brev-logs`. `NADJET_PUBLISH_CANDIDATES=false` detects and logs without posting.
+
+From issue #10 every rule candidate is checked by Qwen3-VL on Brev before it is posted (the worker
+needs the vLLM port-forward, `make brev-forward`, or the host network on the instance): the
+candidate carries the verdict, the cited findings and the AI status (`confirmed` / `probable` /
+`possible` / `insufficient_evidence`). If vLLM is down the candidate still goes out at once with
+`verifier: unavailable`. The AI sweep looks at the last 8 s of every camera every 5 s and can open a
+`possible_incident` for crashes the rules miss (never a `collision`); `NADJET_SWEEP_ENABLED=false`
+turns it off and `NADJET_VERIFY_CANDIDATES=false` skips verification. `make test-brev` runs the live
+check against the real endpoint (uses GPU credits).
+
+### Seed the demo data (issue #22)
+
+`make seed-demo` (after `make migrate`) loads the users of `data/seed/users.yaml` (copy of
+`users.example.yaml`; put the demo phones on the responders), the camera registry and the simulated
+units and facilities in one idempotent call. It never creates incidents: those come from the live
+pipeline (FR-VIS-020). Demo day procedure: `docs/demo/RUNBOOK.md`; measurements: `docs/demo/RESULTS.md`.
+
+### Evaluate on the held-out clips (issue #19)
+
+`make eval` replays every scorable clip of `eval/heldout.json` through the real pipeline and writes
+`eval/results/<date>-<git-sha>.json` and a Markdown summary (needs the GPU extra and
+`make brev-forward`; `EVAL_ARGS="--no-ai"` runs the rules only, `--camera <id>` gives clips with no
+camera of their own the zones of one). Clips need their video (`data/videos/<camera video>` for the
+demo clips, `data/eval/<clip id>.mp4` for the others) and, for crashes, an annotated impact time;
+the others are listed under `skipped_clips`. The script refuses to run if a tuning file names a clip
+id or a camera with `triggers:` overrides is bound to a held-out clip. Check reproducibility with
+`make eval-compare A=<file> B=<file>`. The supervisor reads the newest file at
+`GET /evaluation/latest`.
+
+### Try it yourself (issue #18)
+
+`/public/try` lets anyone upload a clip (≤ 60 s, ≤ 100 MB) and `/public/try/live` turns a phone into
+a camera. Both are analysed by `try-worker` (`nadjet-vision try`, part of `make brev-deploy-workers`)
+with the same detector, tracker, rules and Brev AI as the real cameras. Uploads are analysed in two
+AI passes and return the annotated video, the rule timeline, the verdict with cited frames and a
+**sandbox incident** that lives only in the job result: it never appears in the operator queue, the
+KPIs or the evaluation. Uploads, outputs and live sessions are deleted after one hour (a phone
+session when it stops pinging). A live phone shows on the operator camera wall tagged "live demo"
+with the AI boxes; the AI checks it every 4 s. Browsers need HTTPS for the phone camera (use the
+Cloudflare or Brev tunnel on stage). With vLLM stopped the page says "AI unavailable" and shows the
+rule-based result only.

@@ -4,7 +4,14 @@ from pathlib import Path
 import pytest
 from pydantic import ValidationError
 
-from nadjet_shared import AiStatus, IncidentCandidate, TriggerType, VerifierResult
+from nadjet_shared import (
+    AiStatus,
+    CandidateSource,
+    GeoLocation,
+    IncidentCandidate,
+    TriggerType,
+    VerifierResult,
+)
 from nadjet_shared.export_schemas import export, main
 
 NOW = datetime(2026, 10, 30, 12, 0, tzinfo=UTC)
@@ -13,6 +20,7 @@ NOW = datetime(2026, 10, 30, 12, 0, tzinfo=UTC)
 def make_candidate(**overrides: object) -> IncidentCandidate:
     data: dict[str, object] = {
         "camera_id": "cam-a1-pk42",
+        "location": GeoLocation(lat=36.648, lon=3.329, road="A1"),
         "trigger": TriggerType.COLLISION_CANDIDATE,
         "event_time": NOW,
         "detected_at": NOW,
@@ -38,6 +46,30 @@ def test_candidate_requires_camera_id() -> None:
         make_candidate(camera_id="")
 
 
+def test_citizen_candidate_needs_no_camera_and_defaults_to_no_ai() -> None:
+    candidate = IncidentCandidate(
+        source=CandidateSource.CITIZEN,
+        location=GeoLocation(lat=36.7, lon=3.1),
+        trigger=TriggerType.CITIZEN_REPORT,
+        event_time=NOW,
+        detected_at=NOW,
+    )
+    assert candidate.verifier.available is False
+    assert candidate.ai_status is AiStatus.INSUFFICIENT_EVIDENCE
+
+
+def test_location_is_required() -> None:
+    with pytest.raises(ValidationError):
+        IncidentCandidate.model_validate(
+            {"trigger": "hard_stop", "event_time": NOW, "detected_at": NOW, "camera_id": "c"}
+        )
+
+
+def test_verifier_raise_is_at_most_one_level() -> None:
+    with pytest.raises(ValidationError):
+        VerifierResult(available=True, priority_raise=2)
+
+
 @pytest.mark.parametrize("value", [-0.1, 1.5])
 def test_yes_probability_must_be_a_probability(value: float) -> None:
     with pytest.raises(ValidationError):
@@ -50,7 +82,12 @@ def test_verdict_values_are_restricted() -> None:
 
 
 def test_export_writes_then_reports_no_drift(tmp_path: Path) -> None:
-    assert export(tmp_path, check=False) == ["incident.candidate.schema.json"]
+    assert sorted(export(tmp_path, check=False)) == [
+        "camera.health.schema.json",
+        "evaluation.results.schema.json",
+        "incident.candidate.schema.json",
+        "try.result.schema.json",
+    ]
     assert export(tmp_path, check=True) == []
 
 
@@ -62,3 +99,28 @@ def test_check_mode_fails_on_drift_without_writing(tmp_path: Path) -> None:
 
 def test_committed_schemas_are_up_to_date() -> None:
     assert main(["--check"]) == 0
+
+
+def test_candidate_rejects_naive_timestamps() -> None:
+    """Naive times would break merge arithmetic and be stored in the DB session's zone."""
+    with pytest.raises(ValidationError):
+        make_candidate(event_time=datetime(2026, 10, 30, 12, 0))
+
+
+def test_findings_are_structured_and_legacy_strings_still_load() -> None:
+    from nadjet_shared import Finding
+
+    structured = VerifierResult(
+        available=True,
+        findings=[Finding(statement="Cars touch", basis="observed", frame_ids=[3, 4])],
+    )
+    assert VerifierResult.model_validate_json(structured.model_dump_json()) == structured
+    legacy = VerifierResult.model_validate({"available": True, "findings": ["old text"]})
+    assert legacy.findings == [Finding(statement="old text", basis="inferred", frame_ids=[])]
+
+
+def test_a_finding_basis_is_observed_or_inferred() -> None:
+    from nadjet_shared import Finding
+
+    with pytest.raises(ValidationError):
+        Finding(statement="x", basis="guessed", frame_ids=[])

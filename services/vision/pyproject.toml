@@ -7,11 +7,21 @@ dependencies = [
   "nadjet-shared",
   "httpx>=0.28",
   "pydantic-settings>=2.6",
+  "numpy>=2.0",
+  "pyyaml>=6.0",
 ]
 
 [project.optional-dependencies]
 # Heavy runtime deps for the GPU worker image on Brev (not needed for local dev or tests).
-gpu = ["rfdetr>=1.3", "supervision>=0.25", "av>=14"]
+# torch/torchvision are listed so the root pins them to CUDA 12.6 wheels on Linux (TD-50).
+gpu = [
+  "rfdetr>=1.3",
+  "supervision>=0.25",
+  "trackers>=2.6",
+  "av>=14",
+  "torch>=2.6",
+  "torchvision>=0.21",
+]
 
 [project.scripts]
 nadjet-vision = "nadjet_vision.cli:main"

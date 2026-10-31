@@ -9,16 +9,26 @@ from nadjet_shared.events import (
     AiStatus,
     CandidateSource,
     Evidence,
+    Finding,
+    GeoLocation,
     IncidentCandidate,
     TriggerType,
     VerifierResult,
+    Witness,
 )
+from nadjet_shared.health import CameraHealthReport, FaultReason, StageLatencyMs
 
 __all__ = [
     "AiStatus",
+    "CameraHealthReport",
     "CandidateSource",
     "Evidence",
+    "FaultReason",
+    "Finding",
+    "GeoLocation",
     "IncidentCandidate",
+    "StageLatencyMs",
     "TriggerType",
     "VerifierResult",
+    "Witness",
 ]

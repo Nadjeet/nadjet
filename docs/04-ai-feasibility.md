@@ -126,6 +126,12 @@ optional side branch: smoke/fire detector @ ~2 fps + 10-min watch after an incid
 - **Held-out rule.** Demo clips come from `eval/heldout.json` and are never used for tuning. `eval/run_eval.py` is published so the jury can rerun it.
 - **Dataset licences.** TAD, CADP, TU-DAT, UCF-Crime and the ACCIDENT clips are research-only. Use them for evaluation and demo only, and disclose that.
 
+### Status of the evaluation (issue #19)
+
+The harness exists (`make eval`, TD-42) and every metric above is computed by tested functions, but **no real run has been made yet**: the annotated crash clips, the held-out video files and at least one camera-hour of normal and congested footage are not in the repository, and a run needs the Brev GPU. Until `make eval` has written a file to `eval/results/`, there are no measured numbers in this document: the targets in the success criteria (recall ≥ 0.7, at most 1 false alarm per camera-hour) are goals, not results.
+
+What a results file reports: precision, recall, F1, median detection delay and mean crash-time error with bootstrap 95 % intervals; false alarms per camera-hour; the ablation table (rules, + verifier, + sweep; the boxes on/off comparison is listed as not run because drawn boxes are not implemented, TQ-06); AI quality (valid JSON on the first try, findings dropped for invalid citations, share of "cannot judge"); per-stage latency p50/p95; the clips that were skipped and why; and the limitations of the run. Known limits of the method: intervals over a few dozen clips are wide; delay is stream time without network and queue time; the priority-agreement metric and the robustness (fault-injection) runs of this protocol are not part of the harness yet.
+
 ## 6. Priority (decision support, not medical prediction)
 
 **Priority minimums** (PRD FR-INC-003). Each rule sets a minimum; the final priority is the highest minimum. Every fired rule is shown with its evidence.

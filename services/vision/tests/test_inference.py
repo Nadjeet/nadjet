@@ -32,8 +32,15 @@ def completion(content: dict[str, Any], logprobs: dict[str, Any] | None) -> dict
     return {"choices": [{"message": {"content": json.dumps(content)}, "logprobs": logprobs}]}
 
 
-ANSWER = {
+ANSWER: dict[str, Any] = {
     "collision_visible": "yes",
+    "t_contact": 0.5,
+    "type": "collision",
+    "vehicles_involved": 2,
+    "lanes_blocked": 1,
+    "findings": [{"statement": "Two cars touch", "basis": "observed", "frame_ids": [3, 4]}],
+    "not_assessable": ["occupants"],
+    "priority_raise": 0,
     "description_fr": "Deux voitures.",
     "description_ar": "سيارتان.",
 }
@@ -102,7 +109,7 @@ async def test_verify_sends_structured_request_and_parses_answer() -> None:
         return httpx.Response(200, json=completion(ANSWER, lp))
 
     client = BrevVlmClient(settings(), transport=transport(handler))
-    result = await client.verify("file:///clips/a.mp4")
+    result = await client.verify("file:///clips/a.mp4", frame_count=20)
     await client.aclose()
 
     assert seen["model"] == MODEL
@@ -126,7 +133,7 @@ async def test_verify_failures_mean_unavailable_never_another_provider(
     response: httpx.Response,
 ) -> None:
     client = BrevVlmClient(settings(), transport=transport(lambda r: response))
-    result = await client.verify("file:///clips/a.mp4")
+    result = await client.verify("file:///clips/a.mp4", frame_count=20)
     await client.aclose()
     assert result.available is False
     assert result.collision_visible is None
@@ -137,6 +144,26 @@ async def test_verify_timeout_means_unavailable() -> None:
         raise httpx.ReadTimeout("slow", request=request)
 
     client = BrevVlmClient(settings(), transport=transport(handler))
-    result = await client.verify("file:///clips/a.mp4")
+    result = await client.verify("file:///clips/a.mp4", frame_count=20)
     await client.aclose()
     assert result.available is False
+
+
+def test_FR_VIS_009_default_budget_fits_a_measured_verifier_call() -> None:
+    """One verifier call took 6.2-6.7 s on the L40S (TD-50); the old 7 s budget, which also
+    covers building the clip, made every live candidate 'unavailable'. The budget stays within
+    the doc 11 §6 verifier timeout."""
+    settings = VisionSettings()
+    assert 12.0 <= settings.vlm_budget_s <= settings.vlm_timeout_s
+
+
+def test_FR_CIT_002_verifier_default_budget_is_the_configured_one() -> None:
+    """The try-it worker built ``AiVerifier`` without a budget and got a hardcoded 7 s, so the
+    second (refine) pass always timed out (TD-50)."""
+    import inspect
+
+    from nadjet_vision.verifier import AiVerifier
+
+    defaults = inspect.signature(AiVerifier.__init__).parameters
+    assert defaults["budget_s"].default == VisionSettings.model_fields["vlm_budget_s"].default
+    assert defaults["backoff_s"].default == VisionSettings.model_fields["vlm_backoff_s"].default

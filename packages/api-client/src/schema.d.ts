@@ -4,6 +4,365 @@
  */
 
 export interface paths {
+    "/admin/cameras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Cameras */
+        get: operations["list_cameras_admin_cameras_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/cameras/{camera_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Camera */
+        patch: operations["update_camera_admin_cameras__camera_id__patch"];
+        trace?: never;
+    };
+    "/admin/cameras/{camera_id}/zones": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Replace Zones
+         * @description Replace the camera's zones (``live_lanes`` / ``carriageway`` polygons) with this JSON.
+         */
+        put: operations["replace_zones_admin_cameras__camera_id__zones_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/facilities": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Facilities */
+        get: operations["list_facilities_admin_facilities_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/facilities/{facility_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Facility */
+        patch: operations["update_facility_admin_facilities__facility_id__patch"];
+        trace?: never;
+    };
+    "/admin/units": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Units */
+        get: operations["list_units_admin_units_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/units/{unit_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update Unit */
+        patch: operations["update_unit_admin_units__unit_id__patch"];
+        trace?: never;
+    };
+    "/admin/users": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** List Users */
+        get: operations["list_users_admin_users_get"];
+        put?: never;
+        /** Create User */
+        post: operations["create_user_admin_users_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/admin/users/{user_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Update User */
+        patch: operations["update_user_admin_users__user_id__patch"];
+        trace?: never;
+    };
+    "/auth/login": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Login
+         * @description Exchange username and password for a short-lived access token.
+         */
+        post: operations["login_auth_login_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/me": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Me
+         * @description The authenticated user.
+         */
+        get: operations["me_auth_me_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/auth/stream-token": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Stream Token
+         * @description Short-lived token to watch camera streams (WHEP/HLS), for the console roles.
+         */
+        post: operations["stream_token_auth_stream_token_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cameras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Cameras
+         * @description All registered cameras with coordinates, zones and stream URLs.
+         */
+        get: operations["list_cameras_cameras_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/cameras/{camera_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Camera */
+        get: operations["get_camera_cameras__camera_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/evaluation/latest": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Latest Evaluation
+         * @description Precision, recall, F1, delay, false alarms per camera-hour and the ablation table of the
+         *     newest run on the evaluation clips, with what was not run and the limitations.
+         */
+        get: operations["latest_evaluation_evaluation_latest_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Incident Events
+         * @description Server-Sent Events: ``incident.created|updated|status_changed`` with id and version.
+         *
+         *     Clients refetch the incident on each event. A comment heartbeat is sent every 15 s.
+         */
+        get: operations["incident_events_events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/facilities/{facility_id}/prealerts": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Prealerts
+         * @description Incoming pre-alerts and today's arrivals of a hospital (FR-HSP-001).
+         */
+        get: operations["prealerts_facilities__facility_id__prealerts_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/facilities/{facility_id}/prealerts/{incident_id}/ack": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Acknowledge
+         * @description The hospital confirms it saw the pre-alert; repeating it changes nothing.
+         */
+        post: operations["acknowledge_facilities__facility_id__prealerts__incident_id__ack_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/facilities/{facility_id}/readiness": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Readiness
+         * @description Ready or Divert, from the screen (the SMS ``H <code> READY|DIVERT`` does the same).
+         *
+         *     Divert alerts the operators of every incident that selected the hospital (E-10).
+         */
+        post: operations["readiness_facilities__facility_id__readiness_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/health": {
         parameters: {
             query?: never;
@@ -18,6 +377,796 @@ export interface paths {
         get: operations["health_health_get"];
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Incidents
+         * @description Incidents ordered by priority then recency, limited to the caller's scope.
+         */
+        get: operations["list_incidents_incidents_get"];
+        put?: never;
+        /**
+         * Create Incident
+         * @description Operator creates an incident from a phone call (FR-INC-007); it starts verified.
+         */
+        post: operations["create_incident_incidents_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Incident
+         * @description One incident with its event timeline, evidence and casualties.
+         */
+        get: operations["get_incident_incidents__incident_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}.cap.xml": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Incident Cap
+         * @description The incident as an OASIS CAP 1.2 alert, in Arabic and French (FR-INC-009).
+         */
+        get: operations["incident_cap_incidents__incident_id__cap_xml_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/casualties": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Add Casualty
+         * @description Record a triage entry; the incident priority is recomputed (FR-INC-004, FR-INC-008).
+         */
+        post: operations["add_casualty_incidents__incident_id__casualties_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/dispatch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Dispatch Incident
+         * @description Dispatch units and one hospital in one action (FR-DSP-003, FR-NTF-001, FR-NTF-006).
+         */
+        post: operations["dispatch_incident_incidents__incident_id__dispatch_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/dispatches": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * List Dispatches
+         * @description Dispatches of the incident with the delivery status of each notification.
+         *
+         *     A responder only gets the hospital the patients go to.
+         */
+        get: operations["list_dispatches_incidents__incident_id__dispatches_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/evidence/{evidence_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Download Evidence
+         * @description Stream an evidence file; every view or download is audited (FR-SEC-004).
+         */
+        get: operations["download_evidence_incidents__incident_id__evidence__evidence_id__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/hospital": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Change Hospital
+         * @description Send the patients to another hospital, e.g. after a DIVERT (E-10).
+         */
+        post: operations["change_hospital_incidents__incident_id__hospital_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/integrity": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Integrity
+         * @description Recompute evidence hashes and the signed event chain (FR-SEC-003).
+         */
+        get: operations["integrity_incidents__incident_id__integrity_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/merge": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Merge Incident
+         * @description Operator merges a candidate into another open incident (FR-INC-002, E-14).
+         */
+        post: operations["merge_incident_incidents__incident_id__merge_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recommendations
+         * @description Units and hospitals ranked by road ETA for this incident's needs (FR-DSP-001/002).
+         */
+        get: operations["recommendations_incidents__incident_id__recommendations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Reject Incident
+         * @description Operator rejects a candidate with a reason label (FR-INC-006).
+         */
+        post: operations["reject_incident_incidents__incident_id__reject_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Set Status
+         * @description Advance the response lifecycle (dispatch, acknowledge, ..., close).
+         */
+        post: operations["set_status_incidents__incident_id__status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/incidents/{incident_id}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Verify Incident
+         * @description Operator confirms a candidate (FR-INC-005).
+         */
+        post: operations["verify_incident_incidents__incident_id__verify_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/camera-health": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Camera Health
+         * @description Store the latest report; a fault or recovery updates the camera status once.
+         */
+        post: operations["post_camera_health_internal_camera_health_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/candidates": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Candidate
+         * @description Queue a candidate (Redis Stream). Re-sending the same ``Idempotency-Key`` is safe.
+         */
+        post: operations["post_candidate_internal_candidates_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/evidence": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Upload Evidence
+         * @description Store a file under the evidence root; SHA-256 is computed server-side (FR-SEC-003).
+         *
+         *     Identify the incident by ``incident_id`` or by the ``idempotency_key`` of its candidate.
+         */
+        post: operations["upload_evidence_internal_evidence_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/mediamtx-auth": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Mediamtx Auth
+         * @description Allow or reject one MediaMTX publish/read/api request.
+         */
+        post: operations["mediamtx_auth_internal_mediamtx_auth_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/claim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Claim */
+        post: operations["claim_internal_try_claim_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/fail": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Failure */
+        post: operations["post_failure_internal_try_jobs__job_id__fail_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Job File */
+        get: operations["job_file_internal_try_jobs__job_id__file_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/progress": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Progress */
+        post: operations["progress_internal_try_jobs__job_id__progress_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/result": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Result */
+        post: operations["post_result_internal_try_jobs__job_id__result_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/jobs/{job_id}/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Put Video
+         * @description Store the annotated video (raw MP4 body).
+         */
+        put: operations["put_video_internal_try_jobs__job_id__video_put"];
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Active Sessions
+         * @description Live phone sessions the worker should be attached to.
+         */
+        get: operations["active_sessions_internal_try_sessions_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/sessions/{session_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Session Event */
+        post: operations["session_event_internal_try_sessions__session_id__events_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/internal/try/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Report Status
+         * @description The worker reports whether the Brev AI answers; the flag expires if it stops reporting.
+         */
+        post: operations["report_status_internal_try_status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/kpis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kpis
+         * @description Durations per incident and their median and p90 by period, agency and wilaya, plus the
+         *     false-alarm rate per camera. Merged incidents are duplicates and are not counted.
+         */
+        get: operations["kpis_kpis_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/map/resources": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Map Resources
+         * @description Every facility and unit with its position; ``simulated`` ones must be labelled.
+         */
+        get: operations["map_resources_map_resources_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/reports": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Post Report
+         * @description Create an unverified citizen incident at ``lat``/``lon``, merged with a nearby one.
+         *
+         *     Re-sending the same ``Idempotency-Key`` (a double tap, a retry) returns the same report.
+         */
+        post: operations["post_report_public_reports_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Job
+         * @description Upload the raw video as the request body (``Content-Type: video/*``). The upload stops
+         *     as soon as it is too large; the file is sniffed and, for MP4/MOV, its duration is read.
+         */
+        post: operations["create_job_public_try_jobs_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs/{job_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Job */
+        get: operations["get_job_public_try_jobs__job_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * Delete Job
+         * @description Delete an upload and its outputs now (the owner of the link may do it before the TTL).
+         */
+        delete: operations["delete_job_public_try_jobs__job_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs/{job_id}/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Stream Job
+         * @description Progress of a job over SSE (FR-CIT-002).
+         */
+        get: operations["stream_job_public_try_jobs__job_id__events_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/jobs/{job_id}/video": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Job Video */
+        get: operations["job_video_public_try_jobs__job_id__video_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/sessions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Create Session
+         * @description A temporary live camera: the phone publishes to ``whip_url`` and pings while it stays.
+         */
+        post: operations["create_session_public_try_sessions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/sessions/{session_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Session State */
+        get: operations["get_session_state_public_try_sessions__session_id__get"];
+        put?: never;
+        post?: never;
+        /**
+         * End Session
+         * @description The phone leaves: the session and its results are deleted at once.
+         */
+        delete: operations["end_session_public_try_sessions__session_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/sessions/{session_id}/ping": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Ping Session */
+        post: operations["ping_session_public_try_sessions__session_id__ping_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/public/try/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Try Status
+         * @description Limits and whether the Brev AI is reachable (the page shows "AI unavailable").
+         */
+        get: operations["try_status_public_try_status_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/push/public-key": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Push Public Key
+         * @description The VAPID public key the browser needs to subscribe (``applicationServerKey``).
+         */
+        get: operations["push_public_key_push_public_key_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/push/subscriptions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Subscribe Push
+         * @description Register the caller's browser for push alerts; re-posting an endpoint updates it.
+         */
+        post: operations["subscribe_push_push_subscriptions_post"];
         delete?: never;
         options?: never;
         head?: never;
@@ -44,10 +1193,615 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/routing/recommendations": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Recommendations
+         * @description Rank units and hospitals near a point by road ETA; hospitals by capability, state, ETA.
+         */
+        get: operations["recommendations_routing_recommendations_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sms/gateway": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sms Gateway
+         * @description The gateway SIM number the responder app pre-fills in the SMS fallback (FR-RSP-004).
+         */
+        get: operations["sms_gateway_sms_gateway_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sms/inbound": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sms Inbound
+         * @description ``sms:received`` webhook: parse the SMS, apply it, answer the sender (FR-NTF-005).
+         */
+        post: operations["sms_inbound_sms_inbound_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/sms/status": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sms Status
+         * @description ``sms:sent|delivered|failed`` webhooks: record the delivery status (FR-NTF-003).
+         */
+        post: operations["sms_status_sms_status_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/system/ai": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * System Ai
+         * @description Brev vLLM status: the served model id, or "AI unavailable" (FR-VIS-009).
+         */
+        get: operations["system_ai_system_ai_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/system/cameras": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * System Cameras
+         * @description Camera status with FPS, per-stage latency and queue depth from each worker (FR-CAM-005).
+         */
+        get: operations["system_cameras_system_cameras_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/tiles/algeria.pmtiles": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Algeria Tiles
+         * @description The PMTiles archive; clients read it with Range requests.
+         */
+        get: operations["algeria_tiles_tiles_algeria_pmtiles_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AblationRow */
+        AblationRow: {
+            /** Description */
+            description: string;
+            metrics?: components["schemas"]["EventMetrics"] | null;
+            /** Name */
+            name: string;
+            /**
+             * Not Run Reason
+             * @description Why there is no metrics
+             */
+            not_run_reason?: string | null;
+        };
+        /** AdminCamera */
+        AdminCamera: {
+            /** Heading Deg */
+            heading_deg: number;
+            /** Id */
+            id: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Road */
+            road: string;
+            /** Simulated */
+            simulated: boolean;
+            /** Status */
+            status: string;
+            /** Wilaya */
+            wilaya: string;
+            /** Zones */
+            zones: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** AdminFacility */
+        AdminFacility: {
+            /** Capabilities */
+            capabilities: {
+                [key: string]: boolean;
+            };
+            /** Contact Sms */
+            contact_sms: string | null;
+            /** Id */
+            id: string;
+            /** Kind */
+            kind: string;
+            /** Name */
+            name: string;
+            /**
+             * Ready State
+             * @enum {string}
+             */
+            ready_state: "ready" | "divert";
+            /** Simulated */
+            simulated: boolean;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** AdminUnit */
+        AdminUnit: {
+            /** Agency */
+            agency: string;
+            /** Callsign */
+            callsign: string;
+            /** Facility Id */
+            facility_id: string;
+            /** Id */
+            id: string;
+            /** Phone */
+            phone: string | null;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "dispatched" | "busy" | "offline";
+        };
+        /** AdminUserOut */
+        AdminUserOut: {
+            /** Active */
+            active: boolean;
+            agency: components["schemas"]["Agency"] | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** Display Name */
+            display_name: string;
+            /** Facility Id */
+            facility_id: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Phone */
+            phone: string | null;
+            role: components["schemas"]["Role"];
+            /** Username */
+            username: string;
+        };
+        /**
+         * Agency
+         * @enum {string}
+         */
+        Agency: "civil_protection" | "gendarmerie" | "police" | "samu";
+        /** AiQuality */
+        AiQuality: {
+            cannot_judge_share: components["schemas"]["Metric"];
+            /** @description Findings dropped for invalid frame ids */
+            dropped_citation_share: components["schemas"]["Metric"];
+            /**
+             * Unavailable
+             * @description Calls with no answer (timeout, server down)
+             */
+            unavailable: number;
+            valid_first_try: components["schemas"]["Metric"];
+            /**
+             * Verifications
+             * @description Verifier and sweep calls that were answered
+             */
+            verifications: number;
+        };
+        /**
+         * AiStatus
+         * @description Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.
+         * @enum {string}
+         */
+        "AiStatus-Input": "confirmed" | "probable" | "possible" | "insufficient_evidence";
+        /** AlertRecord */
+        AlertRecord: {
+            /** Ai Status */
+            ai_status: string;
+            /** Collision Visible */
+            collision_visible?: string | null;
+            /**
+             * Source
+             * @enum {string}
+             */
+            source: "rule" | "sweep";
+            /**
+             * T Fire
+             * @description Stream seconds when the alert was raised
+             */
+            t_fire: number;
+            /**
+             * T Peak
+             * @description Stream seconds of the estimated impact
+             */
+            t_peak: number;
+            /** Trigger */
+            trigger: string;
+            /**
+             * Verifier Available
+             * @default false
+             */
+            verifier_available: boolean;
+        };
+        /** Body_post_report_public_reports_post */
+        Body_post_report_public_reports_post: {
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** People Reported */
+            people_reported?: number | null;
+            /** Phone */
+            phone?: string | null;
+            /** Photo */
+            photo?: string | null;
+            /**
+             * Trapped
+             * @default false
+             */
+            trapped: boolean;
+        };
+        /** Body_upload_evidence_internal_evidence_post */
+        Body_upload_evidence_internal_evidence_post: {
+            /** End Ts */
+            end_ts?: string | null;
+            /** File */
+            file: string;
+            /** Idempotency Key */
+            idempotency_key?: string | null;
+            /** Incident Id */
+            incident_id?: string | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "clip" | "keyframe" | "photo";
+            /** Start Ts */
+            start_ts?: string | null;
+        };
+        /** Box */
+        Box: {
+            /** Label */
+            label: string;
+            /** Track Id */
+            track_id?: number | null;
+            /** X1 */
+            x1: number;
+            /** X2 */
+            x2: number;
+            /** Y1 */
+            y1: number;
+            /** Y2 */
+            y2: number;
+        };
+        /** CameraFalseAlarms */
+        CameraFalseAlarms: {
+            /** Camera Id */
+            camera_id: string;
+            /**
+             * False Positives
+             * @description Rejected by an operator as false positive
+             */
+            false_positives: number;
+            /**
+             * Incidents
+             * @description Distinct incidents the camera raised (duplicates excluded)
+             */
+            incidents: number;
+            /** Rate */
+            rate: number | null;
+        };
+        /** CameraHealthAck */
+        CameraHealthAck: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "unknown" | "online" | "degraded" | "offline";
+            /**
+             * Transition
+             * @description Set when this report changed the camera status
+             */
+            transition: ("camera_fault" | "camera_recovered") | null;
+        };
+        /** CameraHealthReport */
+        CameraHealthReport: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Camera Id */
+            camera_id: string;
+            /**
+             * Camera Moving
+             * @description Global camera motion (FR-VIS-011)
+             * @default false
+             */
+            camera_moving: boolean;
+            /** Connected */
+            connected: boolean;
+            /**
+             * Detector
+             * @description Detector model id (source of AI values)
+             */
+            detector?: string | null;
+            /**
+             * Fault
+             * @default false
+             */
+            fault: boolean;
+            /** Fault Reason */
+            fault_reason?: ("stall" | "disconnect") | null;
+            /**
+             * Fps
+             * @description Analysed frames per second
+             */
+            fps: number;
+            /** Last Frame At */
+            last_frame_at?: string | null;
+            latency_ms?: components["schemas"]["StageLatencyMs"];
+            /** Queue Depth */
+            queue_depth: number;
+        };
+        /** CameraOut */
+        CameraOut: {
+            /** Heading Deg */
+            heading_deg: number;
+            /** Id */
+            id: string;
+            /** Lat */
+            lat: number;
+            /**
+             * Live Demo
+             * @description A visitor's phone on the try page (sandbox, FR-CIT-003)
+             * @default false
+             */
+            live_demo: boolean;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Road */
+            road: string;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "unknown" | "online" | "degraded" | "offline";
+            stream: components["schemas"]["StreamUrls"];
+            /** Wilaya */
+            wilaya: string;
+            /**
+             * Zones
+             * @description live_lanes and carriageway polygons
+             */
+            zones: {
+                [key: string]: unknown;
+            } | null;
+        };
+        /** CameraPatch */
+        CameraPatch: {
+            /** Heading Deg */
+            heading_deg?: number | null;
+            /** Lat */
+            lat?: number | null;
+            /** Lon */
+            lon?: number | null;
+            /** Name */
+            name?: string | null;
+            /** Pk Km */
+            pk_km?: number | null;
+            /** Road */
+            road?: string | null;
+            /** Wilaya */
+            wilaya?: string | null;
+        };
+        /**
+         * CameraSystemStatus
+         * @description One row of the system page: registry status plus the latest worker report.
+         */
+        CameraSystemStatus: {
+            /** @description Latest report, null if none or expired */
+            health: components["schemas"]["CameraHealthReport"] | null;
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Stale
+             * @description No report for more than 15 s: the worker is not reporting
+             */
+            stale: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "unknown" | "online" | "degraded" | "offline";
+        };
+        /** CandidateAccepted */
+        CandidateAccepted: {
+            /** Stream Id */
+            stream_id: string;
+        };
+        /**
+         * CandidateSource
+         * @enum {string}
+         */
+        CandidateSource: "camera" | "citizen" | "operator";
+        /** CasualtyIn */
+        CasualtyIn: {
+            /** Avpu */
+            avpu?: ("A" | "V" | "P" | "U") | null;
+            /** Bleeding */
+            bleeding?: boolean | null;
+            /** Notes */
+            notes?: string | null;
+            /** Pulse */
+            pulse?: number | null;
+            /** Resp Rate */
+            resp_rate?: number | null;
+            /**
+             * Source
+             * @default app
+             * @enum {string}
+             */
+            source: "app" | "sms";
+            /** Spo2 */
+            spo2?: number | null;
+            triage_tag: components["schemas"]["TriageTag"];
+        };
+        /** CasualtyOut */
+        CasualtyOut: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Avpu */
+            avpu?: ("A" | "V" | "P" | "U") | null;
+            /** Bleeding */
+            bleeding?: boolean | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Notes */
+            notes?: string | null;
+            /** Pulse */
+            pulse?: number | null;
+            /** Reported By */
+            reported_by: string | null;
+            /** Resp Rate */
+            resp_rate?: number | null;
+            /**
+             * Source
+             * @default app
+             * @enum {string}
+             */
+            source: "app" | "sms";
+            /** Spo2 */
+            spo2?: number | null;
+            triage_tag: components["schemas"]["TriageTag"];
+        };
+        /** ClipSummary */
+        ClipSummary: {
+            /** Alerts */
+            alerts?: components["schemas"]["AlertRecord"][];
+            /** Duration S */
+            duration_s: number;
+            /** Id */
+            id: string;
+            /** Impact S */
+            impact_s?: number | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "crash" | "stalled" | "negative";
+        };
+        /** DeliveryOut */
+        DeliveryOut: {
+            /** Attempts */
+            attempts: number;
+            /**
+             * Channel
+             * @enum {string}
+             */
+            channel: "sms" | "push" | "telegram";
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "sent" | "delivered" | "failed";
+        };
         /** DependencyStatus */
         DependencyStatus: {
             /** Detail */
@@ -55,12 +1809,1009 @@ export interface components {
             /** Ok */
             ok: boolean;
         };
+        /** DispatchIn */
+        DispatchIn: {
+            /**
+             * Hospital Id
+             * @description The hospital that receives the patients
+             */
+            hospital_id: string;
+            /**
+             * Unit Ids
+             * @description Units to send
+             */
+            unit_ids: string[];
+        };
+        /** DispatchOut */
+        DispatchOut: {
+            /** Agency */
+            agency: string | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Deliveries */
+            deliveries: components["schemas"]["DeliveryOut"][];
+            /**
+             * Dispatched By
+             * Format: uuid
+             */
+            dispatched_by: string;
+            /** Distance M */
+            distance_m: number;
+            /** Eta S */
+            eta_s: number;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "unit" | "hospital";
+            /**
+             * Lat
+             * @description Position of the unit or hospital
+             */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /** Resource Id */
+            resource_id: string;
+            /** Route Geojson */
+            route_geojson: {
+                [key: string]: unknown;
+            } | null;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "dispatched" | "replaced";
+        };
+        /** DispatchResult */
+        DispatchResult: {
+            /** Dispatches */
+            dispatches: components["schemas"]["DispatchOut"][];
+            incident: components["schemas"]["IncidentOut"];
+        };
+        /** EvaluationResults */
+        EvaluationResults: {
+            /** Ablation */
+            ablation: components["schemas"]["AblationRow"][];
+            ai_quality?: components["schemas"]["AiQuality"] | null;
+            /** Bootstrap Samples */
+            bootstrap_samples: number;
+            /** Camera Hours */
+            camera_hours: number;
+            /** Clips */
+            clips: components["schemas"]["ClipSummary"][];
+            /**
+             * Dirty
+             * @description Uncommitted changes when the run started
+             */
+            dirty: boolean;
+            /**
+             * Generated At
+             * Format: date-time
+             */
+            generated_at: string;
+            /** Git Sha */
+            git_sha: string;
+            /** Latency Ms */
+            latency_ms?: {
+                [key: string]: components["schemas"]["Percentiles"];
+            };
+            /** Limitations */
+            limitations?: string[];
+            /**
+             * Meets Camera Hour Target
+             * @description At least one camera-hour of negatives
+             */
+            meets_camera_hour_target: boolean;
+            /**
+             * Models
+             * @description Role -> model id used (source of every AI value)
+             */
+            models: {
+                [key: string]: string;
+            };
+            /**
+             * Schema Version
+             * @default 1
+             * @constant
+             */
+            schema_version: 1;
+            /** Seed */
+            seed: number;
+            /** Skipped Clips */
+            skipped_clips?: components["schemas"]["SkippedClip"][];
+            /** Window After S */
+            window_after_s: number;
+            /** Window Before S */
+            window_before_s: number;
+        };
+        /** EventMetrics */
+        EventMetrics: {
+            /**
+             * Alerts
+             * @description Alerts counted in this configuration
+             */
+            alerts: number;
+            /**
+             * Camera Hours
+             * @description Negative footage the false alarms are over
+             */
+            camera_hours: number;
+            f1: components["schemas"]["Metric"];
+            false_alarms_per_camera_hour: components["schemas"]["Metric"];
+            /** False Negatives */
+            false_negatives: number;
+            /** False Positives */
+            false_positives: number;
+            /**
+             * Ground Truth
+             * @description Annotated events scored
+             */
+            ground_truth: number;
+            /** @description Detected impact time minus annotated impact */
+            mean_peak_error_s: components["schemas"]["Metric"];
+            /** @description Alert time minus annotated impact (crash clips) */
+            median_delay_s: components["schemas"]["Metric"];
+            precision: components["schemas"]["Metric"];
+            recall: components["schemas"]["Metric"];
+            /** True Positives */
+            true_positives: number;
+        };
+        /** Evidence */
+        Evidence: {
+            /** Clip Path */
+            clip_path: string;
+            /** Keyframe Paths */
+            keyframe_paths?: string[];
+            /**
+             * Sha256
+             * @description file path -> SHA-256
+             */
+            sha256?: {
+                [key: string]: string;
+            };
+        };
+        /** EvidenceOut */
+        EvidenceOut: {
+            /** Content Type */
+            content_type: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /** End Ts */
+            end_ts: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "clip" | "keyframe" | "photo";
+            /** Sha256 */
+            sha256: string;
+            /** Size Bytes */
+            size_bytes: number;
+            /** Start Ts */
+            start_ts: string | null;
+        };
+        /** FacilityPatch */
+        FacilityPatch: {
+            /** Capabilities */
+            capabilities?: {
+                [key: string]: boolean;
+            } | null;
+            /** Contact Sms */
+            contact_sms?: string | null;
+            /** Name */
+            name?: string | null;
+            /** Ready State */
+            ready_state?: ("ready" | "divert") | null;
+        };
+        /** FacilityState */
+        FacilityState: {
+            /** Id */
+            id: string;
+            /** Name */
+            name: string;
+            /**
+             * Ready State
+             * @enum {string}
+             */
+            ready_state: "ready" | "divert";
+            /** Simulated */
+            simulated: boolean;
+        };
+        /**
+         * Finding
+         * @description One statement of the verifier, tied to the frames it was read from (FR-VIS-016).
+         */
+        Finding: {
+            /** Basis */
+            basis: string;
+            /**
+             * Frame Ids
+             * @description Frames of the verifier video
+             */
+            frame_ids?: number[];
+            /** Statement */
+            statement: string;
+        };
+        /**
+         * GeoLocation
+         * @description Where the event happened (FR-INC-001).
+         */
+        GeoLocation: {
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Pk Km */
+            pk_km?: number | null;
+            /** Road */
+            road?: string | null;
+            /** Wilaya */
+            wilaya?: string | null;
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
+        };
         /** HealthResponse */
         HealthResponse: {
             /** Status */
             status: string;
             /** Version */
             version: string;
+        };
+        /** HospitalBoard */
+        HospitalBoard: {
+            facility: components["schemas"]["FacilityState"];
+            /**
+             * History
+             * @description Arrivals of today (Algiers time)
+             */
+            history: components["schemas"]["PreAlert"][];
+            /**
+             * Incoming
+             * @description Hospital selected, patients not yet arrived
+             */
+            incoming: components["schemas"]["PreAlert"][];
+        };
+        /** HospitalChangeIn */
+        HospitalChangeIn: {
+            /** Hospital Id */
+            hospital_id: string;
+        };
+        /**
+         * IncidentCandidate
+         * @description A candidate incident from a camera, a citizen or an operator (FR-VIS-006, FR-INC-001).
+         */
+        IncidentCandidate: {
+            /** @default insufficient_evidence */
+            ai_status: components["schemas"]["AiStatus-Input"];
+            /** Camera Id */
+            camera_id?: string | null;
+            /**
+             * Detected At
+             * Format: date-time
+             */
+            detected_at: string;
+            /**
+             * Event Time
+             * Format: date-time
+             * @description Best estimate of the impact time
+             */
+            event_time: string;
+            evidence?: components["schemas"]["Evidence"] | null;
+            location: components["schemas"]["GeoLocation"];
+            /**
+             * Signals
+             * @description Named rule signals and their measured values
+             */
+            signals?: {
+                [key: string]: number;
+            };
+            /** @default camera */
+            source: components["schemas"]["CandidateSource"];
+            /** Track Ids */
+            track_ids?: number[];
+            trigger: components["schemas"]["TriggerType"];
+            verifier?: components["schemas"]["VerifierResult"];
+            witness?: components["schemas"]["Witness"] | null;
+        };
+        /** IncidentDetail */
+        IncidentDetail: {
+            /** Ai Signals */
+            ai_signals: {
+                [key: string]: number;
+            };
+            /** Ai Status */
+            ai_status: string | null;
+            /** Camera Id */
+            camera_id: string | null;
+            /** Casualties */
+            casualties: components["schemas"]["CasualtyOut"][];
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Detected At
+             * Format: date-time
+             */
+            detected_at: string;
+            /**
+             * Event Time
+             * Format: date-time
+             */
+            event_time: string;
+            /** Events */
+            events: components["schemas"]["IncidentEventOut"][];
+            /** Evidence */
+            evidence: components["schemas"]["EvidenceOut"][];
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Lat */
+            lat: number | null;
+            /** Location Text */
+            location_text: string | null;
+            /** Lon */
+            lon: number | null;
+            /** Mass Casualty */
+            mass_casualty: boolean;
+            /** Merged Into */
+            merged_into: string | null;
+            /** Needs Extrication */
+            needs_extrication: boolean;
+            /** People Reported */
+            people_reported: number | null;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Priority */
+            priority: number;
+            /** Priority Reasons */
+            priority_reasons: components["schemas"]["PriorityReason"][];
+            /** Quality Flags */
+            quality_flags: string[];
+            reject_reason: components["schemas"]["RejectReason"] | null;
+            /** Report Count */
+            report_count: number;
+            /** Road */
+            road: string | null;
+            /** Short Code */
+            short_code: string;
+            /** Source */
+            source: string;
+            status: components["schemas"]["IncidentStatus"];
+            /** To Assess */
+            to_assess: boolean;
+            /** Trapped Reported */
+            trapped_reported: boolean;
+            /** Type */
+            type: string;
+            verifier_result: components["schemas"]["VerifierResult"];
+            /** Version */
+            version: number;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** IncidentEventOut */
+        IncidentEventOut: {
+            /** Actor Id */
+            actor_id: string | null;
+            /**
+             * Actor Name
+             * @description Display name of the actor
+             */
+            actor_name?: string | null;
+            /** Hash */
+            hash: string;
+            /** Id */
+            id: number;
+            /** Kind */
+            kind: string;
+            /** Payload */
+            payload: {
+                [key: string]: unknown;
+            };
+            /**
+             * Ts
+             * Format: date-time
+             */
+            ts: string;
+        };
+        /** IncidentKpi */
+        IncidentKpi: {
+            /** Agencies */
+            agencies: string[];
+            /**
+             * Durations
+             * @description Seconds per metric; null when the milestone was not reached
+             */
+            durations: {
+                [key: string]: number | null;
+            };
+            /**
+             * Event Time
+             * Format: date-time
+             */
+            event_time: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Priority */
+            priority: number;
+            /** Short Code */
+            short_code: string;
+            /** Status */
+            status: string;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** IncidentList */
+        IncidentList: {
+            /** Items */
+            items: components["schemas"]["IncidentOut"][];
+            /** Limit */
+            limit: number;
+            /** Offset */
+            offset: number;
+            /** Total */
+            total: number;
+        };
+        /** IncidentOut */
+        IncidentOut: {
+            /** Ai Signals */
+            ai_signals: {
+                [key: string]: number;
+            };
+            /** Ai Status */
+            ai_status: string | null;
+            /** Camera Id */
+            camera_id: string | null;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
+            /**
+             * Detected At
+             * Format: date-time
+             */
+            detected_at: string;
+            /**
+             * Event Time
+             * Format: date-time
+             */
+            event_time: string;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Lat */
+            lat: number | null;
+            /** Location Text */
+            location_text: string | null;
+            /** Lon */
+            lon: number | null;
+            /** Mass Casualty */
+            mass_casualty: boolean;
+            /** Merged Into */
+            merged_into: string | null;
+            /** Needs Extrication */
+            needs_extrication: boolean;
+            /** People Reported */
+            people_reported: number | null;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Priority */
+            priority: number;
+            /** Priority Reasons */
+            priority_reasons: components["schemas"]["PriorityReason"][];
+            /** Quality Flags */
+            quality_flags: string[];
+            reject_reason: components["schemas"]["RejectReason"] | null;
+            /** Report Count */
+            report_count: number;
+            /** Road */
+            road: string | null;
+            /** Short Code */
+            short_code: string;
+            /** Source */
+            source: string;
+            status: components["schemas"]["IncidentStatus"];
+            /** To Assess */
+            to_assess: boolean;
+            /** Trapped Reported */
+            trapped_reported: boolean;
+            /** Type */
+            type: string;
+            verifier_result: components["schemas"]["VerifierResult"];
+            /** Version */
+            version: number;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /**
+         * IncidentRecommendations
+         * @description Ranked resources for one incident, with the need that filtered them.
+         */
+        IncidentRecommendations: {
+            /**
+             * Hospital Need
+             * @description Capability hospitals are ranked by
+             */
+            hospital_need: string;
+            /** Hospitals */
+            hospitals: components["schemas"]["RankedResource"][];
+            /**
+             * Unit Agencies
+             * @description Agencies whose units can answer
+             */
+            unit_agencies: string[];
+            /** Units */
+            units: components["schemas"]["RankedResource"][];
+            /** Urban Multiplier */
+            urban_multiplier: number;
+        };
+        /**
+         * IncidentStatus
+         * @enum {string}
+         */
+        IncidentStatus: "candidate" | "verified" | "rejected" | "merged" | "dispatched" | "acknowledged" | "en_route" | "on_scene" | "transporting" | "at_hospital" | "closed";
+        /** IntegrityFailureOut */
+        IntegrityFailureOut: {
+            /** Detail */
+            detail: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "event" | "signature" | "file";
+            /** Ref */
+            ref: string;
+        };
+        /** IntegrityOut */
+        IntegrityOut: {
+            /** Events Checked */
+            events_checked: number;
+            /** Failures */
+            failures: components["schemas"]["IntegrityFailureOut"][];
+            /** Files Checked */
+            files_checked: number;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "valid" | "invalid";
+        };
+        /** Interval */
+        Interval: {
+            /** High */
+            high: number;
+            /** Low */
+            low: number;
+        };
+        /** KpiGroup */
+        KpiGroup: {
+            /** Incidents */
+            incidents: number;
+            /** Key */
+            key: string;
+            /** Metrics */
+            metrics: {
+                [key: string]: components["schemas"]["MetricStats"];
+            };
+        };
+        /** KpiReport */
+        KpiReport: {
+            /** By Agency */
+            by_agency: components["schemas"]["KpiGroup"][];
+            /** By Period */
+            by_period: components["schemas"]["KpiGroup"][];
+            /** By Wilaya */
+            by_wilaya: components["schemas"]["KpiGroup"][];
+            /** False Alarms */
+            false_alarms: components["schemas"]["CameraFalseAlarms"][];
+            /**
+             * Incidents
+             * @description Newest 200 incidents
+             */
+            incidents: components["schemas"]["IncidentKpi"][];
+            overall: components["schemas"]["KpiGroup"];
+            /**
+             * Period
+             * @enum {string}
+             */
+            period: "day" | "week" | "month";
+            /**
+             * Since
+             * Format: date-time
+             */
+            since: string;
+            /**
+             * Until
+             * Format: date-time
+             */
+            until: string;
+        };
+        /** LoginRequest */
+        LoginRequest: {
+            /** Password */
+            password: string;
+            /** Username */
+            username: string;
+        };
+        /**
+         * ManualIncidentIn
+         * @description Operator-created incident from a phone call (FR-INC-007).
+         */
+        ManualIncidentIn: {
+            /**
+             * Bus Involved
+             * @default false
+             */
+            bus_involved: boolean;
+            /**
+             * Event Time
+             * @description Defaults to now
+             */
+            event_time?: string | null;
+            /**
+             * Flames
+             * @default false
+             */
+            flames: boolean;
+            location: components["schemas"]["GeoLocation"];
+            /**
+             * Notes
+             * @description Call notes
+             */
+            notes?: string | null;
+            /**
+             * Overturned
+             * @default false
+             */
+            overturned: boolean;
+            /** People Reported */
+            people_reported?: number | null;
+            /**
+             * Person On Road
+             * @default false
+             */
+            person_on_road: boolean;
+            /**
+             * Smoke
+             * @default false
+             */
+            smoke: boolean;
+            /**
+             * Stopped In Lane
+             * @default false
+             */
+            stopped_in_lane: boolean;
+            /**
+             * Trapped
+             * @default false
+             */
+            trapped: boolean;
+            /** Vehicle Count */
+            vehicle_count?: number | null;
+        };
+        /** MapFacility */
+        MapFacility: {
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "hospital" | "civil_protection" | "gendarmerie" | "police";
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /**
+             * Ready State
+             * @enum {string}
+             */
+            ready_state: "ready" | "divert";
+            /** Simulated */
+            simulated: boolean;
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** MapResources */
+        MapResources: {
+            /** Facilities */
+            facilities: components["schemas"]["MapFacility"][];
+            /** Units */
+            units: components["schemas"]["MapUnit"][];
+        };
+        /** MapUnit */
+        MapUnit: {
+            /**
+             * Agency
+             * @enum {string}
+             */
+            agency: "civil_protection" | "gendarmerie" | "police" | "samu";
+            /** Callsign */
+            callsign: string;
+            /** Id */
+            id: string;
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "available" | "dispatched" | "busy" | "offline";
+        };
+        /**
+         * MediaMtxAuthRequest
+         * @description Body MediaMTX sends (https://mediamtx.org/docs/usage/authentication).
+         */
+        MediaMtxAuthRequest: {
+            /** Action */
+            action: string;
+            /** Id */
+            id?: string | null;
+            /**
+             * Ip
+             * @default
+             */
+            ip: string;
+            /**
+             * Password
+             * @default
+             */
+            password: string;
+            /**
+             * Path
+             * @default
+             */
+            path: string;
+            /**
+             * Protocol
+             * @default
+             */
+            protocol: string;
+            /**
+             * Query
+             * @default
+             */
+            query: string;
+            /**
+             * Token
+             * @default
+             */
+            token: string;
+            /**
+             * User
+             * @default
+             */
+            user: string;
+        };
+        /** MergeIn */
+        MergeIn: {
+            /**
+             * Into
+             * Format: uuid
+             * @description The open incident that absorbs this candidate
+             */
+            into: string;
+        };
+        /**
+         * Metric
+         * @description A value and its bootstrap 95 % interval; ``None`` when it is undefined (no events).
+         */
+        Metric: {
+            ci?: components["schemas"]["Interval"] | null;
+            /** Value */
+            value?: number | null;
+        };
+        /** MetricStats */
+        MetricStats: {
+            /** Median S */
+            median_s: number | null;
+            /**
+             * N
+             * @description Incidents that reached both milestones
+             */
+            n: number;
+            /** P90 S */
+            p90_s: number | null;
+        };
+        /** Percentiles */
+        Percentiles: {
+            /** Count */
+            count: number;
+            /** P50 */
+            p50?: number | null;
+            /** P95 */
+            p95?: number | null;
+        };
+        /**
+         * PreAlert
+         * @description One incident this hospital was selected for (FR-HSP-001).
+         */
+        PreAlert: {
+            /** Acknowledged At */
+            acknowledged_at: string | null;
+            /** Acknowledged By */
+            acknowledged_by: string | null;
+            /** Casualties */
+            casualties: components["schemas"]["VictimOut"][];
+            /**
+             * Dispatched At
+             * Format: date-time
+             */
+            dispatched_at: string;
+            /** Distance M */
+            distance_m: number;
+            /** Eta S */
+            eta_s: number;
+            /**
+             * Expected Arrival At
+             * Format: date-time
+             * @description Dispatch time plus the stored road ETA
+             */
+            expected_arrival_at: string;
+            /**
+             * Incident Id
+             * Format: uuid
+             */
+            incident_id: string;
+            /** Location Text */
+            location_text: string | null;
+            /** Mass Casualty */
+            mass_casualty: boolean;
+            /** Needs Extrication */
+            needs_extrication: boolean;
+            /** People Reported */
+            people_reported: number | null;
+            /** Pk Km */
+            pk_km: number | null;
+            /** Priority */
+            priority: number;
+            /** Road */
+            road: string | null;
+            /** Short Code */
+            short_code: string;
+            status: components["schemas"]["IncidentStatus"];
+            /** Trapped Reported */
+            trapped_reported: boolean;
+            /** Type */
+            type: string;
+            /** Units */
+            units: components["schemas"]["PreAlertUnit"][];
+            victims: components["schemas"]["VictimCounts"];
+            /** Wilaya */
+            wilaya: string | null;
+        };
+        /** PreAlertUnit */
+        PreAlertUnit: {
+            /** Agency */
+            agency: string;
+            /** Callsign */
+            callsign: string;
+            /** Simulated */
+            simulated: boolean;
+        };
+        /** PriorityReason */
+        PriorityReason: {
+            /** Detail */
+            detail: string;
+            /** Level */
+            level: number;
+            /** Rule */
+            rule: string;
+            /**
+             * Source
+             * @description Rule name, model id or 'triage' (FR-VIS-021)
+             */
+            source: string;
+        };
+        /** PushKeys */
+        PushKeys: {
+            /** Auth */
+            auth: string;
+            /** P256Dh */
+            p256dh: string;
+        };
+        /** PushPublicKey */
+        PushPublicKey: {
+            /** Public Key */
+            public_key: string;
+        };
+        /**
+         * PushSubscriptionIn
+         * @description The browser's ``PushSubscription.toJSON()``.
+         */
+        PushSubscriptionIn: {
+            /** Endpoint */
+            endpoint: string;
+            keys: components["schemas"]["PushKeys"];
+        };
+        /** RankedResource */
+        RankedResource: {
+            /** Agency */
+            agency?: string | null;
+            /** Capabilities */
+            capabilities?: {
+                [key: string]: unknown;
+            } | null;
+            /** Contact */
+            contact?: string | null;
+            /** Distance M */
+            distance_m: number;
+            /** Eta S */
+            eta_s: number;
+            /** Id */
+            id: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "unit" | "hospital";
+            /** Lat */
+            lat: number;
+            /** Lon */
+            lon: number;
+            /** Name */
+            name: string;
+            /** Ready State */
+            ready_state?: string | null;
+            /** Route Geojson */
+            route_geojson: {
+                [key: string]: unknown;
+            } | null;
+            /** Simulated */
+            simulated: boolean;
+            /**
+             * Source
+             * @default osrm
+             */
+            source: string;
+        };
+        /** ReadinessIn */
+        ReadinessIn: {
+            /**
+             * State
+             * @enum {string}
+             */
+            state: "ready" | "divert";
         };
         /** ReadinessResponse */
         ReadinessResponse: {
@@ -71,6 +2822,682 @@ export interface components {
             /** Status */
             status: string;
         };
+        /** Recommendations */
+        Recommendations: {
+            /** Hospitals */
+            hospitals: components["schemas"]["RankedResource"][];
+            /** Units */
+            units: components["schemas"]["RankedResource"][];
+            /** Urban Multiplier */
+            urban_multiplier: number;
+        };
+        /** RejectIn */
+        RejectIn: {
+            reason: components["schemas"]["RejectReason"];
+        };
+        /**
+         * RejectReason
+         * @enum {string}
+         */
+        RejectReason: "false_positive" | "duplicate" | "not_emergency" | "other";
+        /** ReportAccepted */
+        ReportAccepted: {
+            /** Merged */
+            merged: boolean;
+            /** Photo Saved */
+            photo_saved: boolean;
+            /** Short Code */
+            short_code: string;
+        };
+        /**
+         * Role
+         * @enum {string}
+         */
+        Role: "operator" | "supervisor" | "responder" | "hospital" | "auditor" | "admin";
+        /**
+         * SandboxIncident
+         * @description What an operator would have been shown, kept inside the sandbox.
+         */
+        "SandboxIncident-Input": {
+            ai_status: components["schemas"]["AiStatus-Input"];
+            /** Description Ar */
+            description_ar?: string | null;
+            /** Description Fr */
+            description_fr?: string | null;
+            /** Event Time S */
+            event_time_s: number;
+            /**
+             * Trigger
+             * @description Rule trigger near the moment, if any
+             */
+            trigger?: string | null;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "collision" | "possible_incident";
+            /**
+             * Vehicles
+             * @description Detector boxes at the moment
+             */
+            vehicles?: components["schemas"]["Box"][];
+        };
+        /**
+         * SandboxIncident
+         * @description What an operator would have been shown, kept inside the sandbox.
+         */
+        "SandboxIncident-Output": {
+            ai_status: components["schemas"]["nadjet_shared__events__AiStatus"];
+            /** Description Ar */
+            description_ar?: string | null;
+            /** Description Fr */
+            description_fr?: string | null;
+            /** Event Time S */
+            event_time_s: number;
+            /**
+             * Trigger
+             * @description Rule trigger near the moment, if any
+             */
+            trigger?: string | null;
+            /**
+             * Type
+             * @enum {string}
+             */
+            type: "collision" | "possible_incident";
+            /**
+             * Vehicles
+             * @description Detector boxes at the moment
+             */
+            vehicles?: components["schemas"]["Box"][];
+        };
+        /**
+         * SessionEvent
+         * @description One AI check or trigger of a live phone session (sandbox, shown on the try page).
+         */
+        "SessionEvent-Input": {
+            ai_status?: components["schemas"]["AiStatus-Input"] | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "ai_check" | "trigger";
+            /** Label */
+            label: string;
+            /** Source */
+            source: string;
+            verifier?: components["schemas"]["VerifierResult"] | null;
+        };
+        /**
+         * SessionEvent
+         * @description One AI check or trigger of a live phone session (sandbox, shown on the try page).
+         */
+        "SessionEvent-Output": {
+            ai_status?: components["schemas"]["nadjet_shared__events__AiStatus"] | null;
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "ai_check" | "trigger";
+            /** Label */
+            label: string;
+            /** Source */
+            source: string;
+            verifier?: components["schemas"]["VerifierResult"] | null;
+        };
+        /** SkippedClip */
+        SkippedClip: {
+            /** Id */
+            id: string;
+            /** Reason */
+            reason: string;
+        };
+        /** SmsAck */
+        SmsAck: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "processed" | "duplicate" | "throttled" | "ignored";
+        };
+        /** SmsGateway */
+        SmsGateway: {
+            /**
+             * Number
+             * @description Where responders text their codes; null when unset
+             */
+            number: string | null;
+        };
+        /**
+         * StageLatencyMs
+         * @description Median per-stage latency over the last window; ``None`` before the first frame.
+         */
+        StageLatencyMs: {
+            /** Annotate */
+            annotate?: number | null;
+            /** Decode */
+            decode?: number | null;
+            /** Detect */
+            detect?: number | null;
+            /** Track */
+            track?: number | null;
+        };
+        /** StatusIn */
+        StatusIn: {
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "dispatched" | "acknowledged" | "en_route" | "on_scene" | "transporting" | "at_hospital" | "closed";
+        };
+        /** StreamTokenResponse */
+        StreamTokenResponse: {
+            /** Expires In */
+            expires_in: number;
+            /** Token */
+            token: string;
+            /**
+             * Token Type
+             * @default Bearer
+             * @constant
+             */
+            token_type: "Bearer";
+        };
+        /** StreamUrls */
+        StreamUrls: {
+            /**
+             * Hls Url
+             * @description LL-HLS URL for the browser (fallback when WebRTC fails)
+             */
+            hls_url: string;
+            /**
+             * Path
+             * @description Video server path (MediaMTX)
+             */
+            path: string;
+            /**
+             * Rtsp Url
+             * @description RTSP URL for vision workers
+             */
+            rtsp_url: string;
+            /**
+             * Whep Url
+             * @description WebRTC WHEP URL for the browser
+             */
+            whep_url: string;
+        };
+        /**
+         * TimelineEntry
+         * @description One event of the analysed clip, in clip seconds, with the source of the value.
+         */
+        TimelineEntry: {
+            /** Detail */
+            detail?: string | null;
+            /**
+             * Kind
+             * @enum {string}
+             */
+            kind: "trigger" | "ai_scan" | "ai_refine";
+            /** Label */
+            label: string;
+            /**
+             * Source
+             * @description Rule name or model id (FR-VIS-021)
+             */
+            source: string;
+            /** T */
+            t: number;
+        };
+        /** TokenResponse */
+        TokenResponse: {
+            /** Access Token */
+            access_token: string;
+            /**
+             * Expires In
+             * @description Token lifetime in seconds
+             */
+            expires_in: number;
+            /**
+             * Token Type
+             * @default bearer
+             * @constant
+             */
+            token_type: "bearer";
+            user: components["schemas"]["UserOut"];
+        };
+        /**
+         * TriageTag
+         * @enum {string}
+         */
+        TriageTag: "red" | "yellow" | "green" | "black";
+        /**
+         * TriggerType
+         * @description Rule triggers (PRD FR-VIS-004) plus the AI sweep (FR-VIS-015).
+         * @enum {string}
+         */
+        TriggerType: "collision_candidate" | "hard_stop" | "stalled_vehicle" | "pedestrian_on_road" | "ai_sweep" | "citizen_report" | "operator_report";
+        /**
+         * TryAiReport
+         * @description What the try-it worker tells the API about the Brev AI (the page says "AI unavailable").
+         */
+        TryAiReport: {
+            /** Ai Available */
+            ai_available: boolean;
+        };
+        /** TryJobClaim */
+        TryJobClaim: {
+            /** Filename */
+            filename: string;
+            /** Id */
+            id: string;
+        };
+        /** TryJobFailure */
+        TryJobFailure: {
+            /** Error */
+            error: string;
+            /**
+             * Rejected
+             * @description Not a usable video: nothing was analysed
+             * @default false
+             */
+            rejected: boolean;
+        };
+        /** TryJobOut */
+        TryJobOut: {
+            /** Error */
+            error: string | null;
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Has Video */
+            has_video: boolean;
+            /** Id */
+            id: string;
+            /** Progress */
+            progress: number;
+            result: components["schemas"]["TryResult-Output"] | null;
+            /** Stage */
+            stage: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "queued" | "processing" | "done" | "failed" | "rejected";
+        };
+        /** TryProgress */
+        TryProgress: {
+            /** Progress */
+            progress: number;
+            /** Stage */
+            stage: string;
+        };
+        /** TryResult */
+        "TryResult-Input": {
+            /**
+             * Ai Available
+             * @description False: only the rule-based analysis is shown
+             */
+            ai_available: boolean;
+            /** Duration S */
+            duration_s: number;
+            /**
+             * Event T S
+             * @description Refined, damped and capped
+             */
+            event_t_s?: number | null;
+            /** Frames Analysed */
+            frames_analysed: number;
+            /** Models */
+            models?: {
+                [key: string]: string;
+            };
+            /** @description Pass 2: around the moment */
+            refine?: components["schemas"]["VerifierResult"] | null;
+            sandbox_incident?: components["schemas"]["SandboxIncident-Input"] | null;
+            /** @description Pass 1: whole clip, 1-2 fps */
+            scan?: components["schemas"]["VerifierResult"] | null;
+            /** Scan T S */
+            scan_t_s?: number | null;
+            /** Timeline */
+            timeline?: components["schemas"]["TimelineEntry"][];
+        };
+        /** TryResult */
+        "TryResult-Output": {
+            /**
+             * Ai Available
+             * @description False: only the rule-based analysis is shown
+             */
+            ai_available: boolean;
+            /** Duration S */
+            duration_s: number;
+            /**
+             * Event T S
+             * @description Refined, damped and capped
+             */
+            event_t_s?: number | null;
+            /** Frames Analysed */
+            frames_analysed: number;
+            /** Models */
+            models?: {
+                [key: string]: string;
+            };
+            /** @description Pass 2: around the moment */
+            refine?: components["schemas"]["VerifierResult"] | null;
+            sandbox_incident?: components["schemas"]["SandboxIncident-Output"] | null;
+            /** @description Pass 1: whole clip, 1-2 fps */
+            scan?: components["schemas"]["VerifierResult"] | null;
+            /** Scan T S */
+            scan_t_s?: number | null;
+            /** Timeline */
+            timeline?: components["schemas"]["TimelineEntry"][];
+        };
+        /** TrySessionOut */
+        TrySessionOut: {
+            /** Events */
+            events: components["schemas"]["SessionEvent-Output"][];
+            /**
+             * Expires At
+             * Format: date-time
+             */
+            expires_at: string;
+            /** Id */
+            id: string;
+            /**
+             * Path
+             * @description Video server path the phone publishes to
+             */
+            path: string;
+            /**
+             * Publish Token
+             * @description Bearer token for the WHIP publish, limited to this path (only on creation)
+             */
+            publish_token?: string | null;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "active" | "ended";
+            /** Whep Url */
+            whep_url: string;
+            /** Whip Url */
+            whip_url: string;
+        };
+        /** TrySessionRef */
+        TrySessionRef: {
+            /** Id */
+            id: string;
+            /** Path */
+            path: string;
+        };
+        /** TryStatus */
+        TryStatus: {
+            /**
+             * Ai Available
+             * @description Brev verifier reachable (reported by the worker)
+             */
+            ai_available: boolean;
+            /** Max Mb */
+            max_mb: number;
+            /** Max Seconds */
+            max_seconds: number;
+            /** Ttl S */
+            ttl_s: number;
+        };
+        /** UnitPatch */
+        UnitPatch: {
+            /** Callsign */
+            callsign?: string | null;
+            /** Phone */
+            phone?: string | null;
+            /**
+             * Status
+             * @description `dispatched` is set by dispatch only
+             */
+            status?: ("available" | "busy" | "offline") | null;
+        };
+        /** UserCreate */
+        UserCreate: {
+            agency?: components["schemas"]["Agency"] | null;
+            /** Display Name */
+            display_name: string;
+            /** Facility Id */
+            facility_id?: string | null;
+            /** Password */
+            password: string;
+            /** Phone */
+            phone?: string | null;
+            role: components["schemas"]["Role"];
+            /** Username */
+            username: string;
+        };
+        /** UserOut */
+        UserOut: {
+            agency: components["schemas"]["Agency"] | null;
+            /** Display Name */
+            display_name: string;
+            /** Facility Id */
+            facility_id: string | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Phone */
+            phone: string | null;
+            role: components["schemas"]["Role"];
+            /** Username */
+            username: string;
+        };
+        /** UserPatch */
+        UserPatch: {
+            /**
+             * Active
+             * @description false deactivates the account
+             */
+            active?: boolean | null;
+            agency?: components["schemas"]["Agency"] | null;
+            /** Display Name */
+            display_name?: string | null;
+            /** Facility Id */
+            facility_id?: string | null;
+            /** Password */
+            password?: string | null;
+            /** Phone */
+            phone?: string | null;
+            role?: components["schemas"]["Role"] | null;
+        };
+        /** ValidationError */
+        ValidationError: {
+            /** Context */
+            ctx?: Record<string, never>;
+            /** Input */
+            input?: unknown;
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
+        /**
+         * VerifierResult
+         * @description Outcome of one call to the AI verifier (or of a failed call).
+         */
+        VerifierResult: {
+            /**
+             * Available
+             * @description False when the verifier timed out or was unreachable
+             */
+            available: boolean;
+            /**
+             * Collision Visible
+             * @description Verifier verdict
+             */
+            collision_visible?: string | null;
+            /** Description Ar */
+            description_ar?: string | null;
+            /** Description Fr */
+            description_fr?: string | null;
+            /**
+             * Findings
+             * @description Cited findings; a raise without one is ignored
+             */
+            findings?: components["schemas"]["Finding"][];
+            /**
+             * Invalid
+             * @description True when the answer failed validation twice (template text)
+             * @default false
+             */
+            invalid: boolean;
+            /** Lanes Blocked */
+            lanes_blocked?: number | null;
+            /**
+             * Model
+             * @description Model id that produced the answer
+             */
+            model?: string | null;
+            /**
+             * Not Assessable
+             * @description What the video does not let anyone judge
+             */
+            not_assessable?: string[];
+            /**
+             * Priority Raise
+             * @description Levels the verifier asks to raise priority (max 1)
+             * @default 0
+             */
+            priority_raise: number;
+            /**
+             * T Contact
+             * @description Contact time in seconds on the frame stamps: relative to the rule moment for a rule candidate, to the window end for a sweep (negative = before)
+             */
+            t_contact?: number | null;
+            /**
+             * Type
+             * @description What the verifier sees
+             */
+            type?: string | null;
+            /** Vehicles Involved */
+            vehicles_involved?: number | null;
+            /**
+             * Yes Probability
+             * @description Probability of the 'yes' answer token (logprobs)
+             */
+            yes_probability?: number | null;
+        };
+        /** VictimCounts */
+        VictimCounts: {
+            /** Black */
+            black: number;
+            /** Green */
+            green: number;
+            /** Red */
+            red: number;
+            /** Total */
+            total: number;
+            /** Yellow */
+            yellow: number;
+        };
+        /** VictimOut */
+        VictimOut: {
+            /**
+             * At
+             * Format: date-time
+             */
+            at: string;
+            /** Avpu */
+            avpu: ("A" | "V" | "P" | "U") | null;
+            /** Bleeding */
+            bleeding: boolean | null;
+            /**
+             * Id
+             * Format: uuid
+             */
+            id: string;
+            /** Notes */
+            notes: string | null;
+            /** Pulse */
+            pulse: number | null;
+            /** Resp Rate */
+            resp_rate: number | null;
+            /** Spo2 */
+            spo2: number | null;
+            /**
+             * Triage Tag
+             * @enum {string}
+             */
+            triage_tag: "red" | "yellow" | "green" | "black";
+        };
+        /** WebhookEnvelope */
+        WebhookEnvelope: {
+            /** Event */
+            event: string;
+            /** Id */
+            id?: string | null;
+            payload?: components["schemas"]["WebhookPayload"];
+        };
+        /**
+         * WebhookPayload
+         * @description The ``payload`` of a capcom6 webhook; fields differ per event, all optional here.
+         */
+        WebhookPayload: {
+            /** Message */
+            message?: string | null;
+            /**
+             * Messageid
+             * @default
+             */
+            messageId: string;
+            /** Reason */
+            reason?: string | null;
+            /** Sender */
+            sender?: string | null;
+        };
+        /**
+         * Witness
+         * @description Answers from a citizen or responder on scene (FR-CIT-006).
+         */
+        Witness: {
+            /** People Reported */
+            people_reported?: number | null;
+            /**
+             * Trapped
+             * @default false
+             */
+            trapped: boolean;
+        };
+        /** AiStatus */
+        nadjet_api__system__routes__AiStatus: {
+            /** Available */
+            available: boolean;
+            /**
+             * Detail
+             * @description Why the AI is unavailable (no secrets), else null
+             */
+            detail: string | null;
+            /**
+             * Model
+             * @description Served model id when available, else null
+             */
+            model: string | null;
+        };
+        /**
+         * AiStatus
+         * @description Graded AI status (PRD FR-VIS-007). The AI alone never yields ``confirmed``.
+         * @enum {string}
+         */
+        nadjet_shared__events__AiStatus: "confirmed" | "probable" | "possible" | "insufficient_evidence";
     };
     responses: never;
     parameters: never;
@@ -80,6 +3507,869 @@ export interface components {
 }
 export type $defs = Record<string, never>;
 export interface operations {
+    list_cameras_admin_cameras_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCamera"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_camera_admin_cameras__camera_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                camera_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CameraPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCamera"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    replace_zones_admin_cameras__camera_id__zones_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                camera_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    [key: string]: unknown;
+                };
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminCamera"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_facilities_admin_facilities_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFacility"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_facility_admin_facilities__facility_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["FacilityPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminFacility"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_units_admin_units_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUnit"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    update_unit_admin_units__unit_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                unit_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UnitPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUnit"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    list_users_admin_users_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    create_user_admin_users_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserCreate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Username taken */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    update_user_admin_users__user_id__patch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                user_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UserPatch"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AdminUserOut"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not an admin */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Own account */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    login_auth_login_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["LoginRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TokenResponse"];
+                };
+            };
+            /** @description Wrong credentials or inactive user (same message) */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    me_auth_me_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["UserOut"];
+                };
+            };
+            /** @description Missing, invalid or expired token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    stream_token_auth_stream_token_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["StreamTokenResponse"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_cameras_cameras_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CameraOut"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_camera_cameras__camera_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                camera_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CameraOut"];
+                };
+            };
+            /** @description Unknown camera */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    latest_evaluation_evaluation_latest_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvaluationResults"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description No evaluation has been run */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    incident_events_events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    prealerts_facilities__facility_id__prealerts_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HospitalBoard"];
+                };
+            };
+            /** @description Not this hospital's user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    acknowledge_facilities__facility_id__prealerts__incident_id__ack_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not this hospital's user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Incident is no longer incoming */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    readiness_facilities__facility_id__readiness_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                facility_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReadinessIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["FacilityState"];
+                };
+            };
+            /** @description Not this hospital's user */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
     health_health_get: {
         parameters: {
             query?: never;
@@ -96,6 +4386,1722 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HealthResponse"];
+                };
+            };
+        };
+    };
+    list_incidents_incidents_get: {
+        parameters: {
+            query?: {
+                status?: components["schemas"]["IncidentStatus"] | null;
+                priority?: number | null;
+                source?: components["schemas"]["CandidateSource"] | null;
+                wilaya?: string | null;
+                to_assess?: boolean | null;
+                open_only?: boolean;
+                limit?: number;
+                offset?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentList"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_incident_incidents_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ManualIncidentIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_incident_incidents__incident_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentDetail"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    incident_cap_incidents__incident_id__cap_xml_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/cap+xml": unknown;
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    add_casualty_incidents__incident_id__casualties_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Repeating a request with the same key changes nothing (offline queues) */
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CasualtyIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Incident is closed */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    dispatch_incident_incidents__incident_id__dispatch_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DispatchIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchResult"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not dispatchable or unit not available */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown unit or hospital */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Routing service unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    list_dispatches_incidents__incident_id__dispatches_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchOut"][];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    download_evidence_incidents__incident_id__evidence__evidence_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+                evidence_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    change_hospital_incidents__incident_id__hospital_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["HospitalChangeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["DispatchResult"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Hospital cannot be changed now */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown hospital */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Routing service unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    integrity_incidents__incident_id__integrity_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IntegrityOut"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    merge_incident_incidents__incident_id__merge_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MergeIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Cannot merge */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    recommendations_incidents__incident_id__recommendations_get: {
+        parameters: {
+            query?: {
+                limit?: number;
+            };
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentRecommendations"];
+                };
+            };
+            /** @description Not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not dispatchable */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    reject_incident_incidents__incident_id__reject_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RejectIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Illegal transition */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    set_status_incidents__incident_id__status_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                /** @description Repeating a request with the same key changes nothing (offline queues) */
+                "Idempotency-Key"?: string | null;
+            };
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StatusIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Illegal transition */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    verify_incident_incidents__incident_id__verify_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                incident_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["IncidentOut"];
+                };
+            };
+            /** @description Illegal transition */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_camera_health_internal_camera_health_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CameraHealthReport"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CameraHealthAck"];
+                };
+            };
+            /** @description Invalid service token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown camera */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_candidate_internal_candidates_post: {
+        parameters: {
+            query?: never;
+            header: {
+                "idempotency-key": string;
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IncidentCandidate"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CandidateAccepted"];
+                };
+            };
+            /** @description Invalid service token */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    upload_evidence_internal_evidence_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_upload_evidence_internal_evidence_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["EvidenceOut"];
+                };
+            };
+            /** @description Unknown incident */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Candidate not persisted yet, retry */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description File too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unsupported media type */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    mediamtx_auth_internal_mediamtx_auth_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["MediaMtxAuthRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Request not allowed */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    claim_internal_try_claim_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryJobClaim"];
+                };
+            };
+            /** @description Nothing queued */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_failure_internal_try_jobs__job_id__fail_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryJobFailure"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not processing */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    job_file_internal_try_jobs__job_id__file_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Gone */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    progress_internal_try_jobs__job_id__progress_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryProgress"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not processing */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    post_result_internal_try_jobs__job_id__result_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryResult-Input"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not processing */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_video_internal_try_jobs__job_id__video_put: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Unknown job */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    active_sessions_internal_try_sessions_get: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrySessionRef"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    session_event_internal_try_sessions__session_id__events_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["SessionEvent-Input"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Session ended */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    report_status_internal_try_status_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                authorization?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["TryAiReport"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    kpis_kpis_get: {
+        parameters: {
+            query?: {
+                /** @description Default: 30 days ago */
+                since?: string | null;
+                /** @description Default: now */
+                until?: string | null;
+                period?: "day" | "week" | "month";
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["KpiReport"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    map_resources_map_resources_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["MapResources"];
+                };
+            };
+        };
+    };
+    post_report_public_reports_post: {
+        parameters: {
+            query?: never;
+            header?: {
+                "idempotency-key"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "multipart/form-data": components["schemas"]["Body_post_report_public_reports_post"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ReportAccepted"];
+                };
+            };
+            /** @description Photo too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Photo is not a JPEG or PNG */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Position outside Algeria or invalid field */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Rate limit exceeded */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    create_job_public_try_jobs_post: {
+        parameters: {
+            query?: {
+                filename?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "video/mp4": string;
+                "video/quicktime": string;
+                "video/webm": string;
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            202: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryJobOut"];
+                };
+            };
+            /** @description Too large */
+            413: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Not a video */
+            415: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Too long */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Rate limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_job_public_try_jobs__job_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryJobOut"];
+                };
+            };
+            /** @description Unknown or expired */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_job_public_try_jobs__job_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    stream_job_public_try_jobs__job_id__events_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Rate limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    job_video_public_try_jobs__job_id__video_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                job_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description No annotated video */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    create_session_public_try_sessions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrySessionOut"];
+                };
+            };
+            /** @description Rate limit */
+            429: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_session_state_public_try_sessions__session_id__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TrySessionOut"];
+                };
+            };
+            /** @description Ended */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    end_session_public_try_sessions__session_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    ping_session_public_try_sessions__session_id__ping_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                session_id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Ended */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    try_status_public_try_status_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TryStatus"];
+                };
+            };
+        };
+    };
+    push_public_key_push_public_key_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["PushPublicKey"];
+                };
+            };
+            /** @description Web push is not configured */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    subscribe_push_push_subscriptions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["PushSubscriptionIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
@@ -126,6 +6132,231 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["ReadinessResponse"];
                 };
+            };
+        };
+    };
+    recommendations_routing_recommendations_get: {
+        parameters: {
+            query: {
+                lat: number;
+                lon: number;
+                kind?: "unit" | "hospital" | "all";
+                /** @description Required hospital capability, e.g. trauma */
+                need?: string | null;
+                limit?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Recommendations"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Routing service unavailable */
+            503: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sms_gateway_sms_gateway_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmsGateway"];
+                };
+            };
+        };
+    };
+    sms_inbound_sms_inbound_post: {
+        parameters: {
+            query?: {
+                token?: string | null;
+            };
+            header?: {
+                "x-signature"?: string | null;
+                "x-timestamp"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookEnvelope"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmsAck"];
+                };
+            };
+            /** @description Invalid webhook signature */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    sms_status_sms_status_post: {
+        parameters: {
+            query?: {
+                token?: string | null;
+            };
+            header?: {
+                "x-signature"?: string | null;
+                "x-timestamp"?: string | null;
+            };
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WebhookEnvelope"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["SmsAck"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    system_ai_system_ai_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["nadjet_api__system__routes__AiStatus"];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Role */
+            403: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    system_cameras_system_cameras_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["CameraSystemStatus"][];
+                };
+            };
+            /** @description Not authenticated */
+            401: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    algeria_tiles_tiles_algeria_pmtiles_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
         };
     };

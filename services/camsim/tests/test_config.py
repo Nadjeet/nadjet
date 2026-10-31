@@ -13,6 +13,7 @@ CAMERA = {
     "id": "cam-a1-pk42",
     "name": "A1 PK42",
     "video": "crash.mp4",
+    "clip_id": "demo-crash-01",
     "geo": {"lat": 36.648, "lon": 3.329},
     "road": "A1",
     "pk_km": 42,
@@ -30,6 +31,7 @@ def test_repository_catalogue_is_valid() -> None:
 
 
 def test_render_publishes_existing_videos_unmodified(tmp_path: Path) -> None:
+    """FR-CAM-002: each real video file is published as a looping camera, without re-encoding."""
     (tmp_path / "crash.mp4").write_bytes(b"\x00")
     config, skipped = render_mediamtx(catalogue(CAMERA), tmp_path)
     assert skipped == []
@@ -70,11 +72,11 @@ def test_cli_writes_config(tmp_path: Path) -> None:
     assert (
         main(
             [
-                "render",
                 "--cameras",
                 str(cams),
                 "--videos",
                 str(tmp_path / "videos"),
+                "render",
                 "--out",
                 str(out),
             ]
@@ -87,4 +89,27 @@ def test_cli_writes_config(tmp_path: Path) -> None:
 def test_cli_fails_on_invalid_catalogue(tmp_path: Path) -> None:
     cams = tmp_path / "cameras.yaml"
     cams.write_text("cameras: [{id: x}]")
-    assert main(["render", "--cameras", str(cams), "--out", str(tmp_path / "o.yml")]) == 1
+    assert main(["--cameras", str(cams), "render", "--out", str(tmp_path / "o.yml")]) == 1
+
+
+def test_frozen_publisher_is_not_dropped_by_the_read_timeout(tmp_path: Path) -> None:
+    """FR-CAM-004: a SIGSTOP'd publisher sends nothing; the 10 s default turned freeze into outage."""
+    config, _ = render_mediamtx(catalogue(CAMERA), tmp_path)
+    assert config["readTimeout"] == "1h"
+
+
+def test_production_render_delegates_auth_to_the_api(tmp_path: Path) -> None:
+    """FR-SEC-007: no anonymous access; publishers log in as the service user."""
+    (tmp_path / "crash.mp4").write_bytes(b"\x00")
+    config, _ = render_mediamtx(
+        catalogue(CAMERA),
+        tmp_path,
+        auth_url="http://api:8000/internal/mediamtx-auth",
+        public_host="203.0.113.7",
+    )
+    assert config["authMethod"] == "http"
+    assert config["authHTTPAddress"] == "http://api:8000/internal/mediamtx-auth"
+    assert "authInternalUsers" not in config
+    assert config["webrtcAdditionalHosts"] == ["203.0.113.7"]
+    command = config["paths"]["cam-a1-pk42"]["runOnInit"]
+    assert "${NADJET_STREAM_USER}:${NADJET_INGEST_TOKEN}@localhost" in command

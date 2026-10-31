@@ -1,0 +1,881 @@
+{
+  "app": {
+    "name": "Nadjet",
+    "tagline": "Détection d'accidents de la route et coordination des secours"
+  },
+  "common": {
+    "logout": "Se déconnecter",
+    "language": "Langue",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "backHome": "Retour à l'accueil",
+    "notFoundTitle": "Page introuvable",
+    "notFoundBody": "Cette adresse n'existe pas ou vous ne pouvez pas l'ouvrir.",
+    "skipToContent": "Aller au contenu",
+    "mainNavigation": "Navigation principale",
+    "signedInAs": "Connecté en tant que {{name}}",
+    "close": "Fermer",
+    "welcomeBack": "Bon retour",
+    "searchIncident": "Trouver un incident par son code",
+    "searchSubmit": "Ouvrir l'incident",
+    "searchNotFound": "Aucun incident avec le code {{code}}"
+  },
+  "surface": {
+    "ops": "Console opérateur",
+    "respond": "Application secouriste",
+    "hospital": "Vue hôpital",
+    "public": "Pages publiques"
+  },
+  "nav": {
+    "overview": "Vue d'ensemble",
+    "cameras": "Mur de caméras",
+    "system": "État du système",
+    "myIncidents": "Mes incidents",
+    "profile": "Profil",
+    "incoming": "Alertes entrantes",
+    "home": "Accueil",
+    "report": "Signaler un accident",
+    "try": "Essayer",
+    "privacy": "Confidentialité",
+    "incidents": "Incidents",
+    "kpis": "Indicateurs de réponse",
+    "evaluation": "Évaluation de l'IA",
+    "admin": "Administration",
+    "sections": {
+      "operations": "Opérations tactiques",
+      "analytics": "Analyses",
+      "platform": "Plateforme"
+    }
+  },
+  "login": {
+    "title": "Connexion",
+    "subtitle": "Utilisez le compte fourni par votre centre de contrôle.",
+    "username": "Nom d'utilisateur",
+    "password": "Mot de passe",
+    "submit": "Se connecter",
+    "invalid": "Nom d'utilisateur ou mot de passe incorrect.",
+    "unavailable": "Le service est injoignable. Réessayez dans un instant.",
+    "heroTitle": "Une image vérifiée de chaque accident de la route.",
+    "heroBody": "Détecter sur les caméras existantes, faire vérifier par un humain et mobiliser la bonne unité et le bon hôpital, même par SMS.",
+    "point1": "Détection IA sur la vidéosurveillance existante",
+    "point2": "Vérification humaine avant l'envoi des secours",
+    "point3": "Les SMS fonctionnent sans données mobiles"
+  },
+  "live": {
+    "label": "Mises à jour en direct",
+    "live": "En direct",
+    "connecting": "Connexion",
+    "reconnecting": "Reconnexion"
+  },
+  "priority": {
+    "label": "Priorité",
+    "p1": "Critique",
+    "p2": "Urgent",
+    "p3": "Modéré",
+    "p4": "Faible"
+  },
+  "ai": {
+    "rule": "Règle",
+    "model": "Modèle",
+    "sourceLabel": "Source de cette valeur IA"
+  },
+  "map": {
+    "unavailable": "Fond de carte indisponible : lancez make map-data, puis redémarrez l'API.",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "recenter": "Recentrer"
+  },
+  "simulated": {
+    "label": "Données simulées"
+  },
+  "status": {
+    "candidate": "Candidat",
+    "verified": "Vérifié",
+    "rejected": "Rejeté",
+    "merged": "Fusionné",
+    "dispatched": "Engagé",
+    "acknowledged": "Pris en compte",
+    "en_route": "En route",
+    "on_scene": "Sur place",
+    "transporting": "Transport en cours",
+    "at_hospital": "À l'hôpital",
+    "closed": "Clôturé"
+  },
+  "timeline": {
+    "label": "Chronologie de l'incident",
+    "pending": "À venir",
+    "done": "Terminé",
+    "current": "Étape en cours"
+  },
+  "system": {
+    "title": "État du système",
+    "checking": "Vérification de l'API…",
+    "unreachable": "L'API est injoignable. Lancez `make dev`.",
+    "ok": "OK",
+    "down": "Hors service",
+    "ai": "Point d'accès IA (NVIDIA Brev)",
+    "aiAvailable": "IA disponible",
+    "aiUnavailable": "IA indisponible",
+    "cameras": "Caméras et chaîne d'analyse",
+    "camera": "Caméra",
+    "state": "État",
+    "fps": "IPS",
+    "queue": "File",
+    "frameAge": "Dernière image",
+    "detector": "Détecteur",
+    "healthy": "Saine",
+    "silent": "Worker silencieux",
+    "stage": {
+      "decode": "Décodage",
+      "detect": "Détection",
+      "track": "Suivi",
+      "annotate": "Annotation"
+    },
+    "fault": {
+      "stall": "Bloquée",
+      "disconnect": "Déconnectée"
+    }
+  },
+  "pages": {
+    "soon": "Cet écran sera réalisé dans une prochaine étape. La structure, la navigation, la langue et le direct sont prêts.",
+    "ops": {
+      "cameras": {
+        "title": "Mur de caméras",
+        "body": "Les flux caméra et les détections apparaîtront ici."
+      },
+      "system": {
+        "title": "État du système",
+        "body": "La santé des services, la latence et l'évaluation apparaîtront ici."
+      },
+      "overview": {
+        "title": "Console opérateur",
+        "body": "La carte, la file d'incidents et le mur de caméras apparaîtront ici."
+      },
+      "incidents": {
+        "title": "Incidents",
+        "body": "La file d'incidents en direct et le détail apparaîtront ici."
+      }
+    },
+    "public": {
+      "home": {
+        "title": "Signalez un accident. Les secours sont coordonnés en quelques minutes.",
+        "body": "Nadjet détecte les accidents sur les caméras existantes, recueille les signalements citoyens et coordonne l'intervention des secours."
+      },
+      "report": {
+        "title": "Signaler un accident",
+        "hint": "Un seul appui envoie votre position exacte aux opérateurs. Répondre aux questions est facultatif mais accélère les secours.",
+        "locating": "Recherche de votre position…",
+        "sending": "Envoi…",
+        "questions": "Que voyez-vous ? (facultatif)",
+        "people": "Combien de personnes sont concernées ?",
+        "trapped": "Quelqu'un est-il coincé ?",
+        "phone": "Votre numéro, pour vous rappeler (facultatif)",
+        "photo": "Photo de la scène (facultatif)",
+        "place": "Où est-ce ? Route, kilomètre, ville (lettres latines)",
+        "consent": "En signalant, vous acceptez que votre position, vos réponses, votre photo et votre numéro soient transmis aux secours et conservés comme preuve. Rien n'est utilisé à d'autres fins.",
+        "viaSms": "Envoyer plutôt par SMS",
+        "sendPicked": "Envoyer la position choisie",
+        "doneTitle": "Signalement reçu",
+        "doneBody": "Les opérateurs sont alertés. Restez en sécurité, loin de la circulation.",
+        "code": "Votre code de signalement :",
+        "merged": "D'autres témoins ont déjà signalé cet accident : votre signalement y a été ajouté.",
+        "emergency": "Si une vie est en danger, appelez aussi la Protection civile au 14 ou la police au 17.",
+        "fail": {
+          "location": "Impossible de lire votre position. Touchez la carte à l'endroit de l'accident, ou décrivez le lieu et envoyez un SMS.",
+          "network": "Pas de connexion à Nadjet. Envoyez le signalement par SMS : votre téléphone ouvre un message prêt.",
+          "limit": "Trop de signalements depuis cette connexion. Patientez quelques minutes ou appelez le 14.",
+          "invalid": "Cette position est hors d'Algérie ou un champ est invalide. Vérifiez et réessayez."
+        }
+      },
+      "try": {
+        "title": "Essayer la détection",
+        "body": "Envoyez jusqu'à {{seconds}} s et {{mb}} Mo de vidéo de trafic, ou utilisez votre téléphone comme caméra en direct. La même IA que celle des caméras l'analyse.",
+        "consent": {
+          "title": "Avant d'envoyer",
+          "body": "Votre vidéo est analysée par l'IA de Nadjet sur notre propre serveur, conservée une heure dans un bac à sable isolé puis supprimée. Elle n'est jamais mélangée aux incidents réels. N'envoyez pas de vidéos de personnes que vous n'avez pas le droit de filmer."
+        },
+        "choose": "Choisir une vidéo",
+        "livePhone": "Utiliser mon téléphone comme caméra",
+        "aiUnavailable": "IA indisponible : seule l'analyse par règles est affichée.",
+        "progress": "Progression de l'analyse",
+        "annotated": "Vidéo avec détections",
+        "incident": "Résultat",
+        "sandbox": "Bac à sable",
+        "status": "Statut IA",
+        "time": "Instant",
+        "vehicles": "Véhicules",
+        "frames": "images",
+        "noCollision": "L'IA ne voit pas de collision dans ce clip.",
+        "noRuleCollision": "Les règles n'ont détecté aucune collision.",
+        "timeline": "Chronologie",
+        "timelineEmpty": "Rien n'a été détecté.",
+        "delete": "Supprimer ma vidéo maintenant",
+        "stages": {
+          "queued": "En attente d'un analyseur libre",
+          "starting": "Démarrage",
+          "detect": "Détection des véhicules",
+          "ai_scan": "Balayage IA du clip entier",
+          "ai_refine": "Regard IA précis sur l'instant",
+          "done": "Terminé"
+        },
+        "errors": {
+          "tooLarge": "Ce fichier dépasse {{mb}} Mo.",
+          "notVideo": "Ce fichier n'est pas une vidéo (MP4, MOV ou WebM).",
+          "tooLong": "Cette vidéo dépasse {{seconds}} s.",
+          "rateLimited": "Trop de tentatives. Patientez une minute.",
+          "failed": "L'envoi a échoué. Réessayez."
+        },
+        "live": {
+          "title": "Votre téléphone en caméra live",
+          "body": "Dirigez votre téléphone vers une route ou un écran. Il apparaît sur le mur de caméras des opérateurs comme démo en direct, et l'IA le vérifie toutes les 4 secondes. La session et ses résultats sont supprimés quand vous partez.",
+          "start": "Démarrer la caméra",
+          "stop": "Arrêter",
+          "on": "En direct",
+          "preview": "Votre caméra",
+          "failed": "La caméra n'a pas pu démarrer."
+        }
+      },
+      "privacy": {
+        "title": "Confidentialité",
+        "body": "Le traitement des signalements, positions et preuves sera expliqué ici."
+      },
+      "cta": "Signaler un accident",
+      "learn": "Essayer la détection"
+    }
+  },
+  "ops": {
+    "console": {
+      "title": "Opérations",
+      "queue": "File des incidents",
+      "map": "Carte en direct",
+      "count": "{{count}} incidents",
+      "empty": "Aucun incident ne correspond à ces filtres.",
+      "loadError": "La liste des incidents n'a pas pu être chargée.",
+      "newIncident": "Nouvel incident",
+      "mapLegend": "Les étiquettes indiquent la priorité (P1–P4) et l'état des caméras. Les établissements et unités marqués simulés sont des données de démonstration.",
+      "kpi": {
+        "active": "Incidents actifs",
+        "activeHint_one": "{{count}} en attente de vérification",
+        "activeHint_other": "{{count}} en attente de vérification",
+        "detection": "Vitesse de détection",
+        "detectionHint": "Médiane, événement → écran",
+        "units": "Équipes d'intervention",
+        "unitsValue": "{{count}} unités",
+        "unitsHint": "Disponibles sur {{total}}",
+        "hospitals": "Hôpitaux prêts",
+        "hospitalsValue": "{{count}} prêts",
+        "hospitalsHint": "Sur {{total}} hôpitaux",
+        "none": "—"
+      },
+      "allPriorities": "Toutes",
+      "moreFilters": "Filtres",
+      "review": "Examiner",
+      "manualCall": "Saisie d'un appel",
+      "inspect": "Examen de l'incident",
+      "inspectEmpty": "Sélectionnez un incident dans la file pour l'examiner ici.",
+      "liveStream": "Flux en direct",
+      "noCamera": "Signalé sans caméra.",
+      "factors": "Facteurs de priorité",
+      "openReview": "Examiner l'incident",
+      "details": "Détails",
+      "humanGate": "Vérification humaine active",
+      "humanGateHint": "L'IA n'envoie jamais de secours seule.",
+      "standards": "Alertes CAP 1.2 · Loi 18-07 / 25-11",
+      "liveRoutes": "Itinéraires en direct",
+      "viewRoute": "Itinéraire",
+      "viewAll": "Tous les incidents",
+      "statStatus": "Statut",
+      "statUnit": "ETA unité",
+      "statHospital": "Hôpital",
+      "notDispatched": "Non envoyé",
+      "minutes": "{{count}} min",
+      "accepting": "Accepte les patients",
+      "diverting": "Détourne",
+      "dispatchNow": "Envoyer les secours",
+      "reviewNow": "Examiner et confirmer",
+      "reject": "Rejeter",
+      "manualCallNav": "Appel manuel",
+      "avgDetection": "Détection moyenne : {{value}}"
+    },
+    "filters": {
+      "status": "Statut",
+      "priority": "Priorité",
+      "source": "Source",
+      "all": "Tous",
+      "open": "Incidents ouverts"
+    },
+    "source": {
+      "camera": "Caméra",
+      "citizen": "Citoyen",
+      "operator": "Opérateur"
+    },
+    "type": {
+      "crash": "Accident",
+      "stalled_vehicle": "Véhicule à l'arrêt",
+      "pedestrian_on_road": "Personne sur la route"
+    },
+    "col": {
+      "code": "Code",
+      "priority": "Priorité",
+      "type": "Type",
+      "ai": "Statut IA",
+      "source": "Source",
+      "location": "Lieu",
+      "age": "Âge",
+      "reports": "Signalements"
+    },
+    "aiStatus": {
+      "confirmed": "Confirmé",
+      "probable": "Probable",
+      "possible": "Possible",
+      "insufficient_evidence": "Preuves insuffisantes",
+      "none": "Sans objet"
+    },
+    "uncertain": "Incertain",
+    "confidence": {
+      "label": "Confiance de l'IA",
+      "low": "Faible",
+      "medium": "Moyenne",
+      "high": "Élevée"
+    },
+    "verdict": {
+      "label": "Réponse du vérificateur",
+      "yes": "Collision visible",
+      "no": "Aucune collision visible",
+      "cannot_judge": "Ne peut pas juger",
+      "findings": "Constats",
+      "noFindings": "Aucun constat enregistré.",
+      "frames": "(images {{frames}})",
+      "notAssessable": "Non évaluable",
+      "notApplicable": "Pas d'analyse IA : cet incident a été créé par un opérateur."
+    },
+    "degraded": {
+      "verifier": "Vérificateur : indisponible. L'IA n'a pas pu contrôler cet incident ; décidez à partir des preuves et des règles.",
+      "contradiction": "Contradiction : les règles ont levé cet incident mais le vérificateur IA ne voit aucune collision. Examinez les preuves avant de décider."
+    },
+    "cameraStatus": {
+      "unknown": "inconnue",
+      "online": "en ligne",
+      "degraded": "dégradée",
+      "offline": "hors ligne"
+    },
+    "create": {
+      "title": "Nouvel incident depuis un appel",
+      "description": "Placez l'incident sur la carte ou saisissez ses coordonnées, puis notez ce que dit l'appelant.",
+      "lat": "Latitude",
+      "lon": "Longitude",
+      "pick": "Choisir sur la carte",
+      "pickHint": "Cliquez sur la carte pour placer l'incident. Appuyez sur Échap pour revenir.",
+      "scene": "Ce que signale l'appelant",
+      "flags": {
+        "bus_involved": "Autobus impliqué",
+        "person_on_road": "Personne sur la route",
+        "flames": "Flammes",
+        "smoke": "Fumée",
+        "overturned": "Véhicule renversé",
+        "stopped_in_lane": "Véhicule arrêté sur la voie",
+        "trapped": "Une personne est coincée"
+      },
+      "vehicles": "Véhicules",
+      "people": "Personnes impliquées",
+      "notes": "Notes d'appel",
+      "submit": "Créer l'incident"
+    },
+    "actions": {
+      "cancel": "Annuler",
+      "confirm": "Confirmer",
+      "reject": "Rejeter",
+      "merge": "Fusionner dans…",
+      "rejectTitle": "Rejeter {{code}}",
+      "rejectBody": "Indiquez pourquoi ce candidat n'est pas un incident. Le motif est enregistré avec votre nom.",
+      "reason": "Motif",
+      "mergeTitle": "Fusionner {{code}}",
+      "mergeBody": "Le candidat est clos comme fusionné et ses signalements et signaux rejoignent l'incident choisi.",
+      "mergeTarget": "Incident de destination",
+      "mergePlaceholder": "Choisir un incident",
+      "mergeNone": "Il n'y a aucun autre incident ouvert."
+    },
+    "reject": {
+      "false_positive": "Faux positif",
+      "duplicate": "Doublon",
+      "not_emergency": "Pas une urgence",
+      "other": "Autre"
+    },
+    "errors": {
+      "generic": "L'action a échoué. Réessayez.",
+      "conflict": "L'incident a changé entre-temps et cette action n'est plus autorisée.",
+      "forbidden": "Votre rôle ne permet pas cette action.",
+      "routing": "Le calcul d'itinéraire est indisponible. Réessayez dans un instant."
+    },
+    "evidence": {
+      "none": "Aucune preuve jointe pour le moment.",
+      "audited": "La consultation et le téléchargement des preuves sont enregistrés dans le journal d'audit.",
+      "loadClip": "Charger la vidéo",
+      "clip": "Vidéo de preuve",
+      "keyframe": "Image clé {{index}}",
+      "download": "Télécharger",
+      "failed": "Le fichier n'a pas pu être chargé."
+    },
+    "signals": {
+      "none": "Aucun signal de règle enregistré.",
+      "vehicles_one": "{{count}} véhicule",
+      "vehicles_other": "{{count}} véhicules"
+    },
+    "flags": {
+      "to_assess": "À évaluer",
+      "mass_casualty": "Possible afflux de victimes",
+      "needs_extrication": "Désincarcération nécessaire"
+    },
+    "event": {
+      "created": "Créé",
+      "status_changed": "Statut modifié",
+      "merged_candidate": "Signalement fusionné",
+      "incident_merged_in": "Autre incident fusionné",
+      "casualty_added": "Victime enregistrée",
+      "evidence_added": "Preuve ajoutée",
+      "system": "Système",
+      "hospital_diverted": "Hôpital en DIVERT",
+      "hospital_changed": "Hôpital changé",
+      "notification_failed": "Notification échouée",
+      "hospital_response": "L'hôpital a choisi Prêt ou Détourner",
+      "prealert_acknowledged": "L'hôpital a accusé réception de la pré-alerte"
+    },
+    "casualties": {
+      "title": "Victimes",
+      "none": "Aucune victime enregistrée.",
+      "tag": "Triage",
+      "avpu": "AVPU",
+      "resp": "Fréq. resp.",
+      "pulse": "Pouls",
+      "spo2": "SpO₂",
+      "bleeding": "Saignement",
+      "time": "Heure"
+    },
+    "triage": {
+      "red": "Rouge",
+      "yellow": "Jaune",
+      "green": "Vert",
+      "black": "Noir"
+    },
+    "yes": "Oui",
+    "no": "Non",
+    "integrity": {
+      "title": "Intégrité des preuves",
+      "verify": "Vérifier l'intégrité",
+      "valid": "Valide",
+      "invalid": "Invalide",
+      "checked": "{{events}} événements et {{files}} fichiers vérifiés."
+    },
+    "detail": {
+      "back": "Retour à la console",
+      "notFound": "Cet incident n'existe pas ou vous ne pouvez pas l'ouvrir.",
+      "evidence": "Preuves",
+      "rules": "Signaux des règles",
+      "ai": "Verdict de l'IA",
+      "priority": "Priorité et raisons",
+      "timeline": "Chronologie",
+      "reports": "{{count}} signalements",
+      "rejectedFor": "Rejeté : {{reason}}",
+      "mergedInto": "Fusionné dans un autre incident.",
+      "openTarget": "L'ouvrir",
+      "review": "Examen de l'incident",
+      "progress": "Avancement de l'incident"
+    },
+    "agency": {
+      "civil_protection": "Protection civile",
+      "gendarmerie": "Gendarmerie",
+      "police": "Police",
+      "samu": "SAMU"
+    },
+    "capability": {
+      "trauma": "Traumatologie",
+      "emergency": "Urgences",
+      "extrication": "Désincarcération"
+    },
+    "dispatch": {
+      "title": "Engagement",
+      "scene": "Lieu de l'incident",
+      "units": "Unités (classées par temps de trajet routier)",
+      "hospitals": "Hôpitaux (capacité, puis Prêt, puis temps)",
+      "noUnits": "Aucune unité disponible ne peut rejoindre cet incident.",
+      "noHospitals": "Aucun hôpital n'est joignable depuis cet incident.",
+      "need": "Unités affichées : {{agencies}}. Hôpitaux classés pour : {{need}}.",
+      "eta": "{{minutes}} min",
+      "distance": "{{km}} km",
+      "ready": "Prêt",
+      "divert": "Détourner",
+      "confirm": "Engager {{count}} unité(s) et l'hôpital",
+      "unitRoute": "{{name}} → lieu",
+      "hospitalRoute": "Lieu → {{name}}",
+      "noPosition": "Cet incident n'a pas encore de position. Rappelez l'appelant pour le placer avant d'engager.",
+      "noRecipients": "Aucun destinataire notifié",
+      "col": {
+        "resource": "Ressource",
+        "eta": "Temps et distance",
+        "status": "Statut",
+        "delivery": "Notification"
+      },
+      "kind": {
+        "unit": "Unité",
+        "hospital": "Hôpital"
+      },
+      "status": {
+        "dispatched": "Engagé",
+        "replaced": "Remplacé"
+      },
+      "channel": {
+        "sms": "SMS",
+        "push": "Push",
+        "telegram": "Telegram"
+      },
+      "delivery": {
+        "queued": "En file",
+        "sent": "Envoyé",
+        "delivered": "Remis",
+        "failed": "Échec"
+      },
+      "fieldAck": "Statut de l'incident : {{status}}",
+      "divertAlert": "{{name}} a répondu DIVERT. Choisissez un autre hôpital pour les patients.",
+      "proposed": "Proposition : {{name}}.",
+      "proposedTag": "Proposé",
+      "switch": "Envoyer les patients dans cet hôpital"
+    }
+  },
+  "stream": {
+    "connecting": "Connexion…",
+    "playing": "En direct",
+    "reconnecting": "Reconnexion…",
+    "fallback": "WebRTC indisponible, mode de repli",
+    "latency": "≈ {{ms}} ms"
+  },
+  "cameras": {
+    "annotated": "Boîtes IA",
+    "raw": "Brut",
+    "view": "Vue vidéo",
+    "fullscreen": "Plein écran",
+    "loadFailed": "La liste des caméras n'a pas pu être chargée.",
+    "videoOf": "{{name}} ({{view}})",
+    "incident": "Incident ouvert : {{codes}}",
+    "status": {
+      "live": "En direct",
+      "degraded": "Dégradée",
+      "offline": "Hors ligne"
+    },
+    "liveDemo": "Démo en direct"
+  },
+  "kpis": {
+    "title": "Indicateurs de réponse",
+    "intro": "Les durées viennent de la chronologie signée de l'incident. Les doublons fusionnés ne sont pas comptés.",
+    "from": "Du",
+    "to": "Au",
+    "periodLabel": "Regrouper par période",
+    "period": {
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois"
+    },
+    "loading": "Chargement des indicateurs…",
+    "error": "Impossible de charger les indicateurs.",
+    "none": "Aucune donnée",
+    "overall": "Tous les incidents",
+    "byPeriod": "Par période",
+    "byAgency": "Par service",
+    "byWilaya": "Par wilaya",
+    "group": "Groupe",
+    "incidents": "Incidents",
+    "median": "Médiane",
+    "p90": "90e centile",
+    "samples": "n",
+    "metric": {
+      "detection_s": "Délai de détection",
+      "verification_s": "Vérification",
+      "acknowledge_s": "Prise en compte",
+      "scene_s": "Délai d'arrivée sur les lieux",
+      "hospital_s": "Délai d'arrivée à l'hôpital"
+    },
+    "metricHelp": {
+      "detection_s": "De l'événement à la création",
+      "verification_s": "De la création à la vérification",
+      "acknowledge_s": "De l'envoi à la prise en compte",
+      "scene_s": "De l'envoi à l'arrivée sur les lieux",
+      "hospital_s": "De l'envoi à l'arrivée à l'hôpital"
+    },
+    "falseAlarms": "Fausses alertes par caméra",
+    "camera": "Caméra",
+    "raised": "Incidents",
+    "falsePositives": "Faux positifs",
+    "rate": "Taux",
+    "perIncident": "Par incident",
+    "code": "Code",
+    "status": "Statut",
+    "wilaya": "Wilaya",
+    "eventTime": "Heure de l'événement",
+    "priority": "Priorité"
+  },
+  "evaluation": {
+    "title": "Évaluation de l'IA",
+    "loading": "Chargement des résultats…",
+    "error": "Impossible de charger les résultats.",
+    "none": "Aucune évaluation n'a encore été exécutée. Lancez make eval.",
+    "generated": "Exécutée le",
+    "commit": "Commit",
+    "dirty": "modifications non validées",
+    "seed": "Graine",
+    "samples": "Tirages bootstrap",
+    "models": "Modèles utilisés",
+    "cameraHours": "Images négatives (heures-caméra)",
+    "targetMet": "Atteint l'objectif d'une heure-caméra",
+    "targetMissed": "Sous l'objectif d'une heure-caméra",
+    "ablation": "Résultats par configuration",
+    "configuration": "Configuration",
+    "precision": "Précision",
+    "recall": "Rappel",
+    "f1": "F1",
+    "delay": "Délai médian (s)",
+    "falseAlarmsPerHour": "Fausses alertes / heure-caméra",
+    "tp": "Vrais positifs",
+    "fp": "Faux positifs",
+    "fn": "Faux négatifs",
+    "ci": "Intervalle à 95 %",
+    "notRun": "Non exécuté",
+    "aiQuality": "Qualité des réponses de l'IA",
+    "verifications": "Appels répondus",
+    "validFirstTry": "Valides du premier coup",
+    "droppedCitations": "Constats écartés (images invalides)",
+    "cannotJudge": "Impossible à juger",
+    "unavailable": "Appels sans réponse",
+    "latency": "Latence (ms)",
+    "p50": "p50",
+    "p95": "p95",
+    "calls": "Appels",
+    "limits": "Limites assumées",
+    "limitsNote": "Ces chiffres viennent d'un petit jeu de test conservé à part. Lisez les intervalles, pas seulement les valeurs ; ce qui n'a pas été exécuté est listé, jamais estimé.",
+    "clips": "Clips évalués",
+    "clip": "Clip",
+    "kind": "Type",
+    "alerts": "Alertes",
+    "skipped": "Clips ignorés"
+  },
+  "admin": {
+    "title": "Administration",
+    "intro": "Chaque modification est écrite dans le journal d'audit.",
+    "tabs": {
+      "cameras": "Caméras",
+      "facilities": "Établissements",
+      "units": "Unités",
+      "users": "Utilisateurs"
+    },
+    "save": "Enregistrer",
+    "saved": "Enregistré",
+    "error": "Modification refusée : {{message}}",
+    "loading": "Chargement…",
+    "name": "Nom",
+    "road": "Route",
+    "wilaya": "Wilaya",
+    "heading": "Cap (°)",
+    "zones": "Zones (fichier JSON)",
+    "zonesInvalid": "Ce fichier n'est pas un objet JSON.",
+    "readyState": "État",
+    "ready": "Disponible",
+    "divert": "Détourner",
+    "contactSms": "Contact SMS",
+    "capabilities": "Capacités",
+    "callsign": "Indicatif",
+    "status": "Statut",
+    "phone": "Téléphone",
+    "available": "Disponible",
+    "dispatched": "Engagée",
+    "busy": "Occupée",
+    "offline": "Hors ligne",
+    "username": "Identifiant",
+    "displayName": "Nom affiché",
+    "password": "Mot de passe (12 caractères min.)",
+    "newPassword": "Nouveau mot de passe",
+    "role": "Rôle",
+    "agency": "Service",
+    "facility": "Id de l'établissement",
+    "active": "Actif",
+    "deactivate": "Désactiver",
+    "activate": "Activer",
+    "createUser": "Créer l'utilisateur",
+    "noAgency": "Aucun",
+    "roles": {
+      "operator": "Opérateur",
+      "supervisor": "Superviseur",
+      "responder": "Intervenant",
+      "hospital": "Hôpital",
+      "auditor": "Auditeur",
+      "admin": "Administrateur"
+    },
+    "agencies": {
+      "civil_protection": "Protection civile",
+      "gendarmerie": "Gendarmerie",
+      "police": "Police",
+      "samu": "SAMU"
+    },
+    "inactive": "Inactif"
+  },
+  "respond": {
+    "offline": "Vous êtes hors ligne. Les actions sont enregistrées sur ce téléphone et envoyées au retour de la connexion.",
+    "list": {
+      "title": "Mes incidents",
+      "empty": "Aucun incident n'est affecté à votre service.",
+      "loadError": "Les incidents n'ont pas pu être chargés.",
+      "subtitle": "Missions confiées à votre service",
+      "openMission": "Ouvrir la mission",
+      "map": "Carte des incidents",
+      "others": "Autres missions"
+    },
+    "alerts": {
+      "enable": "Activer les alertes",
+      "body": "Recevez une notification dès qu'une unité de votre service est engagée.",
+      "denied": "Les notifications sont bloquées dans les réglages du navigateur.",
+      "unsupported": "Ce navigateur ne peut pas recevoir d'alertes push.",
+      "error": "Les alertes n'ont pas pu être activées. Réessayez.",
+      "on": "Les alertes sont activées."
+    },
+    "install": {
+      "button": "Ajouter à l'écran d'accueil",
+      "body": "Ouvrez Nadjet depuis l'écran d'accueil, même avec une connexion faible.",
+      "done": "Installée sur ce téléphone.",
+      "manual": "Dans le menu du navigateur, choisissez Ajouter à l'écran d'accueil (iPhone : Partager, puis Sur l'écran d'accueil)."
+    },
+    "detail": {
+      "back": "Mes incidents",
+      "where": "Lieu",
+      "openMap": "Ouvrir dans l'application de cartes",
+      "openOsm": "OpenStreetMap",
+      "hospital": "Hôpital",
+      "noHospital": "Aucun hôpital affecté pour le moment.",
+      "ai": "Description de l'IA",
+      "aiNote": "Rédigée par l'IA à partir de la vidéo. Ce n'est pas une évaluation médicale.",
+      "noAi": "Pas de description de l'IA pour cet incident.",
+      "evidence": "Preuves",
+      "notFound": "Cet incident n'existe pas ou n'est pas affecté à votre service.",
+      "trapped": "Une personne est coincée",
+      "people": "{{count}} personnes signalées",
+      "missionLabel": "Détails de la mission",
+      "mission": "Mission n° {{code}}",
+      "progress": "Avancement de la mission",
+      "map": "Carte des incidents",
+      "visual": "Images de l'incident",
+      "progressTitle": "Avancement de la mission"
+    },
+    "action": {
+      "title": "Statut",
+      "acknowledged": "Accuser réception",
+      "en_route": "En route",
+      "on_scene": "Sur place",
+      "transporting": "Transport en cours",
+      "at_hospital": "À l'hôpital",
+      "closed": "Clore l'incident",
+      "closeNoTransport": "Clore sans transport",
+      "done": "Cet incident est clos.",
+      "waiting": "En attente d'engagement.",
+      "confirmTitle": "Clore {{code}} ?",
+      "confirmBody": "L'incident est clos pour tous et votre unité redevient disponible.",
+      "confirm": "Clore",
+      "cancel": "Annuler",
+      "queued": "Enregistré sur ce téléphone. Envoi au retour de la connexion.",
+      "failed": "L'action a été refusée ({{error}}).",
+      "sending": "Envoi…"
+    },
+    "triage": {
+      "title": "Enregistrer une victime",
+      "recorded": "{{count}} victimes enregistrées",
+      "tag": "Catégorie START",
+      "red": "Immédiat (rouge)",
+      "yellow": "Différé (jaune)",
+      "green": "Léger (vert)",
+      "black": "Décédé (noir)",
+      "avpu": "Conscience (AVPU)",
+      "A": "Alerte",
+      "V": "Voix",
+      "P": "Douleur",
+      "U": "Inconscient",
+      "resp": "Resp. / min",
+      "pulse": "Pouls / min",
+      "spo2": "SpO₂ % (facultatif)",
+      "bleeding": "Saignement",
+      "notes": "Notes",
+      "submit": "Enregistrer la victime",
+      "saved": "Victime enregistrée.",
+      "queued": "Enregistré sur ce téléphone. Envoi au retour de la connexion."
+    },
+    "sms": {
+      "send": "Envoyer par SMS",
+      "body": "Ouvre votre application SMS avec ce message prêt :",
+      "noNumber": "Le numéro SMS n'est pas configuré.",
+      "fallback": "Secours SMS"
+    },
+    "pending": {
+      "title": "En attente d'envoi",
+      "status": "Statut : {{status}}",
+      "triage": "Victime : {{tag}}",
+      "failed": "Refusé : {{error}}",
+      "discard": "Retirer (déjà envoyé par SMS)"
+    },
+    "profile": {
+      "title": "Profil",
+      "alerts": "Alertes",
+      "app": "Application",
+      "gateway": "Numéro de repli SMS",
+      "queue": "File hors ligne",
+      "queueHint": "Les actions faites sans connexion attendent ici et sont envoyées une seule fois, dans l'ordre, au retour de la connexion."
+    },
+    "nav": {
+      "home": "Accueil",
+      "progress": "Avancement",
+      "triage": "Triage",
+      "profile": "Profil"
+    },
+    "menu": "Menu",
+    "noActive": "Aucune mission en cours. Les nouvelles missions apparaissent dans Accueil."
+  },
+  "hospital": {
+    "incomingTitle": "Patients attendus",
+    "incoming": "{{count}} attendus",
+    "none": "Aucune pré-alerte pour le moment.",
+    "historyTitle": "Arrivées du jour",
+    "noHistory": "Aucune arrivée aujourd'hui.",
+    "historyVictims": "{{count}} victimes",
+    "massCasualty": "Possible afflux de victimes",
+    "massCasualtyBanner": "Possible afflux de victimes attendu : {{codes}}. Préparez-vous à plusieurs patients.",
+    "noFacility": "Votre compte n'est lié à aucun hôpital.",
+    "loadError": "Les pré-alertes n'ont pas pu être chargées.",
+    "error": "L'action a échoué. Réessayez.",
+    "readiness": {
+      "title": "Pouvez-vous recevoir des patients ?",
+      "ready": "Prêt",
+      "divert": "Détourner",
+      "nowReady": "Votre hôpital est Prêt : les opérateurs peuvent envoyer des patients.",
+      "nowDivert": "Votre hôpital est en Détournement : les opérateurs ne le choisiront pas.",
+      "sms": "Par SMS, répondez avec le code de l'incident :",
+      "confirmTitle": "Détourner les patients de votre hôpital ?",
+      "confirmBody": "Les opérateurs sont alertés aussitôt et choisissent un autre hôpital pour chaque groupe de patients attendu."
+    },
+    "card": {
+      "arrivesIn": "Arrivée dans",
+      "overdue": "En retard de",
+      "dueAt": "Prévu à {{time}}",
+      "victims": "Victimes",
+      "vitals": "Victimes et constantes",
+      "noVictims": "Aucune victime signalée pour le moment. Cela se met à jour quand l'équipe les enregistre.",
+      "noUnit": "Unité inconnue",
+      "extrication": "Désincarcération nécessaire",
+      "acknowledge": "Accuser réception de la pré-alerte",
+      "acknowledged": "Reçue par {{name}} à {{time}}"
+    },
+    "kpi": {
+      "incoming": "Groupes de patients attendus",
+      "incomingHint": "Pré-alertes envoyées par la régulation",
+      "victims": "Victimes en route",
+      "victimsHint": "Saisies par les équipes (START)",
+      "next": "Prochaine arrivée",
+      "nextHint": "D'après l'ETA de l'itinéraire",
+      "state": "État de l'hôpital",
+      "stateHint": "Utilisé pour classer les hôpitaux"
+    },
+    "welcome": "Hôpital receveur"
+  }
+}

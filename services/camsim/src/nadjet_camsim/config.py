@@ -1,96 +1,89 @@
 """Camera catalogue (``data/cameras.yaml``) and MediaMTX config rendering."""
 
-import re
 from pathlib import Path
 from typing import Any
 
-import yaml
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from nadjet_shared.catalogue import Camera, Catalogue, load_catalogue
 
-PATH_NAME = re.compile(r"^[a-z0-9][a-z0-9-]{1,62}$")
+__all__ = [
+    "Camera",
+    "Catalogue",
+    "load_catalogue",
+    "path_config",
+    "publisher_command",
+    "render_mediamtx",
+]
 
-
-class GeoPoint(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    lat: float = Field(ge=18.9, le=37.2, description="Inside Algeria's bounding box")
-    lon: float = Field(ge=-8.7, le=12.0)
-
-
-class Camera(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
-    id: str
-    name: str
-    video: str = Field(description="File name inside the videos directory")
-    geo: GeoPoint
-    road: str
-    pk_km: float | None = None
-    heading_deg: float = Field(default=0, ge=0, lt=360)
-    wilaya: str
-
-    @field_validator("id")
-    @classmethod
-    def valid_path_name(cls, value: str) -> str:
-        if not PATH_NAME.match(value):
-            raise ValueError("id must be lowercase letters, digits and dashes (MediaMTX path)")
-        return value
+CONTAINER_VIDEOS_DIR = "/videos"
 
 
-class Catalogue(BaseModel):
-    model_config = ConfigDict(extra="forbid")
+def publisher_command(video_in_container: str, *, authenticated: bool = False) -> str:
+    """ffmpeg command MediaMTX runs to publish a file as a looping camera, without re-encoding.
 
-    cameras: list[Camera]
-
-    @field_validator("cameras")
-    @classmethod
-    def unique_ids(cls, cameras: list[Camera]) -> list[Camera]:
-        ids = [c.id for c in cameras]
-        if len(ids) != len(set(ids)):
-            raise ValueError("camera ids must be unique")
-        return cameras
-
-
-def load_catalogue(path: Path) -> Catalogue:
-    return Catalogue.model_validate(yaml.safe_load(path.read_text()))
-
-
-def publisher_command(video_in_container: str) -> str:
-    """ffmpeg command MediaMTX runs to publish a file as a looping camera, without re-encoding."""
+    ``authenticated``: log in as the service user; MediaMTX's container needs
+    ``NADJET_STREAM_USER`` and ``NADJET_INGEST_TOKEN`` (expanded by the shell at run time).
+    """
+    login = "${NADJET_STREAM_USER}:${NADJET_INGEST_TOKEN}@" if authenticated else ""
     return (
         f"ffmpeg -hide_banner -loglevel warning -re -stream_loop -1 -i {video_in_container} "
-        "-map 0:v:0 -c copy -f rtsp -rtsp_transport tcp rtsp://localhost:$RTSP_PORT/$MTX_PATH"
+        f"-map 0:v:0 -c copy -f rtsp -rtsp_transport tcp rtsp://{login}localhost:$RTSP_PORT/$MTX_PATH"
     )
 
 
+def path_config(video_in_container: str, *, authenticated: bool = False) -> dict[str, Any]:
+    """MediaMTX path settings that publish ``video_in_container`` as a looping camera."""
+    return {
+        "runOnInit": publisher_command(video_in_container, authenticated=authenticated),
+        "runOnInitRestart": True,
+    }
+
+
+FREEZE_READ_TIMEOUT = "1h"
+
+
 def render_mediamtx(
-    catalogue: Catalogue, videos_dir: Path, container_videos_dir: str = "/videos"
+    catalogue: Catalogue,
+    videos_dir: Path,
+    container_videos_dir: str = CONTAINER_VIDEOS_DIR,
+    *,
+    auth_url: str | None = None,
+    public_host: str | None = None,
 ) -> tuple[dict[str, Any], list[str]]:
-    """Return (mediamtx config, ids of cameras skipped because their video file is missing)."""
+    """Return (mediamtx config, ids of cameras skipped because their video file is missing).
+
+    ``auth_url`` switches to production mode: every request is checked by the API
+    (``POST /internal/mediamtx-auth``, FR-SEC-007) and ``public_host`` is advertised as the
+    WebRTC ICE host (the VPS public IP or DNS name).
+    """
     paths: dict[str, Any] = {}
     skipped: list[str] = []
     for cam in catalogue.cameras:
         if not (videos_dir / cam.video).is_file():
             skipped.append(cam.id)
             continue
-        paths[cam.id] = {
-            "runOnInit": publisher_command(f"{container_videos_dir}/{cam.video}"),
-            "runOnInitRestart": True,
-        }
+        paths[cam.id] = path_config(
+            f"{container_videos_dir}/{cam.video}", authenticated=auth_url is not None
+        )
     config: dict[str, Any] = {
         "logLevel": "info",
         "api": True,
         "apiAddress": ":9997",
         "rtspAddress": ":8554",
         "rtspTransports": ["tcp"],
+        # A frozen camera (SIGSTOP'd publisher, FR-CAM-004) sends nothing; with the default 10 s
+        # MediaMTX drops it and its readers, turning a freeze into an outage.
+        "readTimeout": FREEZE_READ_TIMEOUT,
         "webrtcAddress": ":8889",
         "webrtcLocalUDPAddress": ":8189",
         "webrtcLocalTCPAddress": ":8189",
         "hlsAddress": ":8888",
         "rtmp": False,
         "srt": False,
-        # Local development only: anonymous access. Production uses API-delegated auth (TD-17).
-        "authInternalUsers": [
+        "paths": {**paths, "all_others": {}},
+    }
+    if auth_url is None:
+        # Local development only: anonymous access.
+        config["authInternalUsers"] = [
             {
                 "user": "any",
                 "pass": "",
@@ -99,7 +92,10 @@ def render_mediamtx(
                     {"action": a} for a in ("publish", "read", "playback", "api", "metrics")
                 ],
             }
-        ],
-        "paths": {**paths, "all_others": {}},
-    }
+        ]
+    else:
+        config["authMethod"] = "http"
+        config["authHTTPAddress"] = auth_url
+        if public_host:
+            config["webrtcAdditionalHosts"] = [public_host]
     return config, skipped

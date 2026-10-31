@@ -1,9 +1,228 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+@import "./styles/shadcn.css";
+@import "@fontsource-variable/dm-sans";
+@import "@fontsource-variable/noto-sans-arabic";
 
-:root {
-  color-scheme: dark;
+/*
+ * Nadjet design system, light only. Source of truth: Figma "najat" (design-system page, the
+ * "control" dashboard and the "app" screens). Values below are the Figma values as delivered
+ * (TD-55); the Tailwind palette page supplies the status colours the screens use.
+ */
+
+@theme {
+  /* Brand blue (Figma "Colors System") */
+  --color-brand-50: #eaf4ff;
+  --color-brand-100: #aad4ff;
+  --color-brand-200: #80beff;
+  --color-brand-300: #55a8fe;
+  --color-brand-400: #2a93fe;
+  --color-brand-500: #007dfe;
+  --color-brand-600: #0053a9;
+  --color-brand-700: #003f7f;
+  --color-brand-800: #002a55;
+  --color-brand-900: #00152a;
+  /* Start colour of every Figma gradient (buttons, selected cards) */
+  --color-brand-indigo: #3568f5;
+
+  /* Surfaces and text (Figma screens: slate scale) */
+  --color-surface: #f2f4f5;
+  --color-surface-app: #fafafa;
+  --color-surface-strong: #f1f5f9;
+  --color-surface-soft: #f8fafc;
+  --color-ink: #0f172a;
+  --color-ink-body: #334155;
+  --color-ink-muted: #64748b;
+  --color-ink-subtle: #94a3b8;
+  --color-line: #e2e8f0;
+
+  /* Status colours used by the Figma screens (Tailwind palette page) */
+  --color-success: #22c55e;
+  --color-success-strong: #16a34a;
+  --color-success-text: #059669;
+  --color-success-chip: #4ade80;
+  --color-success-soft: #dcfce7;
+  --color-danger: #ef4444;
+  --color-danger-strong: #e11d48;
+  --color-danger-soft: #fee2e2;
+  --color-warning: #f59e0b;
+  --color-warning-strong: #d97706;
+  --color-warning-soft: #fef3c7;
+
+  /* Priority scale (red, orange, amber, slate): always with text and icon, never colour alone */
+  --color-p1: #ef4444;
+  --color-p2: #f97316;
+  --color-p3: #f59e0b;
+  --color-p4: #64748b;
+
+  /* Figma button states (buttons page, Primary / Disable) */
+  --color-button-disabled: #e8ecf3;
+  --color-button-disabled-ink: #899cc9;
+
+  /* Figma map (dashboard "Live Routes", app "Incidents Map") */
+  --color-map-land: #f0f0f0;
+  --color-map-park: #b4e7c7;
+  --color-map-water: #85d5eb;
+  --color-map-route: #13a9ff;
+  --color-map-pin: #ff1f13;
+
+  --font-sans: "DM Sans Variable", "Noto Sans Arabic Variable", system-ui, sans-serif;
+
+  /* Figma "drop shadow" effect and the dashboard card shadow */
+  --shadow-soft: 0 6px 40px 0 rgb(112 144 176 / 0.12);
+  --shadow-card: 0 6px 20px 0 rgb(112 144 176 / 0.12);
+  --shadow-float: 0 12px 32px -8px rgb(15 23 42 / 0.18);
+  --shadow-focus: 0 0 0 2px #ffffff, 0 0 0 4px var(--ring);
+  /* Figma glass controls (app search button and bottom tab bar) */
+  --shadow-glass:
+    0 0 2px 0 rgb(0 0 0 / 0.1), 0 1px 8px 0 rgb(0 0 0 / 0.12),
+    inset 1px 1px 1px -0.5px rgb(255 255 255 / 0.75), inset 0 0 16px 0 #f2f2f2;
+
+  /* Figma type scale (size / line-height) */
+  --text-display-xl: 4rem;
+  --text-display-xl--line-height: 4.5rem;
+  --text-display-lg: 3.125rem;
+  --text-display-lg--line-height: 4rem;
+  --text-display-md: 2.625rem;
+  --text-display-md--line-height: 3.5rem;
+  --text-display-sm: 2.125rem;
+  --text-display-sm--line-height: 2.625rem;
+  --text-display-xs: 1.5rem;
+  --text-display-xs--line-height: 2rem;
+  --text-body-xl: 1.25rem;
+  --text-body-xl--line-height: 2.25rem;
+  --text-body-lg: 1.125rem;
+  --text-body-lg--line-height: 1.75rem;
+  --text-body-md: 1rem;
+  --text-body-md--line-height: 1.5rem;
+  --text-body-sm: 0.875rem;
+  --text-body-sm--line-height: 1.25rem;
+  --text-body-xs: 0.75rem;
+  --text-body-xs--line-height: 1rem;
+  --text-caption: 0.6875rem;
+  --text-caption--line-height: 1rem;
 }
 
-body {
-  @apply bg-slate-950 text-slate-100 antialiased;
+:root {
+  color-scheme: light;
+  --background: #f2f4f5;
+  --foreground: #0f172a;
+  --card: #ffffff;
+  --card-foreground: #0f172a;
+  --popover: #ffffff;
+  --popover-foreground: #0f172a;
+  --primary: #007dfe;
+  --primary-foreground: #ffffff;
+  --secondary: #f1f5f9;
+  --secondary-foreground: #0f172a;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  --accent: #eaf4ff;
+  --accent-foreground: #007dfe;
+  --destructive: #ef4444;
+  --border: #e2e8f0;
+  --input: #f1f5f9;
+  --ring: #007dfe;
+  --chart-1: #007dfe;
+  --chart-2: #3568f5;
+  --chart-3: #55a8fe;
+  --chart-4: #003f7f;
+  --chart-5: #aad4ff;
+  --radius: 1rem;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #0f172a;
+  --sidebar-primary: #007dfe;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eff6ff;
+  --sidebar-accent-foreground: #007dfe;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #007dfe;
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --color-foreground: var(--foreground);
+  --color-background: var(--background);
+  /* Figma radii: chips 6, small controls 8, buttons and inputs 12, nav items 14, cards 16 */
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 14px;
+  --radius-2xl: 16px;
+  --radius-3xl: 20px;
+  --radius-4xl: 24px;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+  }
+  body {
+    @apply min-h-dvh bg-background text-foreground antialiased;
+    letter-spacing: -0.02em;
+  }
+  /* Negative tracking breaks Arabic letter joining */
+  html[dir="rtl"] body,
+  html[lang="ar"] body {
+    letter-spacing: 0;
+  }
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-ring;
+  }
+}
+
+/*
+ * Map chrome in the Figma style (white rounded control column, soft shadow), inspired by the
+ * mapcn controls. The basemap itself stays offline and self-hosted (FR-MAP-001).
+ */
+@layer components {
+  .maplibregl-ctrl-top-right .maplibregl-ctrl-group,
+  .maplibregl-ctrl-top-left .maplibregl-ctrl-group {
+    @apply m-3 overflow-hidden rounded-lg border border-border bg-card shadow-card;
+    box-shadow: var(--shadow-card);
+  }
+  .maplibregl-ctrl-group button {
+    @apply size-9;
+  }
+  .maplibregl-ctrl-group button + button {
+    @apply border-t border-border;
+  }
+  .maplibregl-ctrl-attrib {
+    @apply rounded-ss-md bg-card/85 text-[0.6875rem] text-ink-muted;
+  }
+  .maplibregl-popup-content {
+    @apply rounded-lg border border-border px-3 py-2 text-body-xs shadow-float;
+  }
 }

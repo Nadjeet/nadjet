@@ -5,6 +5,7 @@ on:
     branches: [dev, main]
   push:
     branches: [dev, main]
+    tags: ["demo-v*", "v*"] # release tags: images are published under the tag (TD-19)
 
 permissions:
   contents: read
@@ -34,6 +35,9 @@ jobs:
           --health-cmd "redis-cli ping" --health-interval 2s --health-retries 30
     env:
       NADJET_ENV: test
+      # Below Linux's ephemeral range (32768-60999): the local default 55000 can already be held
+      # by an outgoing connection on the runner ("address already in use", random failures).
+      NADJET_OSRM_URL: http://localhost:15000
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.3.3
@@ -52,6 +56,45 @@ jobs:
       - name: Migrations
         working-directory: services/api
         run: uv run alembic upgrade head
+      - name: Simulated cameras (MediaMTX control API for camsim integration tests)
+        # Not `make infra-video`: it creates .env from .env.example, which tests must not read.
+        run: |
+          mkdir -p data/videos
+          uv run nadjet-camsim render
+          compose="docker compose -f deploy/local/compose.yml --profile video"
+          # Registries drop connections now and then (token reset, 5xx): retry the pull only.
+          for attempt in 1 2 3 4; do
+            $compose pull --quiet mediamtx && break
+            [ "$attempt" = 4 ] && exit 1
+            echo "image pull failed (attempt $attempt), retrying"; sleep $((attempt * 10))
+          done
+          $compose up -d --wait mediamtx
+
+      - name: OSRM from the committed test extract (routing integration tests)
+        env:
+          OSRM_IMAGE: ghcr.io/project-osrm/osrm-backend:v6.0.0
+        run: |
+          # Outside the repo: root-owned graph files would break `uv build` below.
+          data="$RUNNER_TEMP/osrm"
+          mkdir -p "$data"
+          cp services/api/tests/data/boumerdes.osm.pbf "$data/"
+          for attempt in 1 2 3 4; do
+            docker pull --quiet "$OSRM_IMAGE" && break
+            [ "$attempt" = 4 ] && exit 1
+            echo "image pull failed (attempt $attempt), retrying"; sleep $((attempt * 10))
+          done
+          osrm() { docker run --rm -v "$data:/data" "$OSRM_IMAGE" "$@"; }
+          osrm osrm-extract -p /opt/car.lua /data/boumerdes.osm.pbf
+          osrm osrm-partition /data/boumerdes.osrm
+          osrm osrm-customize /data/boumerdes.osrm
+          docker run -d --name osrm -p 15000:5000 -v "$data:/data:ro" "$OSRM_IMAGE" \
+            osrm-routed --algorithm mld /data/boumerdes.osrm
+          for _ in $(seq 30); do
+            curl -fs "$NADJET_OSRM_URL/nearest/v1/driving/3.47,36.76" >/dev/null && exit 0
+            sleep 1
+          done
+          docker logs osrm
+          exit 1
       - name: Tests (unit + integration, no Brev)
         run: uv run pytest -m "not brev" --cov --cov-report=term --cov-report=xml
       - run: uv build --all-packages --out-dir dist
@@ -85,12 +128,101 @@ jobs:
           fetch-depth: 0
       - name: Integrity (no fabricated AI, Brev-only inference, no frontend tests)
         run: bash scripts/check-integrity.sh
+      - name: Traceability report ([M] requirements to tests, informational)
+        continue-on-error: true
+        run: |
+          python3 scripts/traceability.py --check | tee -a "$GITHUB_STEP_SUMMARY"
       - name: One-line Conventional Commits without co-authors
         if: github.event_name == 'pull_request'
         run: |
           status=0
           for sha in $(git rev-list --no-merges "origin/${{ github.base_ref }}..HEAD"); do
+            # Published commits that cannot be rewritten are listed with a reason.
+            if grep -q "^$sha " .github/commit-msg-exceptions; then continue; fi
             git log -1 --format=%B "$sha" > /tmp/msg
             python3 .githooks/commit-msg /tmp/msg || { echo "::error::commit $sha"; status=1; }
           done
           exit $status
+
+  vision-image:
+    name: Vision image (build and publish to GHCR)
+    # Only on pushes to dev/main: pull requests (including forks) never get packages: write.
+    if: github.event_name == 'push'
+    # Never publish an image from a commit whose tests fail.
+    needs: [python]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+      - name: Free disk space (torch + CUDA layers need well over the default ~14 GB)
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          docker system prune -af
+          df -h /
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/nadjeet/nadjet-vision
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: services/vision/Dockerfile
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          # mode=min: exporting every multi-GB layer would evict the other jobs' caches (10 GB).
+          cache-to: type=gha,mode=min
+
+  app-images:
+    name: ${{ matrix.name }} image (build and publish to GHCR)
+    if: github.event_name == 'push'
+    needs: [python, web]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - { name: api, file: services/api/Dockerfile }
+          - { name: web, file: apps/web/Dockerfile }
+    steps:
+      - uses: actions/checkout@v7
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ghcr.io/nadjeet/nadjet-${{ matrix.name }}
+          tags: |
+            type=sha,format=long
+            type=ref,event=branch
+            type=ref,event=tag
+      - uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: ${{ matrix.file }}
+          platforms: linux/amd64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha,scope=${{ matrix.name }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.name }}

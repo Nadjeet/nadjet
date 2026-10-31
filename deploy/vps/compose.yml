@@ -1,0 +1,213 @@
+# Production stack for the live demo (TD-17, TD-19). Dokploy "Docker Compose" mode (not Stack).
+# Images are built in GitHub Actions and only pulled here; NADJET_TAG pins the release.
+# Variables come from Dokploy's Environment tab (written to `.env`); see deploy/vps/.env.example.
+# HTTP hostnames are added in Dokploy → Domains (Traefik labels); see docs/DEPLOYMENT.md.
+name: nadjet-core
+
+x-api: &api
+  image: ghcr.io/nadjeet/nadjet-api:${NADJET_TAG:?set NADJET_TAG, e.g. demo-v1}
+  env_file: .env
+  environment: &api-env
+    NADJET_ENV: production
+    NADJET_DATABASE_URL: postgresql+asyncpg://nadjet:${NADJET_DB_PASSWORD:?}@db:5432/nadjet
+    NADJET_REDIS_URL: redis://redis:6379/0
+    NADJET_OSRM_URL: http://osrm:5000
+    NADJET_SMS_GATEWAY_URL: http://sms-server:3000
+    NADJET_RTSP_URL_TEMPLATE: rtsp://stream.${NADJET_DOMAIN:?}:8554/{path}
+    NADJET_WHEP_URL_TEMPLATE: https://stream.${NADJET_DOMAIN}/{path}/whep
+    NADJET_WHIP_URL_TEMPLATE: https://stream.${NADJET_DOMAIN}/{path}/whip
+    NADJET_HLS_URL_TEMPLATE: https://hls.${NADJET_DOMAIN}/{path}/index.m3u8
+    NADJET_CORS_ORIGINS: '["https://app.${NADJET_DOMAIN}","https://respond.${NADJET_DOMAIN}","https://hospital.${NADJET_DOMAIN}","https://try.${NADJET_DOMAIN}"]'
+    NADJET_MAP_TILES_PATH: /data/map/algeria.pmtiles
+  restart: unless-stopped
+  networks: [internal]
+
+services:
+  web:
+    image: ghcr.io/nadjeet/nadjet-web:${NADJET_TAG}
+    # Domains app./respond./hospital./try. → this service, port 80 (Dokploy → Domains).
+    expose: ["80"]
+    environment:
+      NADJET_API_UPSTREAM: http://api:8000
+    depends_on: [api]
+    restart: unless-stopped
+    networks: [dokploy-network, internal]
+
+  api:
+    <<: *api
+    # Domain api. → port 8000. Workers on Brev reach it over HTTPS (outbound only).
+    expose: ["8000"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+      redis: { condition: service_healthy }
+    volumes: [evidence:/app/evidence, mapdata:/data/map:ro]
+    networks: [dokploy-network, internal]
+
+  migrate:
+    <<: *api
+    entrypoint: ["alembic"]
+    command: ["upgrade", "head"]
+    restart: "no"
+    depends_on:
+      db: { condition: service_healthy }
+
+  consumer:
+    <<: *api
+    command: ["consume"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+    volumes: [evidence:/app/evidence]
+
+  jobs:
+    <<: *api
+    command: ["worker"]
+    depends_on:
+      migrate: { condition: service_completed_successfully }
+
+  db:
+    image: imresamu/postgis:17-3.5
+    environment:
+      POSTGRES_USER: nadjet
+      POSTGRES_PASSWORD: ${NADJET_DB_PASSWORD:?}
+      POSTGRES_DB: nadjet
+    volumes: [pgdata:/var/lib/postgresql/data] # backed up by Dokploy (docs/DEPLOYMENT.md §6)
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nadjet -d nadjet"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    networks: [internal]
+
+  redis:
+    image: redis:8-alpine
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes: [redisdata:/data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    networks: [internal]
+
+  osrm:
+    image: ghcr.io/project-osrm/osrm-backend:v6.0.0 # same tag that built the graph (make routing-data)
+    command:
+      ["osrm-routed", "--algorithm", "mld", "--max-table-size", "100", "/data/algeria-latest.osrm"]
+    volumes: [osrmdata:/data:ro]
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "-O",
+          "/dev/null",
+          "http://127.0.0.1:5000/nearest/v1/driving/3.47,36.76",
+        ]
+      interval: 10s
+      timeout: 3s
+      retries: 30
+      start_period: 30s
+    restart: unless-stopped
+    networks: [internal]
+
+  # One-shot: renders the authenticated MediaMTX config from the camera catalogue (never in git).
+  mediamtx-config:
+    <<: *api
+    entrypoint: ["nadjet-camsim"]
+    command:
+      - "--cameras=/app/data/cameras.yaml"
+      - "--videos=/videos"
+      - "render"
+      - "--out=/config/mediamtx.yml"
+      - "--auth-url=http://api:8000/internal/mediamtx-auth"
+      - "--public-host=${NADJET_PUBLIC_HOST:?VPS public IP or DNS name}"
+    restart: "no"
+    volumes: [videos:/videos:ro, mtxconfig:/config]
+
+  mediamtx:
+    image: bluenviron/mediamtx:1.21.2-ffmpeg
+    environment:
+      NADJET_STREAM_USER: ${NADJET_STREAM_SERVICE_USER:-nadjet-worker}
+      NADJET_INGEST_TOKEN: ${NADJET_INGEST_TOKEN:?}
+    volumes:
+      - mtxconfig:/config:ro
+      - videos:/videos:ro
+    command: ["/config/mediamtx.yml"]
+    depends_on:
+      mediamtx-config: { condition: service_completed_successfully }
+      api: { condition: service_healthy }
+    ports:
+      - "8554:8554/tcp" # RTSP: Brev workers pull raw / push annotated (auth required)
+      - "8189:8189/udp" # WebRTC media
+      - "8189:8189/tcp" # WebRTC TCP fallback (venue Wi-Fi often blocks UDP)
+    # Through Traefik: stream. → port 8889 (WHEP/WHIP), hls. → port 8888 (LL-HLS fallback).
+    expose: ["8889", "8888"]
+    restart: unless-stopped
+    networks: [dokploy-network, internal]
+
+  # SMS gateway (TD-13): capcom6 private server. Phones register against sms. (docs/DEPLOYMENT.md).
+  sms-db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_ROOT_PASSWORD: ${NADJET_SMS_DB_PASSWORD:?}
+      MARIADB_DATABASE: smsgate
+    volumes: [smsdata:/var/lib/mysql]
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+    restart: unless-stopped
+    networks: [internal]
+
+  sms-server:
+    image: ghcr.io/android-sms-gateway/server:1.34.2
+    configs: [{ source: sms_config, target: /app/config.yml }]
+    expose: ["3000"] # Domain sms. → port 3000 (phones register here)
+    depends_on:
+      sms-db: { condition: service_healthy }
+    restart: unless-stopped
+    networks: [dokploy-network, internal]
+
+  sms-worker:
+    image: ghcr.io/android-sms-gateway/server:1.34.2
+    command: ["/app/app", "worker"]
+    configs: [{ source: sms_config, target: /app/config.yml }]
+    depends_on:
+      sms-db: { condition: service_healthy }
+    restart: unless-stopped
+    networks: [internal]
+
+configs:
+  sms_config:
+    content: |
+      gateway:
+        mode: private
+        private_token: ${NADJET_SMS_PRIVATE_TOKEN:?}
+      http:
+        listen: 0.0.0.0:3000
+      database:
+        host: sms-db
+        port: 3306
+        user: root
+        password: ${NADJET_SMS_DB_PASSWORD}
+        database: smsgate
+        timezone: UTC
+
+volumes:
+  pgdata: {}
+  redisdata: {}
+  smsdata: {}
+  osrmdata: {} # filled once: docs/DEPLOYMENT.md §3
+  mapdata: {} # algeria.pmtiles, copied once
+  videos: {} # demo clips (not in git), copied once
+  evidence: {}
+  mtxconfig: {}
+
+networks:
+  dokploy-network:
+    external: true
+  internal: {}

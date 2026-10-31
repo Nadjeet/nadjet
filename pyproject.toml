@@ -16,6 +16,15 @@ nadjet-shared = { workspace = true }
 nadjet-api = { workspace = true }
 nadjet-vision = { workspace = true }
 nadjet-camsim = { workspace = true }
+# Brev's driver (565, CUDA 12.7) cannot run PyPI's default CUDA 13 torch wheels: the detector
+# silently fell back to the CPU. Linux GPU images take the CUDA 12.6 build (TD-50).
+torch = [{ index = "pytorch-cu126", marker = "sys_platform == 'linux'" }]
+torchvision = [{ index = "pytorch-cu126", marker = "sys_platform == 'linux'" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
 
 [dependency-groups]
 dev = [
@@ -30,6 +39,9 @@ dev = [
   "mypy>=1.14",
   "honcho>=2.0",
   "types-pyyaml>=6.0",
+  "lxml>=6.1.3",
+  "lxml-stubs>=0.5.1",
+  "av>=14",  # evidence clip tests remux real H.264 packets
 ]
 
 [tool.ruff]
@@ -45,7 +57,7 @@ ignore = ["S101"]  # assert is fine in tests
 known-first-party = ["nadjet_shared", "nadjet_api", "nadjet_vision", "nadjet_camsim"]
 
 [tool.ruff.lint.per-file-ignores]
-"**/tests/**" = ["S", "B011"]
+"**/tests/**" = ["S", "B011", "E501"]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -60,7 +72,7 @@ explicit_package_bases = true
 exclude = ["migrations/"]
 
 [[tool.mypy.overrides]]
-module = ["honcho.*"]
+module = ["honcho.*", "av.*", "rfdetr.*", "supervision.*", "trackers.*", "cv2.*", "pywebpush.*", "py_vapid.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

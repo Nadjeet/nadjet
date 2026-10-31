@@ -1,0 +1,491 @@
+{
+  "$defs": {
+    "AblationRow": {
+      "additionalProperties": false,
+      "properties": {
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "metrics": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EventMetrics"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "name": {
+          "title": "Name",
+          "type": "string"
+        },
+        "not_run_reason": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Why there is no metrics",
+          "title": "Not Run Reason"
+        }
+      },
+      "required": [
+        "name",
+        "description"
+      ],
+      "title": "AblationRow",
+      "type": "object"
+    },
+    "AiQuality": {
+      "additionalProperties": false,
+      "properties": {
+        "cannot_judge_share": {
+          "$ref": "#/$defs/Metric"
+        },
+        "dropped_citation_share": {
+          "$ref": "#/$defs/Metric",
+          "description": "Findings dropped for invalid frame ids"
+        },
+        "unavailable": {
+          "description": "Calls with no answer (timeout, server down)",
+          "minimum": 0,
+          "title": "Unavailable",
+          "type": "integer"
+        },
+        "valid_first_try": {
+          "$ref": "#/$defs/Metric"
+        },
+        "verifications": {
+          "description": "Verifier and sweep calls that were answered",
+          "minimum": 0,
+          "title": "Verifications",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "verifications",
+        "valid_first_try",
+        "dropped_citation_share",
+        "cannot_judge_share",
+        "unavailable"
+      ],
+      "title": "AiQuality",
+      "type": "object"
+    },
+    "AlertRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "ai_status": {
+          "title": "Ai Status",
+          "type": "string"
+        },
+        "collision_visible": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Collision Visible"
+        },
+        "source": {
+          "enum": [
+            "rule",
+            "sweep"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "t_fire": {
+          "description": "Stream seconds when the alert was raised",
+          "title": "T Fire",
+          "type": "number"
+        },
+        "t_peak": {
+          "description": "Stream seconds of the estimated impact",
+          "title": "T Peak",
+          "type": "number"
+        },
+        "trigger": {
+          "title": "Trigger",
+          "type": "string"
+        },
+        "verifier_available": {
+          "default": false,
+          "title": "Verifier Available",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "source",
+        "trigger",
+        "t_fire",
+        "t_peak",
+        "ai_status"
+      ],
+      "title": "AlertRecord",
+      "type": "object"
+    },
+    "ClipSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "alerts": {
+          "items": {
+            "$ref": "#/$defs/AlertRecord"
+          },
+          "title": "Alerts",
+          "type": "array"
+        },
+        "duration_s": {
+          "minimum": 0,
+          "title": "Duration S",
+          "type": "number"
+        },
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "impact_s": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Impact S"
+        },
+        "kind": {
+          "enum": [
+            "crash",
+            "stalled",
+            "negative"
+          ],
+          "title": "Kind",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "duration_s"
+      ],
+      "title": "ClipSummary",
+      "type": "object"
+    },
+    "EventMetrics": {
+      "additionalProperties": false,
+      "properties": {
+        "alerts": {
+          "description": "Alerts counted in this configuration",
+          "minimum": 0,
+          "title": "Alerts",
+          "type": "integer"
+        },
+        "camera_hours": {
+          "description": "Negative footage the false alarms are over",
+          "minimum": 0,
+          "title": "Camera Hours",
+          "type": "number"
+        },
+        "f1": {
+          "$ref": "#/$defs/Metric"
+        },
+        "false_alarms_per_camera_hour": {
+          "$ref": "#/$defs/Metric"
+        },
+        "false_negatives": {
+          "minimum": 0,
+          "title": "False Negatives",
+          "type": "integer"
+        },
+        "false_positives": {
+          "minimum": 0,
+          "title": "False Positives",
+          "type": "integer"
+        },
+        "ground_truth": {
+          "description": "Annotated events scored",
+          "minimum": 0,
+          "title": "Ground Truth",
+          "type": "integer"
+        },
+        "mean_peak_error_s": {
+          "$ref": "#/$defs/Metric",
+          "description": "Detected impact time minus annotated impact"
+        },
+        "median_delay_s": {
+          "$ref": "#/$defs/Metric",
+          "description": "Alert time minus annotated impact (crash clips)"
+        },
+        "precision": {
+          "$ref": "#/$defs/Metric"
+        },
+        "recall": {
+          "$ref": "#/$defs/Metric"
+        },
+        "true_positives": {
+          "minimum": 0,
+          "title": "True Positives",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "ground_truth",
+        "alerts",
+        "true_positives",
+        "false_positives",
+        "false_negatives",
+        "camera_hours",
+        "precision",
+        "recall",
+        "f1",
+        "median_delay_s",
+        "mean_peak_error_s",
+        "false_alarms_per_camera_hour"
+      ],
+      "title": "EventMetrics",
+      "type": "object"
+    },
+    "Interval": {
+      "additionalProperties": false,
+      "properties": {
+        "high": {
+          "title": "High",
+          "type": "number"
+        },
+        "low": {
+          "title": "Low",
+          "type": "number"
+        }
+      },
+      "required": [
+        "low",
+        "high"
+      ],
+      "title": "Interval",
+      "type": "object"
+    },
+    "Metric": {
+      "additionalProperties": false,
+      "description": "A value and its bootstrap 95 % interval; ``None`` when it is undefined (no events).",
+      "properties": {
+        "ci": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Interval"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "title": "Metric",
+      "type": "object"
+    },
+    "Percentiles": {
+      "additionalProperties": false,
+      "properties": {
+        "count": {
+          "minimum": 0,
+          "title": "Count",
+          "type": "integer"
+        },
+        "p50": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P50"
+        },
+        "p95": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "P95"
+        }
+      },
+      "required": [
+        "count"
+      ],
+      "title": "Percentiles",
+      "type": "object"
+    },
+    "SkippedClip": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "reason": {
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "reason"
+      ],
+      "title": "SkippedClip",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "ablation": {
+      "items": {
+        "$ref": "#/$defs/AblationRow"
+      },
+      "title": "Ablation",
+      "type": "array"
+    },
+    "ai_quality": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/AiQuality"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "bootstrap_samples": {
+      "exclusiveMinimum": 0,
+      "title": "Bootstrap Samples",
+      "type": "integer"
+    },
+    "camera_hours": {
+      "minimum": 0,
+      "title": "Camera Hours",
+      "type": "number"
+    },
+    "clips": {
+      "items": {
+        "$ref": "#/$defs/ClipSummary"
+      },
+      "title": "Clips",
+      "type": "array"
+    },
+    "dirty": {
+      "description": "Uncommitted changes when the run started",
+      "title": "Dirty",
+      "type": "boolean"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "git_sha": {
+      "title": "Git Sha",
+      "type": "string"
+    },
+    "latency_ms": {
+      "additionalProperties": {
+        "$ref": "#/$defs/Percentiles"
+      },
+      "title": "Latency Ms",
+      "type": "object"
+    },
+    "limitations": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Limitations",
+      "type": "array"
+    },
+    "meets_camera_hour_target": {
+      "description": "At least one camera-hour of negatives",
+      "title": "Meets Camera Hour Target",
+      "type": "boolean"
+    },
+    "models": {
+      "additionalProperties": {
+        "type": "string"
+      },
+      "description": "Role -> model id used (source of every AI value)",
+      "title": "Models",
+      "type": "object"
+    },
+    "schema_version": {
+      "const": 1,
+      "default": 1,
+      "title": "Schema Version",
+      "type": "integer"
+    },
+    "seed": {
+      "title": "Seed",
+      "type": "integer"
+    },
+    "skipped_clips": {
+      "items": {
+        "$ref": "#/$defs/SkippedClip"
+      },
+      "title": "Skipped Clips",
+      "type": "array"
+    },
+    "window_after_s": {
+      "title": "Window After S",
+      "type": "number"
+    },
+    "window_before_s": {
+      "title": "Window Before S",
+      "type": "number"
+    }
+  },
+  "required": [
+    "generated_at",
+    "git_sha",
+    "dirty",
+    "seed",
+    "bootstrap_samples",
+    "window_before_s",
+    "window_after_s",
+    "models",
+    "clips",
+    "camera_hours",
+    "meets_camera_hour_target",
+    "ablation"
+  ],
+  "title": "EvaluationResults",
+  "type": "object"
+}

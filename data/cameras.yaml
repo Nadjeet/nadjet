@@ -5,6 +5,7 @@ cameras:
   - id: cam-a1-pk42
     name: "A1 East-West Hwy - Khemis El Khechna PK42 (westbound)"
     video: cam-a1-pk42.mp4
+    clip_id: demo-crash-01
     geo: { lat: 36.6480, lon: 3.3290 }
     road: A1
     pk_km: 42
@@ -13,6 +14,7 @@ cameras:
   - id: cam-a1-lakhdaria
     name: "A1 East-West Hwy - Lakhdaria"
     video: cam-a1-lakhdaria.mp4
+    clip_id: demo-heavy-congestion-01
     geo: { lat: 36.5640, lon: 3.5930 }
     road: A1
     heading_deg: 90
@@ -20,6 +22,7 @@ cameras:
   - id: cam-alg-rn5-bab-ezzouar
     name: "RN5 - Bab Ezzouar"
     video: cam-alg-rn5-bab-ezzouar.mp4
+    clip_id: demo-crash-02
     geo: { lat: 36.7200, lon: 3.1830 }
     road: RN5
     heading_deg: 180
@@ -27,6 +30,7 @@ cameras:
   - id: cam-alg-rocade-sud
     name: "Rocade Sud - Algiers"
     video: cam-alg-rocade-sud.mp4
+    clip_id: demo-stalled-01
     geo: { lat: 36.7130, lon: 3.0600 }
     road: Rocade Sud
     heading_deg: 0
