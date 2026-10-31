@@ -185,7 +185,7 @@ export function IncidentActions({ incident }: { incident: Incident }) {
   return (
     <div className="flex flex-col gap-2">
       <div className="flex flex-wrap gap-2">
-        <Button variant="success" disabled={verify.isPending} onClick={() => verify.mutate()}>
+        <Button variant="success-solid" disabled={verify.isPending} onClick={() => verify.mutate()}>
           <CheckIcon aria-hidden />
           {t("ops.actions.confirm")}
         </Button>

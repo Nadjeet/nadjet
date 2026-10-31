@@ -488,7 +488,9 @@
       "reports": "{{count}} reports",
       "rejectedFor": "Rejected: {{reason}}",
       "mergedInto": "Merged into another incident.",
-      "openTarget": "Open it"
+      "openTarget": "Open it",
+      "review": "Incident review",
+      "progress": "Incident progress"
     },
     "agency": {
       "civil_protection": "Civil Protection",

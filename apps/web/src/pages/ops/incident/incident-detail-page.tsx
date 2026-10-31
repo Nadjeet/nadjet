@@ -12,6 +12,8 @@ import { useTranslation } from "react-i18next";
 import { AiSourceTag, type AiSource } from "@/components/incident/ai-source-tag";
 import { confidenceOf } from "@/components/incident/ai-confidence";
 import { AiStatusBadge } from "@/components/incident/ai-status";
+import { stepsFromEvents, type TimelineStatus } from "@/components/incident/lifecycle";
+import { StatusTimeline } from "@/components/incident/status-timeline";
 import { PriorityBadge, type PriorityLevel } from "@/components/incident/priority-badge";
 import { SimulatedLabel } from "@/components/incident/simulated-label";
 import { Badge } from "@/components/ui/badge";
@@ -42,7 +44,7 @@ function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle className="text-body-lg font-bold">{title}</CardTitle>
+        <CardTitle className="text-body-lg font-semibold">{title}</CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col gap-3">{children}</CardContent>
     </Card>
@@ -53,7 +55,7 @@ function Banner({ children }: { children: ReactNode }) {
   return (
     <p
       role="status"
-      className="flex items-start gap-2 rounded-lg border border-dashed border-foreground/40 bg-muted px-4 py-3 text-body-sm"
+      className="flex items-start gap-2 rounded-lg border border-warning/30 bg-warning-soft px-4 py-3 text-body-sm text-ink"
     >
       <TriangleAlertIcon aria-hidden className="mt-0.5 size-4 shrink-0" />
       <span>{children}</span>
@@ -329,10 +331,9 @@ export function IncidentDetailPage() {
   const query = useIncident(incidentId ?? "");
   const cameras = useCameras();
   const back = (
-    <Button asChild variant="ghost" className="w-fit">
-      <Link to="/ops">
+    <Button asChild variant="neutral" size="icon" className="shrink-0 rounded-full">
+      <Link to="/ops" aria-label={t("ops.detail.back")} title={t("ops.detail.back")}>
         <ArrowLeftIcon aria-hidden className="rtl:rotate-180" />
-        {t("ops.detail.back")}
       </Link>
     </Button>
   );
@@ -355,22 +356,31 @@ export function IncidentDetailPage() {
   const contradiction = verifier.available && verifier.collision_visible === "no";
 
   return (
-    <div className="flex flex-col gap-4">
-      {back}
-      <header className="flex flex-col gap-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="text-display-sm font-bold">
-            <bdi dir="ltr" className="font-mono">
-              {incident.short_code}
-            </bdi>
-          </h1>
-          <PriorityBadge level={incident.priority as PriorityLevel} />
-          <Badge variant="secondary">{t(`status.${incident.status}`)}</Badge>
-          {camera?.simulated ? <SimulatedLabel /> : null}
+    <div className="flex flex-col gap-6">
+      <header className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-card">
+        <div className="flex items-center gap-3">
+          {back}
+          <div className="flex min-w-0 flex-col leading-tight">
+            <span className="text-body-xs font-medium tracking-[0.5px] text-ink-muted uppercase">
+              {t("ops.detail.review")}
+            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 className="text-display-xs font-semibold text-ink">
+                <bdi dir="ltr" className="font-mono">
+                  {incident.short_code}
+                </bdi>
+              </h1>
+              <PriorityBadge level={incident.priority as PriorityLevel} />
+              <Badge variant="secondary">{t(`status.${incident.status}`)}</Badge>
+              {camera?.simulated ? <SimulatedLabel /> : null}
+            </div>
+          </div>
         </div>
-        <p className="text-body-md text-muted-foreground">
-          {label(`ops.type.${incident.type}`, incident.type)} ·{" "}
-          {label(`ops.source.${incident.source}`, incident.source)} · {locationText(incident)} ·{" "}
+        <p className="text-body-md text-ink-body">
+          <span className="font-medium text-ink">
+            {label(`ops.type.${incident.type}`, incident.type)}
+          </span>{" "}
+          · {label(`ops.source.${incident.source}`, incident.source)} · {locationText(incident)} ·{" "}
           {t("ops.detail.reports", { count: incident.report_count })}
         </p>
         {incident.status === "rejected" && incident.reject_reason ? (
@@ -384,7 +394,7 @@ export function IncidentDetailPage() {
             <Link
               to="/ops/incidents/$incidentId"
               params={{ incidentId: incident.merged_into }}
-              className="underline"
+              className="text-primary underline"
             >
               {t("ops.detail.openTarget")}
             </Link>
@@ -396,16 +406,18 @@ export function IncidentDetailPage() {
       {unavailable ? <Banner>{t("ops.degraded.verifier")}</Banner> : null}
       {contradiction ? <Banner>{t("ops.degraded.contradiction")}</Banner> : null}
 
-      <div className="grid gap-4 xl:grid-cols-2">
-        <div className="flex flex-col gap-4">
+      <div className="grid gap-6 xl:grid-cols-12">
+        <div className="flex min-w-0 flex-col gap-6 xl:col-span-8">
           {role && DISPATCHERS.has(role) && incident.status !== "candidate" ? (
             <Section title={t("ops.dispatch.title")}>
               <DispatchPanel incident={incident} />
             </Section>
           ) : null}
-          <Section title={t("ops.detail.evidence")}>
-            <EvidencePanel incident={incident} />
-          </Section>
+          <section id="evidence" className="scroll-mt-6">
+            <Section title={t("ops.detail.evidence")}>
+              <EvidencePanel incident={incident} />
+            </Section>
+          </section>
           <Section title={t("ops.detail.rules")}>
             <Signals incident={incident} />
           </Section>
@@ -413,7 +425,15 @@ export function IncidentDetailPage() {
             <Verdict incident={incident} />
           </Section>
         </div>
-        <div className="flex flex-col gap-4">
+        <div className="flex min-w-0 flex-col gap-6 xl:col-span-4">
+          <Section title={t("ops.detail.progress")}>
+            <StatusTimeline
+              steps={stepsFromEvents(incident.events)}
+              current={
+                (stepsFromEvents(incident.events).at(-1)?.status ?? "candidate") as TimelineStatus
+              }
+            />
+          </Section>
           <Section title={t("ops.detail.priority")}>
             <PrioritySection incident={incident} />
           </Section>
