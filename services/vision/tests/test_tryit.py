@@ -4,6 +4,7 @@ import asyncio
 import json
 from pathlib import Path
 from typing import Any
+from unittest.mock import patch
 
 import httpx
 import numpy as np
@@ -11,7 +12,7 @@ import pytest
 from pydantic import SecretStr
 
 from nadjet_shared import AiStatus, TriggerType, VerifierResult
-from nadjet_shared.tryit import Box, TryJobClaim, TrySessionRef
+from nadjet_shared.tryit import Box, TryJobClaim, TryResult, TrySessionRef
 from nadjet_vision.config import VisionSettings
 from nadjet_vision.detect import Detection
 from nadjet_vision.evidence import plan_clip, write_clip
@@ -496,4 +497,41 @@ def test_E_12_a_clip_without_a_header_duration_is_cut_while_decoding(
             on_progress=lambda _p: None,
             duration_s=0.0,
             draw_frame=lambda image, tracked, speeds, zones: image,
+        )
+
+
+async def test_FR_CIT_002_result_post_is_retried_when_the_connection_drops() -> None:
+    """A pooled connection the API had closed dropped the result post ("Server disconnected
+    without sending a response") and failed one upload in three on the live run."""
+    calls: list[str] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        calls.append(request.url.path)
+        if len(calls) == 1:
+            raise httpx.RemoteProtocolError("Server disconnected without sending a response.")
+        return httpx.Response(204)
+
+    api = TryApi(
+        VisionSettings(ingest_token=SecretStr("t")), transport=httpx.MockTransport(handler)
+    )
+    with patch("nadjet_vision.tryit.SEND_RETRY_DELAYS_S", (0.0, 0.0)):
+        await api.result(
+            "job-1", TryResult(duration_s=30.0, frames_analysed=150, ai_available=True)
+        )
+    assert calls == ["/internal/try/jobs/job-1/result"] * 2
+
+
+async def test_FR_CIT_002_result_post_gives_up_after_the_retries() -> None:
+    def handler(request: httpx.Request) -> httpx.Response:
+        raise httpx.ConnectError("refused")
+
+    api = TryApi(
+        VisionSettings(ingest_token=SecretStr("t")), transport=httpx.MockTransport(handler)
+    )
+    with (
+        patch("nadjet_vision.tryit.SEND_RETRY_DELAYS_S", (0.0,)),
+        pytest.raises(httpx.ConnectError),
+    ):
+        await api.result(
+            "job-1", TryResult(duration_s=30.0, frames_analysed=150, ai_available=True)
         )
