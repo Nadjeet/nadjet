@@ -13,40 +13,55 @@
       "impact_region": null
     },
     {
-      "id": "demo-heavy-congestion-01",
-      "role": "demo",
-      "event": "heavy_congestion",
-      "source_dataset": "UCF-Crime Normal",
-      "source_clip": null,
-      "licence": "research-only (not redistributed; see licence_url)",
-      "licence_url": "https://www.crcv.ucf.edu/projects/real-world/",
-      "annotation_status": "pending",
-      "impact_time_s": null,
-      "impact_region": null
-    },
-    {
       "id": "demo-crash-02",
       "role": "demo",
       "event": "crash",
-      "source_dataset": "UCF-Crime RoadAccidents",
-      "source_clip": null,
-      "licence": "research-only (not redistributed; see licence_url)",
-      "licence_url": "https://www.crcv.ucf.edu/projects/real-world/",
+      "source_dataset": "Public traffic-camera crash compilation (Seattle street cameras, supplied by the team)",
+      "source_clip": "crash-2.mp4 (2nd Ave & Lenora St)",
+      "licence": "unknown: local demo only, never redistributed (source URL to be added)",
+      "licence_url": "to-be-added",
       "annotation_status": "pending",
-      "impact_time_s": null,
-      "impact_region": null
+      "impact_time_s": 5.3,
+      "impact_region": [
+        490,
+        440,
+        240,
+        260
+      ]
     },
     {
-      "id": "demo-stalled-01",
+      "id": "demo-crash-03",
       "role": "demo",
-      "event": "stalled_vehicle",
-      "source_dataset": "TAD",
-      "source_clip": null,
-      "licence": "research-only (not redistributed; see licence_url)",
-      "licence_url": "https://github.com/UnicomAI/UnicomBenchmark/tree/main/TADBench",
+      "event": "crash",
+      "source_dataset": "Public traffic-camera crash compilation (Seattle street cameras, supplied by the team)",
+      "source_clip": "crash-1.mp4, first 21 s (Elliott Ave W & W Galer Flyover, night)",
+      "licence": "unknown: local demo only, never redistributed (source URL to be added)",
+      "licence_url": "to-be-added",
       "annotation_status": "pending",
-      "impact_time_s": null,
-      "impact_region": null
+      "impact_time_s": 12.8,
+      "impact_region": [
+        150,
+        300,
+        180,
+        120
+      ]
+    },
+    {
+      "id": "demo-crash-04",
+      "role": "demo",
+      "event": "crash",
+      "source_dataset": "Public traffic-camera crash compilation (Seattle street cameras, supplied by the team)",
+      "source_clip": "crash-3.mp4 (F-3 Busway & Royal Brougham, loss of control)",
+      "licence": "unknown: local demo only, never redistributed (source URL to be added)",
+      "licence_url": "to-be-added",
+      "annotation_status": "pending",
+      "impact_time_s": 11.4,
+      "impact_region": [
+        200,
+        360,
+        220,
+        140
+      ]
     }
   ]
 }

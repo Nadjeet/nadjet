@@ -74,7 +74,7 @@ A rehearsal is clean only if every box holds. Record date, tag, who ran it and t
 `RESULTS.md`. Two clean rehearsals in a row are required.
 
 1. [ ] Camera wall shows 4 live streams with an annotated and raw toggle. FR-CAM-003, FR-MAP-004
-2. [ ] The congestion camera raises no alert (false-positive control).
+2. [ ] No camera raises an alert during the normal traffic before its impact (false-positive control).
 3. [ ] The crash clip on A1 PK42 creates an incident by itself with clip, signals and AI verdict;
        the AI status is shown with its source. FR-VIS-005, FR-VIS-007, FR-INC-001
 4. [ ] Operator confirms; unit and hospital recommendations appear with ETAs and routes. FR-DSP-001
