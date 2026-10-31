@@ -1,16 +1,19 @@
 import { useTranslation } from "react-i18next";
 
 import logoUrl from "@/assets/brand/nadjet-logo.svg";
+import markUrl from "@/assets/brand/nadjet-mark.svg";
 import { cn } from "@/lib/utils";
 
-/** The mark alone (public/favicon.svg, cropped from the Figma logo): favicons and tight spots. */
+/** The Figma logo icon (node 75:6348): app icon, favicon and tight spots. */
 export function LogoMark({ className }: { className?: string }) {
   return (
     <img
-      src="/favicon.svg"
+      src={markUrl}
       alt=""
       aria-hidden
-      className={cn("size-9 shrink-0 object-contain", className)}
+      width={88}
+      height={52}
+      className={cn("h-8 w-auto shrink-0", className)}
     />
   );
 }
