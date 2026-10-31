@@ -492,7 +492,9 @@
       "reports": "{{count}} بلاغات",
       "rejectedFor": "مرفوضة: {{reason}}",
       "mergedInto": "دُمجت في حادثة أخرى.",
-      "openTarget": "فتحها"
+      "openTarget": "فتحها",
+      "review": "مراجعة الحادث",
+      "progress": "تقدّم الحادث"
     },
     "agency": {
       "civil_protection": "الحماية المدنية",
