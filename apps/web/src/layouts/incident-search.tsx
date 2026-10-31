@@ -1,5 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import { SearchIcon } from "lucide-react";
+import { HouseIcon } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -40,13 +40,13 @@ export function IncidentSearch({ className }: { className?: string }) {
     <form
       role="search"
       onSubmit={(event) => void submit(event)}
-      className={cn("flex min-w-0 flex-1 flex-col gap-1 sm:max-w-md", className)}
+      className={cn("flex min-w-0 flex-1 flex-col gap-1 sm:max-w-[25rem]", className)}
     >
       <label className="relative flex items-center">
         <span className="sr-only">{t("common.searchIncident")}</span>
-        <SearchIcon
+        <HouseIcon
           aria-hidden
-          className="pointer-events-none absolute start-4 size-[18px] text-primary"
+          className="pointer-events-none absolute start-4 size-[18px] text-white"
         />
         <input
           value={code}
@@ -57,7 +57,7 @@ export function IncidentSearch({ className }: { className?: string }) {
           placeholder={t("common.searchIncident")}
           aria-invalid={missing ? true : undefined}
           aria-busy={busy || undefined}
-          className="h-11 w-full rounded-xl border border-transparent bg-accent ps-11 pe-4 text-body-md font-medium text-ink outline-none placeholder:font-normal placeholder:text-primary/80 focus-visible:border-ring focus-visible:bg-card focus-visible:shadow-focus"
+          className="h-[42px] w-full rounded-xl border border-transparent bg-brand-200 ps-11 pe-4 text-body-md font-medium text-white shadow-[0_6px_20px_rgb(112_144_176/0.2)] outline-none placeholder:text-white focus-visible:bg-brand-300 focus-visible:shadow-focus"
         />
       </label>
       {missing ? (

@@ -46,7 +46,7 @@ function useErrorText() {
         : t("ops.errors.generic");
 }
 
-function RejectDialog({
+export function RejectDialog({
   incident,
   open,
   onOpenChange,

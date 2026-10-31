@@ -409,9 +409,11 @@ export function IncidentDetailPage() {
       <div className="grid gap-6 xl:grid-cols-12">
         <div className="flex min-w-0 flex-col gap-6 xl:col-span-8">
           {role && DISPATCHERS.has(role) && incident.status !== "candidate" ? (
-            <Section title={t("ops.dispatch.title")}>
-              <DispatchPanel incident={incident} />
-            </Section>
+            <section id="dispatch" className="scroll-mt-6">
+              <Section title={t("ops.dispatch.title")}>
+                <DispatchPanel incident={incident} />
+              </Section>
+            </section>
           ) : null}
           <section id="evidence" className="scroll-mt-6">
             <Section title={t("ops.detail.evidence")}>

@@ -1,13 +1,11 @@
 import type * as React from "react";
-import { ArrowUpRightIcon, type LucideIcon } from "lucide-react";
 import {
-  AmbulanceIcon,
-  GaugeIcon,
+  ArrowUpRightIcon,
   HospitalIcon,
-  SirenIcon,
-  TriangleAlertIcon,
-  CpuIcon,
   MapPinIcon,
+  TriangleAlertIcon,
+  TruckIcon,
+  type LucideIcon,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
@@ -22,42 +20,41 @@ function median(values: number[]): number | null {
   return sorted.length % 2 ? sorted[mid]! : (sorted[mid - 1]! + sorted[mid]!) / 2;
 }
 
+/** Figma KPI card (node 75:6384): 154 px, light blue title, arrow chip, 34 px figure, hint. */
 function KpiCard({
   title,
   value,
   hint,
-  icon: Icon,
   hintIcon: HintIcon,
   badge,
 }: {
   title: string;
   value: React.ReactNode;
   hint: string;
-  icon: LucideIcon;
   hintIcon: LucideIcon;
   badge?: number;
 }) {
   return (
-    <div className="flex min-h-36 flex-col justify-between gap-3 rounded-2xl border border-border bg-card p-5 shadow-card">
-      <div className="flex items-start justify-between gap-3">
-        <p className="text-body-sm text-primary">{title}</p>
+    <div className="flex h-[154px] flex-col justify-between rounded-2xl border border-line bg-white p-[21px] shadow-card">
+      <div className="flex items-start justify-between gap-3 pt-1">
+        <p className="text-body-sm font-light text-brand-500">{title}</p>
         <span
           aria-hidden
           className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-400 text-white"
         >
-          <Icon className="size-4" />
+          <ArrowUpRightIcon className="size-[17px]" />
         </span>
       </div>
-      <p className="relative w-fit text-display-sm font-semibold tracking-tight text-brand-500">
+      <p className="relative w-fit text-[2.125rem] leading-[2.6rem] font-semibold tracking-tight text-brand-500">
         {value}
         {badge ? (
-          <span className="absolute start-full top-0 ms-1 grid h-4 min-w-4 place-items-center rounded-full bg-danger px-1 text-[0.625rem] font-semibold text-white">
+          <span className="absolute start-full top-0.5 ms-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-danger px-1 text-[0.625rem] font-semibold text-white">
             {badge}
           </span>
         ) : null}
       </p>
-      <p className="flex items-center gap-1.5 truncate text-body-xs text-ink-muted">
-        <HintIcon aria-hidden className="size-3.5 shrink-0 text-brand-300" />
+      <p className="flex items-center gap-1.5 truncate text-body-xs text-brand-200">
+        <HintIcon aria-hidden className="size-3.5 shrink-0" />
         <span className="truncate">{hint}</span>
       </p>
     </div>
@@ -93,36 +90,32 @@ export function KpiRibbon({
   return (
     <section
       aria-label={t("ops.console.title")}
-      className={cn("grid gap-4 sm:grid-cols-2 xl:grid-cols-4 xl:gap-6", className)}
+      className={cn("grid gap-6 sm:grid-cols-2 xl:grid-cols-4", className)}
     >
       <KpiCard
         title={t("ops.console.kpi.active")}
         value={open ? String(open.length) : none}
         badge={awaiting || undefined}
         hint={t("ops.console.kpi.activeHint", { count: awaiting })}
-        icon={SirenIcon}
         hintIcon={TriangleAlertIcon}
       />
       <KpiCard
         title={t("ops.console.kpi.detection")}
         value={detection === null ? none : <bdi dir="ltr">{`${detection.toFixed(1)} s`}</bdi>}
         hint={t("ops.console.kpi.detectionHint")}
-        icon={GaugeIcon}
-        hintIcon={CpuIcon}
+        hintIcon={TruckIcon}
       />
       <KpiCard
         title={t("ops.console.kpi.units")}
         value={resources ? t("ops.console.kpi.unitsValue", { count: available }) : none}
         hint={t("ops.console.kpi.unitsHint", { total: units.length })}
-        icon={AmbulanceIcon}
         hintIcon={MapPinIcon}
       />
       <KpiCard
         title={t("ops.console.kpi.hospitals")}
         value={resources ? t("ops.console.kpi.hospitalsValue", { count: ready }) : none}
         hint={t("ops.console.kpi.hospitalsHint", { total: hospitals.length })}
-        icon={HospitalIcon}
-        hintIcon={ArrowUpRightIcon}
+        hintIcon={HospitalIcon}
       />
     </section>
   );

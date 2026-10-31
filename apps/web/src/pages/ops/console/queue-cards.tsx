@@ -2,7 +2,6 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { AiStatusBadge } from "@/components/incident/ai-status";
 import { PriorityBadge, type PriorityLevel } from "@/components/incident/priority-badge";
 import { formatAge, useLabel } from "@/lib/format";
 import { locationText } from "@/lib/incident-format";
@@ -40,12 +39,12 @@ export function PriorityTabs({
             aria-pressed={active}
             onClick={() => onChange({ ...filters, priority: level })}
             className={cn(
-              "h-7 rounded-md px-2.5 text-body-xs font-medium transition-colors focus-visible:shadow-focus",
+              "h-[26px] min-w-8 rounded-md px-2.5 text-[0.6875rem] transition-colors focus-visible:shadow-focus",
               active
                 ? level === undefined
                   ? "bg-ink text-white"
-                  : "bg-primary text-white"
-                : "bg-surface-strong text-ink-body hover:bg-accent hover:text-primary",
+                  : "bg-brand-400 text-white"
+                : "bg-surface-strong text-ink-body hover:bg-line",
             )}
           >
             {level === undefined ? t("ops.console.allPriorities") : `P${level}`}
@@ -74,7 +73,7 @@ export function QueueCards({
   const label = useLabel();
   const now = useNow();
   return (
-    <ul className="flex flex-col gap-3" aria-label={t("ops.console.queue")}>
+    <ul className="flex flex-col gap-5" aria-label={t("ops.console.queue")}>
       {incidents.map((incident) => {
         const selected = incident.id === selectedId;
         return (
@@ -82,44 +81,51 @@ export function QueueCards({
             <article
               aria-current={selected ? "true" : undefined}
               className={cn(
-                "relative flex flex-col gap-2 rounded-lg border bg-card p-3.5 transition-colors",
+                "relative flex flex-col gap-2 rounded-lg border p-3.5 transition-colors",
                 selected
-                  ? "border-2 border-brand-indigo bg-brand-50/60 shadow-card"
-                  : "border-border hover:border-brand-200",
+                  ? "border-2 border-brand-indigo bg-[rgb(239_246_255/0.4)] shadow-card"
+                  : "border-line bg-white hover:border-brand-200",
               )}
             >
-              <div className="flex items-center gap-2">
-                <PriorityBadge level={incident.priority as PriorityLevel} compact />
+              <div className="flex items-center gap-1.5">
+                {incident.priority === 1 ? (
+                  <span className="rounded-md bg-danger px-1 py-0.5 text-[0.625rem] leading-[0.9rem] text-white">
+                    {t("priority.p1")}
+                  </span>
+                ) : (
+                  <PriorityBadge level={incident.priority as PriorityLevel} compact />
+                )}
                 <button
                   type="button"
                   onClick={() => onSelect(incident.id)}
-                  className="font-mono text-body-sm font-semibold text-ink after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:shadow-focus"
+                  className="text-body-xs font-semibold text-ink after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:shadow-focus"
                 >
-                  {incident.short_code}
+                  <bdi dir="ltr">INC-{incident.short_code}</bdi>
                 </button>
-                <span className="ms-auto text-body-xs whitespace-nowrap text-primary">
+                <span className="ms-auto text-body-xs whitespace-nowrap text-brand-500">
                   {formatAge(incident.event_time, i18n.language, now)}
                 </span>
               </div>
-              <p className="text-body-sm font-medium text-ink">
+              <p className="text-body-xs text-ink">
                 {label(`ops.type.${incident.type}`, incident.type)}
               </p>
-              <p className="truncate text-body-xs text-ink-muted">{locationText(incident)}</p>
+              <p className="truncate text-[0.6875rem] text-ink-muted">{locationText(incident)}</p>
               <div className="flex items-end justify-between gap-2">
-                <div className="flex min-w-0 flex-col gap-0.5 text-body-xs">
-                  <span className="font-medium text-ink-body">
-                    {label(`ops.source.${incident.source}`, incident.source)}
+                {incident.status === "candidate" || incident.status === "verified" ? (
+                  <span className="flex items-center gap-1.5 text-[0.6875rem] leading-tight text-danger-strong">
+                    <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-danger-strong" />
+                    {t(`status.${incident.status}`)}
                   </span>
-                  <AiStatusBadge
-                    aiStatus={incident.ai_status}
-                    verifier={incident.verifier_result}
-                    className="text-ink-muted"
-                  />
-                </div>
+                ) : (
+                  <span className="text-[0.6875rem] leading-tight text-brand-900">
+                    {label(`ops.source.${incident.source}`, incident.source)} ·{" "}
+                    {t(`status.${incident.status}`)}
+                  </span>
+                )}
                 <Link
                   to="/ops/incidents/$incidentId"
                   params={{ incidentId: incident.id }}
-                  className="relative z-10 inline-flex h-7 shrink-0 items-center rounded-md bg-brand-200/70 px-3 text-body-xs font-medium text-brand-700 transition-colors hover:bg-brand-200 focus-visible:shadow-focus"
+                  className="relative z-10 inline-flex h-6 shrink-0 items-center rounded-md bg-brand-200 px-3.5 text-body-xs text-white transition-colors hover:bg-brand-300 focus-visible:shadow-focus"
                 >
                   {t("ops.console.review")}
                   <span className="sr-only"> {incident.short_code}</span>

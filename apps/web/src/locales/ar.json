@@ -284,7 +284,22 @@
       "details": "التفاصيل",
       "humanGate": "التحقق البشري مفعّل",
       "humanGateHint": "الذكاء الاصطناعي لا يرسل الإسعاف بمفرده أبدًا.",
-      "standards": "تنبيهات CAP 1.2 · القانون 18-07 / 25-11"
+      "standards": "تنبيهات CAP 1.2 · القانون 18-07 / 25-11",
+      "liveRoutes": "المسارات المباشرة",
+      "viewRoute": "المسار",
+      "viewAll": "كل الحوادث",
+      "statStatus": "الحالة",
+      "statUnit": "وصول الوحدة",
+      "statHospital": "المستشفى",
+      "notDispatched": "لم يُرسل بعد",
+      "minutes": "{{count}} د",
+      "accepting": "يستقبل المرضى",
+      "diverting": "يحوّل المرضى",
+      "dispatchNow": "إرسال الإسعاف",
+      "reviewNow": "مراجعة وتأكيد",
+      "reject": "رفض",
+      "manualCallNav": "تسجيل مكالمة",
+      "avgDetection": "متوسط الكشف: {{value}}"
     },
     "filters": {
       "status": "الحالة",
@@ -406,7 +421,13 @@
       "failed": "تعذّر تحميل الملف."
     },
     "signals": {
-      "none": "لا توجد إشارات قواعد مسجَّلة."
+      "none": "لا توجد إشارات قواعد مسجَّلة.",
+      "vehicles_zero": "لا مركبة",
+      "vehicles_one": "مركبة واحدة",
+      "vehicles_two": "مركبتان",
+      "vehicles_few": "{{count}} مركبات",
+      "vehicles_many": "{{count}} مركبة",
+      "vehicles_other": "{{count}} مركبة"
     },
     "flags": {
       "to_assess": "للتقييم",
