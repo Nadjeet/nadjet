@@ -47,7 +47,7 @@ export function LoginPage() {
     <main className="grid min-h-dvh lg:grid-cols-2">
       <section
         aria-hidden
-        className="relative hidden flex-col justify-end gap-6 overflow-hidden bg-[linear-gradient(135deg,#006be0_0%,#3568f5_60%,#2a8cf7_100%)] p-12 text-white lg:flex"
+        className="relative hidden flex-col justify-end gap-6 overflow-hidden bg-[linear-gradient(112deg,#3568f5_7.6%,#80beff_95.5%)] p-12 text-white lg:flex"
       >
         <div className="pointer-events-none absolute -end-24 -top-24 size-96 rounded-full bg-white/10" />
         <div className="pointer-events-none absolute -start-32 bottom-24 size-80 rounded-full bg-white/5" />

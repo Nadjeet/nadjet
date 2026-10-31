@@ -17,10 +17,10 @@ import { SmsButton } from "./sms-button";
 
 const TAGS: TriageTag[] = ["red", "yellow", "green", "black"];
 const BORDER: Record<TriageTag, string> = {
-  red: "border-red-700",
-  yellow: "border-yellow-600",
-  green: "border-green-700",
-  black: "border-foreground",
+  red: "border-danger",
+  yellow: "border-warning",
+  green: "border-success",
+  black: "border-ink",
 };
 const AVPU = ["A", "V", "P", "U"] as const;
 
@@ -47,7 +47,7 @@ function Choice({
   return (
     <label
       className={cn(
-        "flex min-h-12 cursor-pointer items-center gap-2 rounded-lg border-2 px-3 py-2 text-body-sm font-medium has-[:checked]:bg-accent has-[:checked]:font-bold has-[:focus-visible]:shadow-focus",
+        "flex min-h-12 cursor-pointer items-center gap-2 rounded-lg border-2 px-3 py-2 text-body-sm font-medium has-[:checked]:bg-brand-50 has-[:checked]:font-bold has-[:focus-visible]:shadow-focus",
         className,
       )}
     >
