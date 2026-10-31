@@ -3,9 +3,10 @@ import workerUrl from "maplibre-gl/dist/maplibre-gl-worker.mjs?worker&url";
 import type { Map as MapLibreMap } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { Protocol } from "pmtiles";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
+import { MapControls } from "./map-controls";
 import { basemapStyle, type MapLang } from "./style";
 
 // The package only exports its ESM source, so reference the built plugin file by path.
@@ -33,15 +34,29 @@ type BaseMapProps = {
   className?: string;
   /** Called once the style is loaded so callers can add their own layers. */
   onLoad?: (map: MapLibreMap) => void;
+  /** Where the recenter button goes (default: the initial view). */
+  onRecenter?: (map: MapLibreMap) => void;
+  /** Figma overlays drawn over the map (camera chip, hospital card). */
+  children?: ReactNode;
 };
 
 /** Offline vector basemap of Algeria with the OpenStreetMap attribution (FR-MAP-001). */
-export function BaseMap({ lang, center = DEMO_CENTER, zoom = 9, className, onLoad }: BaseMapProps) {
+export function BaseMap({
+  lang,
+  center = DEMO_CENTER,
+  zoom = 9,
+  className,
+  onLoad,
+  onRecenter,
+  children,
+}: BaseMapProps) {
   const { t } = useTranslation();
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<MapLibreMap | null>(null);
   const onLoadRef = useRef(onLoad);
   const [failed, setFailed] = useState(false);
+  const [instance, setInstance] = useState<MapLibreMap | null>(null);
+  const initial = useRef({ center, zoom });
 
   useEffect(() => {
     onLoadRef.current = onLoad;
@@ -57,8 +72,8 @@ export function BaseMap({ lang, center = DEMO_CENTER, zoom = 9, className, onLoa
       zoom,
       attributionControl: { compact: false },
     });
-    instance.addControl(new maplibregl.NavigationControl({ showCompass: false }), "top-right");
     instance.on("load", () => {
+      setInstance(instance);
       onLoadRef.current?.(instance);
     });
     instance.on("error", (event) => {
@@ -84,6 +99,15 @@ export function BaseMap({ lang, center = DEMO_CENTER, zoom = 9, className, onLoa
     <div className={`relative ${className ?? ""}`}>
       {/* maplibre's CSS makes the container `position: relative`, so size it instead of inset-0 */}
       <div ref={container} className="h-full w-full" />
+      <MapControls
+        map={instance}
+        onRecenter={() => {
+          if (!instance) return;
+          if (onRecenter) onRecenter(instance);
+          else instance.easeTo({ center: initial.current.center, zoom: initial.current.zoom });
+        }}
+      />
+      {children}
       {failed && (
         <p
           role="alert"
