@@ -6,6 +6,9 @@ from nadjet_shared.events import AiStatus, VerifierResult
 
 MERGE_WINDOW_S = 60.0
 MERGE_RADIUS_M = 50.0
+# E-02: the same camera seeing the same scene again (a looping clip, a crash that stays in view
+# after the trigger cooldown) is a re-observation of the open incident, not a new alert.
+CAMERA_REOBSERVE_S = 600.0
 
 _AI_RANK = {
     AiStatus.INSUFFICIENT_EVIDENCE: 0,
@@ -15,10 +18,18 @@ _AI_RANK = {
 }
 
 
-def should_merge(last_event_time: datetime, event_time: datetime, distance_m: float) -> bool:
-    """Merge when the candidate is within 60 s and 50 m of the open incident."""
+def should_merge(
+    last_event_time: datetime,
+    event_time: datetime,
+    distance_m: float,
+    *,
+    same_camera: bool = False,
+) -> bool:
+    """Merge when the candidate is within 60 s and 50 m of the open incident, or within 10 min
+    when the same camera reports it again (E-02)."""
+    window = CAMERA_REOBSERVE_S if same_camera else MERGE_WINDOW_S
     return (
-        abs((event_time - last_event_time).total_seconds()) <= MERGE_WINDOW_S
+        abs((event_time - last_event_time).total_seconds()) <= window
         and distance_m <= MERGE_RADIUS_M
     )
 

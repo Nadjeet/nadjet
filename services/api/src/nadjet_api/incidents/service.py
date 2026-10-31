@@ -206,7 +206,7 @@ async def _find_mergeable(session: AsyncSession, candidate: IncidentCandidate) -
     rows = await session.execute(
         text(
             """
-            SELECT id, last_event_time,
+            SELECT id, last_event_time, camera_id,
                    ST_Distance(geom::geography, p.g) AS distance_m
             FROM incidents,
                  (SELECT ST_SetSRID(ST_MakePoint(:lon, :lat), 4326)::geography AS g) AS p
@@ -222,8 +222,9 @@ async def _find_mergeable(session: AsyncSession, candidate: IncidentCandidate) -
             "radius": MERGE_RADIUS_M,
         },
     )
-    for incident_id, last_event_time, distance_m in rows:
-        if should_merge(last_event_time, candidate.event_time, distance_m):
+    for incident_id, last_event_time, camera_id, distance_m in rows:
+        same_camera = candidate.camera_id is not None and camera_id == candidate.camera_id
+        if should_merge(last_event_time, candidate.event_time, distance_m, same_camera=same_camera):
             return uuid.UUID(str(incident_id))
     return None
 
