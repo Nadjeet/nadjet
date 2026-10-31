@@ -83,7 +83,10 @@
     "unavailable": "Fond de carte indisponible : lancez make map-data, puis redémarrez l'API.",
     "zoomIn": "Zoom avant",
     "zoomOut": "Zoom arrière",
-    "recenter": "Recentrer"
+    "recenter": "Recentrer",
+    "expand": "Agrandir la carte",
+    "collapse": "Fermer la grande carte",
+    "openDetails": "Cliquer pour ouvrir"
   },
   "simulated": {
     "label": "Données simulées"
@@ -295,7 +298,9 @@
       "reviewNow": "Examiner et confirmer",
       "reject": "Rejeter",
       "manualCallNav": "Appel manuel",
-      "avgDetection": "Détection moyenne : {{value}}"
+      "avgDetection": "Détection moyenne : {{value}}",
+      "liveMap": "Carte opérationnelle en direct",
+      "liveMapHint": "Survolez un incident pour son résumé, cliquez pour ouvrir sa page."
     },
     "filters": {
       "status": "Statut",
@@ -561,7 +566,24 @@
       "degraded": "Dégradée",
       "offline": "Hors ligne"
     },
-    "liveDemo": "Démo en direct"
+    "liveDemo": "Démo en direct",
+    "liveTag": "DIRECT",
+    "emptySlot": "Emplacement vide",
+    "liveCount": "{{live}}/{{total}} en direct",
+    "hint": "Double-cliquez sur une caméra pour l'agrandir",
+    "layout": "Disposition du mur",
+    "layouts": {
+      "single": "Une caméra",
+      "grid4": "2 × 2",
+      "focus": "1 grande + 3",
+      "grid9": "3 × 3"
+    },
+    "exitFullscreen": "Quitter le plein écran",
+    "list": "Caméras",
+    "search": "Chercher une caméra ou une route",
+    "aiUnavailable": "Vidéo brute : boîtes IA indisponibles",
+    "openCount_one": "{{count}} incident ouvert",
+    "openCount_other": "{{count}} incidents ouverts"
   },
   "kpis": {
     "title": "Indicateurs de réponse",
