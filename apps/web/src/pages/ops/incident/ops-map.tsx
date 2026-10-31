@@ -61,9 +61,9 @@ function installLayers(map: MapLibreMap) {
     source: "facilities",
     paint: {
       "circle-radius": 5,
-      "circle-color": "#1d4ed8",
+      "circle-color": "#2a93fe",
       "circle-stroke-color": "#fff",
-      "circle-stroke-width": 1.5,
+      "circle-stroke-width": 2,
     },
   });
   map.addLayer({
@@ -79,10 +79,10 @@ function installLayers(map: MapLibreMap) {
     type: "circle",
     source: "units",
     paint: {
-      "circle-radius": 4,
-      "circle-color": "#0f766e",
+      "circle-radius": 5,
+      "circle-color": "#3568f5",
       "circle-stroke-color": "#fff",
-      "circle-stroke-width": 1,
+      "circle-stroke-width": 2,
     },
   });
   map.addLayer({
@@ -122,6 +122,27 @@ function installLayers(map: MapLibreMap) {
     layout: label("label"),
     paint: halo,
   });
+  // Soft pulse-like halo under each incident pin (Figma map pins).
+  map.addLayer({
+    id: "incidents-halo",
+    type: "circle",
+    source: "incidents",
+    paint: {
+      "circle-radius": ["case", ["get", "selected"], 24, 18],
+      "circle-color": [
+        "match",
+        ["get", "priority"],
+        1,
+        "#dc2626",
+        2,
+        "#c2410c",
+        3,
+        "#92400e",
+        "#475569",
+      ],
+      "circle-opacity": 0.16,
+    },
+  });
   map.addLayer({
     id: "incidents",
     type: "circle",
@@ -132,14 +153,14 @@ function installLayers(map: MapLibreMap) {
         "match",
         ["get", "priority"],
         1,
-        "#b91c1c",
+        "#dc2626",
         2,
         "#c2410c",
         3,
         "#92400e",
         "#475569",
       ],
-      "circle-stroke-color": ["case", ["get", "selected"], "#0f172a", "#ffffff"],
+      "circle-stroke-color": ["case", ["get", "selected"], "#3568f5", "#ffffff"],
       "circle-stroke-width": 3,
     },
   });
