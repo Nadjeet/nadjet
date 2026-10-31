@@ -1,5 +1,11 @@
 import { useQuery } from "@tanstack/react-query";
-import { CircleAlertIcon, CircleCheckIcon, CircleOffIcon, MaximizeIcon } from "lucide-react";
+import {
+  CircleAlertIcon,
+  CircleCheckIcon,
+  CircleOffIcon,
+  MaximizeIcon,
+  VideoIcon,
+} from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -12,6 +18,7 @@ import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/compone
 import { Skeleton } from "@/components/ui/skeleton";
 import { incidentsKey, systemCamerasKey } from "@/live/keys";
 import { cn } from "@/lib/utils";
+import { ViewSwitch } from "@/components/stream/view-switch";
 
 import { streamUrls, tileStatus, type Camera, type TileStatus, type View } from "./camera-status";
 import { useCameras } from "@/lib/incident-queries";
@@ -32,26 +39,6 @@ function StatusBadge({ status }: { status: TileStatus }) {
   );
 }
 
-function ViewToggle({ view, onChange }: { view: View; onChange: (view: View) => void }) {
-  const { t } = useTranslation();
-  return (
-    <div role="group" aria-label={t("cameras.view")} className="flex gap-1">
-      {(["annotated", "raw"] as const).map((option) => (
-        <Button
-          key={option}
-          type="button"
-          size="xs"
-          variant={view === option ? "default" : "secondary"}
-          aria-pressed={view === option}
-          onClick={() => onChange(option)}
-        >
-          {t(`cameras.${option}`)}
-        </Button>
-      ))}
-    </div>
-  );
-}
-
 function CameraTile({
   camera,
   status,
@@ -69,14 +56,17 @@ function CameraTile({
   return (
     <li
       className={cn(
-        "flex flex-col gap-2 rounded-xl border bg-card p-3",
-        incidents.length > 0 ? "border-danger ring-2 ring-danger" : "border-border",
+        "flex flex-col gap-3 rounded-2xl border bg-card p-4 shadow-card",
+        incidents.length > 0 ? "border-danger ring-2 ring-danger/40" : "border-border",
       )}
     >
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div className="min-w-0">
-          <h2 className="truncate text-body-md font-bold">{camera.name}</h2>
-          <bdi dir="ltr" className="text-body-sm text-muted-foreground">
+          <h2 className="flex items-center gap-1.5 truncate text-body-md font-semibold text-ink">
+            <VideoIcon aria-hidden className="size-4 shrink-0 text-primary" />
+            <span className="truncate">{camera.name}</span>
+          </h2>
+          <bdi dir="ltr" className="text-body-sm text-ink-muted">
             {where}
           </bdi>
         </div>
@@ -87,10 +77,7 @@ function CameraTile({
         </div>
       </div>
       {incidents.length > 0 ? (
-        <p
-          role="status"
-          className="flex items-center gap-2 text-body-sm font-medium text-danger"
-        >
+        <p role="status" className="flex items-center gap-2 text-body-sm font-medium text-danger">
           <CircleAlertIcon aria-hidden className="size-4" />
           {t("cameras.incident", { codes: incidents.join(", ") })}
         </p>
@@ -102,8 +89,8 @@ function CameraTile({
         className="aspect-video rounded-lg"
       />
       <div className="flex flex-wrap items-center justify-between gap-2">
-        <ViewToggle view={view} onChange={setView} />
-        <Button type="button" size="xs" variant="outline" onClick={() => setFullscreen(true)}>
+        <ViewSwitch view={view} onChange={setView} />
+        <Button type="button" size="xs" variant="neutral" onClick={() => setFullscreen(true)}>
           <MaximizeIcon aria-hidden />
           {t("cameras.fullscreen")}
         </Button>
@@ -118,7 +105,7 @@ function CameraTile({
             label={t("cameras.videoOf", { name: camera.name, view: t(`cameras.${view}`) })}
             className="aspect-video rounded-lg"
           />
-          <ViewToggle view={view} onChange={setView} />
+          <ViewSwitch view={view} onChange={setView} />
         </DialogContent>
       </Dialog>
     </li>
@@ -155,13 +142,15 @@ export function CameraWall() {
   });
   const healthById = new Map(health.data?.map((row) => [row.id, row]));
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-display-sm font-bold text-balance">{t("pages.ops.cameras.title")}</h1>
+    <div className="flex flex-col gap-6">
+      <h1 className="text-display-xs font-semibold text-ink text-balance">
+        {t("pages.ops.cameras.title")}
+      </h1>
       {cameras.isError ? <p role="alert">{t("cameras.loadFailed")}</p> : null}
       {cameras.isPending ? (
         <Skeleton className="aspect-video w-full max-w-xl" />
       ) : (
-        <ul className="grid gap-4 md:grid-cols-2 2xl:grid-cols-3">
+        <ul className="grid gap-6 md:grid-cols-2 2xl:grid-cols-3">
           {cameras.data?.map((camera) => {
             const row = healthById.get(camera.id);
             return (

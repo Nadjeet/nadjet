@@ -56,7 +56,7 @@ const SWATCH: Record<(typeof BRAND)[number], string> = {
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-4">
-      <h2 className="text-display-xs font-bold">{title}</h2>
+      <h2 className="text-body-lg font-semibold text-ink">{title}</h2>
       <Card>{children}</Card>
     </section>
   );
@@ -69,8 +69,8 @@ export function DesignSystemPage() {
   return (
     <div className="flex flex-col gap-8">
       <header className="flex flex-col gap-2">
-        <h1 className="text-display-sm font-bold">{t("design.title")}</h1>
-        <p className="text-body-md text-muted-foreground">{t("design.intro")}</p>
+        <h1 className="text-display-xs font-semibold text-ink">{t("design.title")}</h1>
+        <p className="text-body-md text-ink-muted">{t("design.intro")}</p>
         <ul className="mt-2 flex flex-wrap gap-2">
           {BRAND.map((step) => (
             <li key={step} className="flex flex-col items-center gap-1 text-body-xs">

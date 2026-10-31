@@ -22,7 +22,7 @@ export function RespondProfile() {
   const gateway = useSmsGateway();
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-display-xs font-bold">{t("respond.profile.title")}</h1>
+      <h1 className="text-body-lg font-semibold text-ink">{t("respond.profile.title")}</h1>
       {user ? (
         <p className="text-body-md">
           {user.display_name}
@@ -41,12 +41,12 @@ export function RespondProfile() {
             {gateway.data}
           </bdi>
         ) : (
-          <p className="text-body-sm text-muted-foreground">{t("respond.sms.noNumber")}</p>
+          <p className="text-body-sm text-ink-muted">{t("respond.sms.noNumber")}</p>
         )}
       </Block>
       <Block title={t("respond.profile.queue")}>
         <PendingActions />
-        <p className="text-body-sm text-muted-foreground">{t("respond.profile.queueHint")}</p>
+        <p className="text-body-sm text-ink-muted">{t("respond.profile.queueHint")}</p>
       </Block>
     </div>
   );

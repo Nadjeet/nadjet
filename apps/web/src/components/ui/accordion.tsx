@@ -41,7 +41,7 @@ function AccordionTrigger({
       <AccordionPrimitive.Trigger
         data-slot="accordion-trigger"
         className={cn(
-          "group/accordion-trigger relative flex flex-1 items-start justify-between rounded-xl border border-transparent py-3.5 text-start text-body-sm font-medium transition-all outline-none focus-visible:shadow-focus focus-visible:after:border-ring disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ms-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-muted-foreground",
+          "group/accordion-trigger relative flex flex-1 items-start justify-between rounded-xl border border-transparent py-3.5 text-start text-body-sm font-medium transition-all outline-none focus-visible:shadow-focus focus-visible:after:border-ring disabled:pointer-events-none disabled:opacity-50 **:data-[slot=accordion-trigger-icon]:ms-auto **:data-[slot=accordion-trigger-icon]:size-4 **:data-[slot=accordion-trigger-icon]:text-ink-muted",
           className,
         )}
         {...props}
@@ -68,7 +68,7 @@ function AccordionContent({
   return (
     <AccordionPrimitive.Content
       data-slot="accordion-content"
-      className="overflow-hidden text-body-sm text-muted-foreground data-open:animate-accordion-down data-closed:animate-accordion-up"
+      className="overflow-hidden text-body-sm text-ink-muted data-open:animate-accordion-down data-closed:animate-accordion-up"
       {...props}
     >
       <div

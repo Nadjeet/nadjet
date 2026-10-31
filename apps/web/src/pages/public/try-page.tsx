@@ -33,7 +33,7 @@ function Consent() {
       <h2 id="try-consent" className="font-bold">
         {t("pages.public.try.consent.title")}
       </h2>
-      <p className="mt-1 text-muted-foreground">{t("pages.public.try.consent.body")}</p>
+      <p className="mt-1 text-ink-muted">{t("pages.public.try.consent.body")}</p>
     </section>
   );
 }
@@ -87,7 +87,7 @@ function Result({ job, onDelete }: { job: TryJob; onDelete: () => void }) {
             {description ? <p className="mt-1">{description}</p> : null}
           </dl>
         ) : (
-          <p className="mt-2 text-body-sm text-muted-foreground">
+          <p className="mt-2 text-body-sm text-ink-muted">
             {result.ai_available
               ? t("pages.public.try.noCollision")
               : t("pages.public.try.noRuleCollision")}
@@ -98,7 +98,7 @@ function Result({ job, onDelete }: { job: TryJob; onDelete: () => void }) {
             {(verdict.findings ?? []).map((finding) => (
               <li key={`${finding.statement}-${(finding.frame_ids ?? []).join(",")}`}>
                 {finding.statement}{" "}
-                <bdi dir="ltr" className="text-muted-foreground">
+                <bdi dir="ltr" className="text-ink-muted">
                   ({t("pages.public.try.frames")} {(finding.frame_ids ?? []).join(", ")})
                 </bdi>
               </li>
@@ -109,7 +109,7 @@ function Result({ job, onDelete }: { job: TryJob; onDelete: () => void }) {
       <section className="rounded-xl border border-border bg-card p-4">
         <h2 className="text-body-lg font-bold">{t("pages.public.try.timeline")}</h2>
         {timeline.length === 0 ? (
-          <p className="mt-2 text-body-sm text-muted-foreground">
+          <p className="mt-2 text-body-sm text-ink-muted">
             {t("pages.public.try.timelineEmpty")}
           </p>
         ) : (
@@ -119,7 +119,7 @@ function Result({ job, onDelete }: { job: TryJob; onDelete: () => void }) {
                 <bdi dir="ltr" className="font-medium">
                   {formatSeconds(entry.t)}
                 </bdi>{" "}
-                {entry.label} <span className="text-muted-foreground">({entry.source})</span>
+                {entry.label} <span className="text-ink-muted">({entry.source})</span>
               </li>
             ))}
           </ol>
@@ -176,8 +176,8 @@ export function TryPage() {
   const working = job !== null && !isFinal(job);
   return (
     <section className="flex flex-col gap-4 py-6">
-      <h1 className="text-display-sm font-bold text-balance">{t("pages.public.try.title")}</h1>
-      <p className="max-w-2xl text-body-lg text-muted-foreground">
+      <h1 className="text-display-xs font-semibold text-ink text-balance">{t("pages.public.try.title")}</h1>
+      <p className="max-w-2xl text-body-lg text-ink-muted">
         {t("pages.public.try.body", {
           seconds: status.data?.max_seconds ?? 60,
           mb: status.data?.max_mb ?? 100,

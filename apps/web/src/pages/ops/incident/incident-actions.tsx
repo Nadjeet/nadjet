@@ -140,7 +140,7 @@ function MergeDialog({
             </SelectContent>
           </Select>
           {targets.length === 0 ? (
-            <p className="text-body-xs text-muted-foreground">{t("ops.actions.mergeNone")}</p>
+            <p className="text-body-xs text-ink-muted">{t("ops.actions.mergeNone")}</p>
           ) : null}
         </div>
         {merge.isError ? (

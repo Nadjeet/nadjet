@@ -30,7 +30,7 @@ function Interval({ metric, digits = 2 }: { metric: Metric; digits?: number }) {
     <bdi dir="ltr">
       {number(metric.value, digits)}
       {metric.ci ? (
-        <span className="text-muted-foreground">
+        <span className="text-ink-muted">
           {" "}
           [{number(metric.ci.low, digits)}, {number(metric.ci.high, digits)}]
         </span>
@@ -45,23 +45,23 @@ function Header({ results }: { results: Results }) {
     <Card>
       <CardContent className="grid gap-3 sm:grid-cols-2">
         <p>
-          <span className="text-muted-foreground">{t("evaluation.generated")}: </span>
+          <span className="text-ink-muted">{t("evaluation.generated")}: </span>
           <bdi dir="ltr">{formatDateTime(results.generated_at, i18n.language)}</bdi>
         </p>
         <p className="flex flex-wrap items-center gap-2">
-          <span className="text-muted-foreground">{t("evaluation.commit")}: </span>
+          <span className="text-ink-muted">{t("evaluation.commit")}: </span>
           <bdi dir="ltr" className="font-mono">
             {results.git_sha}
           </bdi>
           {results.dirty ? <Badge variant="secondary">{t("evaluation.dirty")}</Badge> : null}
         </p>
         <p>
-          <span className="text-muted-foreground">{t("evaluation.seed")}: </span>
+          <span className="text-ink-muted">{t("evaluation.seed")}: </span>
           <bdi dir="ltr">{results.seed}</bdi> · {t("evaluation.samples")}:{" "}
           <bdi dir="ltr">{results.bootstrap_samples}</bdi>
         </p>
         <p className="flex flex-wrap items-center gap-2">
-          <span className="text-muted-foreground">{t("evaluation.cameraHours")}: </span>
+          <span className="text-ink-muted">{t("evaluation.cameraHours")}: </span>
           <bdi dir="ltr">{number(results.camera_hours)}</bdi>
           <Badge variant={results.meets_camera_hour_target ? "success" : "secondary"}>
             {results.meets_camera_hour_target
@@ -70,7 +70,7 @@ function Header({ results }: { results: Results }) {
           </Badge>
         </p>
         <div className="flex flex-wrap items-center gap-2 sm:col-span-2">
-          <span className="text-muted-foreground">{t("evaluation.models")}: </span>
+          <span className="text-ink-muted">{t("evaluation.models")}: </span>
           {Object.entries(results.models).map(([role, id]) => (
             <span key={role} className="flex items-center gap-1">
               <bdi dir="ltr">{role}</bdi>
@@ -88,14 +88,14 @@ function Ablation({ results }: { results: Results }) {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-display-xs font-bold">{t("evaluation.ablation")}</h2>
-        <p className="text-body-sm text-muted-foreground">{t("evaluation.ci")}</p>
+        <h2 className="text-body-lg font-semibold text-ink">{t("evaluation.ablation")}</h2>
+        <p className="text-body-sm text-ink-muted">{t("evaluation.ci")}</p>
       </CardHeader>
       <CardContent className="overflow-x-auto">
         <table className="w-full text-start text-body-sm">
           <caption className="sr-only">{t("evaluation.ablation")}</caption>
           <thead>
-            <tr className="border-b border-border text-muted-foreground">
+            <tr className="border-b border-border text-ink-muted">
               <th scope="col" className="py-2 pe-4 text-start">
                 {t("evaluation.configuration")}
               </th>
@@ -114,7 +114,7 @@ function Ablation({ results }: { results: Results }) {
               <tr key={row.name} className="border-b border-border align-top last:border-0">
                 <th scope="row" className="py-2 pe-4 text-start font-medium">
                   {row.name}
-                  <span className="block font-normal text-muted-foreground">{row.description}</span>
+                  <span className="block font-normal text-ink-muted">{row.description}</span>
                 </th>
                 {row.metrics ? (
                   <>
@@ -162,32 +162,32 @@ function AiQuality({ results }: { results: Results }) {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-display-xs font-bold">{t("evaluation.aiQuality")}</h2>
+        <h2 className="text-body-lg font-semibold text-ink">{t("evaluation.aiQuality")}</h2>
       </CardHeader>
       <CardContent className="grid gap-4">
         {quality ? (
           <dl className="grid gap-2 sm:grid-cols-2">
             <div>
-              <dt className="text-muted-foreground">{t("evaluation.verifications")}</dt>
+              <dt className="text-ink-muted">{t("evaluation.verifications")}</dt>
               <dd>
                 <bdi dir="ltr">{quality.verifications}</bdi> · {t("evaluation.unavailable")}:{" "}
                 <bdi dir="ltr">{quality.unavailable}</bdi>
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">{t("evaluation.validFirstTry")}</dt>
+              <dt className="text-ink-muted">{t("evaluation.validFirstTry")}</dt>
               <dd>
                 <Interval metric={quality.valid_first_try} />
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">{t("evaluation.droppedCitations")}</dt>
+              <dt className="text-ink-muted">{t("evaluation.droppedCitations")}</dt>
               <dd>
                 <Interval metric={quality.dropped_citation_share} />
               </dd>
             </div>
             <div>
-              <dt className="text-muted-foreground">{t("evaluation.cannotJudge")}</dt>
+              <dt className="text-ink-muted">{t("evaluation.cannotJudge")}</dt>
               <dd>
                 <Interval metric={quality.cannot_judge_share} />
               </dd>
@@ -198,7 +198,7 @@ function AiQuality({ results }: { results: Results }) {
           <table className="w-full text-start text-body-sm">
             <caption className="text-start font-medium">{t("evaluation.latency")}</caption>
             <thead>
-              <tr className="border-b border-border text-muted-foreground">
+              <tr className="border-b border-border text-ink-muted">
                 <th scope="col" className="py-2 pe-4 text-start" />
                 <th scope="col" className="pe-4 text-start">
                   {t("evaluation.calls")}
@@ -241,14 +241,14 @@ function Clips({ results }: { results: Results }) {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-display-xs font-bold">{t("evaluation.clips")}</h2>
+        <h2 className="text-body-lg font-semibold text-ink">{t("evaluation.clips")}</h2>
       </CardHeader>
       <CardContent className="grid gap-4">
         <div className="overflow-x-auto">
           <table className="w-full text-start text-body-sm">
             <caption className="sr-only">{t("evaluation.clips")}</caption>
             <thead>
-              <tr className="border-b border-border text-muted-foreground">
+              <tr className="border-b border-border text-ink-muted">
                 <th scope="col" className="py-2 pe-4 text-start">
                   {t("evaluation.clip")}
                 </th>
@@ -301,8 +301,10 @@ export function EvaluationPage() {
   });
   return (
     <div className="flex flex-col gap-6">
-      <h1 className="text-display-sm font-bold text-balance">{t("evaluation.title")}</h1>
-      {isPending ? <p className="text-muted-foreground">{t("evaluation.loading")}</p> : null}
+      <h1 className="text-display-xs font-semibold text-ink text-balance">
+        {t("evaluation.title")}
+      </h1>
+      {isPending ? <p className="text-ink-muted">{t("evaluation.loading")}</p> : null}
       {isError ? <p role="alert">{t("evaluation.error")}</p> : null}
       {data === null ? <p>{t("evaluation.none")}</p> : null}
       {data ? (
@@ -313,11 +315,11 @@ export function EvaluationPage() {
           <Clips results={data} />
           <Card>
             <CardHeader>
-              <h2 className="flex items-center gap-2 text-display-xs font-bold">
+              <h2 className="flex items-center gap-2 text-body-lg font-semibold text-ink">
                 <TriangleAlertIcon aria-hidden className="size-5" />
                 {t("evaluation.limits")}
               </h2>
-              <p className="text-body-sm text-muted-foreground">{t("evaluation.limitsNote")}</p>
+              <p className="text-body-sm text-ink-muted">{t("evaluation.limitsNote")}</p>
             </CardHeader>
             <CardContent>
               <ul className="list-disc ps-6">

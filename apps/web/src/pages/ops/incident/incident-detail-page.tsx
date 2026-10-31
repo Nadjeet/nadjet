@@ -66,7 +66,7 @@ function Banner({ children }: { children: ReactNode }) {
 function Signals({ incident }: { incident: IncidentDetail }) {
   const { t } = useTranslation();
   const entries = Object.entries(incident.ai_signals);
-  if (entries.length === 0) return <p className="text-muted-foreground">{t("ops.signals.none")}</p>;
+  if (entries.length === 0) return <p className="text-ink-muted">{t("ops.signals.none")}</p>;
   return (
     <ul className="flex flex-col gap-2">
       {entries.map(([name, value]) => (
@@ -89,7 +89,7 @@ function Verdict({ incident }: { incident: IncidentDetail }) {
   const confidence = confidenceOf(verifier.yes_probability);
   const description = i18n.language === "ar" ? verifier.description_ar : verifier.description_fr;
   if (incident.ai_status === null) {
-    return <p className="text-muted-foreground">{t("ops.verdict.notApplicable")}</p>;
+    return <p className="text-ink-muted">{t("ops.verdict.notApplicable")}</p>;
   }
   if (!verifier.available) {
     return (
@@ -108,20 +108,20 @@ function Verdict({ incident }: { incident: IncidentDetail }) {
         {verifier.model ? <AiSourceTag source={{ kind: "model", id: verifier.model }} /> : null}
       </div>
       <dl className="grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-body-sm">
-        <dt className="text-muted-foreground">{t("ops.verdict.label")}</dt>
+        <dt className="text-ink-muted">{t("ops.verdict.label")}</dt>
         <dd>
           {verifier.collision_visible
             ? t(`ops.verdict.${verifier.collision_visible as "yes" | "no" | "cannot_judge"}`)
             : "—"}
         </dd>
-        <dt className="text-muted-foreground">{t("ops.confidence.label")}</dt>
+        <dt className="text-ink-muted">{t("ops.confidence.label")}</dt>
         <dd>{confidence ? t(`ops.confidence.${confidence}`) : "—"}</dd>
       </dl>
       {description ? <p className="text-body-sm">{description}</p> : null}
       <div>
         <h3 className="text-body-sm font-bold">{t("ops.verdict.findings")}</h3>
         {findings.length === 0 ? (
-          <p className="text-body-sm text-muted-foreground">{t("ops.verdict.noFindings")}</p>
+          <p className="text-body-sm text-ink-muted">{t("ops.verdict.noFindings")}</p>
         ) : (
           <ul className="list-disc ps-5 text-body-sm">
             {findings.map((finding, index) => {
@@ -131,7 +131,7 @@ function Verdict({ incident }: { incident: IncidentDetail }) {
                 <li key={index}>
                   {item.statement}
                   {frames.length > 0 ? (
-                    <span className="ms-2 text-muted-foreground">
+                    <span className="ms-2 text-ink-muted">
                       {t("ops.verdict.frames", { frames: frames.join(", ") })}
                     </span>
                   ) : null}
@@ -214,7 +214,7 @@ function Timeline({ incident }: { incident: IncidentDetail }) {
             {label(`ops.event.${event.kind}`, event.kind)}
             {eventSummary(event, label) ? ` · ${eventSummary(event, label)}` : ""}
           </span>
-          <span className="text-body-xs text-muted-foreground">
+          <span className="text-body-xs text-ink-muted">
             {formatDateTime(event.ts, i18n.language)} · {event.actor_name ?? t("ops.event.system")}
           </span>
         </li>
@@ -226,14 +226,14 @@ function Timeline({ incident }: { incident: IncidentDetail }) {
 function Casualties({ incident }: { incident: IncidentDetail }) {
   const { t, i18n } = useTranslation();
   if (incident.casualties.length === 0) {
-    return <p className="text-muted-foreground">{t("ops.casualties.none")}</p>;
+    return <p className="text-ink-muted">{t("ops.casualties.none")}</p>;
   }
   const cols = ["tag", "avpu", "resp", "pulse", "spo2", "bleeding", "time"] as const;
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-start text-body-sm">
         <caption className="sr-only">{t("ops.casualties.title")}</caption>
-        <thead className="text-body-xs text-muted-foreground">
+        <thead className="text-body-xs text-ink-muted">
           <tr>
             {cols.map((col) => (
               <th key={col} scope="col" className="px-2 py-1 text-start font-medium">
@@ -298,7 +298,7 @@ function IntegrityCheck({ id }: { id: string }) {
             )}
             {t(`ops.integrity.${result.status}`)}
           </p>
-          <p className="text-muted-foreground">
+          <p className="text-ink-muted">
             {t("ops.integrity.checked", {
               events: result.events_checked,
               files: result.files_checked,

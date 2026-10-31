@@ -50,7 +50,7 @@ export function LoginPage() {
       </div>
       <Card>
         <CardHeader>
-          <h1 className="text-display-xs font-bold">{t("login.title")}</h1>
+          <h1 className="text-body-lg font-semibold text-ink">{t("login.title")}</h1>
           <CardDescription>{t("login.subtitle")}</CardDescription>
         </CardHeader>
         <form onSubmit={submit} noValidate className="flex flex-col gap-5">

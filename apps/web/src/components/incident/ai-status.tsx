@@ -18,7 +18,7 @@ export function AiStatusBadge({
 }) {
   const { t } = useTranslation();
   if (aiStatus === null) {
-    return <span className="text-muted-foreground">{t("ops.aiStatus.none")}</span>;
+    return <span className="text-ink-muted">{t("ops.aiStatus.none")}</span>;
   }
   const uncertain = isUncertain(aiStatus, verifier);
   return (

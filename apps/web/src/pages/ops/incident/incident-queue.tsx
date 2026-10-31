@@ -150,7 +150,7 @@ export function IncidentQueue({
     <div className="overflow-x-auto rounded-lg border border-border">
       <table className="w-full min-w-[56rem] text-start text-body-sm">
         <caption className="sr-only">{t("ops.console.queue")}</caption>
-        <thead className="bg-muted text-body-xs text-muted-foreground">
+        <thead className="bg-muted text-body-xs text-ink-muted">
           <tr>
             {(
               ["code", "priority", "type", "ai", "source", "location", "age", "reports"] as const

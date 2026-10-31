@@ -9,7 +9,7 @@ export function PlaceholderPage({ pageKey }: { pageKey: PageKey }) {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-2">
-      <h1 className="text-display-sm font-bold text-balance">{t(`pages.${pageKey}.title`)}</h1>
+      <h1 className="text-display-xs font-semibold text-ink text-balance">{t(`pages.${pageKey}.title`)}</h1>
       <Card>
         <CardHeader>
           <p className="text-body-lg font-medium">{t(`pages.${pageKey}.body`)}</p>

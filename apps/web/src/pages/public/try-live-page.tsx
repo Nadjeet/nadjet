@@ -88,11 +88,11 @@ export function TryLivePage() {
 
   return (
     <section className="flex flex-col gap-4 py-6">
-      <h1 className="text-display-sm font-bold text-balance">{t("pages.public.try.live.title")}</h1>
-      <p className="max-w-2xl text-body-lg text-muted-foreground">
+      <h1 className="text-display-xs font-semibold text-ink text-balance">{t("pages.public.try.live.title")}</h1>
+      <p className="max-w-2xl text-body-lg text-ink-muted">
         {t("pages.public.try.live.body")}
       </p>
-      <p className="rounded-xl border border-border bg-card p-4 text-body-sm text-muted-foreground">
+      <p className="rounded-xl border border-border bg-card p-4 text-body-sm text-ink-muted">
         {t("pages.public.try.consent.body")}
       </p>
       <video
@@ -135,7 +135,7 @@ export function TryLivePage() {
               <bdi dir="ltr" className="font-medium">
                 {new Date(event.at).toLocaleTimeString()}
               </bdi>{" "}
-              {event.label} <span className="text-muted-foreground">({event.source})</span>
+              {event.label} <span className="text-ink-muted">({event.source})</span>
             </li>
           ))}
         </ol>

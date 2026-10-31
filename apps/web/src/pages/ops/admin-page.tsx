@@ -70,7 +70,7 @@ function useList<T>(key: string, load: () => Promise<{ data?: T[]; error?: unkno
   });
 }
 
-const th = "py-2 pe-3 text-start font-medium text-muted-foreground";
+const th = "py-2 pe-3 text-start font-medium text-ink-muted";
 
 function Table({
   caption,
@@ -409,9 +409,7 @@ function UserRowView({ user }: { user: UserRow }) {
     <tr className="border-b border-border last:border-0">
       <th scope="row" className={cn(cell, "text-start font-medium")}>
         <bdi dir="ltr">{user.username}</bdi>
-        {user.active ? null : (
-          <span className="block text-muted-foreground">{t("admin.inactive")}</span>
-        )}
+        {user.active ? null : <span className="block text-ink-muted">{t("admin.inactive")}</span>}
       </th>
       <td className={cell}>
         <Input
@@ -645,8 +643,8 @@ export function AdminPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-display-sm font-bold text-balance">{t("admin.title")}</h1>
-        <p className="text-muted-foreground">{t("admin.intro")}</p>
+        <h1 className="text-display-xs font-semibold text-ink text-balance">{t("admin.title")}</h1>
+        <p className="text-ink-muted">{t("admin.intro")}</p>
       </div>
       <div className="flex flex-wrap gap-2" role="group" aria-label={t("admin.title")}>
         {TABS.map((id) => (
@@ -663,7 +661,7 @@ export function AdminPage() {
       </div>
       <Card>
         <CardHeader>
-          <h2 className="text-display-xs font-bold">{t(`admin.tabs.${tab}`)}</h2>
+          <h2 className="text-body-lg font-semibold text-ink">{t(`admin.tabs.${tab}`)}</h2>
         </CardHeader>
         <CardContent>
           {tab === "cameras" ? <CamerasTab /> : null}

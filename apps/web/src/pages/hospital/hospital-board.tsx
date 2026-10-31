@@ -51,8 +51,8 @@ export function HospitalBoard() {
   return (
     <div className="flex flex-col gap-6 text-body-lg">
       <header className="flex flex-wrap items-baseline justify-between gap-3">
-        <h1 className="text-display-sm font-bold">{facility.name}</h1>
-        <p className="text-body-lg text-muted-foreground">
+        <h1 className="text-display-xs font-semibold text-ink">{facility.name}</h1>
+        <p className="text-body-lg text-ink-muted">
           {t("hospital.incoming", { count: incoming.length })}
         </p>
       </header>
@@ -76,11 +76,11 @@ export function HospitalBoard() {
       />
 
       <section aria-labelledby="incoming-title" className="flex flex-col gap-4">
-        <h2 id="incoming-title" className="text-display-xs font-bold">
+        <h2 id="incoming-title" className="text-body-lg font-semibold text-ink">
           {t("hospital.incomingTitle")}
         </h2>
         {incoming.length === 0 ? (
-          <p className="text-muted-foreground">{t("hospital.none")}</p>
+          <p className="text-ink-muted">{t("hospital.none")}</p>
         ) : (
           <div className="grid gap-4 lg:grid-cols-2">
             {incoming.map((alert) => (
@@ -96,11 +96,11 @@ export function HospitalBoard() {
       </section>
 
       <section aria-labelledby="history-title" className="flex flex-col gap-3">
-        <h2 id="history-title" className="text-display-xs font-bold">
+        <h2 id="history-title" className="text-body-lg font-semibold text-ink">
           {t("hospital.historyTitle")}
         </h2>
         {history.length === 0 ? (
-          <p className="text-muted-foreground">{t("hospital.noHistory")}</p>
+          <p className="text-ink-muted">{t("hospital.noHistory")}</p>
         ) : (
           <ul className="flex flex-col gap-2">
             {history.map((alert) => (
@@ -114,7 +114,7 @@ export function HospitalBoard() {
                 <PriorityBadge level={alert.priority as PriorityLevel} compact />
                 <Badge variant="secondary">{t(`status.${alert.status}`)}</Badge>
                 <span>{t("hospital.historyVictims", { count: alert.victims.total })}</span>
-                <span className="text-muted-foreground">
+                <span className="text-ink-muted">
                   {t("hospital.card.dueAt", {
                     time: formatTime(alert.expected_arrival_at, i18n.language),
                   })}
