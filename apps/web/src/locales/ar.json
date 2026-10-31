@@ -83,7 +83,10 @@
     "unavailable": "الخريطة غير متاحة: شغّل make map-data ثم أعد تشغيل الواجهة البرمجية.",
     "zoomIn": "تكبير",
     "zoomOut": "تصغير",
-    "recenter": "إعادة التوسيط"
+    "recenter": "إعادة التوسيط",
+    "expand": "تكبير الخريطة",
+    "collapse": "إغلاق الخريطة الكبيرة",
+    "openDetails": "انقر للفتح"
   },
   "simulated": {
     "label": "بيانات محاكاة"
@@ -299,7 +302,9 @@
       "reviewNow": "مراجعة وتأكيد",
       "reject": "رفض",
       "manualCallNav": "تسجيل مكالمة",
-      "avgDetection": "متوسط الكشف: {{value}}"
+      "avgDetection": "متوسط الكشف: {{value}}",
+      "liveMap": "الخريطة العملياتية المباشرة",
+      "liveMapHint": "مرّر فوق حادث لرؤية ملخصه، وانقر لفتح صفحته."
     },
     "filters": {
       "status": "الحالة",
@@ -569,7 +574,28 @@
       "degraded": "متدهورة",
       "offline": "غير متصلة"
     },
-    "liveDemo": "عرض مباشر"
+    "liveDemo": "عرض مباشر",
+    "liveTag": "مباشر",
+    "emptySlot": "خانة فارغة",
+    "liveCount": "{{live}}/{{total}} مباشر",
+    "hint": "انقر مرتين على كاميرا لتكبيرها",
+    "layout": "تخطيط الجدار",
+    "layouts": {
+      "single": "كاميرا واحدة",
+      "grid4": "2 × 2",
+      "focus": "1 كبيرة + 3",
+      "grid9": "3 × 3"
+    },
+    "exitFullscreen": "الخروج من ملء الشاشة",
+    "list": "الكاميرات",
+    "search": "ابحث عن كاميرا أو طريق",
+    "aiUnavailable": "فيديو خام: مربعات الذكاء الاصطناعي غير متاحة",
+    "openCount_zero": "لا حوادث مفتوحة",
+    "openCount_one": "حادث مفتوح واحد",
+    "openCount_two": "حادثان مفتوحان",
+    "openCount_few": "{{count}} حوادث مفتوحة",
+    "openCount_many": "{{count}} حادثًا مفتوحًا",
+    "openCount_other": "{{count}} حادث مفتوح"
   },
   "kpis": {
     "title": "مؤشرات الاستجابة",

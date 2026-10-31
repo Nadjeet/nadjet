@@ -83,7 +83,10 @@
     "unavailable": "Basemap unavailable: run make map-data, then restart the API.",
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
-    "recenter": "Recenter"
+    "recenter": "Recenter",
+    "expand": "Expand map",
+    "collapse": "Close large map",
+    "openDetails": "Click to open"
   },
   "simulated": {
     "label": "Simulated data"
@@ -295,7 +298,9 @@
       "reviewNow": "Review & confirm",
       "reject": "Reject",
       "manualCallNav": "Manual incident call",
-      "avgDetection": "Avg detection: {{value}}"
+      "avgDetection": "Avg detection: {{value}}",
+      "liveMap": "Live operational map",
+      "liveMapHint": "Hover an incident for its summary, click it to open its page."
     },
     "filters": {
       "status": "Status",
@@ -561,7 +566,24 @@
       "degraded": "Degraded",
       "offline": "Offline"
     },
-    "liveDemo": "Live demo"
+    "liveDemo": "Live demo",
+    "liveTag": "LIVE",
+    "emptySlot": "Empty slot",
+    "liveCount": "{{live}}/{{total}} live",
+    "hint": "Double-click a camera to enlarge it",
+    "layout": "Wall layout",
+    "layouts": {
+      "single": "One camera",
+      "grid4": "2 × 2",
+      "focus": "1 large + 3",
+      "grid9": "3 × 3"
+    },
+    "exitFullscreen": "Exit full screen",
+    "list": "Cameras",
+    "search": "Search a camera or road",
+    "aiUnavailable": "Raw video: AI boxes unavailable",
+    "openCount_one": "{{count}} open incident",
+    "openCount_other": "{{count}} open incidents"
   },
   "kpis": {
     "title": "Response KPIs",
