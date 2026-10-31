@@ -99,7 +99,7 @@ def test_a_camera_with_overrides_on_an_evaluation_clip_stops_the_run(tmp_path: P
 def test_main_without_scorable_clips_exits_2_and_says_why(
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    code = run_eval.main(["--no-ai", "--videos", "/nonexistent"])
+    code = run_eval.main(["--no-ai", "--videos", "/nonexistent", "--demo-videos", "/nonexistent"])
     out = capsys.readouterr().out
     assert code == 2
     assert "No clip can be scored" in out and "crash annotation pending" in out
