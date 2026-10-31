@@ -29,7 +29,7 @@ export function AiStatusBadge({
         )}
       </span>
       {uncertain ? (
-        <span className="inline-flex items-center gap-1 rounded-full border border-dashed border-muted-foreground px-2 py-0.5 text-body-xs text-muted-foreground">
+        <span className="inline-flex items-center gap-1 rounded-sm border border-dashed border-ink-subtle px-1.5 py-0.5 text-body-xs text-ink-muted">
           <CircleHelpIcon aria-hidden className="size-3" />
           {t("ops.uncertain")}
         </span>

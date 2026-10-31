@@ -14,7 +14,7 @@ export function AiSourceTag({ source, className }: { source: AiSource; className
       data-slot="ai-source-tag"
       title={t("ai.sourceLabel")}
       className={cn(
-        "inline-flex max-w-full items-center gap-1.5 rounded-full bg-accent px-3 py-1 text-body-xs font-medium text-accent-foreground",
+        "inline-flex max-w-full items-center gap-1.5 rounded-sm bg-accent px-2 py-0.5 text-body-xs font-medium text-accent-foreground",
         className,
       )}
     >

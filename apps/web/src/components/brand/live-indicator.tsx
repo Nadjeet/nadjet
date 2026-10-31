@@ -16,8 +16,8 @@ export function LiveIndicator({ className }: { className?: string }) {
       data-status={status}
       title={t("live.label")}
       className={cn(
-        "inline-flex items-center gap-2 rounded-full px-3 py-1 text-body-xs font-medium",
-        live ? "bg-success text-white" : "bg-muted text-foreground ring-1 ring-border",
+        "inline-flex items-center gap-1.5 rounded-sm px-2 py-1 text-body-xs font-medium",
+        live ? "bg-success-soft text-success" : "bg-surface-strong text-ink-body ring-1 ring-border",
         className,
       )}
     >
