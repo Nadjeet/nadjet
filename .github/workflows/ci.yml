@@ -137,6 +137,8 @@ jobs:
         run: |
           status=0
           for sha in $(git rev-list --no-merges "origin/${{ github.base_ref }}..HEAD"); do
+            # Published commits that cannot be rewritten are listed with a reason.
+            if grep -q "^$sha " .github/commit-msg-exceptions; then continue; fi
             git log -1 --format=%B "$sha" > /tmp/msg
             python3 .githooks/commit-msg /tmp/msg || { echo "::error::commit $sha"; status=1; }
           done
