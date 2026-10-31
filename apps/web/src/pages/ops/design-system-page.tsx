@@ -102,6 +102,8 @@ export function DesignSystemPage() {
           ))}
           <div className="flex flex-wrap items-center gap-3">
             <Button variant="success">{t("design.success")}</Button>
+            <Button variant="success-solid">{t("design.success")}</Button>
+            <Button variant="neutral">{t("design.neutral")}</Button>
             <Button variant="destructive">{t("design.error")}</Button>
             <Button disabled>{t("design.disabled")}</Button>
             <Button loading>{t("design.loading")}</Button>

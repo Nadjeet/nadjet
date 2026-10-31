@@ -274,7 +274,8 @@
     "dialogTitle": "Confirmer l'action",
     "dialogBody": "Les boîtes de dialogue ont un rayon de 24 px, un titre et des actions claires.",
     "cancel": "Annuler",
-    "confirm": "Confirmer"
+    "confirm": "Confirmer",
+    "neutral": "Neutre"
   },
   "ops": {
     "console": {
