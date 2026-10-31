@@ -47,21 +47,16 @@
       ]
     },
     {
-      "id": "demo-crash-04",
+      "id": "demo-normal-01",
       "role": "demo",
-      "event": "crash",
-      "source_dataset": "Public traffic-camera crash compilation (Seattle street cameras, supplied by the team)",
-      "source_clip": "crash-3.mp4 (F-3 Busway & Royal Brougham, loss of control)",
+      "event": "normal",
+      "source_dataset": "Public traffic-camera footage (supplied by the team)",
+      "source_clip": "road.mp4 (overhead multi-lane road, normal traffic)",
       "licence": "unknown: local demo only, never redistributed (source URL to be added)",
       "licence_url": "to-be-added",
       "annotation_status": "pending",
-      "impact_time_s": 11.4,
-      "impact_region": [
-        200,
-        360,
-        220,
-        140
-      ]
+      "impact_time_s": null,
+      "impact_region": null
     }
   ]
 }

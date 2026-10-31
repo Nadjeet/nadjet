@@ -24,11 +24,11 @@ Pick clips with a fixed, roadside/overhead CCTV view. Demo clips are fixed by `d
 | `cam-a1-pk42` | `demo-crash-01` | crash (TAD) |
 | `cam-alg-rn5-bab-ezzouar` | `demo-crash-02` | crash at an urban crossing (team compilation, `crash-2`) |
 | `cam-a1-lakhdaria` | `demo-crash-03` | night crash into a roadside pole (team compilation, `crash-1`, first 21 s) |
-| `cam-alg-rocade-sud` | `demo-crash-04` | loss of control on the far carriageway (team compilation, `crash-3`) |
+| `cam-alg-rocade-sud` | `demo-normal-01` | normal multi-lane traffic, **no alert expected** (team clip, `road`) |
 
-The three compilation clips keep their originals in `data/videos/raw/source/` (git-ignored). `crash-1`
-is cut at 21 s, before the cross-fade to a later scene; nothing else is edited. Every clip starts
-with several seconds of normal traffic, which is the false-positive check before each impact.
+The team clips keep their originals in `data/videos/raw/source/` (git-ignored). `crash-1`
+is cut at 21 s, before the cross-fade to a later scene; nothing else is edited. `cam-alg-rocade-sud` is the
+false-positive control: it never shows a crash.
 
 Save each download as the raw file, keeping its original container:
 
