@@ -117,7 +117,7 @@ async def run(args: argparse.Namespace) -> int:
         print(*(f"  {p}" for p in problems), sep="\n", file=sys.stderr)
         return 3
     catalogue = load_catalogue(settings.cameras_file)
-    plans, skipped = plan_clips(heldout, catalogue, ROOT / "data/videos", args.videos, args.camera)
+    plans, skipped = plan_clips(heldout, catalogue, args.demo_videos, args.videos, args.camera)
     if not plans:
         print("No clip can be scored:", *(f"  {s.id}: {s.reason}" for s in skipped), sep="\n")
         return 2
@@ -229,6 +229,9 @@ def compare(first: Path, second: Path) -> int:
 def main(argv: Sequence[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     parser.add_argument("--videos", type=Path, default=ROOT / "data/eval", help="Eval-role clips")
+    parser.add_argument(
+        "--demo-videos", type=Path, default=ROOT / "data/videos", help="Demo camera clips"
+    )
     parser.add_argument("--camera", help="Camera id whose zones score clips with no camera")
     parser.add_argument("--out", type=Path, default=ROOT / "eval/results")
     parser.add_argument("--samples", type=int, default=1000, help="Bootstrap resamples")
