@@ -32,7 +32,7 @@
   --color-surface-soft: #f8fafc;
   --color-ink: #0f172a;
   --color-ink-body: #334155;
-  --color-ink-muted: #64748b;
+  --color-ink-muted: #596a80;
   --color-ink-subtle: #94a3b8;
   --color-line: #e2e8f0;
 
@@ -94,7 +94,7 @@
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
-  --muted-foreground: #64748b;
+  --muted-foreground: #596a80;
   --accent: #eff6ff;
   --accent-foreground: #006be0;
   --destructive: #dc2626;
