@@ -40,8 +40,8 @@ export function SystemStatusCard() {
                 <span
                   className={
                     dependency.ok
-                      ? "inline-flex items-center gap-1.5 font-medium text-success dark:text-emerald-400"
-                      : "inline-flex items-center gap-1.5 font-medium text-danger dark:text-red-400"
+                      ? "inline-flex items-center gap-1.5 font-medium text-success"
+                      : "inline-flex items-center gap-1.5 font-medium text-danger"
                   }
                 >
                   {dependency.ok ? (

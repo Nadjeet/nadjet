@@ -89,7 +89,7 @@ function CameraTile({
       {incidents.length > 0 ? (
         <p
           role="status"
-          className="flex items-center gap-2 text-body-sm font-medium text-danger dark:text-red-400"
+          className="flex items-center gap-2 text-body-sm font-medium text-danger"
         >
           <CircleAlertIcon aria-hidden className="size-4" />
           {t("cameras.incident", { codes: incidents.join(", ") })}

@@ -9,7 +9,6 @@ import { cn } from "@/lib/utils";
 
 import { SkipLink } from "./skip-link";
 import { usePublicManifest } from "./use-public-manifest";
-import { useSurfaceTheme } from "./use-surface-theme";
 
 const link =
   "rounded-full px-4 py-2 text-body-sm font-medium text-foreground transition-colors hover:bg-accent data-[status=active]:bg-accent data-[status=active]:text-accent-foreground";
@@ -17,7 +16,6 @@ const link =
 /** Public pages (no login): report, try it, privacy. Installable like the responder app. */
 export function PublicLayout() {
   const { t } = useTranslation();
-  useSurfaceTheme("light");
   usePublicManifest();
   return (
     <>

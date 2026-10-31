@@ -10,7 +10,6 @@ import { Card, CardDescription, CardHeader } from "@/components/ui/card";
 import { Field, FieldError, FieldGroup, FieldLabel } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { authStore, homeFor } from "@/lib/auth-store";
-import { useSurfaceTheme } from "@/layouts/use-surface-theme";
 
 type LoginError = "invalid" | "unavailable" | null;
 
@@ -20,7 +19,6 @@ export function LoginPage() {
   const navigate = useNavigate();
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<LoginError>(null);
-  useSurfaceTheme("light");
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
