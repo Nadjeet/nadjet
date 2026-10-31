@@ -78,24 +78,35 @@ async function webrtcLatency(pc: RTCPeerConnection): Promise<number | null> {
 /** Short-lived stream token (FR-SEC-007); `null` when the server does not require one. */
 export type StreamToken = string | null;
 
+/**
+ * Whether this attempt still owns the `<video>`. An attempt that was cancelled while it was
+ * connecting (React mounts effects twice in development; a camera can be remounted) must not
+ * attach to or clear the element: that blanked the newer attempt's picture while the tile kept
+ * saying "Live".
+ */
+export type Owns = () => boolean;
+
 export async function startWhep(
   url: string,
   video: HTMLVideoElement,
   token: StreamToken = null,
+  owns: Owns = () => true,
 ): Promise<Playback> {
   const pc = new RTCPeerConnection();
   const abort = new AbortController();
   let lose: () => void = () => {};
   const lost = new Promise<void>((resolve) => (lose = resolve));
+  let stream: MediaStream | null = null;
   const stop = () => {
     abort.abort();
     pc.close();
-    video.srcObject = null;
+    if (owns() && stream && video.srcObject === stream) video.srcObject = null;
   };
   try {
     pc.addTransceiver("video", { direction: "recvonly" });
     pc.ontrack = (event) => {
-      video.srcObject = event.streams[0] ?? null;
+      stream = event.streams[0] ?? null;
+      if (owns()) video.srcObject = stream;
     };
     await pc.setLocalDescription(await pc.createOffer());
     await iceGathered(pc);
@@ -129,15 +140,18 @@ export async function startHls(
   url: string,
   video: HTMLVideoElement,
   token: StreamToken = null,
+  owns: Owns = () => true,
 ): Promise<Playback> {
   let lose: () => void = () => {};
   const lost = new Promise<void>((resolve) => (lose = resolve));
+  if (!owns()) throw new Error("Playback cancelled");
 
   // Native HLS cannot add an Authorization header, so a token forces hls.js.
   if (!token && video.canPlayType("application/vnd.apple.mpegurl")) {
     // Safari plays HLS natively.
     video.src = url;
     const stop = () => {
+      if (!owns()) return;
       video.removeAttribute("src");
       video.load();
     };
@@ -161,7 +175,7 @@ export async function startHls(
   });
   const stop = () => {
     hls.destroy();
-    video.removeAttribute("src");
+    if (owns()) video.removeAttribute("src");
   };
   try {
     await withTimeout(
@@ -172,6 +186,7 @@ export async function startHls(
           lose();
         });
         video.addEventListener("playing", () => resolve(), { once: true });
+        if (!owns()) return reject(new Error("Playback cancelled"));
         hls.loadSource(url);
         hls.attachMedia(video);
         void video.play().catch(() => {});
