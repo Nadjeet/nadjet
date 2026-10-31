@@ -21,7 +21,7 @@ function median(values: number[]): number | null {
 }
 
 /** Figma KPI card (node 75:6384): 154 px, light blue title, arrow chip, 34 px figure, hint. */
-function KpiCard({
+export function KpiCard({
   title,
   value,
   hint,

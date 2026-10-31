@@ -36,44 +36,52 @@ export function ReadinessPanel({
   return (
     <section
       aria-labelledby="readiness-title"
-      className="flex flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-card"
+      className="flex flex-col gap-4 rounded-2xl bg-white p-5 shadow-card"
     >
-      <h2 id="readiness-title" className="text-body-xl font-bold">
+      <h2 id="readiness-title" className="text-body-md font-medium text-ink">
         {t("hospital.readiness.title")}
       </h2>
       <div className="flex flex-wrap items-stretch gap-3">
         <Button
           size="lg"
-          variant={state === "ready" ? "success" : "outline"}
+          variant={state === "ready" ? "success-solid" : "success"}
           aria-pressed={state === "ready"}
-          className="h-16 min-w-44 flex-1 text-body-xl"
+          className="min-w-36 flex-1"
           disabled={busy}
           onClick={() => state !== "ready" && setReadiness.mutate("ready")}
         >
-          <CircleCheckIcon aria-hidden className="size-6" />
+          <CircleCheckIcon aria-hidden className="size-5" />
           {t("hospital.readiness.ready")}
         </Button>
         <Button
           size="lg"
-          variant={state === "divert" ? "destructive" : "outline"}
+          variant={state === "divert" ? "destructive" : "neutral"}
           aria-pressed={state === "divert"}
-          className={cn("h-16 min-w-44 flex-1 text-body-xl")}
+          className="min-w-36 flex-1"
           disabled={busy}
           onClick={() => state !== "divert" && setConfirming(true)}
         >
-          <TriangleAlertIcon aria-hidden className="size-6" />
+          <TriangleAlertIcon aria-hidden className="size-5" />
           {t("hospital.readiness.divert")}
         </Button>
       </div>
-      <p role="status" className="text-body-lg font-medium">
+      <p
+        role="status"
+        className={cn(
+          "flex items-start gap-2 rounded-md px-3 py-2 text-body-sm",
+          state === "ready"
+            ? "bg-success-soft text-success-text"
+            : "bg-danger-soft text-danger-strong",
+        )}
+      >
         {state === "ready" ? t("hospital.readiness.nowReady") : t("hospital.readiness.nowDivert")}
       </p>
       {setReadiness.isError ? (
-        <p role="alert" className="text-body-md text-danger">
+        <p role="alert" className="text-body-sm text-danger-strong">
           {t("hospital.error")}
         </p>
       ) : null}
-      <p className="text-body-md text-ink-muted">
+      <p className="text-body-xs text-ink-muted">
         {t("hospital.readiness.sms")}{" "}
         <bdi dir="ltr" className="font-mono">
           H {exampleCode} READY

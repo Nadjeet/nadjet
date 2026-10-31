@@ -865,6 +865,17 @@
       "extrication": "Désincarcération nécessaire",
       "acknowledge": "Accuser réception de la pré-alerte",
       "acknowledged": "Reçue par {{name}} à {{time}}"
-    }
+    },
+    "kpi": {
+      "incoming": "Groupes de patients attendus",
+      "incomingHint": "Pré-alertes envoyées par la régulation",
+      "victims": "Victimes en route",
+      "victimsHint": "Saisies par les équipes (START)",
+      "next": "Prochaine arrivée",
+      "nextHint": "D'après l'ETA de l'itinéraire",
+      "state": "État de l'hôpital",
+      "stateHint": "Utilisé pour classer les hôpitaux"
+    },
+    "welcome": "Hôpital receveur"
   }
 }
