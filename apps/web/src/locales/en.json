@@ -865,6 +865,17 @@
       "extrication": "Extrication needed",
       "acknowledge": "Acknowledge pre-alert",
       "acknowledged": "Acknowledged by {{name}} at {{time}}"
-    }
+    },
+    "kpi": {
+      "incoming": "Incoming patient groups",
+      "incomingHint": "Pre-alerts sent by dispatch",
+      "victims": "Victims en route",
+      "victimsHint": "Recorded by the crews (START)",
+      "next": "Next arrival",
+      "nextHint": "From the unit route ETA",
+      "state": "Hospital status",
+      "stateHint": "Used to rank hospitals at dispatch"
+    },
+    "welcome": "Receiving hospital"
   }
 }
