@@ -1,4 +1,4 @@
-import { MessageSquareIcon } from "lucide-react";
+import { MessageSquareTextIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { Button } from "@/components/ui/button";
@@ -29,8 +29,8 @@ export function SmsButton({
     <div className="flex flex-col gap-1">
       <Button asChild variant="outline" size={size} className="w-full">
         <a href={smsUri(number, body)}>
-          <MessageSquareIcon aria-hidden />
-          {t("respond.sms.send")}
+          <MessageSquareTextIcon aria-hidden />
+          {t("respond.sms.fallback")}
         </a>
       </Button>
       <p className="text-body-xs text-ink-muted">

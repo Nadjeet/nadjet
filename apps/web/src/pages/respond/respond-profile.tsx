@@ -8,8 +8,8 @@ import { PendingActions } from "./pending-actions";
 
 function Block({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <section className="flex flex-col gap-3 rounded-2xl border border-border bg-card p-4">
-      <h2 className="text-body-md font-bold">{title}</h2>
+    <section className="flex flex-col gap-3 rounded-xl border border-brand-200 bg-white p-4 shadow-soft">
+      <h2 className="text-body-md font-semibold text-[#1a1c1c]">{title}</h2>
       {children}
     </section>
   );
@@ -22,7 +22,9 @@ export function RespondProfile() {
   const gateway = useSmsGateway();
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-body-lg font-semibold text-ink">{t("respond.profile.title")}</h1>
+      <h1 className="text-body-xl leading-7 font-semibold text-[#1a1c1c]">
+        {t("respond.profile.title")}
+      </h1>
       {user ? (
         <p className="text-body-md">
           {user.display_name}

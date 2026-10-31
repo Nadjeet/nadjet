@@ -723,7 +723,7 @@
       "loadError": "The incidents could not be loaded.",
       "subtitle": "Missions assigned to your agency",
       "openMission": "Open mission",
-      "map": "Incidents map",
+      "map": "Incidents Map",
       "others": "Other missions"
     },
     "alerts": {
@@ -757,8 +757,9 @@
       "missionLabel": "Mission details",
       "mission": "Mission #{{code}}",
       "progress": "Mission progress",
-      "map": "Map",
-      "visual": "Incident visual"
+      "map": "Incidents Map",
+      "visual": "Incident Visual",
+      "progressTitle": "Mission Progress"
     },
     "action": {
       "title": "Status",
@@ -804,7 +805,8 @@
     "sms": {
       "send": "Send by SMS",
       "body": "Opens your SMS app with this message ready:",
-      "noNumber": "The SMS number is not set up."
+      "noNumber": "The SMS number is not set up.",
+      "fallback": "SMS Fallback"
     },
     "pending": {
       "title": "Waiting to be sent",
@@ -820,7 +822,15 @@
       "gateway": "SMS fallback number",
       "queue": "Offline queue",
       "queueHint": "Actions taken without a connection wait here and are sent once, in order, when it returns."
-    }
+    },
+    "nav": {
+      "home": "Home",
+      "progress": "Progress",
+      "triage": "Triage",
+      "profile": "Profile"
+    },
+    "menu": "Menu",
+    "noActive": "No active mission. New missions appear on Home."
   },
   "hospital": {
     "incomingTitle": "Incoming patients",

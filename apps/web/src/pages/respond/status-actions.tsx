@@ -1,5 +1,5 @@
 import { useQueryClient } from "@tanstack/react-query";
-import { CheckIcon, CircleDotIcon, CircleIcon } from "lucide-react";
+import { AmbulanceIcon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
@@ -17,18 +17,12 @@ import type { IncidentDetail } from "@/lib/incident-queries";
 import { submitAction } from "@/lib/responder-actions";
 import { statusSms, type ResponderStatus } from "@/lib/sms-codes";
 import { usePendingActions } from "@/lib/use-pending";
-import { cn } from "@/lib/utils";
 
 import { SmsButton } from "./sms-button";
 
-const STEPS: ResponderStatus[] = [
-  "acknowledged",
-  "en_route",
-  "on_scene",
-  "transporting",
-  "at_hospital",
-  "closed",
-];
+/** Icon of the next-step button (Figma "Start Transport to Hospital" uses an ambulance). */
+const NEXT_ICON = AmbulanceIcon;
+
 const NEXT: Record<string, ResponderStatus | undefined> = {
   dispatched: "acknowledged",
   acknowledged: "en_route",
@@ -57,7 +51,6 @@ export function StatusActions({ incident }: { incident: IncidentDetail }) {
   const last = [...pending].reverse().find((a) => a.kind === "status");
   const effective = last?.kind === "status" ? last.status : incident.status;
   const next = NEXT[effective];
-  const reached = STEPS.indexOf(effective as ResponderStatus);
 
   async function send(status: ResponderStatus) {
     setBusy(true);
@@ -82,44 +75,17 @@ export function StatusActions({ incident }: { incident: IncidentDetail }) {
     return <p className="text-body-md font-medium">{t("respond.action.done")}</p>;
   }
   return (
-    <section aria-labelledby="status-title" className="flex flex-col gap-3">
-      <h2 id="status-title" className="text-body-md font-bold">
-        {t("respond.action.title")}
-      </h2>
-      <ol className="flex flex-wrap gap-1.5">
-        {STEPS.map((step, index) => {
-          const done = index < reached;
-          const current = index === reached;
-          const Icon = done ? CheckIcon : current ? CircleDotIcon : CircleIcon;
-          return (
-            <li
-              key={step}
-              aria-current={current ? "step" : undefined}
-              className={cn(
-                "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-body-xs",
-                current ? "border-primary font-bold" : "border-border text-ink-muted",
-              )}
-            >
-              <Icon aria-hidden className="size-3" />
-              {t(`respond.action.${step}`)}
-            </li>
-          );
-        })}
-      </ol>
+    <section aria-label={t("respond.action.title")} className="flex flex-col gap-3">
       {next ? (
-        <Button
-          size="lg"
-          className="h-14 w-full text-body-lg"
-          disabled={busy}
-          onClick={() => press(next)}
-        >
+        <Button variant="gradient" className="w-full" disabled={busy} onClick={() => press(next)}>
+          <NEXT_ICON aria-hidden />
           {busy ? t("respond.action.sending") : t(`respond.action.${next}`)}
         </Button>
       ) : (
         <p className="text-body-sm text-ink-muted">{t("respond.action.waiting")}</p>
       )}
       {effective === "on_scene" ? (
-        <Button variant="outline" disabled={busy} onClick={() => press("closed")}>
+        <Button variant="neutral" disabled={busy} onClick={() => press("closed")}>
           {t("respond.action.closeNoTransport")}
         </Button>
       ) : null}
@@ -142,7 +108,7 @@ export function StatusActions({ incident }: { incident: IncidentDetail }) {
             <Button variant="ghost" onClick={() => setConfirming(null)}>
               {t("respond.action.cancel")}
             </Button>
-            <Button disabled={busy} onClick={() => void send("closed")}>
+            <Button variant="gradient" disabled={busy} onClick={() => void send("closed")}>
               {t("respond.action.confirm")}
             </Button>
           </DialogFooter>
