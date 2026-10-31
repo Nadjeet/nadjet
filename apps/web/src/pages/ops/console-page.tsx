@@ -1,9 +1,14 @@
 import { useNavigate } from "@tanstack/react-router";
-import { PlusIcon, XIcon } from "lucide-react";
+import {
+  PhoneCallIcon,
+  PlusIcon,
+  ShieldCheckIcon,
+  SlidersHorizontalIcon,
+  XIcon,
+} from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
-import { LiveIndicator } from "@/components/brand/live-indicator";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SimulatedLabel } from "@/components/incident/simulated-label";
@@ -15,20 +20,29 @@ import {
   useMapResources,
   type QueueFilters,
 } from "@/lib/incident-queries";
-import { IncidentQueue, QueueFiltersBar } from "./incident/incident-queue";
+import { InspectPanel } from "./console/inspect-panel";
+import { KpiRibbon } from "./console/kpi-ribbon";
+import { PriorityTabs, QueueCards } from "./console/queue-cards";
+import { QueueFiltersBar } from "./incident/incident-queue";
 import { NewIncidentDialog } from "./incident/new-incident-dialog";
 import { OpsMap, type PickedPoint } from "./incident/ops-map";
 import { SystemStatusCard } from "./system-status-card";
 
 const CAN_CREATE = new Set(["operator", "supervisor", "admin"]);
 
-/** Operator console: live incident queue next to the live map (FR-MAP-001, FR-MAP-002). */
+/**
+ * Operator console, Figma "control" dashboard: KPI ribbon, then queue cards, live map and the
+ * inspect panel side by side, then the audit strip (FR-MAP-001, FR-MAP-002, NFR-SAFE-001).
+ */
 export function ConsolePage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const role = useSession()?.user.role;
   const [filters, setFilters] = useState<QueueFilters>({ status: "open" });
   const incidents = useIncidents(filters);
+  const openIncidents = useIncidents({ status: "open" });
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
   const cameras = useCameras();
   const resources = useMapResources();
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -62,14 +76,16 @@ export function ConsolePage() {
     (resources.data?.facilities ?? []).some((f) => f.simulated) ||
     (resources.data?.units ?? []).some((u) => u.simulated);
 
+  const selected = items.find((incident) => incident.id === selectedId) ?? items[0] ?? null;
+  const canCreate = role !== undefined && CAN_CREATE.has(role);
+
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-6">
       <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-display-sm font-bold">{t("ops.console.title")}</h1>
+        <h1 className="text-display-xs font-semibold text-ink">{t("ops.console.title")}</h1>
         <div className="flex flex-wrap items-center gap-3">
-          <LiveIndicator />
           {hasSimulated ? <SimulatedLabel /> : null}
-          {role && CAN_CREATE.has(role) ? (
+          {canCreate ? (
             <Button onClick={() => setDialogOpen(true)}>
               <PlusIcon aria-hidden />
               {t("ops.console.newIncident")}
@@ -78,34 +94,72 @@ export function ConsolePage() {
         </div>
       </header>
 
-      <div className="grid gap-4 xl:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
-        <section aria-labelledby="queue-title" className="flex min-w-0 flex-col gap-3">
-          <h2 id="queue-title" className="text-display-xs font-bold">
-            {t("ops.console.queue")}
-            {incidents.data ? (
-              <span className="ms-2 text-body-md font-normal text-muted-foreground">
-                {t("ops.console.count", { count: incidents.data.total })}
-              </span>
+      <KpiRibbon open={openIncidents.data?.items} resources={resources.data} />
+
+      <div className="grid gap-6 xl:grid-cols-12">
+        <section
+          aria-labelledby="queue-title"
+          className="flex min-w-0 flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-card xl:col-span-3 xl:max-h-[calc(100dvh-10rem)]"
+        >
+          <div className="flex items-center justify-between gap-2 border-b border-border pb-3">
+            <h2 id="queue-title" className="flex items-center gap-1 text-body-lg font-semibold">
+              {t("ops.console.queue")}
+              {incidents.data ? (
+                <span className="relative -top-2 grid min-w-4 place-items-center rounded-full bg-danger px-1 text-[0.625rem] font-semibold text-white">
+                  {incidents.data.total}
+                  <span className="sr-only">
+                    {t("ops.console.count", { count: incidents.data.total })}
+                  </span>
+                </span>
+              ) : null}
+            </h2>
+            <Button
+              variant="ghost"
+              size="icon-xs"
+              aria-expanded={showFilters}
+              aria-label={t("ops.console.moreFilters")}
+              title={t("ops.console.moreFilters")}
+              onClick={() => setShowFilters((value) => !value)}
+            >
+              <SlidersHorizontalIcon aria-hidden />
+            </Button>
+          </div>
+          <PriorityTabs filters={filters} onChange={setFilters} />
+          {showFilters ? <QueueFiltersBar filters={filters} onChange={setFilters} /> : null}
+          <div className="-me-2 min-h-0 flex-1 overflow-y-auto pe-2">
+            {incidents.isPending ? <Skeleton className="h-40 w-full" /> : null}
+            {incidents.isError ? (
+              <p role="alert" className="text-body-sm">
+                {t("ops.console.loadError")}{" "}
+                <Button variant="link" onClick={() => void incidents.refetch()}>
+                  {t("common.retry")}
+                </Button>
+              </p>
             ) : null}
-          </h2>
-          <QueueFiltersBar filters={filters} onChange={setFilters} />
-          {incidents.isPending ? <Skeleton className="h-40 w-full" /> : null}
-          {incidents.isError ? (
-            <p role="alert">
-              {t("ops.console.loadError")}{" "}
-              <Button variant="link" onClick={() => void incidents.refetch()}>
-                {t("common.retry")}
-              </Button>
-            </p>
+            {incidents.data && items.length === 0 ? (
+              <p className="text-body-sm text-ink-muted">{t("ops.console.empty")}</p>
+            ) : null}
+            {items.length > 0 ? (
+              <QueueCards
+                incidents={items}
+                selectedId={selected?.id ?? null}
+                onSelect={setSelectedId}
+              />
+            ) : null}
+          </div>
+          {canCreate ? (
+            <Button variant="success-solid" className="w-full" onClick={() => setDialogOpen(true)}>
+              <PhoneCallIcon aria-hidden />
+              {t("ops.console.manualCall")}
+            </Button>
           ) : null}
-          {incidents.data && items.length === 0 ? (
-            <p className="text-muted-foreground">{t("ops.console.empty")}</p>
-          ) : null}
-          {items.length > 0 ? <IncidentQueue incidents={items} /> : null}
         </section>
 
-        <section aria-labelledby="map-title" className="flex min-w-0 flex-col gap-3">
-          <h2 id="map-title" className="text-display-xs font-bold">
+        <section
+          aria-labelledby="map-title"
+          className="flex min-w-0 flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-card xl:col-span-6"
+        >
+          <h2 id="map-title" className="text-body-lg font-semibold">
             {t("ops.console.map")}
           </h2>
           {pickMode ? (
@@ -128,7 +182,7 @@ export function ConsolePage() {
             </p>
           ) : null}
           <OpsMap
-            className="h-[28rem] overflow-hidden rounded-lg border border-border xl:h-[calc(100dvh-14rem)]"
+            className="h-[28rem] overflow-hidden rounded-lg border border-border xl:h-auto xl:min-h-[34rem] xl:flex-1"
             incidents={items}
             cameras={cameras.data ?? []}
             resources={resources.data}
@@ -137,9 +191,32 @@ export function ConsolePage() {
             onSelectIncident={open}
             onPick={onPick}
           />
-          <p className="text-body-xs text-muted-foreground">{t("ops.console.mapLegend")}</p>
+          <p className="text-body-xs text-ink-muted">{t("ops.console.mapLegend")}</p>
+        </section>
+
+        <section
+          aria-labelledby="inspect-title"
+          className="flex min-w-0 flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-card xl:col-span-3"
+        >
+          <h2 id="inspect-title" className="text-body-lg font-semibold">
+            {t("ops.console.inspect")}
+          </h2>
+          <InspectPanel incident={selected} cameras={cameras.data ?? []} />
         </section>
       </div>
+
+      <footer className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card px-5 py-4 shadow-card">
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-body-xs text-ink-body">
+          <span className="inline-flex items-center gap-1.5 font-medium">
+            <ShieldCheckIcon aria-hidden className="size-4 text-brand-indigo" />
+            {t("ops.console.humanGate")}
+          </span>
+          <span className="text-ink-muted">{t("ops.console.humanGateHint")}</span>
+        </p>
+        <span className="rounded-md bg-surface-strong px-2 py-1 text-body-xs text-ink-body">
+          {t("ops.console.standards")}
+        </span>
+      </footer>
 
       <NewIncidentDialog
         open={dialogOpen}
