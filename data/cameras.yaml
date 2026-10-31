@@ -30,7 +30,7 @@ cameras:
   - id: cam-alg-rocade-sud
     name: "Rocade Sud - Algiers"
     video: cam-alg-rocade-sud.mp4
-    clip_id: demo-crash-04
+    clip_id: demo-normal-01
     geo: { lat: 36.7130, lon: 3.0600 }
     road: Rocade Sud
     heading_deg: 0
