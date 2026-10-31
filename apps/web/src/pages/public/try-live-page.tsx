@@ -122,7 +122,7 @@ export function TryLivePage() {
       {error ? (
         <p
           role="alert"
-          className="flex items-center gap-2 font-medium text-danger dark:text-red-400"
+          className="flex items-center gap-2 font-medium text-danger"
         >
           <CircleAlertIcon aria-hidden className="size-4" />
           {error}

@@ -16,7 +16,6 @@ import { LiveEventsProvider } from "@/live/live-events-provider";
 
 import { AccountActions } from "./account-actions";
 import { SkipLink } from "./skip-link";
-import { useSurfaceTheme } from "./use-surface-theme";
 
 const link =
   "flex min-h-11 items-center gap-3 rounded-full px-4 py-2 text-body-sm font-medium whitespace-nowrap text-sidebar-foreground transition-colors hover:bg-sidebar-accent data-[status=active]:bg-sidebar-primary data-[status=active]:text-sidebar-primary-foreground";
@@ -24,7 +23,6 @@ const link =
 /** Operator console shell (operator, supervisor, auditor, admin): dark theme, side navigation. */
 export function OpsLayout() {
   const { t } = useTranslation();
-  useSurfaceTheme("dark");
   const role = authStore.current()?.user.role;
   const analyst = role === "supervisor" || role === "admin";
   return (

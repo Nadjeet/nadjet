@@ -8,7 +8,6 @@ import { LiveEventsProvider } from "@/live/live-events-provider";
 
 import { AccountActions } from "./account-actions";
 import { SkipLink } from "./skip-link";
-import { useSurfaceTheme } from "./use-surface-theme";
 
 export type PhoneNavItem = {
   to: "/respond" | "/respond/profile" | "/hospital";
@@ -34,7 +33,6 @@ export function PhoneShell({
   wide?: boolean;
 }) {
   const { t } = useTranslation();
-  useSurfaceTheme("light");
   return (
     <LiveEventsProvider>
       <SkipLink />

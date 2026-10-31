@@ -51,7 +51,7 @@ function Result({ job, onDelete }: { job: TryJob; onDelete: () => void }) {
       {!result.ai_available ? (
         <p
           role="alert"
-          className="flex items-center gap-2 rounded-lg border border-danger p-3 font-medium text-danger dark:text-red-400"
+          className="flex items-center gap-2 rounded-lg border border-danger p-3 font-medium text-danger"
         >
           <CircleAlertIcon aria-hidden className="size-4" />
           {t("pages.public.try.aiUnavailable")}
@@ -187,7 +187,7 @@ export function TryPage() {
       {status.data && !status.data.ai_available ? (
         <p
           role="status"
-          className="flex items-center gap-2 font-medium text-danger dark:text-red-400"
+          className="flex items-center gap-2 font-medium text-danger"
         >
           <CircleAlertIcon aria-hidden className="size-4" />
           {t("pages.public.try.aiUnavailable")}
@@ -219,7 +219,7 @@ export function TryPage() {
         </Link>
       </div>
       {error ? (
-        <p role="alert" className="font-medium text-danger dark:text-red-400">
+        <p role="alert" className="font-medium text-danger">
           {t(`pages.public.try.errors.${error.kind}`, {
             seconds: status.data?.max_seconds ?? 60,
             mb: status.data?.max_mb ?? 100,
@@ -238,7 +238,7 @@ export function TryPage() {
         </div>
       ) : null}
       {job && (job.status === "failed" || job.status === "rejected") ? (
-        <p role="alert" className="font-medium text-danger dark:text-red-400">
+        <p role="alert" className="font-medium text-danger">
           {job.error ?? t("pages.public.try.errors.failed")}
         </p>
       ) : null}
