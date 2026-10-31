@@ -14,7 +14,11 @@
     "skipToContent": "Aller au contenu",
     "mainNavigation": "Navigation principale",
     "signedInAs": "Connecté en tant que {{name}}",
-    "close": "Fermer"
+    "close": "Fermer",
+    "welcomeBack": "Bon retour",
+    "searchIncident": "Trouver un incident par son code",
+    "searchSubmit": "Ouvrir l'incident",
+    "searchNotFound": "Aucun incident avec le code {{code}}"
   },
   "surface": {
     "ops": "Console opérateur",
@@ -37,7 +41,12 @@
     "incidents": "Incidents",
     "kpis": "Indicateurs de réponse",
     "evaluation": "Évaluation de l'IA",
-    "admin": "Administration"
+    "admin": "Administration",
+    "sections": {
+      "operations": "Opérations tactiques",
+      "analytics": "Analyses",
+      "platform": "Plateforme"
+    }
   },
   "login": {
     "title": "Connexion",

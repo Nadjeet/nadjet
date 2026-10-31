@@ -14,7 +14,11 @@
     "skipToContent": "انتقل إلى المحتوى",
     "mainNavigation": "التنقل الرئيسي",
     "signedInAs": "مسجَّل الدخول باسم {{name}}",
-    "close": "إغلاق"
+    "close": "إغلاق",
+    "welcomeBack": "مرحبًا بعودتك",
+    "searchIncident": "ابحث عن حادث برمزه",
+    "searchSubmit": "فتح الحادث",
+    "searchNotFound": "لا يوجد حادث بالرمز {{code}}"
   },
   "surface": {
     "ops": "لوحة المشغّل",
@@ -37,7 +41,12 @@
     "incidents": "الحوادث",
     "kpis": "مؤشرات الاستجابة",
     "evaluation": "تقييم الذكاء الاصطناعي",
-    "admin": "الإدارة"
+    "admin": "الإدارة",
+    "sections": {
+      "operations": "العمليات الميدانية",
+      "analytics": "التحليلات",
+      "platform": "المنصة"
+    }
   },
   "login": {
     "title": "تسجيل الدخول",

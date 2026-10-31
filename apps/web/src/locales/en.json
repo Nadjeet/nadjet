@@ -14,7 +14,11 @@
     "skipToContent": "Skip to content",
     "mainNavigation": "Main navigation",
     "signedInAs": "Signed in as {{name}}",
-    "close": "Close"
+    "close": "Close",
+    "welcomeBack": "Welcome back",
+    "searchIncident": "Find an incident by code",
+    "searchSubmit": "Open incident",
+    "searchNotFound": "No incident with code {{code}}"
   },
   "surface": {
     "ops": "Operator console",
@@ -37,7 +41,12 @@
     "incidents": "Incidents",
     "kpis": "Response KPIs",
     "evaluation": "AI evaluation",
-    "admin": "Administration"
+    "admin": "Administration",
+    "sections": {
+      "operations": "Tactical operations",
+      "analytics": "Analytics",
+      "platform": "Platform"
+    }
   },
   "login": {
     "title": "Sign in",
