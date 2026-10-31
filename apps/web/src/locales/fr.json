@@ -729,7 +729,11 @@
     "list": {
       "title": "Mes incidents",
       "empty": "Aucun incident n'est affecté à votre service.",
-      "loadError": "Les incidents n'ont pas pu être chargés."
+      "loadError": "Les incidents n'ont pas pu être chargés.",
+      "subtitle": "Missions confiées à votre service",
+      "openMission": "Ouvrir la mission",
+      "map": "Carte des incidents",
+      "others": "Autres missions"
     },
     "alerts": {
       "enable": "Activer les alertes",
@@ -758,7 +762,12 @@
       "evidence": "Preuves",
       "notFound": "Cet incident n'existe pas ou n'est pas affecté à votre service.",
       "trapped": "Une personne est coincée",
-      "people": "{{count}} personnes signalées"
+      "people": "{{count}} personnes signalées",
+      "missionLabel": "Détails de la mission",
+      "mission": "Mission n° {{code}}",
+      "progress": "Avancement de la mission",
+      "map": "Carte",
+      "visual": "Images de l'incident"
     },
     "action": {
       "title": "Statut",

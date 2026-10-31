@@ -729,7 +729,11 @@
     "list": {
       "title": "My incidents",
       "empty": "No incident is assigned to your agency.",
-      "loadError": "The incidents could not be loaded."
+      "loadError": "The incidents could not be loaded.",
+      "subtitle": "Missions assigned to your agency",
+      "openMission": "Open mission",
+      "map": "Incidents map",
+      "others": "Other missions"
     },
     "alerts": {
       "enable": "Enable alerts",
@@ -758,7 +762,12 @@
       "evidence": "Evidence",
       "notFound": "This incident does not exist or is not assigned to your agency.",
       "trapped": "Someone is trapped",
-      "people": "{{count}} people reported"
+      "people": "{{count}} people reported",
+      "missionLabel": "Mission details",
+      "mission": "Mission #{{code}}",
+      "progress": "Mission progress",
+      "map": "Map",
+      "visual": "Incident visual"
     },
     "action": {
       "title": "Status",
