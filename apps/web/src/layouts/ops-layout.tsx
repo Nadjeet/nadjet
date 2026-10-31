@@ -4,7 +4,6 @@ import {
   BarChart3Icon,
   FlaskConicalIcon,
   LayoutDashboardIcon,
-  PaletteIcon,
   UsersIcon,
   VideoIcon,
   type LucideIcon,
@@ -21,13 +20,7 @@ import { OpsAccount } from "./ops-account";
 import { SkipLink } from "./skip-link";
 
 type NavTarget =
-  | "/ops"
-  | "/ops/cameras"
-  | "/ops/system"
-  | "/ops/kpis"
-  | "/ops/evaluation"
-  | "/ops/admin"
-  | "/ops/design";
+  "/ops" | "/ops/cameras" | "/ops/system" | "/ops/kpis" | "/ops/evaluation" | "/ops/admin";
 
 type NavItem = { to: NavTarget; label: string; icon: LucideIcon; exact?: boolean };
 
@@ -82,7 +75,6 @@ export function OpsLayout() {
     ...(role === "admin"
       ? [{ to: "/ops/admin", label: t("nav.admin"), icon: UsersIcon } as NavItem]
       : []),
-    { to: "/ops/design", label: t("nav.design"), icon: PaletteIcon },
   ];
 
   return (
