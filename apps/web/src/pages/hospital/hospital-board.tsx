@@ -51,12 +51,7 @@ export function HospitalBoard() {
   return (
     <div className="flex flex-col gap-6 text-body-lg">
       <header className="flex flex-wrap items-end justify-between gap-3">
-        <div className="flex min-w-0 flex-col leading-tight">
-          <span className="text-body-xs font-medium tracking-[0.5px] text-ink-muted uppercase">
-            {t("surface.hospital")}
-          </span>
-          <h1 className="text-display-xs font-semibold text-ink">{facility.name}</h1>
-        </div>
+        <h1 className="min-w-0 text-display-xs font-semibold text-ink">{facility.name}</h1>
         <p className="rounded-full bg-accent px-3 py-1 text-body-sm font-medium text-primary">
           {t("hospital.incoming", { count: incoming.length })}
         </p>
