@@ -57,8 +57,7 @@ Source: the Nadjet Figma file "najat": the design-system page (Colors, Typograph
 buttons, Inputs, check box, Cards, Modals, Dropdowns, icons) and the designer's screens
 ("control" dashboard, "app" mission, progress and home). The Figma components use a purple
 primary; Nadjet uses the brand blue everywhere, as the designer's screens do. **Light mode
-only**: there is no dark theme. Tokens live in `src/index.css`; `/ops/design` renders every
-component. Decisions: `docs/11-technical-decisions.md` TD-54.
+only**: there is no dark theme. Tokens live in `src/index.css`. Decisions: `docs/11-technical-decisions.md` TD-54.
 
 - **Brand blue** `brand-100…900`: `#aad4ff #80beff #55a8fe #2a93fe #007dfe #006be0 #003f7f #002a55 #00152a`.
   `brand-500` `#007dfe` is the Figma primary; white on it is only 3.9:1, so it is kept for the

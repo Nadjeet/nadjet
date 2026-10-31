@@ -17,7 +17,6 @@ import { LoginPage } from "@/pages/login-page";
 import { NotFound } from "@/pages/not-found";
 import { AdminPage } from "@/pages/ops/admin-page";
 import { CameraWall } from "@/pages/ops/camera-wall";
-import { DesignSystemPage } from "@/pages/ops/design-system-page";
 import { ConsolePage } from "@/pages/ops/console-page";
 import { EvaluationPage } from "@/pages/ops/evaluation-page";
 import { IncidentDetailPage } from "@/pages/ops/incident/incident-detail-page";
@@ -119,7 +118,6 @@ const opsRoutes = [
     beforeLoad: requireRoles("admin"),
     component: AdminPage,
   }),
-  createRoute({ getParentRoute: () => opsRoute, path: "design", component: DesignSystemPage }),
 ];
 
 // ---- responder app
