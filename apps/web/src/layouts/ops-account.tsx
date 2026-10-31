@@ -1,11 +1,11 @@
 import { LogOutIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import { Avatar } from "@/components/brand/avatar";
 import { LanguagePicker } from "@/components/brand/language-picker";
 import { LiveIndicator } from "@/components/brand/live-indicator";
 import { Button } from "@/components/ui/button";
 import { authStore, useSession } from "@/lib/auth-store";
-import { initials } from "@/lib/initials";
 
 /** Figma "Welcome back" block: avatar, greeting and name, plus live status, language, sign-out. */
 export function OpsAccount() {
@@ -18,15 +18,12 @@ export function OpsAccount() {
       {session ? (
         <>
           <div className="flex items-center gap-3 ps-1">
-            <span
-              aria-hidden
-              className="grid size-10 place-items-center rounded-full bg-[linear-gradient(135deg,#3568f5,#55a8fe)] text-body-sm font-semibold text-white"
-            >
-              {initials(session.user.display_name)}
-            </span>
-            <span className="hidden flex-col leading-tight sm:flex">
-              <span className="text-body-xs text-ink-muted">{t("common.welcomeBack")}</span>
-              <span className="text-body-md font-semibold text-ink">
+            <Avatar />
+            <span className="hidden flex-col leading-5 sm:flex">
+              <span className="text-body-xs font-medium text-ink-muted">
+                {t("common.welcomeBack")}
+              </span>
+              <span className="text-body-sm font-medium text-[#081021]">
                 {session.user.display_name}
               </span>
             </span>

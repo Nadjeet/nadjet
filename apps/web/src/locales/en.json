@@ -280,7 +280,22 @@
       "details": "Details",
       "humanGate": "Human verification active",
       "humanGateHint": "The AI never dispatches on its own.",
-      "standards": "CAP 1.2 alerts · Law 18-07 / 25-11"
+      "standards": "CAP 1.2 alerts · Law 18-07 / 25-11",
+      "liveRoutes": "Live routes",
+      "viewRoute": "Route",
+      "viewAll": "All incidents",
+      "statStatus": "Status",
+      "statUnit": "Unit ETA",
+      "statHospital": "Hospital",
+      "notDispatched": "Not dispatched",
+      "minutes": "{{count}} min",
+      "accepting": "Accepting patients",
+      "diverting": "Diverting",
+      "dispatchNow": "Dispatch now",
+      "reviewNow": "Review & confirm",
+      "reject": "Reject",
+      "manualCallNav": "Manual incident call",
+      "avgDetection": "Avg detection: {{value}}"
     },
     "filters": {
       "status": "Status",
@@ -402,7 +417,9 @@
       "failed": "The file could not be loaded."
     },
     "signals": {
-      "none": "No rule signals recorded."
+      "none": "No rule signals recorded.",
+      "vehicles_one": "{{count}} vehicle",
+      "vehicles_other": "{{count}} vehicles"
     },
     "flags": {
       "to_assess": "To assess",

@@ -1,8 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import {
   PhoneCallIcon,
-  PlusIcon,
-  ShieldCheckIcon,
   SlidersHorizontalIcon,
   XIcon,
 } from "lucide-react";
@@ -21,11 +19,12 @@ import {
   type QueueFilters,
 } from "@/lib/incident-queries";
 import { InspectPanel } from "./console/inspect-panel";
+import { LiveRoutes } from "./console/live-routes";
 import { KpiRibbon } from "./console/kpi-ribbon";
 import { PriorityTabs, QueueCards } from "./console/queue-cards";
 import { QueueFiltersBar } from "./incident/incident-queue";
 import { NewIncidentDialog } from "./incident/new-incident-dialog";
-import { OpsMap, type PickedPoint } from "./incident/ops-map";
+import type { PickedPoint } from "./incident/ops-map";
 import { SystemStatusCard } from "./system-status-card";
 
 const CAN_CREATE = new Set(["operator", "supervisor", "admin"]);
@@ -81,31 +80,22 @@ export function ConsolePage() {
 
   return (
     <div className="flex flex-col gap-6">
-      <header className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-display-xs font-semibold text-ink">{t("ops.console.title")}</h1>
-        <div className="flex flex-wrap items-center gap-3">
-          {hasSimulated ? <SimulatedLabel /> : null}
-          {canCreate ? (
-            <Button onClick={() => setDialogOpen(true)}>
-              <PlusIcon aria-hidden />
-              {t("ops.console.newIncident")}
-            </Button>
-          ) : null}
-        </div>
-      </header>
-
+      <h1 className="sr-only">{t("ops.console.title")}</h1>
       <KpiRibbon open={openIncidents.data?.items} resources={resources.data} />
 
-      <div className="grid gap-6 xl:grid-cols-12">
+      <div className="grid gap-6 xl:min-h-[43.75rem] xl:grid-cols-12">
         <section
           aria-labelledby="queue-title"
-          className="flex min-w-0 flex-col gap-4 rounded-2xl border border-border bg-card p-5 shadow-card xl:col-span-3 xl:max-h-[calc(100dvh-10rem)]"
+          className="flex min-w-0 flex-col gap-4 rounded-2xl border border-line bg-white p-[21px] shadow-card xl:col-span-3 xl:max-h-[calc(100dvh-14rem)]"
         >
-          <div className="flex items-center justify-between gap-2 border-b border-border pb-3">
-            <h2 id="queue-title" className="flex items-center gap-1 text-body-lg font-semibold">
+          <div className="flex items-center justify-between gap-2 border-b border-line pb-4">
+            <h2
+              id="queue-title"
+              className="flex items-start gap-0.5 text-body-md font-medium text-ink"
+            >
               {t("ops.console.queue")}
               {incidents.data ? (
-                <span className="relative -top-2 grid min-w-4 place-items-center rounded-full bg-danger px-1 text-[0.625rem] font-semibold text-white">
+                <span className="grid h-4 min-w-4 place-items-center rounded-full bg-danger px-1 text-[0.625rem] font-semibold text-white">
                   {incidents.data.total}
                   <span className="sr-only">
                     {t("ops.console.count", { count: incidents.data.total })}
@@ -157,15 +147,12 @@ export function ConsolePage() {
 
         <section
           aria-labelledby="map-title"
-          className="flex min-w-0 flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-card xl:col-span-6"
+          className="flex min-w-0 flex-col gap-3 rounded-2xl border border-line bg-white p-[21px] shadow-card xl:col-span-5"
         >
-          <h2 id="map-title" className="text-body-lg font-semibold">
-            {t("ops.console.map")}
-          </h2>
           {pickMode ? (
             <p
               role="status"
-              className="flex items-center justify-between gap-3 rounded-lg bg-accent px-4 py-2 text-body-sm text-accent-foreground"
+              className="flex items-center justify-between gap-3 rounded-lg bg-brand-50 px-4 py-2 text-body-sm text-brand-500"
             >
               {t("ops.create.pickHint")}
               <Button
@@ -181,34 +168,31 @@ export function ConsolePage() {
               </Button>
             </p>
           ) : null}
-          <OpsMap
-            className="h-[28rem] overflow-hidden rounded-lg border border-border xl:h-auto xl:min-h-[34rem] xl:flex-1"
+          <LiveRoutes
+            incident={selected}
             incidents={items}
             cameras={cameras.data ?? []}
             resources={resources.data}
             pickMode={pickMode}
             picked={picked}
-            onSelectIncident={open}
+            onSelectIncident={(id) => setSelectedId(id)}
             onPick={onPick}
           />
-          <p className="text-body-xs text-ink-muted">{t("ops.console.mapLegend")}</p>
+          {hasSimulated ? <SimulatedLabel className="self-start" /> : null}
         </section>
 
         <section
           aria-labelledby="inspect-title"
-          className="flex min-w-0 flex-col gap-3 rounded-2xl border border-border bg-card p-5 shadow-card xl:col-span-3"
+          className="flex min-w-0 flex-col rounded-2xl border border-line bg-white p-[21px] shadow-card xl:col-span-4"
         >
-          <h2 id="inspect-title" className="text-body-lg font-semibold">
-            {t("ops.console.inspect")}
-          </h2>
-          <InspectPanel incident={selected} cameras={cameras.data ?? []} />
+          <InspectPanel incident={selected} cameras={cameras.data ?? []} canAct={canCreate} />
         </section>
       </div>
 
-      <footer className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card px-5 py-4 shadow-card">
-        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-body-xs text-ink-body">
-          <span className="inline-flex items-center gap-1.5 font-medium">
-            <ShieldCheckIcon aria-hidden className="size-4 text-brand-indigo" />
+      <footer className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-line bg-white p-[17px] shadow-card">
+        <p className="flex flex-wrap items-center gap-x-3 gap-y-1 text-body-xs">
+          <span className="inline-flex items-center gap-1.5 text-ink-body">
+            <span aria-hidden className="size-2 rounded-full bg-brand-indigo" />
             {t("ops.console.humanGate")}
           </span>
           <span className="text-ink-muted">{t("ops.console.humanGateHint")}</span>

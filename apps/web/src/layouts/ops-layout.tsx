@@ -25,19 +25,19 @@ type NavTarget =
 type NavItem = { to: NavTarget; label: string; icon: LucideIcon; exact?: boolean };
 
 /**
- * Figma "control" sidebar: the active item is a solid blue 14 px pill, the others are blue-tinted
- * text on the page background. On small screens the items become a scrollable row.
+ * Figma "control" sidebar (node 75:6342): 46 px items with a 14 px radius, the active one
+ * solid brand-500 with white text, the others brand-200 text and icons on the page background.
  */
 const link = cn(
-  "flex min-h-11 items-center gap-3 rounded-xl px-4 text-body-md font-medium whitespace-nowrap text-ink-body transition-colors",
-  "hover:bg-card hover:text-primary [&_svg]:text-brand-400 hover:[&_svg]:text-primary",
-  "data-[status=active]:bg-primary data-[status=active]:text-white data-[status=active]:shadow-[0_8px_20px_-8px_rgb(0_107_224/0.6)] data-[status=active]:[&_svg]:text-white",
+  "flex h-[46px] items-center gap-3 rounded-xl px-4 text-body-md font-medium tracking-[-0.02em] whitespace-nowrap text-brand-200 transition-colors",
+  "hover:bg-white/70 hover:text-brand-400",
+  "data-[status=active]:bg-brand-500 data-[status=active]:text-white",
 );
 
 function NavSection({ title, items }: { title: string; items: NavItem[] }) {
   return (
     <div className="flex shrink-0 items-center gap-1 lg:flex-col lg:items-stretch lg:gap-2">
-      <p className="hidden px-4 pt-2 text-body-xs font-medium tracking-[0.5px] text-ink-muted uppercase lg:block">
+      <p className="hidden pt-2 text-body-xs tracking-[0.5px] text-ink-subtle uppercase lg:block">
         {title}
       </p>
       <ul className="flex gap-1 lg:flex-col lg:gap-1.5">
@@ -80,10 +80,10 @@ export function OpsLayout() {
   return (
     <LiveEventsProvider>
       <SkipLink />
-      <div className="flex min-h-dvh flex-col bg-background lg:flex-row">
-        <aside className="flex flex-col gap-6 px-4 pt-5 lg:sticky lg:top-0 lg:h-dvh lg:w-72 lg:shrink-0 lg:overflow-y-auto lg:px-6 lg:py-8">
-          <Link to="/ops" className="w-fit rounded-lg px-2" aria-label={t("surface.ops")}>
-            <Logo className="h-11 lg:h-12" />
+      <div className="flex min-h-dvh flex-col bg-surface lg:flex-row">
+        <aside className="flex flex-col gap-8 px-4 pt-5 lg:sticky lg:top-0 lg:h-dvh lg:w-[19rem] lg:shrink-0 lg:overflow-y-auto lg:px-9 lg:pt-12">
+          <Link to="/ops" className="w-fit rounded-lg" aria-label={t("surface.ops")}>
+            <Logo className="h-[52px]" />
           </Link>
           <nav
             aria-label={t("common.mainNavigation")}
@@ -96,8 +96,8 @@ export function OpsLayout() {
             <NavSection title={t("nav.sections.platform")} items={platform} />
           </nav>
         </aside>
-        <div className="flex min-w-0 flex-1 flex-col gap-6 p-4 sm:p-6 lg:ps-2 lg:pe-8 lg:pt-8">
-          <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border bg-card px-4 py-3 shadow-card sm:px-5">
+        <div className="flex min-w-0 flex-1 flex-col gap-6 p-4 sm:p-6 lg:ps-0 lg:pe-8 lg:pt-8">
+          <header className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white px-5 py-5 shadow-card sm:px-6">
             <IncidentSearch />
             <OpsAccount />
           </header>

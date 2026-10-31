@@ -280,7 +280,22 @@
       "details": "Détails",
       "humanGate": "Vérification humaine active",
       "humanGateHint": "L'IA n'envoie jamais de secours seule.",
-      "standards": "Alertes CAP 1.2 · Loi 18-07 / 25-11"
+      "standards": "Alertes CAP 1.2 · Loi 18-07 / 25-11",
+      "liveRoutes": "Itinéraires en direct",
+      "viewRoute": "Itinéraire",
+      "viewAll": "Tous les incidents",
+      "statStatus": "Statut",
+      "statUnit": "ETA unité",
+      "statHospital": "Hôpital",
+      "notDispatched": "Non envoyé",
+      "minutes": "{{count}} min",
+      "accepting": "Accepte les patients",
+      "diverting": "Détourne",
+      "dispatchNow": "Envoyer les secours",
+      "reviewNow": "Examiner et confirmer",
+      "reject": "Rejeter",
+      "manualCallNav": "Appel manuel",
+      "avgDetection": "Détection moyenne : {{value}}"
     },
     "filters": {
       "status": "Statut",
@@ -402,7 +417,9 @@
       "failed": "Le fichier n'a pas pu être chargé."
     },
     "signals": {
-      "none": "Aucun signal de règle enregistré."
+      "none": "Aucun signal de règle enregistré.",
+      "vehicles_one": "{{count}} véhicule",
+      "vehicles_other": "{{count}} véhicules"
     },
     "flags": {
       "to_assess": "À évaluer",
