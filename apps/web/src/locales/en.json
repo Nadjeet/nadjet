@@ -274,7 +274,8 @@
     "dialogTitle": "Confirm the action",
     "dialogBody": "Dialogs use a 24 px radius, a title and clear actions.",
     "cancel": "Cancel",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "neutral": "Neutral"
   },
   "ops": {
     "console": {
