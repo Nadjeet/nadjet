@@ -16,16 +16,19 @@ function formatTime(iso: string, language: string): string {
 }
 
 /**
- * Vertical timeline. A step is done when it appears in `steps` before `current`; state is
- * shown by icon and text, not by colour alone.
+ * Figma "progress" stepper: reached steps get a green check and a green connector, the current
+ * one a green dot, the rest a grey ring and "Pending". State is shown by icon and text, not by
+ * colour alone. `from` hides the steps before it (a responder's mission starts at dispatch).
  */
 export function StatusTimeline({
   steps,
   current,
+  from,
   className,
 }: {
   steps: TimelineStep[];
   current: TimelineStatus;
+  from?: TimelineStatus;
   className?: string;
 }) {
   const { t, i18n } = useTranslation();
@@ -34,6 +37,7 @@ export function StatusTimeline({
   return (
     <ol aria-label={t("timeline.label")} className={cn("flex flex-col", className)}>
       {LIFECYCLE.map((status, index) => {
+        if (from && index < LIFECYCLE.indexOf(from)) return null;
         const done = index < currentIndex && reached.has(status);
         const active = index === currentIndex;
         const at = reached.get(status);
@@ -42,14 +46,14 @@ export function StatusTimeline({
           <li
             key={status}
             aria-current={active ? "step" : undefined}
-            className="relative flex gap-3 pb-5 last:pb-0"
+            className="relative flex gap-3 pb-6 last:pb-0"
           >
             {index < LIFECYCLE.length - 1 ? (
               <span
                 aria-hidden
                 className={cn(
                   "absolute start-3 top-7 -ms-px h-[calc(100%-1.75rem)] w-0.5",
-                  done ? "bg-primary" : "bg-border",
+                  done ? "bg-success" : "bg-border",
                 )}
               />
             ) : null}
@@ -57,18 +61,18 @@ export function StatusTimeline({
               aria-hidden
               className={cn(
                 "z-10 flex size-6 shrink-0 items-center justify-center rounded-full border-2",
-                done && "border-primary bg-primary text-primary-foreground",
-                active && "border-primary bg-background text-primary",
-                !done && !active && "border-muted-foreground bg-background text-muted-foreground",
+                done && "border-success bg-success text-white",
+                active && "border-success bg-card text-success ring-4 ring-success-soft",
+                !done && !active && "border-line bg-card text-ink-subtle",
               )}
             >
               <Icon className="size-3.5" />
             </span>
             <div className="flex min-w-0 flex-col">
-              <span className={cn("text-body-sm", active ? "font-bold" : "font-medium")}>
+              <span className={cn("text-body-md text-ink", active ? "font-semibold" : "font-medium")}>
                 {t(`status.${status}`)}
               </span>
-              <span className="text-body-xs text-muted-foreground">
+              <span className="text-body-xs text-ink-muted">
                 {at ? (
                   <>
                     {done ? <span className="sr-only">{t("timeline.done")} · </span> : null}

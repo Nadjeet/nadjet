@@ -5,12 +5,7 @@ import { LanguagePicker } from "@/components/brand/language-picker";
 import { LiveIndicator } from "@/components/brand/live-indicator";
 import { Button } from "@/components/ui/button";
 import { authStore, useSession } from "@/lib/auth-store";
-
-/** Initials of a display name (no photos are stored: privacy by design). */
-export function initials(name: string): string {
-  const parts = name.trim().split(/\s+/).filter(Boolean);
-  return (parts.length > 1 ? parts[0]![0]! + parts.at(-1)![0]! : name.slice(0, 2)).toUpperCase();
-}
+import { initials } from "@/lib/initials";
 
 /** Figma "Welcome back" block: avatar, greeting and name, plus live status, language, sign-out. */
 export function OpsAccount() {
