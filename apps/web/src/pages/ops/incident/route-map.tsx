@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 
 import { BaseMap } from "@/map/BaseMap";
 import type { MapLang } from "@/map/style";
+import { addIcons } from "@/map/icons";
+import { CameraChip, HospitalCard } from "@/map/map-controls";
 
 export type RouteLine = {
   id: string;
@@ -16,6 +18,10 @@ export type RouteLine = {
 type Props = {
   scene: { lat: number; lon: number } | null;
   routes: RouteLine[];
+  /** Figma hospital card in the bottom corner (name and readiness line). */
+  hospital?: { name: string; detail: string; ready: boolean };
+  /** Figma camera chip in the top corner. */
+  camera?: { label: string; status: "online" | "degraded" | "offline" | "unknown" };
   className?: string;
 };
 
@@ -43,14 +49,16 @@ function install(map: MapLibreMap) {
   if (map.getSource("routes")) return;
   map.addSource("routes", { type: "geojson", data: EMPTY });
   map.addSource("scene", { type: "geojson", data: EMPTY });
-  // Unit → scene is solid, scene → hospital is dashed; both carry a text label.
+  map.addSource("starts", { type: "geojson", data: EMPTY });
+  // Figma route: bright blue #13a9ff, 7.5 px, round joins. Unit → scene is solid,
+  // scene → hospital is dashed (the kind is also written along the line).
   map.addLayer({
     id: "routes-unit",
     type: "line",
     source: "routes",
     filter: ["==", ["get", "kind"], "unit"],
     layout: { "line-cap": "round", "line-join": "round" },
-    paint: { "line-color": "#2a93fe", "line-width": 6 },
+    paint: { "line-color": "#13a9ff", "line-width": 7.5 },
   });
   map.addLayer({
     id: "routes-hospital",
@@ -58,7 +66,7 @@ function install(map: MapLibreMap) {
     source: "routes",
     filter: ["==", ["get", "kind"], "hospital"],
     layout: { "line-cap": "round", "line-join": "round" },
-    paint: { "line-color": "#3568f5", "line-width": 5, "line-dasharray": [1.5, 1.5] },
+    paint: { "line-color": "#13a9ff", "line-width": 6, "line-dasharray": [1.2, 1.4] },
   });
   map.addLayer({
     id: "routes-label",
@@ -72,15 +80,23 @@ function install(map: MapLibreMap) {
     },
     paint: { "text-color": "#0f172a", "text-halo-color": "#ffffff", "text-halo-width": 2 },
   });
+  // Unit positions: the Figma navigation marker at the start of each unit route.
+  map.addLayer({
+    id: "starts",
+    type: "symbol",
+    source: "starts",
+    layout: { "icon-image": "nadjet-unit", "icon-size": 0.8, "icon-allow-overlap": true },
+  });
+  // The scene: the Figma red drop pin.
   map.addLayer({
     id: "scene",
-    type: "circle",
+    type: "symbol",
     source: "scene",
-    paint: {
-      "circle-radius": 9,
-      "circle-color": "#ffffff",
-      "circle-stroke-color": "#0f172a",
-      "circle-stroke-width": 4,
+    layout: {
+      "icon-image": "nadjet-pin",
+      "icon-anchor": "bottom",
+      "icon-size": 1.25,
+      "icon-allow-overlap": true,
     },
   });
   map.addLayer({
@@ -91,7 +107,7 @@ function install(map: MapLibreMap) {
       "text-field": ["get", "label"],
       "text-font": FONT,
       "text-size": 12,
-      "text-offset": [0, 1.4],
+      "text-offset": [0, 0.4],
       "text-anchor": "top",
     },
     paint: { "text-color": "#0f172a", "text-halo-color": "#ffffff", "text-halo-width": 2 },
@@ -105,7 +121,7 @@ function coordinatesOf(route: RouteLine): number[][] | null {
 }
 
 /** The routes of the recommended or dispatched resources on the offline basemap (FR-DSP-004). */
-export function RouteMap({ scene, routes, className }: Props) {
+export function RouteMap({ scene, routes, className, hospital, camera }: Props) {
   const { t, i18n } = useTranslation();
   const mapRef = useRef<MapLibreMap | null>(null);
 
@@ -138,7 +154,22 @@ export function RouteMap({ scene, routes, className }: Props) {
             ]
           : [],
       };
+      const starts: Points = {
+        type: "FeatureCollection",
+        features: lines.features.flatMap((f) =>
+          f.properties.kind === "unit" && f.geometry.coordinates[0]
+            ? [
+                {
+                  type: "Feature" as const,
+                  geometry: { type: "Point" as const, coordinates: f.geometry.coordinates[0] },
+                  properties: {},
+                },
+              ]
+            : [],
+        ),
+      };
       (map.getSource("routes") as GeoJSONSource | undefined)?.setData(lines);
+      (map.getSource("starts") as GeoJSONSource | undefined)?.setData(starts);
       (map.getSource("scene") as GeoJSONSource | undefined)?.setData(points);
       const all = [
         ...lines.features.flatMap((f) => f.geometry.coordinates),
@@ -178,12 +209,32 @@ export function RouteMap({ scene, routes, className }: Props) {
   const onLoad = useCallback((map: MapLibreMap) => {
     mapRef.current = map;
     const ready = () => {
-      install(map);
-      latest.current(map);
+      void addIcons(map, ["pin", "unit"]).then(() => {
+        install(map);
+        latest.current(map);
+      });
     };
     ready();
     map.on("style.load", ready);
   }, []);
 
-  return <BaseMap lang={i18n.language as MapLang} onLoad={onLoad} className={className} />;
+  return (
+    <BaseMap
+      lang={i18n.language as MapLang}
+      onLoad={onLoad}
+      onRecenter={(map) => latest.current(map)}
+      className={className}
+    >
+      {camera ? (
+        <CameraChip
+          label={camera.label}
+          status={camera.status}
+          className="absolute start-2 top-1.5 z-10"
+        />
+      ) : null}
+      {hospital ? (
+        <HospitalCard name={hospital.name} detail={hospital.detail} ready={hospital.ready} />
+      ) : null}
+    </BaseMap>
+  );
 }

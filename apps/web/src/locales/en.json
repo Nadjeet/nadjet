@@ -80,7 +80,10 @@
     "sourceLabel": "Source of this AI value"
   },
   "map": {
-    "unavailable": "Basemap unavailable: run make map-data, then restart the API."
+    "unavailable": "Basemap unavailable: run make map-data, then restart the API.",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "recenter": "Recenter"
   },
   "simulated": {
     "label": "Simulated data"

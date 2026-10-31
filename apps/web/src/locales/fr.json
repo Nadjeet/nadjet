@@ -80,7 +80,10 @@
     "sourceLabel": "Source de cette valeur IA"
   },
   "map": {
-    "unavailable": "Fond de carte indisponible : lancez make map-data, puis redémarrez l'API."
+    "unavailable": "Fond de carte indisponible : lancez make map-data, puis redémarrez l'API.",
+    "zoomIn": "Zoom avant",
+    "zoomOut": "Zoom arrière",
+    "recenter": "Recentrer"
   },
   "simulated": {
     "label": "Données simulées"
