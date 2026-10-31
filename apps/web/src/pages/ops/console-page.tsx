@@ -171,7 +171,6 @@ export function ConsolePage() {
             resources={resources.data}
             pickMode={pickMode}
             picked={picked}
-            onSelectIncident={(id) => setSelectedId(id)}
             onPick={onPick}
           />
           {hasSimulated ? <SimulatedLabel className="self-start" /> : null}
