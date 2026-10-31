@@ -757,8 +757,9 @@
       "missionLabel": "Détails de la mission",
       "mission": "Mission n° {{code}}",
       "progress": "Avancement de la mission",
-      "map": "Carte",
-      "visual": "Images de l'incident"
+      "map": "Carte des incidents",
+      "visual": "Images de l'incident",
+      "progressTitle": "Avancement de la mission"
     },
     "action": {
       "title": "Statut",
@@ -804,7 +805,8 @@
     "sms": {
       "send": "Envoyer par SMS",
       "body": "Ouvre votre application SMS avec ce message prêt :",
-      "noNumber": "Le numéro SMS n'est pas configuré."
+      "noNumber": "Le numéro SMS n'est pas configuré.",
+      "fallback": "Secours SMS"
     },
     "pending": {
       "title": "En attente d'envoi",
@@ -820,7 +822,15 @@
       "gateway": "Numéro de repli SMS",
       "queue": "File hors ligne",
       "queueHint": "Les actions faites sans connexion attendent ici et sont envoyées une seule fois, dans l'ordre, au retour de la connexion."
-    }
+    },
+    "nav": {
+      "home": "Accueil",
+      "progress": "Avancement",
+      "triage": "Triage",
+      "profile": "Profil"
+    },
+    "menu": "Menu",
+    "noActive": "Aucune mission en cours. Les nouvelles missions apparaissent dans Accueil."
   },
   "hospital": {
     "incomingTitle": "Patients attendus",

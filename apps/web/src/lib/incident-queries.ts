@@ -69,6 +69,7 @@ export function useIncident(id: string) {
   return useQuery({
     queryKey: incidentKey(id),
     refetchInterval,
+    enabled: id !== "",
     queryFn: async () => {
       const { data, response } = await api.GET("/incidents/{incident_id}", {
         params: { path: { incident_id: id } },

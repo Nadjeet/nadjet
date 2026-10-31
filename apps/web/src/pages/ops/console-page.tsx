@@ -1,9 +1,5 @@
 import { useNavigate } from "@tanstack/react-router";
-import {
-  PhoneCallIcon,
-  SlidersHorizontalIcon,
-  XIcon,
-} from "lucide-react";
+import { PhoneCallIcon, SlidersHorizontalIcon, XIcon } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 

@@ -26,6 +26,8 @@ import { PlaceholderPage } from "@/pages/placeholder-page";
 import { RespondDetail } from "@/pages/respond/respond-detail";
 import { RespondList } from "@/pages/respond/respond-list";
 import { RespondProfile } from "@/pages/respond/respond-profile";
+import { RespondProgress } from "@/pages/respond/respond-progress";
+import { RespondTriage } from "@/pages/respond/respond-triage";
 import { PublicHome } from "@/pages/public/public-home";
 import { ReportPage } from "@/pages/public/report-page";
 import { TryLivePage } from "@/pages/public/try-live-page";
@@ -134,6 +136,8 @@ const respondRoutes = [
     path: "incidents/$incidentId",
     component: RespondDetail,
   }),
+  createRoute({ getParentRoute: () => respondRoute, path: "progress", component: RespondProgress }),
+  createRoute({ getParentRoute: () => respondRoute, path: "triage", component: RespondTriage }),
   createRoute({ getParentRoute: () => respondRoute, path: "profile", component: RespondProfile }),
 ];
 

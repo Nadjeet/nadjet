@@ -8,7 +8,7 @@ export function HospitalLayout() {
       wide
       surfaceKey="surface.hospital"
       home="/hospital"
-      nav={[{ to: "/hospital", icon: HospitalIcon, labelKey: "nav.incoming", exact: true }]}
+      nav={[{ to: "/hospital", icon: HospitalIcon, label: "", exact: true }]}
     />
   );
 }
