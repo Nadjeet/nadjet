@@ -37,6 +37,9 @@ async function fetchStreamToken(): Promise<string | null> {
   return data?.token ?? null;
 }
 
+/** The latest supervisor of each `<video>`: only it may attach or clear the picture. */
+const owners = new WeakMap<HTMLVideoElement, object>();
+
 /** WebRTC first, LL-HLS when WebRTC fails; on a drop, start over with a growing delay. */
 async function supervise(
   video: HTMLVideoElement,
@@ -44,15 +47,19 @@ async function supervise(
   signal: AbortSignal,
   report: (state: StreamState) => void,
 ) {
+  const claim = {};
+  owners.set(video, claim);
+  const owns = () => !signal.aborted && owners.get(video) === claim;
   let attempt = 0;
   while (!signal.aborted) {
     report({ ...INITIAL, phase: attempt === 0 ? "connecting" : "reconnecting" });
     let mode: PlaybackMode = "webrtc";
     const token = await fetchStreamToken();
-    let playback = await startWhep(urls.whepUrl, video, token).catch(() => null);
-    if (!playback) {
+    if (signal.aborted) return;
+    let playback = await startWhep(urls.whepUrl, video, token, owns).catch(() => null);
+    if (!playback && !signal.aborted) {
       mode = "hls";
-      playback = await startHls(urls.hlsUrl, video, token).catch(() => null);
+      playback = await startHls(urls.hlsUrl, video, token, owns).catch(() => null);
     }
     if (playback && !signal.aborted) {
       attempt = 0;
