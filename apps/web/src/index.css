@@ -180,3 +180,27 @@
     @apply outline-2 outline-offset-2 outline-ring;
   }
 }
+
+/*
+ * Map chrome in the Figma style (white rounded control column, soft shadow), inspired by the
+ * mapcn controls. The basemap itself stays offline and self-hosted (FR-MAP-001).
+ */
+@layer components {
+  .maplibregl-ctrl-top-right .maplibregl-ctrl-group,
+  .maplibregl-ctrl-top-left .maplibregl-ctrl-group {
+    @apply m-3 overflow-hidden rounded-lg border border-border bg-card shadow-card;
+    box-shadow: var(--shadow-card);
+  }
+  .maplibregl-ctrl-group button {
+    @apply size-9;
+  }
+  .maplibregl-ctrl-group button + button {
+    @apply border-t border-border;
+  }
+  .maplibregl-ctrl-attrib {
+    @apply rounded-ss-md bg-card/85 text-[0.6875rem] text-ink-muted;
+  }
+  .maplibregl-popup-content {
+    @apply rounded-lg border border-border px-3 py-2 text-body-xs shadow-float;
+  }
+}

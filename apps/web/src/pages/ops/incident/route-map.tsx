@@ -50,15 +50,15 @@ function install(map: MapLibreMap) {
     source: "routes",
     filter: ["==", ["get", "kind"], "unit"],
     layout: { "line-cap": "round", "line-join": "round" },
-    paint: { "line-color": "#0053a9", "line-width": 5 },
+    paint: { "line-color": "#2a93fe", "line-width": 6 },
   });
   map.addLayer({
     id: "routes-hospital",
     type: "line",
     source: "routes",
     filter: ["==", ["get", "kind"], "hospital"],
-    layout: { "line-join": "round" },
-    paint: { "line-color": "#b91c1c", "line-width": 5, "line-dasharray": [2, 1.5] },
+    layout: { "line-cap": "round", "line-join": "round" },
+    paint: { "line-color": "#3568f5", "line-width": 5, "line-dasharray": [1.5, 1.5] },
   });
   map.addLayer({
     id: "routes-label",
