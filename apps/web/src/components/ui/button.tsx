@@ -6,41 +6,45 @@ import { Slot } from "radix-ui";
 import { cn } from "@/lib/utils";
 
 /**
- * Figma "buttons": 12 px radius, Primary (blue gradient), Secondary (green outline, filled on
- * hover), Tertiary (light blue), disabled in grey; four sizes. The gradient ends on #0f7ae8
- * instead of brand-200 so white labels stay at WCAG AA (TD-54).
+ * Figma "buttons" sheet (node 10:2097), 12 px radius, four sizes (48 / 44 / 40 / 36):
+ * - `default` (Primary): blue-300 at rest, the blue gradient on hover and press;
+ * - `gradient`: the gradient at rest, as the screens use it for the main action
+ *   ("Dispatch Now", "Acknowledge Mission", "Start Transport to Hospital");
+ * - `outline`: blue outline (the screens' "SMS Fallback");
+ * - `success` (Secondary): green outline, filled green on hover, darker when pressed;
+ * - `secondary` (Tertiary): light fill, darker on hover (the purple of the sheet in brand blue);
+ * - `neutral`: the slate buttons of the screens ("Reject", "Details");
+ * - disabled: the sheet's grey for every variant.
  */
 const buttonVariants = cva(
-  "group/button inline-flex shrink-0 items-center justify-center gap-2 rounded-[12px] border border-transparent font-medium whitespace-nowrap transition-[background,color,box-shadow,filter] outline-none select-none focus-visible:shadow-focus disabled:pointer-events-none disabled:border-transparent disabled:bg-none disabled:bg-surface-strong disabled:text-ink-subtle aria-busy:cursor-progress [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
+  "group/button inline-flex shrink-0 items-center justify-center gap-2 rounded-[12px] border border-transparent font-medium whitespace-nowrap transition-[background,color,box-shadow] outline-none select-none focus-visible:shadow-focus disabled:pointer-events-none disabled:border-transparent disabled:bg-none disabled:bg-button-disabled disabled:text-button-disabled-ink disabled:shadow-none aria-busy:cursor-progress [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4",
   {
     variants: {
       variant: {
         default:
-          "bg-[linear-gradient(129deg,#3568f5_8%,#0f7ae8_95%)] text-white shadow-[0_6px_16px_-6px_rgb(53_104_245/0.55)] hover:brightness-95 active:brightness-90",
-        outline:
-          "border-primary bg-card text-primary hover:bg-accent active:bg-[color-mix(in_oklab,var(--accent),var(--primary)_10%)]",
-        secondary:
-          "bg-accent text-primary hover:bg-[color-mix(in_oklab,var(--accent),var(--primary)_10%)] active:bg-[color-mix(in_oklab,var(--accent),var(--primary)_18%)]",
-        neutral:
-          "border-border bg-surface-soft text-ink-body hover:bg-surface-strong active:bg-[color-mix(in_oklab,var(--color-surface-strong),black_5%)]",
-        ghost: "text-primary hover:bg-accent active:bg-secondary",
-        destructive:
-          "bg-danger text-white hover:bg-[color-mix(in_oklab,var(--color-danger),black_14%)] active:bg-[color-mix(in_oklab,var(--color-danger),black_26%)]",
+          "bg-brand-300 text-white hover:bg-[linear-gradient(112deg,#3568f5_7.6%,#80beff_95.5%)] active:bg-[linear-gradient(112deg,#3568f5_7.6%,#80beff_95.5%)] active:brightness-95",
+        gradient:
+          "bg-[linear-gradient(112deg,#3568f5_7.6%,#80beff_95.5%)] text-white shadow-[0_8px_20px_-8px_rgb(53_104_245/0.6)] hover:shadow-[0_10px_24px_-8px_rgb(53_104_245/0.75)] active:brightness-95",
+        outline: "border-brand-500 bg-card text-brand-500 hover:bg-brand-50 active:bg-brand-100/50",
         success:
-          "border-success bg-card text-success hover:bg-success hover:text-white active:bg-[color-mix(in_oklab,var(--color-success),black_18%)] active:text-white",
-        "success-solid":
-          "bg-success text-white hover:bg-[color-mix(in_oklab,var(--color-success),black_14%)] active:bg-[color-mix(in_oklab,var(--color-success),black_26%)]",
-        link: "rounded-sm text-primary underline-offset-4 hover:underline",
+          "border-success bg-card text-success hover:bg-success hover:text-white active:bg-success-strong active:text-white",
+        "success-solid": "bg-success-strong text-white hover:bg-success active:bg-[#15803d]",
+        secondary: "bg-brand-50 text-brand-indigo hover:bg-brand-100/60 active:bg-brand-100/80",
+        neutral:
+          "bg-surface-strong text-ink-body hover:bg-line active:bg-[#cbd5e1] [&_svg]:text-ink-muted",
+        ghost: "text-brand-500 hover:bg-brand-50 active:bg-brand-100/50",
+        destructive: "bg-danger text-white hover:bg-danger-strong active:bg-[#be123c]",
+        link: "rounded-sm text-brand-500 underline-offset-4 hover:underline",
       },
       size: {
+        lg: "h-12 px-6 text-body-sm",
         default: "h-11 px-5 text-body-sm",
-        lg: "h-12 px-6 text-body-md",
         sm: "h-10 px-4 text-body-sm",
-        xs: "h-8 rounded-[10px] px-3 text-body-xs",
+        xs: "h-9 px-3 text-body-xs",
         icon: "size-11",
         "icon-lg": "size-12",
         "icon-sm": "size-10",
-        "icon-xs": "size-8 rounded-[10px]",
+        "icon-xs": "size-9",
       },
     },
     defaultVariants: { variant: "default", size: "default" },

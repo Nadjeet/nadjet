@@ -5,48 +5,66 @@
 @import "@fontsource-variable/noto-sans-arabic";
 
 /*
- * Nadjet design system, light only. Source: Figma "najat" (design system page and the
- * "control" dashboard and "app" screens). Contrast (WCAG 2.2 AA, NFR-INT-002): the brand blue
- * #007dfe is 3.9:1 on white, so it is kept for marks, icons and large figures; text and filled
- * controls use #006be0 (5.0:1), which reads as the same blue. Details: docs/11 TD-54.
+ * Nadjet design system, light only. Source of truth: Figma "najat" (design-system page, the
+ * "control" dashboard and the "app" screens). Values below are the Figma values as delivered
+ * (TD-55); the Tailwind palette page supplies the status colours the screens use.
  */
 
 @theme {
   /* Brand blue (Figma "Colors System") */
-  --color-brand-50: #eff6ff;
+  --color-brand-50: #eaf4ff;
   --color-brand-100: #aad4ff;
   --color-brand-200: #80beff;
   --color-brand-300: #55a8fe;
   --color-brand-400: #2a93fe;
   --color-brand-500: #007dfe;
-  --color-brand-600: #006be0;
+  --color-brand-600: #0053a9;
   --color-brand-700: #003f7f;
   --color-brand-800: #002a55;
   --color-brand-900: #00152a;
-  /* Figma primary-button gradient (#3568f5 to brand-200), darkened at the end for white text */
+  /* Start colour of every Figma gradient (buttons, selected cards) */
   --color-brand-indigo: #3568f5;
 
-  /* Surfaces and text (Figma dashboard: slate scale) */
+  /* Surfaces and text (Figma screens: slate scale) */
   --color-surface: #f2f4f5;
+  --color-surface-app: #fafafa;
   --color-surface-strong: #f1f5f9;
   --color-surface-soft: #f8fafc;
   --color-ink: #0f172a;
   --color-ink-body: #334155;
-  --color-ink-muted: #596a80;
+  --color-ink-muted: #64748b;
   --color-ink-subtle: #94a3b8;
   --color-line: #e2e8f0;
 
-  /* Priority scale: always shown with text and icon, never by colour alone */
-  --color-p1: #dc2626;
-  --color-p2: #c2410c;
-  --color-p3: #92400e;
-  --color-p4: #475569;
-  --color-success: #15803d;
+  /* Status colours used by the Figma screens (Tailwind palette page) */
+  --color-success: #22c55e;
+  --color-success-strong: #16a34a;
+  --color-success-text: #059669;
+  --color-success-chip: #4ade80;
   --color-success-soft: #dcfce7;
-  --color-danger: #dc2626;
+  --color-danger: #ef4444;
+  --color-danger-strong: #e11d48;
   --color-danger-soft: #fee2e2;
-  --color-warning: #b45309;
+  --color-warning: #f59e0b;
+  --color-warning-strong: #d97706;
   --color-warning-soft: #fef3c7;
+
+  /* Priority scale (red, orange, amber, slate): always with text and icon, never colour alone */
+  --color-p1: #ef4444;
+  --color-p2: #f97316;
+  --color-p3: #f59e0b;
+  --color-p4: #64748b;
+
+  /* Figma button states (buttons page, Primary / Disable) */
+  --color-button-disabled: #e8ecf3;
+  --color-button-disabled-ink: #899cc9;
+
+  /* Figma map (dashboard "Live Routes", app "Incidents Map") */
+  --color-map-land: #f0f0f0;
+  --color-map-park: #b4e7c7;
+  --color-map-water: #85d5eb;
+  --color-map-route: #13a9ff;
+  --color-map-pin: #ff1f13;
 
   --font-sans: "DM Sans Variable", "Noto Sans Arabic Variable", system-ui, sans-serif;
 
@@ -55,6 +73,10 @@
   --shadow-card: 0 6px 20px 0 rgb(112 144 176 / 0.12);
   --shadow-float: 0 12px 32px -8px rgb(15 23 42 / 0.18);
   --shadow-focus: 0 0 0 2px #ffffff, 0 0 0 4px var(--ring);
+  /* Figma glass controls (app search button and bottom tab bar) */
+  --shadow-glass:
+    0 0 2px 0 rgb(0 0 0 / 0.1), 0 1px 8px 0 rgb(0 0 0 / 0.12),
+    inset 1px 1px 1px -0.5px rgb(255 255 255 / 0.75), inset 0 0 16px 0 #f2f2f2;
 
   /* Figma type scale (size / line-height) */
   --text-display-xl: 4rem;
@@ -89,15 +111,15 @@
   --card-foreground: #0f172a;
   --popover: #ffffff;
   --popover-foreground: #0f172a;
-  --primary: #006be0;
+  --primary: #007dfe;
   --primary-foreground: #ffffff;
   --secondary: #f1f5f9;
   --secondary-foreground: #0f172a;
   --muted: #f1f5f9;
-  --muted-foreground: #596a80;
-  --accent: #eff6ff;
-  --accent-foreground: #006be0;
-  --destructive: #dc2626;
+  --muted-foreground: #64748b;
+  --accent: #eaf4ff;
+  --accent-foreground: #007dfe;
+  --destructive: #ef4444;
   --border: #e2e8f0;
   --input: #f1f5f9;
   --ring: #007dfe;
@@ -112,7 +134,7 @@
   --sidebar-primary: #007dfe;
   --sidebar-primary-foreground: #ffffff;
   --sidebar-accent: #eff6ff;
-  --sidebar-accent-foreground: #006be0;
+  --sidebar-accent-foreground: #007dfe;
   --sidebar-border: #e2e8f0;
   --sidebar-ring: #007dfe;
 }
