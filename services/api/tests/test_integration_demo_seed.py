@@ -88,3 +88,36 @@ def test_seed_demo_needs_a_users_file(capsys: pytest.CaptureFixture[str], tmp_pa
     code = cli.main(["seed-demo", "--users", str(tmp_path / "missing.yaml")])
     assert code == 1
     assert "not found" in capsys.readouterr().err
+
+
+async def test_a_hospital_user_bound_to_an_unknown_facility_is_reported(
+    session: AsyncSession,
+) -> None:
+    """The example users bound the hospital account to ``demo-hospital``, which no seed file
+    creates: its pre-alert view stayed empty on the live run."""
+    tag = uuid.uuid4().hex[:8]
+    password = SecretStr("demo-seed-test-pw")
+    seeds = [
+        SeedUser(username=f"h-bad-{tag}", display_name="H", password=password,
+                 role=Role.HOSPITAL, facility_id="no-such-facility"),
+        SeedUser(username=f"h-ok-{tag}", display_name="H", password=password,
+                 role=Role.HOSPITAL, facility_id="osm-way-28919252"),
+    ]  # fmt: skip
+    try:
+        report = await run(session, seeds)
+        assert f"h-bad-{tag}" in report.hospitals_without_facility
+        assert f"h-ok-{tag}" not in report.hospitals_without_facility
+        assert any("WARNING" in line and f"h-bad-{tag}" in line for line in report.lines())
+    finally:
+        await session.execute(delete(User).where(User.username.like(f"%-{tag}")))
+        await session.commit()
+
+
+def test_example_users_bind_the_hospital_to_a_seeded_facility() -> None:
+    import yaml
+
+    seeded = {line.split(",", 1)[0] for line in (ROOT / "data/seed/facilities.csv").open()}
+    example = yaml.safe_load((ROOT / "data/seed/users.example.yaml").read_text())
+    for user in example["users"]:
+        if user.get("role") == "hospital":
+            assert user["facility_id"] in seeded, user["username"]

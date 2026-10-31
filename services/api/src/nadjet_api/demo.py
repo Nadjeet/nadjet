@@ -5,9 +5,9 @@ simulated units and facilities, and the camera registry. It never writes inciden
 detections or notifications: those must come from the live pipeline.
 """
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
-from sqlalchemy import func, select
+from sqlalchemy import func, select, text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from nadjet_api.auth.models import User
@@ -29,6 +29,7 @@ class DemoSeedReport:
     units: int
     incidents: int
     responders_without_phone: list[str]
+    hospitals_without_facility: list[str] = field(default_factory=list)
 
     def lines(self) -> list[str]:
         out = [
@@ -40,6 +41,12 @@ class DemoSeedReport:
         if self.responders_without_phone:
             names = ", ".join(self.responders_without_phone)
             out.append(f"seed-demo: WARNING no phone for responder(s): {names} (no SMS demo)")
+        if self.hospitals_without_facility:
+            names = ", ".join(self.hospitals_without_facility)
+            out.append(
+                f"seed-demo: WARNING hospital user(s) bound to no seeded facility: {names} "
+                "(their pre-alert view stays empty; use a facility id from facilities.csv)"
+            )
         return out
 
 
@@ -60,6 +67,9 @@ async def seed_demo(
         row.username: row.phone
         for row in await session.scalars(select(User).where(User.role == Role.RESPONDER.value))
     }
+    known = set((await session.scalars(text("SELECT id FROM facilities"))).all())
+    hospitals = await session.scalars(select(User).where(User.role == Role.HOSPITAL.value))
+    unbound = sorted(u.username for u in hospitals if u.facility_id not in known)
     return DemoSeedReport(
         users_created=created,
         users_existing=existing,
@@ -69,4 +79,5 @@ async def seed_demo(
         units=u_count,
         incidents=incidents,
         responders_without_phone=sorted(name for name, phone in phones.items() if not phone),
+        hospitals_without_facility=unbound,
     )

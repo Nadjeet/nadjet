@@ -38,5 +38,5 @@ users:
       display_name: Hospital,
       password: change-me-hospital,
       role: hospital,
-      facility_id: demo-hospital,
+      facility_id: osm-way-28919252, # Hôpital Mustapha Pacha (facilities.csv)
     }
