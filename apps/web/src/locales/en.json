@@ -59,7 +59,8 @@
     "heroBody": "Detect on existing cameras, verify with a human, and get the right unit and hospital moving — even over SMS.",
     "point1": "AI detection on existing CCTV",
     "point2": "Human verification before dispatch",
-    "point3": "SMS works without mobile data"
+    "point3": "SMS works without mobile data",
+    "liveTag": "Road cameras, watched around the clock"
   },
   "live": {
     "label": "Live updates",
