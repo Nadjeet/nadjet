@@ -55,7 +55,12 @@
     "password": "Mot de passe",
     "submit": "Se connecter",
     "invalid": "Nom d'utilisateur ou mot de passe incorrect.",
-    "unavailable": "Le service est injoignable. Réessayez dans un instant."
+    "unavailable": "Le service est injoignable. Réessayez dans un instant.",
+    "heroTitle": "Une image vérifiée de chaque accident de la route.",
+    "heroBody": "Détecter sur les caméras existantes, faire vérifier par un humain et mobiliser la bonne unité et le bon hôpital, même par SMS.",
+    "point1": "Détection IA sur la vidéosurveillance existante",
+    "point2": "Vérification humaine avant l'envoi des secours",
+    "point3": "Les SMS fonctionnent sans données mobiles"
   },
   "live": {
     "label": "Mises à jour en direct",
