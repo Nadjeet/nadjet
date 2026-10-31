@@ -39,7 +39,7 @@ export function PublicHome() {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-6">
-      <section className="relative overflow-hidden rounded-3xl bg-[linear-gradient(120deg,#006be0_0%,#006be0_58%,#2a8cf7_58%,#55a8fe_100%)] px-6 py-12 text-white shadow-card sm:px-12 sm:py-16">
+      <section className="relative overflow-hidden rounded-[18.6px] bg-[linear-gradient(112deg,#3568f5_7.6%,#80beff_95.5%)] px-6 py-12 text-white shadow-card sm:px-12 sm:py-16">
         <div className="relative flex max-w-3xl flex-col gap-5">
           <h1 className="text-display-xs font-semibold text-balance sm:text-display-md">
             {t("pages.public.home.title")}
@@ -49,8 +49,8 @@ export function PublicHome() {
             <Link
               to="/public/report"
               className={cn(
-                buttonVariants({ size: "lg" }),
-                "bg-none bg-white text-primary shadow-float hover:bg-brand-50 hover:brightness-100",
+                buttonVariants({ variant: "outline", size: "lg" }),
+                "border-white bg-white shadow-float hover:bg-brand-50",
               )}
             >
               <SirenIcon aria-hidden />
