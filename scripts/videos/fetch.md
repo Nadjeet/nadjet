@@ -22,15 +22,19 @@ Pick clips with a fixed, roadside/overhead CCTV view. Demo clips are fixed by `d
 | Camera id | Held-out clip id | Content |
 |---|---|---|
 | `cam-a1-pk42` | `demo-crash-01` | crash (TAD) |
-| `cam-alg-rn5-bab-ezzouar` | `demo-crash-02` | crash (UCF-Crime RoadAccidents) |
-| `cam-a1-lakhdaria` | `demo-heavy-congestion-01` | heavy congestion, **no alert expected** |
-| `cam-alg-rocade-sud` | `demo-stalled-01` | normal flow or a stalled vehicle |
+| `cam-alg-rn5-bab-ezzouar` | `demo-crash-02` | crash at an urban crossing (team compilation, `crash-2`) |
+| `cam-a1-lakhdaria` | `demo-crash-03` | night crash into a roadside pole (team compilation, `crash-1`, first 21 s) |
+| `cam-alg-rocade-sud` | `demo-crash-04` | loss of control on the far carriageway (team compilation, `crash-3`) |
+
+The three compilation clips keep their originals in `data/videos/raw/source/` (git-ignored). `crash-1`
+is cut at 21 s, before the cross-fade to a later scene; nothing else is edited. Every clip starts
+with several seconds of normal traffic, which is the false-positive check before each impact.
 
 Save each download as the raw file, keeping its original container:
 
 ```
 data/videos/raw/cam-a1-pk42.mp4
-data/videos/raw/cam-a1-lakhdaria.avi
+data/videos/raw/cam-a1-lakhdaria.mp4
 data/videos/raw/cam-alg-rn5-bab-ezzouar.mp4
 data/videos/raw/cam-alg-rocade-sud.mp4
 data/videos/raw/eval/<any-name>.mp4        # evaluation pool, one file per clip (optional)
