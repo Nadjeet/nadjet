@@ -386,6 +386,11 @@ def _snap_at(
 
 # --------------------------------------------------------------------------- API client
 
+# Below uvicorn's 5 s keep-alive: a pooled connection the API already closed made the result
+# post fail with "Server disconnected without sending a response" right after a long upload.
+KEEPALIVE_EXPIRY_S = 2.0
+SEND_RETRY_DELAYS_S = (0.5, 1.0, 2.0)
+
 
 class TryApi:
     """The worker's side of ``/internal/try``."""
@@ -400,11 +405,25 @@ class TryApi:
             base_url=str(settings.api_url).rstrip("/") + "/internal/try",
             headers=headers,
             timeout=60.0,
+            limits=httpx.Limits(keepalive_expiry=KEEPALIVE_EXPIRY_S),
             transport=transport,
         )
 
     async def aclose(self) -> None:
         await self._client.aclose()
+
+    async def _send(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
+        """Send, retrying when the connection drops before an answer. If the dropped request
+        was in fact handled, the retry gets 409 and the job already holds its result."""
+        for delay in (*SEND_RETRY_DELAYS_S, None):
+            try:
+                return await self._client.request(method, url, **kwargs)
+            except httpx.TransportError as exc:
+                if delay is None:
+                    raise
+                log.warning("try-it API %s %s dropped (%s); retrying", method, url, exc)
+                await asyncio.sleep(delay)
+        raise AssertionError("unreachable")
 
     async def claim(self) -> TryJobClaim | None:
         response = await self._client.post("/claim")
@@ -428,11 +447,12 @@ class TryApi:
 
     async def upload_video(self, job_id: str, path: Path) -> None:
         data = await anyio.Path(path).read_bytes()
-        response = await self._client.put(f"/jobs/{job_id}/video", content=data)
+        response = await self._send("PUT", f"/jobs/{job_id}/video", content=data)
         response.raise_for_status()
 
     async def result(self, job_id: str, result: TryResult) -> None:
-        response = await self._client.post(
+        response = await self._send(
+            "POST",
             f"/jobs/{job_id}/result",
             content=result.model_dump_json(),
             headers={"Content-Type": "application/json"},
