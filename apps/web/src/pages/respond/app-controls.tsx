@@ -15,7 +15,7 @@ export function AlertsControl() {
   }
   if (state === "unsupported" || state === "denied") {
     return (
-      <p className="text-body-sm text-muted-foreground">
+      <p className="text-body-sm text-ink-muted">
         {t(state === "denied" ? "respond.alerts.denied" : "respond.alerts.unsupported")}
       </p>
     );
@@ -50,7 +50,7 @@ export function InstallControl() {
           {t("respond.install.button")}
         </Button>
       ) : (
-        <p className="text-body-xs text-muted-foreground">{t("respond.install.manual")}</p>
+        <p className="text-body-xs text-ink-muted">{t("respond.install.manual")}</p>
       )}
     </div>
   );

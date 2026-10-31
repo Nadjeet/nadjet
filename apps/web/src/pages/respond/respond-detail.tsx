@@ -88,11 +88,11 @@ function Hospital({ incident }: { incident: IncidentDetail }) {
   const dispatches = useDispatches(incident.id, true);
   const hospital = dispatches.data?.find((d) => d.kind === "hospital");
   if (dispatches.isPending) return <Skeleton className="h-10 w-full" />;
-  if (!hospital) return <p className="text-muted-foreground">{t("respond.detail.noHospital")}</p>;
+  if (!hospital) return <p className="text-ink-muted">{t("respond.detail.noHospital")}</p>;
   return (
     <div className="flex flex-col gap-2">
       <p className="text-body-md font-medium">{hospital.name}</p>
-      <p className="text-body-sm text-muted-foreground">
+      <p className="text-body-sm text-ink-muted">
         {t("ops.dispatch.eta", { minutes: Math.max(1, Math.round(hospital.eta_s / 60)) })} ·{" "}
         {t("ops.dispatch.distance", { km: (hospital.distance_m / 1000).toFixed(1) })}
       </p>
@@ -107,7 +107,7 @@ function AiDescription({ incident }: { incident: IncidentDetail }) {
   const verifier = incident.verifier_result;
   const text = i18n.language === "ar" ? verifier.description_ar : verifier.description_fr;
   if (!verifier.available || !text) {
-    return <p className="text-muted-foreground">{t("respond.detail.noAi")}</p>;
+    return <p className="text-ink-muted">{t("respond.detail.noAi")}</p>;
   }
   return (
     <div className="flex flex-col gap-2">
@@ -116,7 +116,7 @@ function AiDescription({ incident }: { incident: IncidentDetail }) {
         {verifier.model ? <AiSourceTag source={{ kind: "model", id: verifier.model }} /> : null}
       </div>
       <p className="text-body-md">{text}</p>
-      <p className="text-body-xs text-muted-foreground">{t("respond.detail.aiNote")}</p>
+      <p className="text-body-xs text-ink-muted">{t("respond.detail.aiNote")}</p>
     </div>
   );
 }

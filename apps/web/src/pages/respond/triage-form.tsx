@@ -135,7 +135,7 @@ export function TriageForm({ incident }: { incident: IncidentDetail }) {
       <h2 id="triage-title" className="text-body-md font-bold">
         {t("respond.triage.title")}
       </h2>
-      <p className="text-body-sm text-muted-foreground">
+      <p className="text-body-sm text-ink-muted">
         {t("respond.triage.recorded", { count: recorded })}
       </p>
       <form onSubmit={submit} className="flex flex-col gap-4">

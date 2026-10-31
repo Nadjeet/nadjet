@@ -73,7 +73,7 @@ export function ReadinessPanel({
           {t("hospital.error")}
         </p>
       ) : null}
-      <p className="text-body-md text-muted-foreground">
+      <p className="text-body-md text-ink-muted">
         {t("hospital.readiness.sms")}{" "}
         <bdi dir="ltr" className="font-mono">
           H {exampleCode} READY

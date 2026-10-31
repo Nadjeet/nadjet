@@ -31,10 +31,10 @@ function AiCard() {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-display-xs font-bold">{t("system.ai")}</h2>
+        <h2 className="text-body-lg font-semibold text-ink">{t("system.ai")}</h2>
       </CardHeader>
       <CardContent className="flex flex-wrap items-center gap-3">
-        {isPending ? <p className="text-muted-foreground">{t("system.checking")}</p> : null}
+        {isPending ? <p className="text-ink-muted">{t("system.checking")}</p> : null}
         {isError ? <p role="alert">{t("system.unreachable")}</p> : null}
         {data ? (
           <>
@@ -44,7 +44,7 @@ function AiCard() {
             </Badge>
             {data.model ? <AiSourceTag source={{ kind: "model", id: data.model }} /> : null}
             {data.detail ? (
-              <bdi dir="ltr" className="text-body-sm text-muted-foreground">
+              <bdi dir="ltr" className="text-body-sm text-ink-muted">
                 {data.detail}
               </bdi>
             ) : null}
@@ -79,17 +79,17 @@ function CamerasCard() {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-display-xs font-bold">{t("system.cameras")}</h2>
+        <h2 className="text-body-lg font-semibold text-ink">{t("system.cameras")}</h2>
       </CardHeader>
       <CardContent>
-        {isPending ? <p className="text-muted-foreground">{t("system.checking")}</p> : null}
+        {isPending ? <p className="text-ink-muted">{t("system.checking")}</p> : null}
         {isError ? <p role="alert">{t("system.unreachable")}</p> : null}
         {data ? (
           <div className="overflow-x-auto">
             <table className="w-full text-start text-body-sm">
               <caption className="sr-only">{t("system.cameras")}</caption>
               <thead>
-                <tr className="border-b border-border text-muted-foreground">
+                <tr className="border-b border-border text-ink-muted">
                   <th scope="col" className="py-2 pe-4 text-start">
                     {t("system.camera")}
                   </th>
@@ -175,7 +175,9 @@ export function SystemPage() {
   const { t } = useTranslation();
   return (
     <div className="flex flex-col gap-4">
-      <h1 className="text-display-sm font-bold text-balance">{t("pages.ops.system.title")}</h1>
+      <h1 className="text-display-xs font-semibold text-ink text-balance">
+        {t("pages.ops.system.title")}
+      </h1>
       <SystemStatusCard />
       <AiCard />
       <CamerasCard />

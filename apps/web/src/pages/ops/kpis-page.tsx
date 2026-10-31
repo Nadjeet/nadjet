@@ -63,9 +63,7 @@ function MetricBars({ group }: { group: Group }) {
           <li key={metric} className="grid gap-1">
             <div className="flex flex-wrap items-baseline justify-between gap-2">
               <span className="font-medium">{t(`kpis.metric.${metric}`)}</span>
-              <span className="text-body-sm text-muted-foreground">
-                {t(`kpis.metricHelp.${metric}`)}
-              </span>
+              <span className="text-body-sm text-ink-muted">{t(`kpis.metricHelp.${metric}`)}</span>
             </div>
             <div
               className="relative h-6 overflow-hidden rounded-full bg-secondary"
@@ -98,16 +96,16 @@ function GroupTable({ title, groups }: { title: ParseKeys; groups: Group[] }) {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-display-xs font-bold">{t(title)}</h2>
+        <h2 className="text-body-lg font-semibold text-ink">{t(title)}</h2>
       </CardHeader>
       <CardContent className="overflow-x-auto">
         {groups.length === 0 ? (
-          <p className="text-muted-foreground">{t("kpis.none")}</p>
+          <p className="text-ink-muted">{t("kpis.none")}</p>
         ) : (
           <table className="w-full text-start text-body-sm">
             <caption className="sr-only">{t(title)}</caption>
             <thead>
-              <tr className="border-b border-border text-muted-foreground">
+              <tr className="border-b border-border text-ink-muted">
                 <th scope="col" className="py-2 pe-4 text-start">
                   {t("kpis.group")}
                 </th>
@@ -148,16 +146,16 @@ function FalseAlarms({ report }: { report: Report }) {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-display-xs font-bold">{t("kpis.falseAlarms")}</h2>
+        <h2 className="text-body-lg font-semibold text-ink">{t("kpis.falseAlarms")}</h2>
       </CardHeader>
       <CardContent className="overflow-x-auto">
         {report.false_alarms.length === 0 ? (
-          <p className="text-muted-foreground">{t("kpis.none")}</p>
+          <p className="text-ink-muted">{t("kpis.none")}</p>
         ) : (
           <table className="w-full text-start text-body-sm">
             <caption className="sr-only">{t("kpis.falseAlarms")}</caption>
             <thead>
-              <tr className="border-b border-border text-muted-foreground">
+              <tr className="border-b border-border text-ink-muted">
                 <th scope="col" className="py-2 pe-4 text-start">
                   {t("kpis.camera")}
                 </th>
@@ -212,16 +210,16 @@ function IncidentTable({ report }: { report: Report }) {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-display-xs font-bold">{t("kpis.perIncident")}</h2>
+        <h2 className="text-body-lg font-semibold text-ink">{t("kpis.perIncident")}</h2>
       </CardHeader>
       <CardContent className="overflow-x-auto">
         {report.incidents.length === 0 ? (
-          <p className="text-muted-foreground">{t("kpis.none")}</p>
+          <p className="text-ink-muted">{t("kpis.none")}</p>
         ) : (
           <table className="w-full text-start text-body-sm">
             <caption className="sr-only">{t("kpis.perIncident")}</caption>
             <thead>
-              <tr className="border-b border-border text-muted-foreground">
+              <tr className="border-b border-border text-ink-muted">
                 <th scope="col" className="py-2 pe-4 text-start">
                   {t("kpis.code")}
                 </th>
@@ -283,8 +281,8 @@ export function KpisPage() {
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-col gap-1">
-        <h1 className="text-display-sm font-bold text-balance">{t("kpis.title")}</h1>
-        <p className="text-muted-foreground">{t("kpis.intro")}</p>
+        <h1 className="text-display-xs font-semibold text-ink text-balance">{t("kpis.title")}</h1>
+        <p className="text-ink-muted">{t("kpis.intro")}</p>
       </div>
       <form className="flex flex-wrap items-end gap-4" onSubmit={(e) => e.preventDefault()}>
         <div className="grid gap-1.5">
@@ -325,13 +323,13 @@ export function KpisPage() {
           </select>
         </div>
       </form>
-      {isPending ? <p className="text-muted-foreground">{t("kpis.loading")}</p> : null}
+      {isPending ? <p className="text-ink-muted">{t("kpis.loading")}</p> : null}
       {isError ? <p role="alert">{t("kpis.error")}</p> : null}
       {data ? (
         <>
           <Card>
             <CardHeader>
-              <h2 className="text-display-xs font-bold">
+              <h2 className="text-body-lg font-semibold text-ink">
                 {t("kpis.overall")} ({data.overall.incidents})
               </h2>
             </CardHeader>

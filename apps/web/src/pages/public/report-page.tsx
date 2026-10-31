@@ -112,7 +112,7 @@ export function ReportPage() {
     return (
       <section className="mx-auto flex max-w-xl flex-col gap-4 py-8" aria-live="polite">
         <CheckCircle2Icon aria-hidden className="size-14 text-success" />
-        <h1 className="text-display-sm font-bold">{t("pages.public.report.doneTitle")}</h1>
+        <h1 className="text-display-xs font-semibold text-ink">{t("pages.public.report.doneTitle")}</h1>
         <p className="text-body-lg">{t("pages.public.report.doneBody")}</p>
         <p className="text-body-md">
           {t("pages.public.report.code")}{" "}
@@ -135,7 +135,7 @@ export function ReportPage() {
 
   return (
     <section className="mx-auto flex w-full max-w-xl flex-col gap-6 py-4">
-      <h1 className="text-display-sm font-bold text-balance">{t("pages.public.report.title")}</h1>
+      <h1 className="text-display-xs font-semibold text-ink text-balance">{t("pages.public.report.title")}</h1>
       <form onSubmit={report} className="flex flex-col gap-5">
         <Button
           type="submit"
@@ -151,7 +151,7 @@ export function ReportPage() {
               ? t("pages.public.report.sending")
               : t("pages.public.cta")}
         </Button>
-        <p className="text-body-sm text-muted-foreground">{t("pages.public.report.hint")}</p>
+        <p className="text-body-sm text-ink-muted">{t("pages.public.report.hint")}</p>
 
         <fieldset className="flex flex-col gap-4 rounded-lg border p-4">
           <legend className="px-1 text-body-sm font-medium">
@@ -196,7 +196,7 @@ export function ReportPage() {
             />
           </div>
         </fieldset>
-        <p className="text-body-sm text-muted-foreground">
+        <p className="text-body-sm text-ink-muted">
           {t("pages.public.report.consent")}{" "}
           <Link to="/public/privacy" className="underline">
             {t("nav.privacy")}

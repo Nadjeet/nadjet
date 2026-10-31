@@ -97,7 +97,7 @@ export function StatusActions({ incident }: { incident: IncidentDetail }) {
               aria-current={current ? "step" : undefined}
               className={cn(
                 "inline-flex items-center gap-1 rounded-full border px-2.5 py-1 text-body-xs",
-                current ? "border-primary font-bold" : "border-border text-muted-foreground",
+                current ? "border-primary font-bold" : "border-border text-ink-muted",
               )}
             >
               <Icon aria-hidden className="size-3" />
@@ -116,7 +116,7 @@ export function StatusActions({ incident }: { incident: IncidentDetail }) {
           {busy ? t("respond.action.sending") : t(`respond.action.${next}`)}
         </Button>
       ) : (
-        <p className="text-body-sm text-muted-foreground">{t("respond.action.waiting")}</p>
+        <p className="text-body-sm text-ink-muted">{t("respond.action.waiting")}</p>
       )}
       {effective === "on_scene" ? (
         <Button variant="outline" disabled={busy} onClick={() => press("closed")}>

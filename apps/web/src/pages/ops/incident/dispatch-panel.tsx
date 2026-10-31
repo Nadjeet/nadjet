@@ -52,7 +52,7 @@ function ResourceFacts({ resource }: { resource: RankedResource }) {
     <span className="flex flex-wrap items-center gap-x-3 gap-y-1 text-body-sm">
       <span className="font-medium">{resource.name}</span>
       <span>{t("ops.dispatch.eta", { minutes: minutes(resource.eta_s) })}</span>
-      <span className="text-muted-foreground">
+      <span className="text-ink-muted">
         {t("ops.dispatch.distance", { km: (resource.distance_m / 1000).toFixed(1) })}
       </span>
       {resource.agency ? (
@@ -142,7 +142,7 @@ function DispatchChooser({ incident }: { incident: IncidentDetail }) {
   }
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-body-xs text-muted-foreground">
+      <p className="text-body-xs text-ink-muted">
         {t("ops.dispatch.need", {
           agencies: data.unit_agencies
             .map((agency) => label(`ops.agency.${agency}`, agency))
@@ -153,7 +153,7 @@ function DispatchChooser({ incident }: { incident: IncidentDetail }) {
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-1 text-body-sm font-bold">{t("ops.dispatch.units")}</legend>
         {data.units.length === 0 ? (
-          <p className="text-body-sm text-muted-foreground">{t("ops.dispatch.noUnits")}</p>
+          <p className="text-body-sm text-ink-muted">{t("ops.dispatch.noUnits")}</p>
         ) : null}
         {data.units.map((unit) => (
           <div key={unit.id} className="flex items-start gap-3">
@@ -176,7 +176,7 @@ function DispatchChooser({ incident }: { incident: IncidentDetail }) {
       <fieldset className="flex flex-col gap-2">
         <legend className="mb-1 text-body-sm font-bold">{t("ops.dispatch.hospitals")}</legend>
         {data.hospitals.length === 0 ? (
-          <p className="text-body-sm text-muted-foreground">{t("ops.dispatch.noHospitals")}</p>
+          <p className="text-body-sm text-ink-muted">{t("ops.dispatch.noHospitals")}</p>
         ) : null}
         <RadioGroup value={hospital} onValueChange={setHospital}>
           {data.hospitals.map((h) => (
@@ -219,7 +219,7 @@ function DispatchChooser({ incident }: { incident: IncidentDetail }) {
 function Deliveries({ row }: { row: DispatchRow }) {
   const { t } = useTranslation();
   if (row.deliveries.length === 0) {
-    return <span className="text-muted-foreground">{t("ops.dispatch.noRecipients")}</span>;
+    return <span className="text-ink-muted">{t("ops.dispatch.noRecipients")}</span>;
   }
   return (
     <ul className="flex flex-wrap gap-2">
@@ -332,7 +332,7 @@ function DispatchStatus({ incident }: { incident: IncidentDetail }) {
       <div className="overflow-x-auto">
         <table className="w-full min-w-[34rem] text-start text-body-sm">
           <caption className="sr-only">{t("ops.dispatch.title")}</caption>
-          <thead className="text-body-xs text-muted-foreground">
+          <thead className="text-body-xs text-ink-muted">
             <tr>
               {(["resource", "eta", "status", "delivery"] as const).map((col) => (
                 <th key={col} scope="col" className="px-2 py-1 text-start font-medium">
@@ -358,7 +358,7 @@ function DispatchStatus({ incident }: { incident: IncidentDetail }) {
                 <td className="px-2 py-2">
                   {t(`ops.dispatch.status.${row.status}`)}
                   {row.status === "dispatched" && FIELD_STATUSES.has(incident.status) ? (
-                    <span className="block text-body-xs text-muted-foreground">
+                    <span className="block text-body-xs text-ink-muted">
                       {t("ops.dispatch.fieldAck", {
                         status: t(`status.${incident.status as "acknowledged"}`),
                       })}

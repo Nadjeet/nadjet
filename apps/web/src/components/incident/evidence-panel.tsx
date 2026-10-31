@@ -135,11 +135,11 @@ export function EvidencePanel({ incident }: { incident: IncidentDetail }) {
   const clips = incident.evidence.filter((e) => e.kind === "clip");
   const frames = incident.evidence.filter((e) => e.kind !== "clip");
   if (incident.evidence.length === 0) {
-    return <p className="text-muted-foreground">{t("ops.evidence.none")}</p>;
+    return <p className="text-ink-muted">{t("ops.evidence.none")}</p>;
   }
   return (
     <div className="flex flex-col gap-4">
-      <p className="text-body-xs text-muted-foreground">{t("ops.evidence.audited")}</p>
+      <p className="text-body-xs text-ink-muted">{t("ops.evidence.audited")}</p>
       {clips.map((clip) => (
         <ClipPlayer key={clip.id} incidentId={incident.id} clip={clip} />
       ))}

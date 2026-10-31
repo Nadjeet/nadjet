@@ -28,10 +28,10 @@ export function SystemStatusCard() {
   return (
     <Card>
       <CardHeader>
-        <h2 className="text-display-xs font-bold">{t("system.title")}</h2>
+        <h2 className="text-body-lg font-semibold text-ink">{t("system.title")}</h2>
       </CardHeader>
       <CardContent>
-        {isPending ? <p className="text-muted-foreground">{t("system.checking")}</p> : null}
+        {isPending ? <p className="text-ink-muted">{t("system.checking")}</p> : null}
         {isError ? <p role="alert">{t("system.unreachable")}</p> : null}
         {data ? (
           <ul className="flex flex-col gap-2">
@@ -54,7 +54,7 @@ export function SystemStatusCard() {
                 <bdi dir="ltr" className="font-mono text-body-sm">
                   {name}
                 </bdi>
-                <bdi dir="ltr" className="text-body-sm text-muted-foreground">
+                <bdi dir="ltr" className="text-body-sm text-ink-muted">
                   {dependency.detail}
                 </bdi>
               </li>

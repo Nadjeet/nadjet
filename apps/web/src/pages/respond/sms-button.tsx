@@ -22,7 +22,7 @@ export function SmsButton({
   if (!body) return null;
   if (!number) {
     return gateway.isPending ? null : (
-      <p className="text-body-xs text-muted-foreground">{t("respond.sms.noNumber")}</p>
+      <p className="text-body-xs text-ink-muted">{t("respond.sms.noNumber")}</p>
     );
   }
   return (
@@ -33,7 +33,7 @@ export function SmsButton({
           {t("respond.sms.send")}
         </a>
       </Button>
-      <p className="text-body-xs text-muted-foreground">
+      <p className="text-body-xs text-ink-muted">
         {t("respond.sms.body")}{" "}
         <bdi dir="ltr" className="font-mono">
           {body}

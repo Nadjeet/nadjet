@@ -32,7 +32,7 @@ function Countdown({ dueAt, now }: { dueAt: string; now: number }) {
   const clock = `${Math.floor(abs / 60)}:${String(abs % 60).padStart(2, "0")}`;
   return (
     <div className="flex flex-col">
-      <span className="flex items-center gap-2 text-body-md text-muted-foreground">
+      <span className="flex items-center gap-2 text-body-md text-ink-muted">
         <ClockIcon aria-hidden className="size-5" />
         {seconds >= 0 ? t("hospital.card.arrivesIn") : t("hospital.card.overdue")}
       </span>
@@ -43,7 +43,7 @@ function Countdown({ dueAt, now }: { dueAt: string; now: number }) {
       >
         {clock}
       </time>
-      <span className="text-body-sm text-muted-foreground">
+      <span className="text-body-sm text-ink-muted">
         {t("hospital.card.dueAt", { time: formatTime(dueAt, i18n.language) })}
       </span>
     </div>
@@ -60,7 +60,7 @@ function Victims({ alert }: { alert: PreAlert }) {
       <ul className="grid grid-cols-2 gap-2 sm:grid-cols-4">
         {TAGS.map((tag) => (
           <li key={tag} className={cn("flex flex-col rounded-xl border-4 px-3 py-2", TILE[tag])}>
-            <span className="font-mono text-display-sm font-bold">{alert.victims[tag]}</span>
+            <span className="font-mono text-display-xs font-semibold text-ink">{alert.victims[tag]}</span>
             <span className="text-body-sm font-medium">{t(`respond.triage.${tag}`)}</span>
           </li>
         ))}
@@ -69,7 +69,7 @@ function Victims({ alert }: { alert: PreAlert }) {
         <div className="overflow-x-auto">
           <table className="w-full min-w-[32rem] text-start text-body-md">
             <caption className="sr-only">{t("hospital.card.vitals")}</caption>
-            <thead className="text-body-sm text-muted-foreground">
+            <thead className="text-body-sm text-ink-muted">
               <tr>
                 {(["tag", "avpu", "resp", "pulse", "spo2", "bleeding", "time"] as const).map(
                   (col) => (
@@ -100,7 +100,7 @@ function Victims({ alert }: { alert: PreAlert }) {
           </table>
         </div>
       ) : (
-        <p className="text-body-md text-muted-foreground">{t("hospital.card.noVictims")}</p>
+        <p className="text-body-md text-ink-muted">{t("hospital.card.noVictims")}</p>
       )}
     </section>
   );
@@ -125,7 +125,7 @@ export function PreAlertCard({
       className="flex flex-col gap-4 rounded-3xl border border-border bg-card p-5 shadow-soft"
     >
       <header className="flex flex-wrap items-center gap-3">
-        <h2 id={`prealert-${alert.short_code}`} className="text-display-sm font-bold">
+        <h2 id={`prealert-${alert.short_code}`} className="text-display-xs font-semibold text-ink">
           <bdi dir="ltr" className="font-mono">
             {alert.short_code}
           </bdi>
@@ -153,7 +153,7 @@ export function PreAlertCard({
           </span>
           {alert.units.some((u) => u.simulated) ? <SimulatedLabel className="w-fit" /> : null}
           <span>{label(`ops.type.${alert.type}`, alert.type)}</span>
-          <span className="text-muted-foreground">{place(alert)}</span>
+          <span className="text-ink-muted">{place(alert)}</span>
           {alert.people_reported !== null ? (
             <span>{t("respond.detail.people", { count: alert.people_reported })}</span>
           ) : null}
