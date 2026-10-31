@@ -36,6 +36,9 @@ type BaseMapProps = {
   onLoad?: (map: MapLibreMap) => void;
   /** Where the recenter button goes (default: the initial view). */
   onRecenter?: (map: MapLibreMap) => void;
+  /** Opens or closes the large map (expand button in the controls). */
+  onExpand?: () => void;
+  expanded?: boolean;
   /** Figma overlays drawn over the map (camera chip, hospital card). */
   children?: ReactNode;
 };
@@ -48,6 +51,8 @@ export function BaseMap({
   className,
   onLoad,
   onRecenter,
+  onExpand,
+  expanded,
   children,
 }: BaseMapProps) {
   const { t } = useTranslation();
@@ -101,6 +106,8 @@ export function BaseMap({
       <div ref={container} className="h-full w-full" />
       <MapControls
         map={instance}
+        onExpand={onExpand}
+        expanded={expanded}
         onRecenter={() => {
           if (!instance) return;
           if (onRecenter) onRecenter(instance);

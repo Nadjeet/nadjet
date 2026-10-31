@@ -3,6 +3,9 @@ import type { GeoJSONSource, Map as MapLibreMap, SymbolLayerSpecification } from
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { PriorityBadge, type PriorityLevel } from "@/components/incident/priority-badge";
+import { formatAge, useLabel } from "@/lib/format";
+import { locationText } from "@/lib/incident-format";
 import { BaseMap } from "@/map/BaseMap";
 import { addIcons } from "@/map/icons";
 import type { MapLang } from "@/map/style";
@@ -20,8 +23,51 @@ type Props = {
   picked: PickedPoint | null;
   onSelectIncident: (id: string) => void;
   onPick: (point: PickedPoint) => void;
+  /** Opens or closes the large map (expand button in the map controls). */
+  onExpand?: () => void;
+  expanded?: boolean;
   className?: string;
 };
+
+type Hover = { id: string; x: number; y: number };
+
+/**
+ * Card shown over a hovered incident pin: priority, code, age, type, place and status, with the
+ * hint that a click opens the incident page.
+ */
+function IncidentHoverCard({ incident, x, y }: { incident: Incident; x: number; y: number }) {
+  const { t, i18n } = useTranslation();
+  const label = useLabel();
+  return (
+    <div
+      role="tooltip"
+      style={{ left: x, top: y }}
+      className="pointer-events-none absolute z-20 flex w-64 -translate-x-1/2 -translate-y-[calc(100%+3.25rem)] flex-col gap-1.5 rounded-lg border-2 border-brand-indigo bg-white p-3 shadow-card"
+    >
+      <div className="flex items-center gap-1.5">
+        {incident.priority === 1 ? (
+          <span className="rounded-md bg-danger px-1 py-0.5 text-[0.625rem] leading-[0.9rem] text-white">
+            {t("priority.p1")}
+          </span>
+        ) : (
+          <PriorityBadge level={incident.priority as PriorityLevel} compact />
+        )}
+        <bdi dir="ltr" className="text-body-xs font-semibold text-ink">
+          INC-{incident.short_code}
+        </bdi>
+        <span className="ms-auto text-body-xs whitespace-nowrap text-brand-500">
+          {formatAge(incident.event_time, i18n.language)}
+        </span>
+      </div>
+      <p className="text-body-xs text-ink">{label(`ops.type.${incident.type}`, incident.type)}</p>
+      <p className="truncate text-[0.6875rem] text-ink-muted">{locationText(incident)}</p>
+      <div className="flex items-center justify-between gap-2 border-t border-line pt-1.5">
+        <span className="text-[0.6875rem] text-brand-900">{t(`status.${incident.status}`)}</span>
+        <span className="text-[0.6875rem] font-medium text-brand-500">{t("map.openDetails")}</span>
+      </div>
+    </div>
+  );
+}
 
 type Collection = {
   type: "FeatureCollection";
@@ -165,7 +211,8 @@ function setData(map: MapLibreMap, name: (typeof SOURCES)[number], data: Collect
 
 /**
  * Operator map: cameras (status in the label), incidents (priority in the label), facilities
- * and units (simulated ones say so in the label) — FR-MAP-001. A click on an incident opens it;
+ * and units (simulated ones say so in the label) — FR-MAP-001. Hovering an incident shows its
+ * summary card and a click opens it;
  * in pick mode a click places the point of a manual incident (FR-INC-007).
  */
 export function OpsMap({
@@ -177,11 +224,14 @@ export function OpsMap({
   picked,
   onSelectIncident,
   onPick,
+  onExpand,
+  expanded,
   className,
 }: Props) {
   const { t, i18n } = useTranslation();
   const mapRef = useRef<MapLibreMap | null>(null);
   const [ready, setReady] = useState(false);
+  const [hover, setHover] = useState<Hover | null>(null);
   const live = useRef({ pickMode, onSelectIncident, onPick });
   useEffect(() => {
     live.current = { pickMode, onSelectIncident, onPick };
@@ -277,9 +327,16 @@ export function OpsMap({
     map.on("mouseenter", "incidents", () => {
       if (!live.current.pickMode) map.getCanvas().style.cursor = "pointer";
     });
+    map.on("mousemove", "incidents", (event) => {
+      const id = event.features?.[0]?.properties?.id as string | undefined;
+      if (!id || live.current.pickMode) return;
+      setHover({ id, x: event.point.x, y: event.point.y });
+    });
     map.on("mouseleave", "incidents", () => {
       map.getCanvas().style.cursor = live.current.pickMode ? "crosshair" : "";
+      setHover(null);
     });
+    map.on("movestart", () => setHover(null));
     map.on("click", (event) => {
       if (live.current.pickMode) {
         live.current.onPick({ lat: event.lngLat.lat, lon: event.lngLat.lng });
@@ -291,5 +348,16 @@ export function OpsMap({
     });
   }, []);
 
-  return <BaseMap lang={i18n.language as MapLang} onLoad={onLoad} className={className} />;
+  const hovered = hover ? incidents.find((i) => i.id === hover.id) : undefined;
+  return (
+    <BaseMap
+      lang={i18n.language as MapLang}
+      onLoad={onLoad}
+      onExpand={onExpand}
+      expanded={expanded}
+      className={className}
+    >
+      {hover && hovered ? <IncidentHoverCard incident={hovered} x={hover.x} y={hover.y} /> : null}
+    </BaseMap>
+  );
 }

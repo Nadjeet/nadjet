@@ -1,5 +1,5 @@
 import type { Map as MapLibreMap } from "maplibre-gl";
-import { MinusIcon, NavigationIcon, PlusIcon } from "lucide-react";
+import { Maximize2Icon, Minimize2Icon, MinusIcon, NavigationIcon, PlusIcon } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
 import { cn } from "@/lib/utils";
@@ -11,10 +11,15 @@ import { cn } from "@/lib/utils";
 export function MapControls({
   map,
   onRecenter,
+  onExpand,
+  expanded = false,
   className,
 }: {
   map: MapLibreMap | null;
   onRecenter: () => void;
+  /** When set, a fourth button opens (or closes) the large map. */
+  onExpand?: () => void;
+  expanded?: boolean;
   className?: string;
 }) {
   const { t } = useTranslation();
@@ -57,6 +62,21 @@ export function MapControls({
       >
         <NavigationIcon aria-hidden className="size-3.5 text-brand-500" />
       </button>
+      {onExpand ? (
+        <button
+          type="button"
+          className={button}
+          onClick={onExpand}
+          aria-label={expanded ? t("map.collapse") : t("map.expand")}
+          title={expanded ? t("map.collapse") : t("map.expand")}
+        >
+          {expanded ? (
+            <Minimize2Icon aria-hidden className="size-3.5" />
+          ) : (
+            <Maximize2Icon aria-hidden className="size-3.5" />
+          )}
+        </button>
+      ) : null}
     </div>
   );
 }

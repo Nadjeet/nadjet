@@ -1,6 +1,9 @@
+import { useNavigate } from "@tanstack/react-router";
+import { Maximize2Icon } from "lucide-react";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { Dialog, DialogContent, DialogDescription, DialogTitle } from "@/components/ui/dialog";
 import {
   useDispatches,
   type Camera,
@@ -54,7 +57,6 @@ export function LiveRoutes({
   resources,
   pickMode,
   picked,
-  onSelectIncident,
   onPick,
 }: {
   incident: Incident | null;
@@ -63,11 +65,14 @@ export function LiveRoutes({
   resources: MapResources | undefined;
   pickMode: boolean;
   picked: PickedPoint | null;
-  onSelectIncident: (id: string) => void;
   onPick: (point: PickedPoint) => void;
 }) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [view, setView] = useState<"route" | "all">("route");
+  const [expanded, setExpanded] = useState(false);
+  const openIncident = (id: string) =>
+    void navigate({ to: "/ops/incidents/$incidentId", params: { incidentId: id } });
   const dispatched = incident !== null && DISPATCHED.has(incident.status);
   const dispatches = useDispatches(incident?.id ?? "", dispatched);
   const rows = dispatched ? (dispatches.data ?? []) : [];
@@ -96,8 +101,8 @@ export function LiveRoutes({
 
   return (
     <div className="flex h-full flex-col gap-4">
-      <div className="flex items-center justify-between gap-2">
-        <h2 id="map-title" className="text-body-md font-medium text-ink">
+      <div className="flex items-center gap-2">
+        <h2 id="map-title" className="me-auto text-body-md font-medium text-ink">
           {t("ops.console.liveRoutes")}
         </h2>
         <div
@@ -120,6 +125,15 @@ export function LiveRoutes({
             </button>
           ))}
         </div>
+        <button
+          type="button"
+          onClick={() => setExpanded(true)}
+          aria-label={t("map.expand")}
+          title={t("map.expand")}
+          className="ms-auto grid size-7 place-items-center rounded-md border border-line bg-white text-ink transition-colors hover:bg-surface-strong focus-visible:shadow-focus"
+        >
+          <Maximize2Icon aria-hidden className="size-3.5" />
+        </button>
       </div>
       {showAll ? (
         <OpsMap
@@ -130,8 +144,9 @@ export function LiveRoutes({
           selectedId={incident?.id}
           pickMode={pickMode}
           picked={picked}
-          onSelectIncident={onSelectIncident}
+          onSelectIncident={openIncident}
           onPick={onPick}
+          onExpand={() => setExpanded(true)}
         />
       ) : (
         <RouteMap
@@ -175,6 +190,34 @@ export function LiveRoutes({
           tone={hospital ? (ready ? "ok" : "danger") : undefined}
         />
       </div>
+
+      <Dialog open={expanded} onOpenChange={setExpanded}>
+        <DialogContent className="flex h-[calc(100dvh-2rem)] max-w-[calc(100vw-2rem)] flex-col gap-3 rounded-2xl p-5 sm:max-w-[calc(100vw-2rem)]">
+          <div className="flex flex-col gap-0.5 pe-10">
+            <DialogTitle className="text-body-md font-medium text-ink">
+              {t("ops.console.liveMap")}
+            </DialogTitle>
+            <DialogDescription className="text-body-xs text-ink-muted">
+              {t("ops.console.liveMapHint")}
+            </DialogDescription>
+          </div>
+          {expanded ? (
+            <OpsMap
+              className="min-h-0 flex-1 overflow-hidden rounded-lg border border-surface-strong bg-surface-soft"
+              incidents={incidents}
+              cameras={cameras}
+              resources={resources}
+              selectedId={incident?.id}
+              pickMode={false}
+              picked={null}
+              onSelectIncident={openIncident}
+              onPick={() => undefined}
+              expanded
+              onExpand={() => setExpanded(false)}
+            />
+          ) : null}
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
