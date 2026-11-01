@@ -174,7 +174,7 @@ jobs:
           tags: |
             type=sha,format=long
             type=ref,event=branch
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v7
         with:
           context: .
           file: services/vision/Dockerfile
@@ -216,7 +216,7 @@ jobs:
             type=sha,format=long
             type=ref,event=branch
             type=ref,event=tag
-      - uses: docker/build-push-action@v6
+      - uses: docker/build-push-action@v7
         with:
           context: .
           file: ${{ matrix.file }}
